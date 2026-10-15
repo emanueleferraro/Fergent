@@ -194,6 +194,7 @@ mod tests {
     use std::path::Path;
     use std::sync::Arc;
     use std::time::Duration;
+    use std::time::Instant;
     use tokio::sync::watch;
 
     /// Start a kernel + server on a temp socket and wait until it accepts.
@@ -300,5 +301,64 @@ mod tests {
             Some(-32001)
         );
         let _ = handle;
+    }
+
+    #[tokio::test]
+    async fn ping_roundtrips_in_under_fifty_milliseconds() {
+        let (_dir, socket, handle, _kernel) = start_stack().await;
+        let client = KernelClient::connect(&socket).await.unwrap();
+        // Warm up so the measurement excludes first-call setup.
+        let _: fergents_protocol::PingResult = client.call_typed("ping", &()).await.unwrap();
+        let start = Instant::now();
+        let pong: fergents_protocol::PingResult = client.call_typed("ping", &()).await.unwrap();
+        let elapsed = start.elapsed();
+        assert!(pong.pong);
+        assert!(
+            elapsed < Duration::from_millis(50),
+            "ping round-trip took {elapsed:?}"
+        );
+        let _ = client.call("kernel.shutdown", serde_json::json!({})).await;
+        handle.join().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn two_clients_get_independent_subscriptions() {
+        let (_dir, socket, handle, kernel) = start_stack().await;
+        let mut a = KernelClient::connect(&socket).await.unwrap();
+        let mut b = KernelClient::connect(&socket).await.unwrap();
+        a.subscribe(&["a.".to_string()]).await.unwrap();
+        b.subscribe(&["b.".to_string()]).await.unwrap();
+        tokio::time::sleep(Duration::from_millis(50)).await;
+
+        kernel
+            .bus()
+            .publish("b.thing", "kernel", serde_json::json!({}))
+            .unwrap();
+
+        let seen = tokio::time::timeout(Duration::from_secs(2), b.next_event())
+            .await
+            .expect("b should receive its topic")
+            .expect("b stream ended");
+        assert_eq!(seen.kind, "b.thing");
+        // `a` filters on a different topic and must not see it.
+        assert!(
+            tokio::time::timeout(Duration::from_millis(200), a.next_event())
+                .await
+                .is_err(),
+            "a must not receive a topic it did not subscribe to"
+        );
+
+        kernel
+            .bus()
+            .publish("a.thing", "kernel", serde_json::json!({}))
+            .unwrap();
+        let seen = tokio::time::timeout(Duration::from_secs(2), a.next_event())
+            .await
+            .expect("a should receive its own topic")
+            .expect("a stream ended");
+        assert_eq!(seen.kind, "a.thing");
+
+        let _ = a.call("kernel.shutdown", serde_json::json!({})).await;
+        handle.join().await.unwrap();
     }
 }

@@ -60,8 +60,8 @@ requirement. Check only when the referenced evidence exists and passes.
 - [ ] `IpcTransport` is implemented for Windows named pipe and Unix socket. — Both code paths present; exercised on Unix only. The Windows named-pipe branch is `cfg`-gated and is not compiled/run in this Linux environment.
 - [x] The `api` server performs handshake with a **5 s timeout** (`-32002` on timeout), assigns per-client sessions, dispatches commands, and pushes subscribed events.
 - [x] Unknown method / malformed params return JSON-RPC error objects (no crash). — `unknown_method_returns_rpc_error` asserts `-32601`.
-- [ ] A trivial command round-trips in under 50 ms locally. — No explicit latency assertion; not measured here.
-- [ ] Two concurrent clients each get independent subscriptions. — Single-client subscription is tested (`subscription_delivers_events_live`); the two-client case is not asserted.
+- [x] A trivial command round-trips in under 50 ms locally. — `ping_roundtrips_in_under_fifty_milliseconds`.
+- [x] Two concurrent clients each get independent subscriptions. — `two_clients_get_independent_subscriptions` (topic filters are per-client).
 
 ## Daemon lifecycle
 
