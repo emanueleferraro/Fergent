@@ -1,9 +1,13 @@
 //! The Fergents kernel daemon (`fergentsd`).
 
+mod config;
+mod logs;
+
 use std::path::PathBuf;
 use std::process::{ExitCode, Stdio};
 
 use clap::{Parser, Subcommand};
+use config::GlobalConfig;
 use fergents_api::{KernelClient, ServerHandle, SocketPath};
 use fergents_core::{default_data_dir, find_migrations_dir, Kernel, KernelConfig};
 use fergents_protocol::HealthSnapshot;
@@ -118,7 +122,11 @@ fn spawn_detached(data_dir: &std::path::Path) -> anyhow::Result<()> {
 
 async fn run_daemon(data_dir: &std::path::Path, socket: SocketPath) -> anyhow::Result<()> {
     let migrations_dir = resolve_migrations_dir()?;
+    let global_config = GlobalConfig::load(data_dir)?;
     let _guard = init_logging(data_dir)?;
+
+    // Prune old logs now, then once per day for the daemon's lifetime.
+    logs::prune_on_startup(&data_dir.join("logs"), &global_config.log);
 
     // Single-instance enforcement: if a kernel already answers, refuse to start.
     if KernelClient::connect(&socket).await.is_ok() {
@@ -139,6 +147,11 @@ async fn run_daemon(data_dir: &std::path::Path, socket: SocketPath) -> anyhow::R
     pid_file.write_current()?;
 
     let (shutdown_tx, _) = watch::channel(false);
+    let _prune_task = tokio::spawn(logs::run_daily_prune(
+        data_dir.join("logs"),
+        global_config.log.clone(),
+        shutdown_tx.subscribe(),
+    ));
     let server = ServerHandle::spawn(
         kernel.clone(),
         socket.clone(),
