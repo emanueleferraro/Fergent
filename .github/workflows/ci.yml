@@ -113,10 +113,11 @@ jobs:
 
       # The pnpm lockfile is committed to the repository; --frozen-lockfile
       # ensures CI uses the exact locked dependency versions.
+      # The pnpm version is pinned via `packageManager` in package.json, which
+      # pnpm/action-setup reads automatically. Passing `version` here as well
+      # makes pnpm abort with "Multiple versions of pnpm specified".
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 12
 
       - name: Setup Node
         uses: actions/setup-node@v4
