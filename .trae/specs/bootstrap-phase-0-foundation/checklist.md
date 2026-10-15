@@ -15,7 +15,7 @@ requirement. Check only when the referenced evidence exists and passes.
 - [x] `README.md`, `LICENSE` (AGPL-3.0), `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` exist.
 - [ ] `.devcontainer/` provisions Rust + Node toolchains; `cargo build` and `pnpm install && pnpm build` succeed **inside** the devcontainer. — Files present (`.devcontainer/Dockerfile`, `devcontainer.json`) but not built here (no Docker in this environment).
 - [x] `cargo build --release` succeeds and `pnpm install && pnpm build` succeeds from a clean checkout on the host. — Verified on the host (WSL2 Ubuntu); `pnpm build` and `cargo build --release` both exit 0.
-- [ ] The repository is initialized with git, remote points to GitHub, default branch is `main`, and `main` is protected (require PR, require CI). — `git init` done, branch `main`, **no commit yet**; GitHub remote + branch protection pending `gh auth login`.
+- [ ] The repository is initialized with git, remote points to GitHub, default branch is `main`, and `main` is protected (require PR, require CI). — `git init` done, branch `main`, initial commit created (`b0b4fa4`), `origin` set to `github.com/emanueleferraro/Fergent.git`. Push and branch protection are **blocked**: the provided PAT lacks `Contents: write` (API returns `403 Resource not accessible by personal access token`).
 
 ## Protocol & codegen
 
@@ -108,13 +108,13 @@ requirement. Check only when the referenced evidence exists and passes.
 
 - [x] No task introduced an unjustified dependency.
 - [x] No global mutable state was introduced.
-- [ ] Conventional Commits used in every commit. — No commits exist yet; blocked on the repository step above.
+- [x] Conventional Commits used in every commit. — Initial commit `b0b4fa4` (`feat: bootstrap Fergents Phase 0 foundation`).
 - [x] No permissions/downloads/rollbacks performed outside the approved task scope.
 - [x] The IPC trust boundary (OS user) is documented; no authentication is added in Phase 0.
 
 ## Remaining blockers
 
-1. **Git commit + GitHub remote + `main` protection** — requires `gh auth login`. No commit has been created yet; therefore Conventional Commits is unverified and CI has not run on the GitHub matrix.
+1. **Push + GitHub branch protection** — the local repo is committed (`b0b4fa4`) and `origin` is set, but the push is blocked: the provided fine-grained PAT lacks **Contents: Read and write** (`403 Resource not accessible by personal access token`). After granting Contents (and Administration/Branches for protection), the push and `PUT /branches/main/protection` can be retried. Do **not** store the token in `.git/config`.
 2. **`.devcontainer` build** — not executed (no Docker in this environment).
 3. **Windows named-pipe transport** — code path present but not compiled/run on this Linux host.
 4. **`tauri-driver` desktop smoke** — replaced for now by a Vitest render smoke.
