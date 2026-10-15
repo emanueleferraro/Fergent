@@ -58,6 +58,9 @@ hex = "0.4"
 thiserror = "1"
 anyhow = "1"
 
+# Platform
+libc = "0.2"
+
 # CLI
 clap = { version = "4", features = ["derive"] }
 

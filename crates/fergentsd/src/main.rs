@@ -110,14 +110,46 @@ fn spawn_detached(data_dir: &std::path::Path) -> anyhow::Result<()> {
         .append(true)
         .open(logs.join("fergentsd.stdout.log"))?;
     let err = out.try_clone()?;
-    let child = std::process::Command::new(exe)
+    let mut command = std::process::Command::new(exe);
+    command
         .args(["start", "--run"])
         .stdin(Stdio::null())
         .stdout(Stdio::from(out))
-        .stderr(Stdio::from(err))
-        .spawn()?;
+        .stderr(Stdio::from(err));
+    detach(&mut command);
+    let child = command.spawn()?;
     println!("fergentsd spawned (pid {})", child.id());
     Ok(())
+}
+
+/// Detach the child from the parent's session so it survives the parent's
+/// terminal closing.
+///
+/// Unix: create a new session with `setsid` (no controlling terminal), so the
+/// child is not killed by `SIGHUP` when the parent shell exits. Windows: start
+/// a detached process in its own process group.
+#[cfg(unix)]
+fn detach(command: &mut std::process::Command) {
+    use std::os::unix::process::CommandExt;
+    // SAFETY: `setsid` is async-signal-safe, and the closure runs in the child
+    // after `fork` and before `exec`, where only async-signal-safe calls are
+    // permitted.
+    unsafe {
+        command.pre_exec(|| {
+            if libc::setsid() == -1 {
+                return Err(std::io::Error::last_os_error());
+            }
+            Ok(())
+        });
+    }
+}
+
+#[cfg(windows)]
+fn detach(command: &mut std::process::Command) {
+    use std::os::windows::process::CommandExt;
+    const DETACHED_PROCESS: u32 = 0x0000_0008;
+    const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
+    command.creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP);
 }
 
 async fn run_daemon(data_dir: &std::path::Path, socket: SocketPath) -> anyhow::Result<()> {
