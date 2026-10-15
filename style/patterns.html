@@ -1,0 +1,2120 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAE — Patterns</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="typography.css">
+<link rel="stylesheet" href="components.css">
+<style>
+/* ============================================================
+   PATTERN LAYOUT
+   ============================================================ */
+body { background: var(--color-bg); overflow-x: hidden; }
+body::before {
+    content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background:
+        radial-gradient(58% 42% at 78% -6%, rgba(217,119,87,0.055), transparent 70%),
+        radial-gradient(50% 38% at 10% 106%, rgba(122,148,255,0.040), transparent 70%);
+}
+.pt-wrap { position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; padding: 48px 32px 120px; }
+.pt-hero { padding-bottom: 32px; margin-bottom: 40px; border-bottom: 1px solid var(--color-border); }
+.pt-hero h1 {
+    font-size: 32px; font-weight: 500; letter-spacing: -0.032em;
+    background: linear-gradient(180deg, #FFFFFF 0%, #A8A8B0 130%);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+}
+.pt-hero p { color: var(--color-text-2); max-width: 680px; line-height: 1.6; }
+.pt-hero .nav-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 22px; }
+.pt-hero .nav-pills a {
+    font-size: 11.5px; color: var(--color-text-3); padding: 5px 10px;
+    border: 1px solid var(--color-border); border-radius: 999px;
+    transition: background var(--t), color var(--t), border-color var(--t);
+}
+.pt-hero .nav-pills a:hover { background: var(--color-hover); border-color: var(--color-border-2); color: var(--color-text); text-decoration: none; }
+
+.pt-section { margin-bottom: 80px; scroll-margin-top: 24px; }
+.pt-section > h2 {
+    font-size: 21px; font-weight: 500; letter-spacing: -0.02em; margin-bottom: 6px;
+    display: flex; align-items: baseline; gap: 12px;
+}
+.pt-section > h2 .n { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-4); letter-spacing: 0.04em; }
+.pt-section > p { font-size: 13px; color: var(--color-text-3); line-height: 1.6; max-width: 720px; margin-bottom: 22px; }
+
+/* Wrapper demo generico */
+.demo {
+    border: 1px solid var(--color-border); border-radius: var(--r-lg);
+    background: var(--color-glass); backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    overflow: hidden;
+}
+.demo-bar {
+    display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    border-bottom: 1px solid var(--color-border); background: rgba(0,0,0,0.18);
+    font-size: 11.5px; color: var(--color-text-3);
+}
+.demo-bar .win-dots { display: flex; gap: 6px; }
+.demo-bar .win-dots span { width: 9px; height: 9px; border-radius: 50%; background: rgba(255,255,255,0.12); }
+.demo-bar .title { flex: 1; font-family: var(--font-mono); font-size: 11.5px; }
+.demo-body { padding: 20px; }
+
+/* ============================================================
+   01 · CHAT AGENTICA
+   ============================================================ */
+.chat { display: flex; flex-direction: column; gap: 20px; max-width: 780px; }
+.msg { display: flex; gap: 12px; }
+.msg-avatar {
+    width: 26px; height: 26px; flex-shrink: 0; border-radius: 50%;
+    display: grid; place-items: center; font-size: 10.5px; font-weight: 700;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.10);
+}
+.msg-avatar.user { background: linear-gradient(145deg, rgba(107,148,217,0.85), rgba(107,148,217,0.30)); color: #0A1526; }
+.msg-avatar.assistant { background: linear-gradient(145deg, rgba(217,119,87,0.85), rgba(217,119,87,0.35)); color: #1A0F0A; }
+.msg-avatar.tool { background: rgba(255,255,255,0.06); color: var(--color-text-2); border: 1px solid var(--color-border); }
+.msg-avatar.system { background: linear-gradient(145deg, rgba(229,184,77,0.85), rgba(229,184,77,0.30)); color: #241A05; }
+.msg-avatar svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+.msg-body { flex: 1; min-width: 0; }
+.msg-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; font-size: 11.5px; }
+.msg-meta .name { font-weight: 600; color: var(--color-text); font-size: 12.5px; }
+.msg-meta .role { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: rgba(255,255,255,0.05); color: var(--color-text-3); letter-spacing: 0.05em; text-transform: uppercase; font-weight: 600; }
+.msg-meta .time { color: var(--color-text-4); font-size: 11px; margin-left: auto; }
+.msg-content { font-size: 13px; line-height: 1.65; color: var(--color-text-2); }
+.msg-content p + p { margin-top: 8px; }
+.msg-content code { font-size: 11.5px; }
+
+.msg.user .msg-content {
+    background: rgba(255,255,255,0.03); border: 1px solid var(--color-border);
+    padding: 10px 14px; border-radius: 4px 12px 12px 12px;
+    color: var(--color-text);
+}
+.msg.system .msg-content {
+    font-size: 12px; color: var(--color-text-3); font-style: italic;
+    padding-left: 10px; border-left: 2px solid var(--color-border-2);
+}
+
+/* Thinking collapsible */
+.thinking {
+    margin: 6px 0 8px; padding: 8px 12px 8px 14px;
+    border-left: 2px solid var(--color-border-2);
+    border-radius: 0 var(--r-sm) var(--r-sm) 0;
+    background: rgba(255,255,255,0.015);
+}
+.thinking summary {
+    display: flex; align-items: center; gap: 7px; cursor: pointer;
+    list-style: none; font-size: 11.5px; color: var(--color-text-3);
+    user-select: none; transition: color var(--t);
+}
+.thinking summary::-webkit-details-marker { display: none; }
+.thinking summary:hover { color: var(--color-text-2); }
+.thinking summary svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; transition: transform var(--t); }
+.thinking[open] summary svg { transform: rotate(90deg); }
+.thinking .body { margin-top: 8px; font-size: 12px; line-height: 1.7; color: var(--color-text-3); font-style: italic; }
+
+/* Tool call inline */
+.tool-call {
+    margin-top: 10px; border: 1px solid var(--color-border);
+    border-radius: var(--r-md); background: rgba(0,0,0,0.22); overflow: hidden;
+    font-family: var(--font-mono); font-size: 11.5px;
+}
+.tool-call-head {
+    display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+    border-bottom: 1px solid var(--color-border); background: rgba(255,255,255,0.02);
+}
+.tool-call-head .name { color: var(--color-text); font-weight: 600; }
+.tool-call-head .args { color: var(--color-text-3); }
+.tool-call-head .badge { margin-left: auto; font-family: var(--font-sans); }
+.tool-call-body { padding: 10px 12px; color: var(--color-text-3); white-space: pre-wrap; line-height: 1.65; }
+.tool-call-body .ok { color: var(--color-success); }
+
+/* Streaming cursor */
+.stream-cursor {
+    display: inline-block; width: 7px; height: 14px;
+    margin-left: 2px; vertical-align: -2px;
+    background: var(--color-accent);
+    animation: blink 1s steps(2) infinite;
+    border-radius: 1px;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Attachments */
+.attach-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.attach {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 10px; border: 1px solid var(--color-border);
+    border-radius: var(--r-sm); background: rgba(255,255,255,0.02);
+    font-size: 11.5px; color: var(--color-text-2);
+    transition: background var(--t), border-color var(--t);
+}
+.attach:hover { background: var(--color-hover); border-color: var(--color-border-2); }
+.attach .ic {
+    width: 20px; height: 20px; border-radius: 4px;
+    display: grid; place-items: center;
+    background: rgba(217,119,87,0.12); color: var(--color-accent);
+}
+.attach .ic svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
+.attach .meta { display: flex; flex-direction: column; line-height: 1.2; }
+.attach .meta strong { font-weight: 500; color: var(--color-text); font-size: 11.5px; }
+.attach .meta small { font-size: 10px; color: var(--color-text-4); }
+
+/* Chat composer */
+.composer {
+    margin-top: 20px; padding: 12px; border: 1px solid var(--color-border);
+    border-radius: var(--r-lg); background: rgba(255,255,255,0.02);
+    display: flex; flex-direction: column; gap: 8px;
+}
+.composer-input {
+    background: transparent; border: none; outline: none;
+    font-size: 13px; color: var(--color-text); resize: none;
+    min-height: 22px; font-family: inherit;
+}
+.composer-input::placeholder { color: var(--color-text-4); }
+.composer-row { display: flex; align-items: center; gap: 6px; }
+
+/* ============================================================
+   02 · DIFF VIEWER
+   ============================================================ */
+.diff-toolbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-bottom: 1px solid var(--color-border);
+    background: rgba(0,0,0,0.15);
+}
+.diff-toolbar .file {
+    flex: 1; font-family: var(--font-mono); font-size: 11.5px;
+    color: var(--color-text-2); display: flex; align-items: center; gap: 8px;
+}
+.diff-toolbar .file .stats { color: var(--color-text-4); font-size: 11px; }
+.diff-toolbar .file .stats .add { color: var(--color-success); }
+.diff-toolbar .file .stats .del { color: var(--color-danger); }
+.diff-view {
+    font-family: var(--font-mono); font-size: 11.5px; line-height: 1.7;
+    background: rgba(0,0,0,0.2);
+}
+.diff-line { display: flex; }
+.diff-line .n {
+    width: 42px; text-align: right; padding-right: 10px;
+    color: var(--color-text-4); user-select: none; flex-shrink: 0;
+}
+.diff-line .s { width: 18px; text-align: center; flex-shrink: 0; color: var(--color-text-4); }
+.diff-line .c { flex: 1; padding-right: 16px; white-space: pre; color: var(--color-text-2); }
+.diff-line.add { background: rgba(127,184,148,0.07); }
+.diff-line.add .n, .diff-line.add .s { color: rgba(127,184,148,0.55); }
+.diff-line.add .c { color: var(--color-success); }
+.diff-line.del { background: rgba(229,72,77,0.07); }
+.diff-line.del .n, .diff-line.del .s { color: rgba(229,72,77,0.55); }
+.diff-line.del .c { color: var(--color-danger); }
+.diff-line.ctx .c { color: var(--color-text-2); }
+
+.side-by-side { display: grid; grid-template-columns: 1fr 1fr; }
+.side-by-side > div:first-child { border-right: 1px solid var(--color-border); }
+.side-by-side .head {
+    padding: 6px 12px; background: rgba(0,0,0,0.2);
+    font-family: var(--font-mono); font-size: 11px; color: var(--color-text-4);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.diff-actions {
+    display: flex; justify-content: flex-end; gap: 8px;
+    padding: 10px 12px; border-top: 1px solid var(--color-border);
+    background: rgba(0,0,0,0.15);
+}
+
+/* ============================================================
+   03 · PERMISSION BAR
+   ============================================================ */
+.perm-bar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 14px; border: 1px solid var(--color-border);
+    border-radius: var(--r-md); background: rgba(255,255,255,0.02);
+    font-size: 12.5px; max-width: 520px;
+}
+.perm-bar .shield {
+    width: 16px; height: 16px; flex-shrink: 0;
+    stroke: currentColor; stroke-width: 1.7; fill: none;
+}
+.perm-bar .label { font-weight: 500; color: var(--color-text); }
+.perm-bar .desc { color: var(--color-text-3); font-size: 11.5px; }
+.perm-bar .chev { width: 12px; height: 12px; margin-left: auto; stroke: currentColor; stroke-width: 1.8; fill: none; opacity: 0.6; }
+
+.perm-bar.manual { border-color: rgba(229,72,77,0.35); background: rgba(229,72,77,0.06); }
+.perm-bar.manual .shield { color: var(--color-danger); }
+.perm-bar.auto { border-color: rgba(229,184,77,0.35); background: rgba(229,184,77,0.06); }
+.perm-bar.auto .shield { color: var(--color-warning); }
+.perm-bar.full { border-color: var(--color-accent-line); background: var(--color-accent-soft); }
+.perm-bar.full .shield { color: var(--color-accent); }
+
+/* ============================================================
+   04 · EDITOR PANELS
+   ============================================================ */
+.editor {
+    display: grid; grid-template-columns: 200px 1fr;
+    height: 420px; border-radius: var(--r-lg); overflow: hidden;
+    background: rgba(0,0,0,0.2);
+}
+.file-tree {
+    border-right: 1px solid var(--color-border); padding: 10px 0;
+    overflow-y: auto; background: rgba(0,0,0,0.15);
+}
+.file-tree .tree-title {
+    padding: 6px 14px 8px; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.09em; text-transform: uppercase; color: var(--color-text-4);
+}
+.tree-item {
+    display: flex; align-items: center; gap: 7px;
+    padding: 5px 14px; font-size: 12.5px;
+    color: var(--color-text-2); cursor: pointer;
+    transition: background var(--t), color var(--t);
+}
+.tree-item svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 1.6; fill: none; flex-shrink: 0; opacity: 0.65; }
+.tree-item:hover { background: var(--color-hover); color: var(--color-text); }
+.tree-item.active { background: var(--color-active); color: var(--color-text); }
+.tree-item.active svg { color: var(--color-accent); opacity: 1; }
+.tree-item.indent { padding-left: 30px; }
+.tree-item.indent-2 { padding-left: 46px; }
+
+.editor-main { display: flex; flex-direction: column; min-width: 0; }
+.editor-tabs {
+    display: flex; align-items: center; gap: 0;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(0,0,0,0.15); overflow-x: auto;
+}
+.editor-tab {
+    display: flex; align-items: center; gap: 8px;
+    padding: 9px 14px; font-size: 12px;
+    color: var(--color-text-3); cursor: pointer;
+    border-right: 1px solid var(--color-border);
+    white-space: nowrap;
+    transition: background var(--t), color var(--t);
+    position: relative;
+}
+.editor-tab:hover { color: var(--color-text-2); }
+.editor-tab.active { background: rgba(0,0,0,0.2); color: var(--color-text); }
+.editor-tab.active::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -1px;
+    height: 1px; background: var(--color-accent);
+}
+.editor-tab .dot-modified { width: 6px; height: 6px; border-radius: 50%; background: var(--color-accent); }
+.editor-tab svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; opacity: 0.5; }
+
+.editor-breadcrumb {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 16px; font-family: var(--font-mono);
+    font-size: 11px; color: var(--color-text-4);
+    border-bottom: 1px solid var(--color-border); background: rgba(0,0,0,0.1);
+}
+.editor-breadcrumb .sep { opacity: 0.5; }
+.editor-breadcrumb .current { color: var(--color-text-2); }
+
+.editor-code {
+    flex: 1; padding: 14px 16px; overflow: auto;
+    font-family: var(--font-mono); font-size: 12px; line-height: 1.75;
+    color: var(--color-text-2);
+}
+.editor-code .ln { display: inline-block; width: 32px; text-align: right; padding-right: 16px; color: var(--color-text-4); user-select: none; }
+.editor-code .kw { color: var(--color-accent); }
+.editor-code .str { color: var(--color-success); }
+.editor-code .cmt { color: var(--color-text-4); font-style: italic; }
+.editor-code .fn { color: var(--color-info); }
+.editor-code .num { color: var(--color-warning); }
+
+/* ============================================================
+   05 · TERMINALE
+   ============================================================ */
+.term {
+    border-radius: var(--r-lg); overflow: hidden;
+    background: #060607; border: 1px solid var(--color-border);
+    font-family: var(--font-mono); font-size: 12px;
+}
+.term-tabs {
+    display: flex; align-items: center; gap: 0;
+    border-bottom: 1px solid var(--color-border);
+    background: rgba(255,255,255,0.02);
+}
+.term-tab {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 14px; font-size: 11.5px;
+    color: var(--color-text-3); cursor: pointer;
+    border-right: 1px solid var(--color-border);
+    transition: background var(--t), color var(--t);
+}
+.term-tab:hover { color: var(--color-text-2); }
+.term-tab.active { background: #060607; color: var(--color-text); }
+.term-tab .status { width: 6px; height: 6px; border-radius: 50%; background: var(--color-success); }
+.term-tab .status.idle { background: var(--color-text-4); }
+.term-body { padding: 14px 16px; line-height: 1.75; color: var(--color-text-2); overflow-x: auto; }
+.term-body .prompt { color: var(--color-accent); }
+.term-body .path { color: var(--color-info); }
+.term-body .cmd { color: var(--color-text); }
+.term-body .ok { color: var(--color-success); }
+.term-body .warn { color: var(--color-warning); }
+.term-body .err { color: var(--color-danger); }
+.term-body .dim { color: var(--color-text-4); }
+.term-body .cursor {
+    display: inline-block; width: 7px; height: 14px; vertical-align: -2px;
+    background: var(--color-text-2); animation: blink 1s steps(2) infinite;
+}
+
+/* ============================================================
+   06 · WORKFLOW CANVAS
+   ============================================================ */
+.workflow {
+    position: relative; height: 460px;
+    background:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.045) 1px, transparent 0) 0 0 / 22px 22px,
+        rgba(0,0,0,0.15);
+    border-radius: var(--r-lg); overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+.workflow svg.canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+.workflow .edge { fill: none; stroke: rgba(255,255,255,0.15); stroke-width: 1.5; }
+.workflow .edge.active { stroke: var(--color-accent); stroke-width: 2; }
+.wf-node {
+    position: absolute; min-width: 160px;
+    border: 1px solid var(--color-border-2); border-radius: var(--r-md);
+    background: var(--color-glass-strong); backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--sh-md);
+    transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+    cursor: grab;
+}
+.wf-node:hover { border-color: var(--color-border-3); }
+.wf-node.selected { border-color: var(--color-accent-line); box-shadow: 0 0 0 3px rgba(217,119,87,0.10), var(--sh-md); }
+.wf-node-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; border-bottom: 1px solid var(--color-border);
+    font-size: 12px; font-weight: 550; color: var(--color-text);
+}
+.wf-node-head .ic {
+    width: 20px; height: 20px; border-radius: 5px;
+    display: grid; place-items: center;
+    background: rgba(217,119,87,0.12); color: var(--color-accent);
+}
+.wf-node-head .ic.blue { background: rgba(107,148,217,0.14); color: var(--color-info); }
+.wf-node-head .ic.green { background: rgba(127,184,148,0.14); color: var(--color-success); }
+.wf-node-head .ic svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 2; fill: none; }
+.wf-node-body { padding: 10px 12px; font-size: 11.5px; color: var(--color-text-3); line-height: 1.5; }
+.wf-port {
+    position: absolute; width: 9px; height: 9px;
+    border-radius: 50%; background: var(--color-bg);
+    border: 2px solid var(--color-border-3);
+    transition: border-color var(--t), background var(--t);
+}
+.wf-port.in { left: -5px; top: 50%; transform: translateY(-50%); }
+.wf-port.out { right: -5px; top: 50%; transform: translateY(-50%); background: var(--color-accent); border-color: var(--color-accent); }
+
+.wf-minimap {
+    position: absolute; bottom: 12px; right: 12px;
+    width: 140px; height: 90px;
+    border: 1px solid var(--color-border-2); border-radius: var(--r-sm);
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
+}
+.wf-minimap .vp {
+    position: absolute; border: 1px solid var(--color-accent-line);
+    background: rgba(217,119,87,0.08); border-radius: 3px;
+}
+.wf-minimap .mini-node {
+    position: absolute; width: 14px; height: 8px;
+    background: rgba(255,255,255,0.35); border-radius: 2px;
+}
+
+.wf-inspector {
+    position: absolute; top: 12px; right: 12px; width: 240px;
+    border: 1px solid var(--color-border-2); border-radius: var(--r-md);
+    background: var(--color-glass-strong); backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: var(--sh-md); overflow: hidden;
+}
+.wf-inspector-head {
+    padding: 10px 12px; border-bottom: 1px solid var(--color-border);
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--color-text-4);
+}
+.wf-inspector-body { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+.wf-field { display: flex; flex-direction: column; gap: 4px; }
+.wf-field label { font-size: 11px; color: var(--color-text-3); }
+.wf-field .input { padding: 6px 8px; font-size: 11.5px; }
+
+/* ============================================================
+   07 · BRAIN / GRAPH VIEW
+   ============================================================ */
+.graph {
+    display: grid; grid-template-columns: 200px 1fr;
+    height: 440px; border-radius: var(--r-lg); overflow: hidden;
+    border: 1px solid var(--color-border);
+}
+.graph-side {
+    border-right: 1px solid var(--color-border); padding: 14px 12px;
+    background: rgba(0,0,0,0.18);
+}
+.graph-side h4 {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--color-text-4);
+    margin-bottom: 10px; margin-top: 14px;
+}
+.graph-side h4:first-child { margin-top: 0; }
+.graph-side .filter {
+    display: flex; align-items: center; gap: 8px;
+    padding: 5px 8px; font-size: 12px; color: var(--color-text-2);
+    border-radius: var(--r-sm); cursor: pointer;
+    transition: background var(--t);
+}
+.graph-side .filter:hover { background: var(--color-hover); }
+.graph-side .filter .sw {
+    width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+}
+.graph-side .filter .ct { margin-left: auto; font-size: 10.5px; color: var(--color-text-4); font-family: var(--font-mono); }
+
+.graph-canvas {
+    position: relative;
+    background:
+        radial-gradient(circle at 1px 1px, rgba(255,255,255,0.045) 1px, transparent 0) 0 0 / 22px 22px,
+        rgba(0,0,0,0.15);
+}
+.graph-canvas svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.graph-canvas .gedge { stroke: rgba(255,255,255,0.15); stroke-width: 1; fill: none; }
+.graph-canvas .gnode { fill: var(--color-accent); }
+.graph-canvas .gnode.blue { fill: var(--color-info); }
+.graph-canvas .gnode.green { fill: var(--color-success); }
+.graph-canvas .gnode.yellow { fill: var(--color-warning); }
+.graph-canvas .gnode-label {
+    fill: var(--color-text-2); font-family: var(--font-sans);
+    font-size: 10.5px; font-weight: 500;
+    text-anchor: middle; pointer-events: none;
+}
+.graph-canvas .ghalo { fill: currentColor; opacity: 0.08; }
+
+/* ============================================================
+   08 · COMMAND PALETTE
+   ============================================================ */
+.cmdk-overlay {
+    position: relative; padding: 40px 0;
+    background: rgba(0,0,0,0.4); border-radius: var(--r-lg);
+    display: grid; place-items: start center;
+    border: 1px solid var(--color-border);
+}
+.cmdk {
+    width: 540px; max-width: calc(100% - 40px);
+    border: 1px solid var(--color-border-2); border-radius: var(--r-lg);
+    background: var(--color-glass-strong);
+    backdrop-filter: blur(28px) saturate(150%);
+    -webkit-backdrop-filter: blur(28px) saturate(150%);
+    box-shadow: var(--sh-lg); overflow: hidden;
+}
+.cmdk-input-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 14px 16px; border-bottom: 1px solid var(--color-border);
+}
+.cmdk-input-row svg { width: 16px; height: 16px; stroke: var(--color-text-3); stroke-width: 1.8; fill: none; flex-shrink: 0; }
+.cmdk-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    font-size: 14px; color: var(--color-text);
+}
+.cmdk-input::placeholder { color: var(--color-text-4); }
+.cmdk-kbd {
+    font-family: var(--font-mono); font-size: 10.5px;
+    padding: 2px 6px; border: 1px solid var(--color-border);
+    border-radius: 4px; color: var(--color-text-4);
+}
+.cmdk-list { max-height: 340px; overflow-y: auto; padding: 6px; }
+.cmdk-group {
+    padding: 8px 10px 4px; font-size: 10.5px; font-weight: 600;
+    letter-spacing: 0.09em; text-transform: uppercase; color: var(--color-text-4);
+}
+.cmdk-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 8px 10px; border-radius: var(--r-sm);
+    font-size: 13px; color: var(--color-text-2);
+    cursor: pointer; transition: background var(--t), color var(--t);
+}
+.cmdk-item:hover { background: var(--color-hover); color: var(--color-text); }
+.cmdk-item.active { background: var(--color-active); color: var(--color-text); }
+.cmdk-item .ic {
+    width: 22px; height: 22px; border-radius: 5px;
+    display: grid; place-items: center; flex-shrink: 0;
+    background: rgba(255,255,255,0.04); color: var(--color-text-3);
+    border: 1px solid var(--color-border);
+}
+.cmdk-item .ic svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+.cmdk-item .ic.accent { background: var(--color-accent-soft); color: var(--color-accent); border-color: var(--color-accent-line); }
+.cmdk-item .kbd {
+    margin-left: auto; font-family: var(--font-mono); font-size: 10px;
+    color: var(--color-text-4); display: flex; gap: 3px;
+}
+.cmdk-item .kbd span { padding: 1px 5px; border: 1px solid var(--color-border); border-radius: 3px; }
+.cmdk-match { color: var(--color-accent); font-weight: 600; }
+
+/* ============================================================
+   09 · SIDEBAR APP
+   ============================================================ */
+.sidebar-demo {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.sb-expanded {
+    display: flex; height: 380px;
+    border: 1px solid var(--color-border); border-radius: var(--r-lg);
+    background: var(--color-glass); overflow: hidden;
+}
+.sb-rail {
+    width: 52px; padding: 12px 0;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border-right: 1px solid var(--color-border); background: rgba(0,0,0,0.18);
+}
+.sb-rail .icon-btn {
+    width: 34px; height: 34px; border-radius: var(--r-sm);
+    display: grid; place-items: center;
+    color: var(--color-text-3); cursor: pointer;
+    transition: background var(--t), color var(--t);
+    position: relative;
+}
+.sb-rail .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+.sb-rail .icon-btn:hover { background: var(--color-hover); color: var(--color-text-2); }
+.sb-rail .icon-btn.active { background: var(--color-active); color: var(--color-text); }
+.sb-rail .icon-btn.active::before {
+    content: ""; position: absolute; left: -12px; top: 50%;
+    width: 2px; height: 16px; transform: translateY(-50%);
+    background: var(--color-accent); border-radius: 0 2px 2px 0;
+}
+.sb-rail .spacer { flex: 1; }
+
+.sb-panel {
+    flex: 1; display: flex; flex-direction: column;
+    min-width: 0;
+}
+.sb-panel-head {
+    padding: 12px 14px; border-bottom: 1px solid var(--color-border);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+    color: var(--color-text-2); display: flex; align-items: center; justify-content: space-between;
+}
+.sb-panel-body { flex: 1; overflow-y: auto; padding: 8px 8px; }
+.sb-row {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 10px; border-radius: var(--r-sm);
+    font-size: 12.5px; color: var(--color-text-2);
+    cursor: pointer; transition: background var(--t), color var(--t);
+}
+.sb-row:hover { background: var(--color-hover); color: var(--color-text); }
+.sb-row.active { background: var(--color-active); color: var(--color-text); }
+.sb-row .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-4); }
+.sb-row .dot.live { background: var(--color-success); box-shadow: 0 0 6px rgba(127,184,148,0.6); }
+.sb-row .count { margin-left: auto; font-size: 10.5px; color: var(--color-text-4); font-family: var(--font-mono); }
+
+.sb-collapsed {
+    width: 52px; height: 380px; padding: 12px 0;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    border: 1px solid var(--color-border); border-radius: var(--r-lg);
+    background: var(--color-glass);
+}
+.sb-collapsed .icon-btn {
+    width: 34px; height: 34px; border-radius: var(--r-sm);
+    display: grid; place-items: center; color: var(--color-text-3);
+    cursor: pointer; transition: background var(--t), color var(--t); position: relative;
+}
+.sb-collapsed .icon-btn svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+.sb-collapsed .icon-btn:hover { background: var(--color-hover); color: var(--color-text-2); }
+.sb-collapsed .icon-btn.active { background: var(--color-active); color: var(--color-text); }
+.sb-collapsed .icon-btn.active::before {
+    content: ""; position: absolute; left: -12px; top: 50%;
+    width: 2px; height: 16px; transform: translateY(-50%);
+    background: var(--color-accent); border-radius: 0 2px 2px 0;
+}
+
+/* ============================================================
+   10 · STATUS BAR
+   ============================================================ */
+.status-bar {
+    display: flex; align-items: center; gap: 0;
+    padding: 6px 12px; border: 1px solid var(--color-border);
+    border-radius: var(--r-md); background: var(--color-glass-strong);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    font-size: 11.5px; color: var(--color-text-3);
+}
+.sb-item {
+    display: flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 4px;
+    transition: background var(--t), color var(--t);
+    cursor: default;
+}
+.sb-item.clickable { cursor: pointer; }
+.sb-item.clickable:hover { background: var(--color-hover); color: var(--color-text); }
+.sb-item + .sb-item { border-left: 1px solid var(--color-border); }
+.sb-item svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+.sb-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--color-success); box-shadow: 0 0 5px rgba(127,184,148,0.6); }
+.sb-item .dot.idle { background: var(--color-text-4); box-shadow: none; }
+.sb-item .dot.warn { background: var(--color-warning); box-shadow: 0 0 5px rgba(229,184,77,0.6); }
+.sb-item.accent { color: var(--color-accent); }
+.sb-item .spinner { width: 10px; height: 10px; border-width: 1.5px; }
+
+/* ============================================================
+   11 · AGENT STATUS
+   ============================================================ */
+.agent-list {
+    display: flex; flex-direction: column; gap: 6px;
+    max-width: 620px;
+}
+.agent-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border: 1px solid var(--color-border);
+    border-radius: var(--r-md); background: rgba(255,255,255,0.015);
+    transition: background var(--t), border-color var(--t);
+}
+.agent-row:hover { background: var(--color-hover); border-color: var(--color-border-2); }
+.agent-row.sub { margin-left: 30px; }
+.agent-row.sub::before {
+    content: "└";
+    position: absolute; margin-left: -22px;
+    color: var(--color-text-4); font-size: 14px;
+}
+.agent-av {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center;
+    background: linear-gradient(145deg, rgba(217,119,87,0.85), rgba(217,119,87,0.35));
+    color: #1A0F0A; font-size: 11px; font-weight: 700;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+}
+.agent-av.blue { background: linear-gradient(145deg, rgba(107,148,217,0.85), rgba(107,148,217,0.30)); color: #0A1526; }
+.agent-av.green { background: linear-gradient(145deg, rgba(127,184,148,0.85), rgba(127,184,148,0.30)); color: #0E1F16; }
+.agent-info { flex: 1; min-width: 0; }
+.agent-info .name {
+    font-size: 12.5px; font-weight: 500; color: var(--color-text);
+    display: flex; align-items: center; gap: 8px;
+}
+.agent-info .task {
+    font-size: 11.5px; color: var(--color-text-3); margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.agent-state {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 9px; border-radius: 999px;
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.03em;
+    border: 1px solid var(--color-border);
+}
+.agent-state.idle { color: var(--color-text-3); background: rgba(255,255,255,0.02); }
+.agent-state.working { color: var(--color-accent); background: var(--color-accent-soft); border-color: var(--color-accent-line); }
+.agent-state.waiting { color: var(--color-warning); background: var(--color-warning-soft); border-color: rgba(229,184,77,0.35); }
+.agent-state.done { color: var(--color-success); background: var(--color-success-soft); border-color: rgba(127,184,148,0.35); }
+.agent-state .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.agent-state.working .dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+/* ============================================================
+   12 · PLUGIN CARDS
+   ============================================================ */
+.plugin-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; }
+.plugin-card {
+    padding: 16px; border: 1px solid var(--color-border);
+    border-radius: var(--r-lg); background: var(--color-glass);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    display: flex; flex-direction: column; gap: 12px;
+    transition: border-color var(--t), transform var(--t), box-shadow var(--t);
+}
+.plugin-card:hover { border-color: var(--color-border-2); transform: translateY(-2px); box-shadow: var(--sh-md); }
+.plugin-head { display: flex; gap: 11px; align-items: flex-start; }
+.plugin-icon {
+    width: 36px; height: 36px; border-radius: var(--r-md); flex-shrink: 0;
+    display: grid; place-items: center;
+    background: linear-gradient(145deg, rgba(217,119,87,0.18), rgba(217,119,87,0.06));
+    border: 1px solid var(--color-accent-line); color: var(--color-accent);
+}
+.plugin-icon.blue { background: linear-gradient(145deg, rgba(107,148,217,0.18), rgba(107,148,217,0.06)); border-color: rgba(107,148,217,0.35); color: var(--color-info); }
+.plugin-icon.green { background: linear-gradient(145deg, rgba(127,184,148,0.18), rgba(127,184,148,0.06)); border-color: rgba(127,184,148,0.35); color: var(--color-success); }
+.plugin-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+.plugin-title { font-size: 13.5px; font-weight: 600; color: var(--color-text); }
+.plugin-sub { font-size: 11.5px; color: var(--color-text-3); margin-top: 2px; }
+.plugin-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.plugin-perms { display: flex; flex-wrap: wrap; gap: 5px; }
+.perm-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 2px 8px; border-radius: 4px;
+    font-size: 10.5px; font-family: var(--font-mono);
+    background: rgba(255,255,255,0.03); border: 1px solid var(--color-border);
+    color: var(--color-text-3);
+}
+.perm-pill svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2; fill: none; }
+.plugin-foot {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 12px; border-top: 1px solid var(--color-border);
+    font-size: 11px; color: var(--color-text-4);
+}
+.plugin-foot .source { display: flex; align-items: center; gap: 5px; font-family: var(--font-mono); }
+.plugin-foot .source svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+/* ============================================================
+   13 · DASHBOARD WIDGETS
+   ============================================================ */
+.dash {
+    display: grid; grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 12px; padding: 16px;
+    background:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px) 0 0 / 100% 100px,
+        rgba(0,0,0,0.15);
+    border-radius: var(--r-lg); border: 1px solid var(--color-border);
+}
+.widget {
+    position: relative; padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    background: var(--color-glass-strong);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    transition: border-color var(--t), box-shadow var(--t), transform var(--t);
+}
+.widget:hover { border-color: var(--color-border-2); }
+.widget.dragging {
+    transform: rotate(1.5deg) scale(1.02);
+    box-shadow: 0 20px 40px -10px rgba(0,0,0,0.7), 0 0 0 2px var(--color-accent-line);
+    cursor: grabbing;
+}
+.widget-handle {
+    position: absolute; top: 8px; right: 8px;
+    width: 20px; height: 20px; border-radius: 4px;
+    display: grid; place-items: center; cursor: grab;
+    color: var(--color-text-4); opacity: 0;
+    transition: opacity var(--t), background var(--t), color var(--t);
+}
+.widget:hover .widget-handle { opacity: 1; }
+.widget-handle:hover { background: var(--color-hover); color: var(--color-text-2); }
+.widget-handle svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+.widget.w2 { grid-column: span 2; }
+.widget.w1 { grid-column: span 1; }
+.widget-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--color-text-4); }
+.widget-value { font-size: 22px; font-weight: 500; letter-spacing: -0.028em; color: var(--color-text); margin-top: 6px; }
+.widget-value small { font-size: 12px; color: var(--color-text-3); font-weight: 400; }
+.widget-foot { margin-top: 12px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--color-text-3); }
+
+/* ============================================================
+   14 · TABS WORKSPACE
+   ============================================================ */
+.ws-tabs {
+    display: flex; align-items: center; gap: 2px;
+    padding: 6px 8px; border: 1px solid var(--color-border);
+    border-radius: var(--r-md) var(--r-md) 0 0;
+    background: rgba(0,0,0,0.22);
+    overflow-x: auto;
+}
+.ws-tab {
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 10px 6px 12px; border-radius: var(--r-sm);
+    font-size: 12px; color: var(--color-text-3);
+    cursor: pointer; white-space: nowrap;
+    transition: background var(--t), color var(--t);
+    position: relative;
+}
+.ws-tab:hover { background: var(--color-hover); color: var(--color-text-2); }
+.ws-tab.active { background: rgba(255,255,255,0.055); color: var(--color-text); }
+.ws-tab .dot-mark {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--color-accent);
+}
+.ws-tab .path { font-family: var(--font-mono); font-size: 10px; color: var(--color-text-4); }
+.ws-tab .close {
+    width: 16px; height: 16px; display: grid; place-items: center;
+    border-radius: 3px; opacity: 0; transition: opacity var(--t), background var(--t);
+}
+.ws-tab:hover .close { opacity: 0.6; }
+.ws-tab .close:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+.ws-tab .close svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+.ws-new {
+    width: 26px; height: 26px; border-radius: var(--r-sm);
+    display: grid; place-items: center; color: var(--color-text-4);
+    cursor: pointer; transition: background var(--t), color var(--t);
+}
+.ws-new:hover { background: var(--color-hover); color: var(--color-text-2); }
+.ws-new svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+/* ============================================================
+   15 · SPLIT PANES
+   ============================================================ */
+.split-demo { display: flex; flex-direction: column; gap: 14px; }
+.split {
+    display: grid; height: 340px;
+    border: 1px solid var(--color-border); border-radius: var(--r-lg);
+    background: var(--color-glass); overflow: hidden;
+}
+.split.vertical { grid-template-columns: 1fr 4px 1fr; }
+.split.horizontal { grid-template-rows: 1fr 4px 1fr; }
+.split-pane {
+    padding: 14px; overflow: auto; min-width: 0; min-height: 0;
+    background: rgba(0,0,0,0.10);
+}
+.split-pane.left { background: rgba(0,0,0,0.15); }
+.split-gutter {
+    background: rgba(255,255,255,0.03);
+    cursor: col-resize; position: relative;
+    transition: background var(--t);
+}
+.split.horizontal .split-gutter { cursor: row-resize; }
+.split-gutter:hover { background: var(--color-accent-line); }
+.split-gutter::after {
+    content: ""; position: absolute; left: 50%; top: 50%;
+    width: 16px; height: 2px; border-radius: 1px;
+    background: rgba(255,255,255,0.15);
+    transform: translate(-50%, -50%);
+}
+.split.horizontal .split-gutter::after {
+    width: 2px; height: 16px;
+}
+.split-pane-title {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.09em;
+    text-transform: uppercase; color: var(--color-text-4);
+    margin-bottom: 12px;
+}
+
+/* Mini chat dentro split */
+.mini-chat { display: flex; flex-direction: column; gap: 10px; }
+.mini-msg {
+    display: flex; gap: 8px; font-size: 12px; line-height: 1.55;
+    color: var(--color-text-2);
+}
+.mini-msg .av {
+    width: 20px; height: 20px; border-radius: 50%;
+    display: grid; place-items: center; flex-shrink: 0;
+    font-size: 9px; font-weight: 700;
+    background: linear-gradient(145deg, rgba(217,119,87,0.85), rgba(217,119,87,0.35));
+    color: #1A0F0A;
+}
+.mini-msg.user .av { background: linear-gradient(145deg, rgba(107,148,217,0.85), rgba(107,148,217,0.30)); color: #0A1526; }
+
+/* Mini code */
+.mini-code {
+    font-family: var(--font-mono); font-size: 11px; line-height: 1.7;
+    color: var(--color-text-2);
+}
+.mini-code .kw { color: var(--color-accent); }
+.mini-code .str { color: var(--color-success); }
+.mini-code .cmt { color: var(--color-text-4); font-style: italic; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+    .pt-wrap { padding: 32px 20px 80px; }
+    .plugin-grid, .dash { grid-template-columns: 1fr; }
+    .widget.w2 { grid-column: span 1; }
+    .sidebar-demo { grid-template-columns: 1fr; }
+    .editor { grid-template-columns: 1fr; }
+    .file-tree { display: none; }
+    .side-by-side { grid-template-columns: 1fr; }
+    .graph { grid-template-columns: 1fr; }
+    .graph-side { display: none; }
+}
+</style>
+</head>
+<body>
+
+<div class="pt-wrap">
+
+    <!-- HERO -->
+    <header class="pt-hero">
+        <h1>Patterns</h1>
+        <p>
+            Quindici pattern complessi per l'interfaccia TRAE — chat agentica, editor,
+            workflow, brain graph, terminale, split panes. Tutti costruiti sui design
+            token e sui componenti base del sistema.
+        </p>
+        <nav class="nav-pills">
+            <a href="#chat">01 Chat</a>
+            <a href="#diff">02 Diff</a>
+            <a href="#perm">03 Permission</a>
+            <a href="#editor">04 Editor</a>
+            <a href="#term">05 Terminale</a>
+            <a href="#workflow">06 Workflow</a>
+            <a href="#graph">07 Brain</a>
+            <a href="#cmdk">08 Command</a>
+            <a href="#sidebar">09 Sidebar</a>
+            <a href="#statusbar">10 Status bar</a>
+            <a href="#agents">11 Agents</a>
+            <a href="#plugins">12 Plugin</a>
+            <a href="#dash">13 Dashboard</a>
+            <a href="#wstabs">14 Workspace</a>
+            <a href="#split">15 Split</a>
+        </nav>
+    </header>
+
+    <!-- ============================================================
+         01 · CHAT AGENTICA
+         ============================================================ -->
+    <section class="pt-section" id="chat">
+        <h2><span class="n">01</span>Chat agentica</h2>
+        <p>
+            Bolle user/assistant/tool/system, blocco thinking collassabile, tool-call
+            inline con args e output, streaming con cursore animato, allegati.
+        </p>
+
+        <div class="demo">
+            <div class="demo-bar">
+                <div class="win-dots"><span></span><span></span><span></span></div>
+                <span class="title">session · agent-trae-7f3a</span>
+                <span class="badge badge-green"><span class="dot"></span>Streaming</span>
+            </div>
+            <div class="demo-body" style="padding: 24px;">
+                <div class="chat">
+
+                    <!-- User message with attachments -->
+                    <div class="msg user">
+                        <div class="msg-avatar user">E</div>
+                        <div class="msg-body">
+                            <div class="msg-meta">
+                                <span class="name">Emanuele627</span>
+                                <span class="role">User</span>
+                                <span class="time">2 min fa</span>
+                            </div>
+                            <div class="msg-content">
+                                Fixa il bug CSRF e aggiorna la documentazione di deploy.
+                                Ti allego i log.
+                            </div>
+                            <div class="attach-row">
+                                <div class="attach">
+                                    <div class="ic">
+                                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                                    </div>
+                                    <div class="meta">
+                                        <strong>error.log</strong>
+                                        <small>24 KB · text</small>
+                                    </div>
+                                </div>
+                                <div class="attach">
+                                    <div class="ic">
+                                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                    </div>
+                                    <div class="meta">
+                                        <strong>screenshot.png</strong>
+                                        <small>340 KB · image</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- System message -->
+                    <div class="msg system">
+                        <div class="msg-avatar system">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </div>
+                        <div class="msg-body">
+                            <div class="msg-content">
+                                Workspace sincronizzato · modello <span class="t-mono">deepseek-v4-flash</span> · permessi <strong>Full Access</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Assistant with thinking + tool call -->
+                    <div class="msg assistant">
+                        <div class="msg-avatar assistant">T</div>
+                        <div class="msg-body">
+                            <div class="msg-meta">
+                                <span class="name">TRAE</span>
+                                <span class="role">Assistant</span>
+                                <span class="time">adesso</span>
+                            </div>
+
+                            <details class="thinking" open>
+                                <summary>
+                                    <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                                    Pensiero · 4 step · 2.1s
+                                </summary>
+                                <div class="body">
+                                    Analizzo il flusso di autenticazione. Il token CSRF viene
+                                    generato al login ma non refreshato dopo il redirect.
+                                    Devo verificare il middleware e aggiornare il template.
+                                </div>
+                            </details>
+
+                            <div class="msg-content">
+                                Ho trovato il problema. Il token CSRF viene invalidato dopo il
+                                redirect post-login ma non viene rigenerato. Applico il fix al
+                                middleware e aggiorno il template di base.
+                            </div>
+
+                            <!-- Tool call inline -->
+                            <div class="tool-call">
+                                <div class="tool-call-head">
+                                    <span class="name">read_file</span>
+                                    <span class="args">("app/middleware/csrf.py")</span>
+                                    <span class="badge badge-green"><span class="dot"></span>done</span>
+                                </div>
+                                <div class="tool-call-body"><span class="ok">✓</span> 48 righe lette in 12ms</div>
+                            </div>
+
+                            <div class="tool-call">
+                                <div class="tool-call-head">
+                                    <span class="name">edit_file</span>
+                                    <span class="args">("app/middleware/csrf.py", lines 22–28)</span>
+                                    <span class="badge badge-green"><span class="dot"></span>done</span>
+                                </div>
+                                <div class="tool-call-body"><span class="ok">✓</span> +6 −2 righe · pronto per review</div>
+                            </div>
+
+                            <div class="msg-content" style="margin-top: 12px;">
+                                Aggiungo anche la nota di deploy per rigenerare il token dopo
+                                ogni login<span class="stream-cursor"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tool message -->
+                    <div class="msg tool">
+                        <div class="msg-avatar tool">
+                            <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        </div>
+                        <div class="msg-body">
+                            <div class="msg-meta">
+                                <span class="name">terminal</span>
+                                <span class="role">Tool</span>
+                            </div>
+                            <div class="tool-call">
+                                <div class="tool-call-head">
+                                    <span class="name">run_tests</span>
+                                    <span class="args">("tests/test_csrf.py")</span>
+                                    <span class="badge badge-green"><span class="dot"></span>passed</span>
+                                </div>
+                                <div class="tool-call-body"><span class="ok">✓</span> 14 passed · 0 failed · 0.8s</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Composer -->
+                <div class="composer">
+                    <textarea class="composer-input" placeholder="Rispondi a TRAE…" rows="1"></textarea>
+                    <div class="composer-row">
+                        <button class="icon-btn" style="width:28px;height:28px;">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" fill="none"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        </button>
+                        <button class="icon-btn" style="width:28px;height:28px;">
+                            <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" fill="none"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                        </button>
+                        <span class="t-caption" style="margin-left:auto;">Shift+Invio per andare a capo</span>
+                        <button class="btn btn-primary btn-sm" style="margin-left:8px;">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+                            Invia
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         02 · DIFF VIEWER
+         ============================================================ -->
+    <section class="pt-section" id="diff">
+        <h2><span class="n">02</span>Diff viewer</h2>
+        <p>
+            Vista inline con numeri di riga e colori semantici. Vista side-by-side con
+            header per lato. Barra azioni con approva/rifiuta.
+        </p>
+
+        <div class="demo" style="margin-bottom: 16px;">
+            <div class="diff-toolbar">
+                <div class="file">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    app/middleware/csrf.py
+                    <span class="stats"><span class="add">+6</span> <span class="del">−2</span></span>
+                </div>
+                <span class="badge badge-yellow"><span class="dot"></span>In review</span>
+            </div>
+            <div class="diff-view">
+                <div class="diff-line ctx"><span class="n">20</span><span class="s"></span><span class="c">def generate_token(request):</span></div>
+                <div class="diff-line ctx"><span class="n">21</span><span class="s"></span><span class="c">    token = secrets.token_urlsafe(32)</span></div>
+                <div class="diff-line del"><span class="n">22</span><span class="s">−</span><span class="c">    request.session['csrf'] = token</span></div>
+                <div class="diff-line del"><span class="n">23</span><span class="s">−</span><span class="c">    return token</span></div>
+                <div class="diff-line add"><span class="n">22</span><span class="s">+</span><span class="c">    request.session['csrf'] = token</span></div>
+                <div class="diff-line add"><span class="n">23</span><span class="s">+</span><span class="c">    request.session.modified = True</span></div>
+                <div class="diff-line add"><span class="n">24</span><span class="s">+</span><span class="c">    request.session.save()</span></div>
+                <div class="diff-line add"><span class="n">25</span><span class="s">+</span><span class="c">    return token</span></div>
+                <div class="diff-line ctx"><span class="n">26</span><span class="s"></span><span class="c"></span></div>
+                <div class="diff-line ctx"><span class="n">27</span><span class="s"></span><span class="c">def validate_token(request, token):</span></div>
+            </div>
+            <div class="diff-actions">
+                <button class="btn btn-sm">Rifiuta</button>
+                <button class="btn btn-sm btn-ghost">
+                    <svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+                    Vedi side-by-side
+                </button>
+                <button class="btn btn-sm btn-primary">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    Approva modifiche
+                </button>
+            </div>
+        </div>
+
+        <!-- Side by side -->
+        <div class="demo">
+            <div class="diff-toolbar">
+                <div class="file">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    app/middleware/csrf.py
+                    <span class="stats"><span class="add">+6</span> <span class="del">−2</span></span>
+                </div>
+                <div class="tabs" style="padding: 2px;">
+                    <button class="tab active" style="font-size:11px; padding:4px 10px;">Side-by-side</button>
+                    <button class="tab" style="font-size:11px; padding:4px 10px;">Inline</button>
+                </div>
+            </div>
+            <div class="side-by-side">
+                <div>
+                    <div class="head">prima · version 3a4b</div>
+                    <div class="diff-view">
+                        <div class="diff-line ctx"><span class="n">20</span><span class="s"></span><span class="c">def generate_token(req):</span></div>
+                        <div class="diff-line ctx"><span class="n">21</span><span class="s"></span><span class="c">    token = secrets.token</span></div>
+                        <div class="diff-line del"><span class="n">22</span><span class="s">−</span><span class="c">    request.session['csrf']</span></div>
+                        <div class="diff-line del"><span class="n">23</span><span class="s">−</span><span class="c">    return token</span></div>
+                        <div class="diff-line ctx"><span class="n">24</span><span class="s"></span><span class="c"></span></div>
+                        <div class="diff-line ctx"><span class="n">25</span><span class="s"></span><span class="c">def validate_token(…):</span></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="head">dopo · version 7c2e</div>
+                    <div class="diff-view">
+                        <div class="diff-line ctx"><span class="n">20</span><span class="s"></span><span class="c">def generate_token(req):</span></div>
+                        <div class="diff-line ctx"><span class="n">21</span><span class="s"></span><span class="c">    token = secrets.token</span></div>
+                        <div class="diff-line add"><span class="n">22</span><span class="s">+</span><span class="c">    request.session['csrf']</span></div>
+                        <div class="diff-line add"><span class="n">23</span><span class="s">+</span><span class="c">    request.session.modified</span></div>
+                        <div class="diff-line add"><span class="n">24</span><span class="s">+</span><span class="c">    request.session.save()</span></div>
+                        <div class="diff-line add"><span class="n">25</span><span class="s">+</span><span class="c">    return token</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="diff-actions">
+                <button class="btn btn-sm">Rifiuta</button>
+                <button class="btn btn-sm btn-primary">Approva</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         03 · PERMISSION BAR
+         ============================================================ -->
+    <section class="pt-section" id="perm">
+        <h2><span class="n">03</span>Permission bar</h2>
+        <p>
+            Tre stati: manuale (rosso), auto-rischiosi (giallo), full access (accento).
+            Ogni stato ha colore, icona e descrizione dedicata.
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; max-width: 520px;">
+            <div class="perm-bar manual">
+                <svg class="shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div>
+                    <div class="label">Manual Approval</div>
+                    <div class="desc">Confermi ogni azione importante prima dell'esecuzione.</div>
+                </div>
+                <svg class="chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+
+            <div class="perm-bar auto">
+                <svg class="shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div>
+                    <div class="label">Auto Approval</div>
+                    <div class="desc">L'AI valuta le azioni e ti chiede solo per quelle rischiose.</div>
+                </div>
+                <svg class="chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+
+            <div class="perm-bar full">
+                <svg class="shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <div>
+                    <div class="label">Full Access</div>
+                    <div class="desc">Esecuzione diretta sulla macchina, nessuna approvazione.</div>
+                </div>
+                <svg class="chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         04 · EDITOR PANELS
+         ============================================================ -->
+    <section class="pt-section" id="editor">
+        <h2><span class="n">04</span>Editor panels</h2>
+        <p>
+            Layout editor con file tree, tab bar, breadcrumb del file, area codice
+            syntax-highlighted. Griglia 200px + flex.
+        </p>
+
+        <div class="demo">
+            <div class="demo-bar">
+                <div class="win-dots"><span></span><span></span><span></span></div>
+                <span class="title">ferraro3d-app</span>
+            </div>
+            <div class="editor">
+                <aside class="file-tree">
+                    <div class="tree-title">Explorer</div>
+                    <div class="tree-item">
+                        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        app
+                    </div>
+                    <div class="tree-item indent">
+                        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        middleware
+                    </div>
+                    <div class="tree-item indent-2 active">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        csrf.py
+                    </div>
+                    <div class="tree-item indent-2">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        auth.py
+                    </div>
+                    <div class="tree-item indent">
+                        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        routes
+                    </div>
+                    <div class="tree-item indent">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        main.py
+                    </div>
+                    <div class="tree-item">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        README.md
+                    </div>
+                </aside>
+
+                <div class="editor-main">
+                    <div class="editor-tabs">
+                        <div class="editor-tab active">
+                            csrf.py
+                            <span class="dot-modified"></span>
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </div>
+                        <div class="editor-tab">
+                            auth.py
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </div>
+                        <div class="editor-tab">
+                            main.py
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </div>
+                    </div>
+
+                    <div class="editor-breadcrumb">
+                        <span>app</span>
+                        <span class="sep">›</span>
+                        <span>middleware</span>
+                        <span class="sep">›</span>
+                        <span class="current">csrf.py</span>
+                        <span class="sep">·</span>
+                        <span>L22:8</span>
+                    </div>
+
+                    <div class="editor-code">
+                        <div><span class="ln">1</span><span class="kw">import</span> secrets</div>
+                        <div><span class="ln">2</span><span class="kw">from</span> flask <span class="kw">import</span> request, session</div>
+                        <div><span class="ln">3</span></div>
+                        <div><span class="ln">4</span><span class="cmt"># CSRF token management</span></div>
+                        <div><span class="ln">5</span></div>
+                        <div><span class="ln">6</span><span class="kw">def</span> <span class="fn">generate_token</span>(request):</div>
+                        <div><span class="ln">7</span>    token = secrets.<span class="fn">token_urlsafe</span>(<span class="num">32</span>)</div>
+                        <div><span class="ln">8</span>    request.session[<span class="str">'csrf'</span>] = token</div>
+                        <div><span class="ln">9</span>    request.session.modified = <span class="kw">True</span></div>
+                        <div><span class="ln">10</span>    request.session.<span class="fn">save</span>()</div>
+                        <div><span class="ln">11</span>    <span class="kw">return</span> token</div>
+                        <div><span class="ln">12</span></div>
+                        <div><span class="ln">13</span><span class="kw">def</span> <span class="fn">validate_token</span>(request, token):</div>
+                        <div><span class="ln">14</span>    stored = session.<span class="fn">get</span>(<span class="str">'csrf'</span>)</div>
+                        <div><span class="ln">15</span>    <span class="kw">return</span> stored == token</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         05 · TERMINALE
+         ============================================================ -->
+    <section class="pt-section" id="term">
+        <h2><span class="n">05</span>Terminale</h2>
+        <p>
+            Container xterm-like con tab bar (shell, dev server, test runner),
+            output colorato e cursore animato.
+        </p>
+
+        <div class="term">
+            <div class="term-tabs">
+                <div class="term-tab active">
+                    <span class="status"></span>
+                    bash
+                </div>
+                <div class="term-tab">
+                    <span class="status idle"></span>
+                    dev server
+                </div>
+                <div class="term-tab">
+                    <span class="status idle"></span>
+                    tests
+                </div>
+            </div>
+            <div class="term-body">
+                <div><span class="prompt">~</span> <span class="path">ferraro3d-app</span> <span class="cmd">git status</span></div>
+                <div class="dim">On branch main</div>
+                <div class="dim">Your branch is up to date with 'origin/main'.</div>
+                <div class="dim">Changes not staged for commit:</div>
+                <div>  <span class="err">modified:</span>   app/middleware/csrf.py</div>
+                <div>  <span class="err">modified:</span>   app/templates/base.html</div>
+                <div></div>
+                <div><span class="prompt">~</span> <span class="path">ferraro3d-app</span> <span class="cmd">pytest tests/ -v</span></div>
+                <div>============================= test session starts ==============================</div>
+                <div>platform darwin -- Python 3.11.6, pytest-7.4.0</div>
+                <div>collected 14 items</div>
+                <div></div>
+                <div>tests/test_csrf.py::test_token_generation <span class="ok">PASSED</span>   [ 7%]</div>
+                <div>tests/test_csrf.py::test_token_validation <span class="ok">PASSED</span>   [14%]</div>
+                <div>tests/test_auth.py::test_login_flow <span class="ok">PASSED</span>        [21%]</div>
+                <div>tests/test_auth.py::test_session_refresh <span class="warn">SKIPPED</span>  [28%]</div>
+                <div></div>
+                <div class="ok">======================== 13 passed, 1 skipped in 0.82s =========================</div>
+                <div></div>
+                <div><span class="prompt">~</span> <span class="path">ferraro3d-app</span> <span class="cursor"></span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         06 · WORKFLOW CANVAS
+         ============================================================ -->
+    <section class="pt-section" id="workflow">
+        <h2><span class="n">06</span>Workflow canvas</h2>
+        <p>
+            Canvas con nodi trascinabili, edge curvi, porte in/out, minimappa e
+            inspector laterale. Griglia a puntini, sfondo traslucido.
+        </p>
+
+        <div class="workflow">
+            <svg class="canvas" viewBox="0 0 1000 460" preserveAspectRatio="none">
+                <path class="edge active" d="M 220 140 C 320 140, 320 220, 420 220"/>
+                <path class="edge" d="M 420 240 C 500 240, 500 320, 590 320"/>
+                <path class="edge" d="M 420 200 C 500 200, 500 140, 590 140"/>
+                <path class="edge" d="M 760 140 C 820 140, 820 220, 880 220"/>
+            </svg>
+
+            <!-- Node 1 -->
+            <div class="wf-node selected" style="left: 60px; top: 110px;">
+                <span class="wf-port out"></span>
+                <div class="wf-node-head">
+                    <div class="ic">
+                        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    Trigger · Webhook
+                </div>
+                <div class="wf-node-body">POST /api/deploy</div>
+            </div>
+
+            <!-- Node 2 -->
+            <div class="wf-node" style="left: 420px; top: 190px;">
+                <span class="wf-port in"></span>
+                <span class="wf-port out"></span>
+                <div class="wf-node-head">
+                    <div class="ic blue">
+                        <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                    </div>
+                    Agent · Review
+                </div>
+                <div class="wf-node-body">Analizza diff e applica regole</div>
+            </div>
+
+            <!-- Node 3 -->
+            <div class="wf-node" style="left: 590px; top: 110px;">
+                <span class="wf-port in"></span>
+                <span class="wf-port out"></span>
+                <div class="wf-node-head">
+                    <div class="ic green">
+                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    </div>
+                    Deploy production
+                </div>
+                <div class="wf-node-body">kubectl apply -f prod/</div>
+            </div>
+
+            <!-- Node 4 -->
+            <div class="wf-node" style="left: 590px; top: 290px;">
+                <span class="wf-port in"></span>
+                <div class="wf-node-head">
+                    <div class="ic">
+                        <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+                    </div>
+                    Notify on-call
+                </div>
+                <div class="wf-node-body">Slack #alerts</div>
+            </div>
+
+            <!-- Minimap -->
+            <div class="wf-minimap">
+                <div class="mini-node" style="left: 8px; top: 40px;"></div>
+                <div class="mini-node" style="left: 55px; top: 50px;"></div>
+                <div class="mini-node" style="left: 90px; top: 30px;"></div>
+                <div class="mini-node" style="left: 90px; top: 62px;"></div>
+                <div class="vp" style="left: 4px; top: 20px; width: 130px; height: 60px;"></div>
+            </div>
+
+            <!-- Inspector -->
+            <div class="wf-inspector">
+                <div class="wf-inspector-head">Inspector · Trigger</div>
+                <div class="wf-inspector-body">
+                    <div class="wf-field">
+                        <label>Label</label>
+                        <input class="input" value="Trigger · Webhook">
+                    </div>
+                    <div class="wf-field">
+                        <label>Endpoint</label>
+                        <input class="input" value="/api/deploy">
+                    </div>
+                    <div class="wf-field">
+                        <label>Method</label>
+                        <select class="select" style="padding:6px 8px; font-size:11.5px;">
+                            <option>POST</option>
+                            <option>GET</option>
+                        </select>
+                    </div>
+                    <div style="display:flex; gap:6px; margin-top:6px;">
+                        <button class="btn btn-sm" style="flex:1;">Duplica</button>
+                        <button class="btn btn-sm btn-danger" style="flex:1;">Elimina</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         07 · BRAIN / GRAPH VIEW
+         ============================================================ -->
+    <section class="pt-section" id="graph">
+        <h2><span class="n">07</span>Brain / Graph view</h2>
+        <p>
+            Vista grafo con nodi entità, edge relazioni, layout force-simulated,
+            filtri per tipo a sinistra, halo sui nodi principali.
+        </p>
+
+        <div class="graph">
+            <aside class="graph-side">
+                <h4>Filtri</h4>
+                <div class="filter"><span class="sw" style="background: var(--color-accent);"></span>Persone<span class="ct">12</span></div>
+                <div class="filter"><span class="sw" style="background: var(--color-info);"></span>Progetti<span class="ct">8</span></div>
+                <div class="filter"><span class="sw" style="background: var(--color-success);"></span>File<span class="ct">34</span></div>
+                <div class="filter"><span class="sw" style="background: var(--color-warning);"></span>Concetti<span class="ct">21</span></div>
+
+                <h4>Focus</h4>
+                <div class="filter">Radius · 2 hop</div>
+                <div class="filter">Solo connessi</div>
+
+                <h4>Layout</h4>
+                <div class="filter">Force-directed</div>
+                <div class="filter">Radial</div>
+                <div class="filter">Gerarchico</div>
+            </aside>
+
+            <div class="graph-canvas">
+                <svg viewBox="0 0 900 440" preserveAspectRatio="none">
+                    <!-- Edges -->
+                    <line class="gedge" x1="450" y1="220" x2="280" y2="120"/>
+                    <line class="gedge" x1="450" y1="220" x2="640" y2="130"/>
+                    <line class="gedge" x1="450" y1="220" x2="700" y2="280"/>
+                    <line class="gedge" x1="450" y1="220" x2="320" y2="310"/>
+                    <line class="gedge" x1="450" y1="220" x2="180" y2="230"/>
+                    <line class="gedge" x1="280" y1="120" x2="180" y2="230"/>
+                    <line class="gedge" x1="640" y1="130" x2="700" y2="280"/>
+                    <line class="gedge" x1="320" y1="310" x2="700" y2="280"/>
+                    <line class="gedge" x1="640" y1="130" x2="760" y2="80"/>
+                    <line class="gedge" x1="320" y1="310" x2="240" y2="380"/>
+
+                    <!-- Halo center -->
+                    <circle class="ghalo" cx="450" cy="220" r="36" style="color: var(--color-accent);"></circle>
+
+                    <!-- Nodes -->
+                    <circle class="gnode" cx="450" cy="220" r="18"/>
+                    <text class="gnode-label" x="450" y="256">Emanuele</text>
+
+                    <circle class="gnode blue" cx="280" cy="120" r="12"/>
+                    <text class="gnode-label" x="280" y="150">ferraro3d</text>
+
+                    <circle class="gnode blue" cx="640" cy="130" r="12"/>
+                    <text class="gnode-label" x="640" y="160">pdf-to-rag</text>
+
+                    <circle class="gnode green" cx="700" cy="280" r="10"/>
+                    <text class="gnode-label" x="700" y="308">csrf.py</text>
+
+                    <circle class="gnode green" cx="320" cy="310" r="10"/>
+                    <text class="gnode-label" x="320" y="338">auth.py</text>
+
+                    <circle class="gnode yellow" cx="180" cy="230" r="9"/>
+                    <text class="gnode-label" x="180" y="256">Marco_R</text>
+
+                    <circle class="gnode green" cx="760" cy="80" r="8"/>
+                    <text class="gnode-label" x="760" y="104">README</text>
+
+                    <circle class="gnode yellow" cx="240" cy="380" r="8"/>
+                    <text class="gnode-label" x="240" y="404">Concetto</text>
+                </svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         08 · COMMAND PALETTE
+         ============================================================ -->
+    <section class="pt-section" id="cmdk">
+        <h2><span class="n">08</span>Command palette</h2>
+        <p>
+            Overlay con input fuzzy, categorie, icone, scorciatoie. Match evidenziato
+            in accento. Voce attiva con background più chiaro.
+        </p>
+
+        <div class="cmdk-overlay">
+            <div class="cmdk">
+                <div class="cmdk-input-row">
+                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input class="cmdk-input" placeholder="Cerca azioni, file, comandi…" value="deploy">
+                    <span class="cmdk-kbd">ESC</span>
+                </div>
+                <div class="cmdk-list">
+                    <div class="cmdk-group">Azioni</div>
+                    <div class="cmdk-item active">
+                        <div class="ic accent">
+                            <svg viewBox="0 0 24 24"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+                        </div>
+                        <span><span class="cmdk-match">Deploy</span> a produzione</span>
+                        <span class="kbd"><span>⌘</span><span>⇧</span><span>D</span></span>
+                    </div>
+                    <div class="cmdk-item">
+                        <div class="ic">
+                            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <span>Vedi log di <span class="cmdk-match">deploy</span></span>
+                    </div>
+                    <div class="cmdk-item">
+                        <div class="ic">
+                            <svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+                        </div>
+                        <span>Rollback ultimo <span class="cmdk-match">deploy</span></span>
+                    </div>
+
+                    <div class="cmdk-group">File</div>
+                    <div class="cmdk-item">
+                        <div class="ic">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <span>scripts/<span class="cmdk-match">deploy</span>.sh</span>
+                        <span class="kbd">↵</span>
+                    </div>
+                    <div class="cmdk-item">
+                        <div class="ic">
+                            <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                        </div>
+                        <span>infra/<span class="cmdk-match">deploy</span>/</span>
+                    </div>
+
+                    <div class="cmdk-group">Workspace</div>
+                    <div class="cmdk-item">
+                        <div class="ic">
+                            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                        </div>
+                        <span>Apri <span class="cmdk-match">deploy</span> workspace</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         09 · SIDEBAR APP
+         ============================================================ -->
+    <section class="pt-section" id="sidebar">
+        <h2><span class="n">09</span>Sidebar app</h2>
+        <p>
+            Rail icon-only collassabile + pannello espanso con sezioni (chat, brain,
+            workflow, dashboard, plugin). Indicatore di sezione attiva sul rail.
+        </p>
+
+        <div class="sidebar-demo">
+            <!-- Expanded -->
+            <div class="sb-expanded">
+                <div class="sb-rail">
+                    <div class="icon-btn active" title="Chat">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div class="icon-btn" title="Brain">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="7" x2="10" y2="10"/><line x1="17" y1="7" x2="14" y2="10"/><line x1="7" y1="17" x2="10" y2="14"/><line x1="17" y1="17" x2="14" y2="14"/></svg>
+                    </div>
+                    <div class="icon-btn" title="Workflow">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="9" y="15" width="6" height="6"/><line x1="6" y1="9" x2="12" y2="15"/><line x1="18" y1="9" x2="12" y2="15"/></svg>
+                    </div>
+                    <div class="icon-btn" title="Dashboard">
+                        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                    </div>
+                    <div class="icon-btn" title="Plugin">
+                        <svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+                    </div>
+                    <div class="spacer"></div>
+                    <div class="icon-btn" title="Impostazioni">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </div>
+                </div>
+                <div class="sb-panel">
+                    <div class="sb-panel-head">
+                        Chat
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </div>
+                    <div class="sb-panel-body">
+                        <div class="sb-row active"><span class="dot live"></span>Sessione corrente<span class="count">3</span></div>
+                        <div class="sb-row"><span class="dot"></span>Fix CSRF bug<span class="count">2h</span></div>
+                        <div class="sb-row"><span class="dot"></span>Deploy production<span class="count">5h</span></div>
+                        <div class="sb-row"><span class="dot"></span>Documentazione RAG<span class="count">1g</span></div>
+                        <div class="sb-row"><span class="dot"></span>Analisi performance<span class="count">3g</span></div>
+                        <div class="sb-row"><span class="dot"></span>Refactor middleware<span class="count">5g</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Collapsed -->
+            <div class="sb-collapsed">
+                <div class="icon-btn active">
+                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="7" x2="10" y2="10"/><line x1="17" y1="7" x2="14" y2="10"/><line x1="7" y1="17" x2="10" y2="14"/><line x1="17" y1="17" x2="14" y2="14"/></svg>
+                </div>
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="6" height="6"/><rect x="15" y="3" width="6" height="6"/><rect x="9" y="15" width="6" height="6"/><line x1="6" y1="9" x2="12" y2="15"/><line x1="18" y1="9" x2="12" y2="15"/></svg>
+                </div>
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                </div>
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>
+                </div>
+                <div class="spacer" style="flex:1;"></div>
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         10 · STATUS BAR
+         ============================================================ -->
+    <section class="pt-section" id="statusbar">
+        <h2><span class="n">10</span>Status bar</h2>
+        <p>
+            Barra inferiore con modello attivo, token usati, costi sessione,
+            stato sync, agenti running. Item cliccabili e indicatori live.
+        </p>
+
+        <div class="status-bar">
+            <div class="sb-item">
+                <span class="dot"></span>
+                <span>Connected</span>
+            </div>
+            <div class="sb-item clickable">
+                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 10v6"/></svg>
+                deepseek-v4-flash
+            </div>
+            <div class="sb-item">
+                <svg viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                €0.42
+            </div>
+            <div class="sb-item">
+                <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                12.4k / 128k
+            </div>
+            <div class="sb-item">
+                <span class="spinner"></span>
+                2 agenti
+            </div>
+            <div class="sb-item clickable" style="margin-left: auto;">
+                <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+                Sync 2m fa
+            </div>
+            <div class="sb-item">
+                <span class="dot warn"></span>
+                Full access
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         11 · AGENT STATUS / ACTIVITY
+         ============================================================ -->
+    <section class="pt-section" id="agents">
+        <h2><span class="n">11</span>Agent status / activity</h2>
+        <p>
+            Lista agenti attivi con stato (idle / working / waiting / done),
+            task corrente, sub-agenti indentati.
+        </p>
+
+        <div class="agent-list">
+            <div class="agent-row">
+                <div class="agent-av">T</div>
+                <div class="agent-info">
+                    <div class="name">
+                        trae-main
+                        <span class="t-caption" style="font-family:var(--font-mono); color:var(--color-text-4);">· 7f3a</span>
+                    </div>
+                    <div class="task">Fix CSRF token refresh after login redirect</div>
+                </div>
+                <div class="agent-state working"><span class="dot"></span>Working</div>
+            </div>
+
+            <div class="agent-row sub" style="position: relative;">
+                <div class="agent-av blue">R</div>
+                <div class="agent-info">
+                    <div class="name">reviewer</div>
+                    <div class="task">Analisi diff middleware/csrf.py</div>
+                </div>
+                <div class="agent-state waiting"><span class="dot"></span>Waiting</div>
+            </div>
+
+            <div class="agent-row sub" style="position: relative;">
+                <div class="agent-av green">X</div>
+                <div class="agent-info">
+                    <div class="name">test-runner</div>
+                    <div class="task">pytest tests/test_csrf.py — 14 test</div>
+                </div>
+                <div class="agent-state done"><span class="dot"></span>Done</div>
+            </div>
+
+            <div class="agent-row">
+                <div class="agent-av green">D</div>
+                <div class="agent-info">
+                    <div class="name">deployer</div>
+                    <div class="task">Idle in attesa di trigger</div>
+                </div>
+                <div class="agent-state idle"><span class="dot"></span>Idle</div>
+            </div>
+
+            <div class="agent-row">
+                <div class="agent-av blue">I</div>
+                <div class="agent-info">
+                    <div class="name">indexer</div>
+                    <div class="task">Indicizzazione 340 file in pdf-to-rag</div>
+                </div>
+                <div class="agent-state working"><span class="dot"></span>Working</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         12 · PLUGIN CARDS
+         ============================================================ -->
+    <section class="pt-section" id="plugins">
+        <h2><span class="n">12</span>Plugin cards</h2>
+        <p>
+            Card plugin con icona, autore, permessi richiesti, source e versione.
+            Stati: attivo, aggiornamento disponibile, in pausa.
+        </p>
+
+        <div class="plugin-grid">
+            <div class="plugin-card">
+                <div class="plugin-head">
+                    <div class="plugin-icon">
+                        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div class="plugin-title">Auto Deployer</div>
+                        <div class="plugin-sub">by TRAE Labs</div>
+                    </div>
+                    <span class="badge badge-green"><span class="dot"></span>Attivo</span>
+                </div>
+
+                <div class="plugin-perms">
+                    <span class="perm-pill"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>exec</span>
+                    <span class="perm-pill"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M4 4h16v16H4z"/><polyline points="4 12 20 12"/></svg>net</span>
+                    <span class="perm-pill"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>fs</span>
+                </div>
+
+                <div class="plugin-foot">
+                    <span class="source">
+                        <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                        github.com/trae/deployer
+                    </span>
+                    <span>v2.4.1</span>
+                </div>
+            </div>
+
+            <div class="plugin-card">
+                <div class="plugin-head">
+                    <div class="plugin-icon blue">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div class="plugin-title">Slack Notifier</div>
+                        <div class="plugin-sub">by community</div>
+                    </div>
+                    <span class="badge badge-yellow"><span class="dot"></span>Update</span>
+                </div>
+
+                <div class="plugin-perms">
+                    <span class="perm-pill"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M4 4h16v16H4z"/><polyline points="4 12 20 12"/></svg>net</span>
+                </div>
+
+                <div class="plugin-foot">
+                    <span class="source">
+                        <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                        github.com/comm/slack-notify
+                    </span>
+                    <span>v1.2.0 → <span style="color: var(--color-warning);">1.3.0</span></span>
+                </div>
+            </div>
+
+            <div class="plugin-card">
+                <div class="plugin-head">
+                    <div class="plugin-icon green">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div class="plugin-title">Cron Scheduler</div>
+                        <div class="plugin-sub">by TRAE Labs</div>
+                    </div>
+                    <span class="badge"><span class="dot"></span>Pausa</span>
+                </div>
+
+                <div class="plugin-perms">
+                    <span class="perm-pill"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>exec</span>
+                    <span class="perm-pill"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>fs</span>
+                    <span class="perm-pill"><svg viewBox="0 0 24 24" stroke="currentColor" fill="none"><circle cx="12" cy="12" r="3"/></svg>sys</span>
+                </div>
+
+                <div class="plugin-foot">
+                    <span class="source">
+                        <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                        github.com/trae/cron
+                    </span>
+                    <span>v0.9.3</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         13 · DASHBOARD WIDGETS
+         ============================================================ -->
+    <section class="pt-section" id="dash">
+        <h2><span class="n">13</span>Dashboard widgets</h2>
+        <p>
+            Griglia 4-colonne drag&drop con handle, stato dragging e widget di
+            varia dimensione (w1, w2). Ogni widget è YAML-rendered.
+        </p>
+
+        <div class="dash">
+            <div class="widget w1">
+                <div class="widget-handle">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                </div>
+                <div class="widget-label">Progetti attivi</div>
+                <div class="widget-value">12</div>
+                <div class="widget-foot"><span>+3 questa settimana</span><span style="color:var(--color-success);">↑ 12%</span></div>
+            </div>
+
+            <div class="widget w1">
+                <div class="widget-handle">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                </div>
+                <div class="widget-label">Task completati</div>
+                <div class="widget-value">148</div>
+                <div class="widget-foot"><span>ultimi 7 giorni</span><span style="color:var(--color-success);">↑ 22%</span></div>
+            </div>
+
+            <div class="widget w2 dragging">
+                <div class="widget-handle">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                </div>
+                <div class="widget-label">Attività settimanale</div>
+                <div style="display:flex; align-items:flex-end; gap:4px; height:44px; margin-top:10px;">
+                    <div style="flex:1; height:40%; background: linear-gradient(180deg,var(--color-accent),transparent); border-radius:3px;"></div>
+                    <div style="flex:1; height:62%; background: linear-gradient(180deg,var(--color-accent),transparent); border-radius:3px;"></div>
+                    <div style="flex:1; height:35%; background: linear-gradient(180deg,var(--color-accent),transparent); border-radius:3px;"></div>
+                    <div style="flex:1; height:78%; background: linear-gradient(180deg,var(--color-accent),transparent); border-radius:3px;"></div>
+                    <div style="flex:1; height:55%; background: linear-gradient(180deg,var(--color-accent),transparent); border-radius:3px;"></div>
+                    <div style="flex:1; height:88%; background: linear-gradient(180deg,var(--color-accent),transparent); border-radius:3px;"></div>
+                    <div style="flex:1; height:70%; background: linear-gradient(180deg,var(--color-accent),transparent); border-radius:3px;"></div>
+                </div>
+                <div class="widget-foot"><span>Lun → Dom</span><span>€0.42</span></div>
+            </div>
+
+            <div class="widget w1">
+                <div class="widget-handle">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                </div>
+                <div class="widget-label">Modello attivo</div>
+                <div class="widget-value" style="font-size:14px; font-family: var(--font-mono); margin-top:10px;">deepseek-v4-flash</div>
+                <div class="widget-foot"><span>128k ctx</span><span style="color:var(--color-accent);">attivo</span></div>
+            </div>
+
+            <div class="widget w2">
+                <div class="widget-handle">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                </div>
+                <div class="widget-label">Agenti running</div>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:12px;">
+                    <div class="spinner"></div>
+                    <div style="flex:1;">
+                        <div style="font-size:12.5px; color: var(--color-text);">reviewer</div>
+                        <div style="font-size:11px; color: var(--color-text-3);">Analisi diff in corso</div>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:12px; margin-top:10px;">
+                    <div class="spinner" style="border-top-color: var(--color-info);"></div>
+                    <div style="flex:1;">
+                        <div style="font-size:12.5px; color: var(--color-text);">indexer</div>
+                        <div style="font-size:11px; color: var(--color-text-3);">340 file · 62%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="widget w1">
+                <div class="widget-handle">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                </div>
+                <div class="widget-label">Sync</div>
+                <div class="widget-value" style="font-size:14px; margin-top:10px;">2 minuti fa</div>
+                <div class="widget-foot"><span>auto ogni 5m</span><span style="color:var(--color-success);">● live</span></div>
+            </div>
+
+            <div class="widget w1">
+                <div class="widget-handle">
+                    <svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="15" cy="18" r="1"/></svg>
+                </div>
+                <div class="widget-label">Sync errori</div>
+                <div class="widget-value" style="color: var(--color-danger);">3</div>
+                <div class="widget-foot"><span>ultimo 1h fa</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         14 · TABS WORKSPACE
+         ============================================================ -->
+    <section class="pt-section" id="wstabs">
+        <h2><span class="n">14</span>Tabs workspace</h2>
+        <p>
+            Barra tab di sessione/progetto in alto. Tab attivo con background,
+            pallino di modifica, path opzionale e close on hover.
+        </p>
+
+        <div class="ws-tabs">
+            <div class="ws-tab active">
+                <span class="dot-mark"></span>
+                Fix CSRF bug
+                <span class="path">~/ferraro3d</span>
+                <span class="close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </span>
+            </div>
+            <div class="ws-tab">
+                Deploy production
+                <span class="path">~/infra</span>
+                <span class="close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </span>
+            </div>
+            <div class="ws-tab">
+                <span class="dot-mark"></span>
+                RAG docs
+                <span class="close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </span>
+            </div>
+            <div class="ws-tab">
+                Refactor middleware
+                <span class="close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </span>
+            </div>
+            <div class="ws-new">
+                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         15 · SPLIT PANES
+         ============================================================ -->
+    <section class="pt-section" id="split">
+        <h2><span class="n">15</span>Split panes</h2>
+        <p>
+            Split verticale (chat + editor) e orizzontale (log + codice).
+            Gutter ridimensionabile con indicatore di drag.
+        </p>
+
+        <div class="split-demo">
+            <!-- Vertical split -->
+            <div class="split vertical">
+                <div class="split-pane left">
+                    <div class="split-pane-title">Chat</div>
+                    <div class="mini-chat">
+                        <div class="mini-msg user">
+                            <div class="av">E</div>
+                            <div>Fixa il bug CSRF in app/middleware</div>
+                        </div>
+                        <div class="mini-msg">
+                            <div class="av">T</div>
+                            <div>Analizzo il middleware. Il token viene generato ma non salvato dopo il redirect.</div>
+                        </div>
+                        <div class="mini-msg user">
+                            <div class="av">E</div>
+                            <div>Applica il fix e apri una PR.</div>
+                        </div>
+                        <div class="mini-msg">
+                            <div class="av">T</div>
+                            <div>Fatto. Aggiunto <span style="color:var(--color-accent); font-family: var(--font-mono); font-size:11px;">session.save()</span> e aggiornato il template.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="split-gutter"></div>
+                <div class="split-pane">
+                    <div class="split-pane-title">Editor · csrf.py</div>
+                    <div class="mini-code">
+                        <div><span class="cmt"># CSRF token management</span></div>
+                        <div><span class="kw">def</span> generate_token(request):</div>
+                        <div>    token = secrets.token_urlsafe(<span style="color: var(--color-warning);">32</span>)</div>
+                        <div>    request.session[<span class="str">'csrf'</span>] = token</div>
+                        <div>    request.session.modified = <span class="kw">True</span></div>
+                        <div>    request.session.save()</div>
+                        <div>    <span class="kw">return</span> token</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Horizontal split -->
+            <div class="split horizontal">
+                <div class="split-pane">
+                    <div class="split-pane-title">Terminal</div>
+                    <div class="mini-code" style="font-size: 11px;">
+                        <div><span style="color: var(--color-accent);">~</span> pytest tests/ -v</div>
+                        <div><span style="color: var(--color-success);">13 passed, 1 skipped in 0.82s</span></div>
+                        <div><span style="color: var(--color-accent);">~</span> git push origin main</div>
+                        <div style="color: var(--color-text-4);">Enumerating objects: 8, done.</div>
+                        <div><span style="color: var(--color-success);">To github.com:ferraro3d-app.git</span></div>
+                    </div>
+                </div>
+                <div class="split-gutter"></div>
+                <div class="split-pane">
+                    <div class="split-pane-title">Diff · base.html</div>
+                    <div class="diff-view" style="font-size: 11px;">
+                        <div class="diff-line ctx"><span class="n">12</span><span class="s"></span><span class="c">&lt;form method="POST"&gt;</span></div>
+                        <div class="diff-line del"><span class="n">13</span><span class="s">−</span><span class="c">  &lt;input type="hidden" name="csrf"&gt;</span></div>
+                        <div class="diff-line add"><span class="n">13</span><span class="s">+</span><span class="c">  &lt;input type="hidden" name="csrf" value="{{ csrf_token }}"&gt;</span></div>
+                        <div class="diff-line ctx"><span class="n">14</span><span class="s"></span><span class="c">&lt;/form&gt;</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    // Smooth scroll per i link nav
+    document.querySelectorAll('.nav-pills a').forEach(a => {
+        a.addEventListener('click', (e) => {
+            const el = document.querySelector(a.getAttribute('href'));
+            if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+        });
+    });
+</script>
+
+</body>
+</html>

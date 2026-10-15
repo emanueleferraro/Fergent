@@ -1,0 +1,3 @@
+# Tauri sidecar binaries live here, named `fergentsd-<target-triple>`.
+# They are built separately from `crates/fergentsd` and are not committed.
+# See `src-tauri/src/lib.rs` for the exact copy command.

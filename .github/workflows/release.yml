@@ -1,0 +1,25 @@
+# Release pipeline STUB.
+#
+# This is intentionally inert in Phase 0: it is a tag-triggered workflow that
+# only logs a message and does NOT build or publish any artifacts. It exists so
+# the pipeline shape is in place (ROADMAP.md Phase 0: "release.yml stub"). Real
+# cross-platform builds, signing, and GitHub Releases uploads arrive in a later
+# phase.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build (stub)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Not implemented
+        run: echo "release pipeline not implemented in Phase 0"

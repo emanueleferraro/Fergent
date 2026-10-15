@@ -1,0 +1,31 @@
+[package]
+name = "fergents-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "The Fergents command-line interface and TUI."
+
+[[bin]]
+name = "fergents"
+path = "src/main.rs"
+
+[dependencies]
+fergents-api = { workspace = true }
+fergents-core = { workspace = true }
+fergents-protocol = { workspace = true }
+clap = { workspace = true }
+tokio = { workspace = true }
+ratatui = { workspace = true }
+crossterm = { workspace = true, features = ["event-stream"] }
+futures = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+fergents-events = { workspace = true }
+fergents-storage = { workspace = true }
+tempfile = { workspace = true }

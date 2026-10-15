@@ -1,0 +1,2635 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAE — Styleguide</title>
+<style>
+    /* ============================================================
+       1. DESIGN TOKENS
+       ============================================================ */
+    :root {
+        /* Superfici */
+        --bg:            #0A0A0B;
+        --bg-elev:       #0F0F12;
+        --glass:         rgba(20, 20, 23, 0.55);
+        --glass-strong:  rgba(20, 20, 23, 0.82);
+        --hover:         rgba(255, 255, 255, 0.045);
+        --active:        rgba(255, 255, 255, 0.075);
+
+        /* Bordi */
+        --border:        rgba(255, 255, 255, 0.07);
+        --border-2:      rgba(255, 255, 255, 0.13);
+        --border-3:      rgba(255, 255, 255, 0.20);
+
+        /* Testo */
+        --text:          #EDEDEF;
+        --text-2:        #98989F;
+        --text-3:        #66666E;
+        --text-4:        #44444A;
+
+        /* Accenti */
+        --accent:        #D97757;
+        --accent-soft:   rgba(217, 119, 87, 0.12);
+        --accent-line:   rgba(217, 119, 87, 0.35);
+
+        /* Semantici */
+        --green:         #7FB894;
+        --green-soft:    rgba(127, 184, 148, 0.12);
+        --red:           #E5484D;
+        --red-soft:      rgba(229, 72, 77, 0.12);
+        --yellow:        #E5B84D;
+        --yellow-soft:   rgba(229, 184, 77, 0.12);
+        --blue:          #6B94D9;
+        --blue-soft:     rgba(107, 148, 217, 0.12);
+
+        /* Raggi */
+        --r-xs: 6px;
+        --r-sm: 8px;
+        --r-md: 10px;
+        --r-lg: 14px;
+        --r-xl: 18px;
+        --r-full: 999px;
+
+        /* Spacing scale (4pt) */
+        --s-1: 4px;
+        --s-2: 8px;
+        --s-3: 12px;
+        --s-4: 16px;
+        --s-5: 20px;
+        --s-6: 24px;
+        --s-8: 32px;
+        --s-10: 40px;
+        --s-12: 48px;
+
+        /* Tipografia */
+        --font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                Roboto, Helvetica, Arial, sans-serif;
+        --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular,
+                     Menlo, Consolas, monospace;
+
+        /* Motion */
+        --ease:   cubic-bezier(0.22, 1, 0.36, 1);
+        --ease-2: cubic-bezier(0.4, 0, 0.2, 1);
+        --t-fast: 140ms var(--ease);
+        --t:      220ms var(--ease);
+        --t-slow: 380ms var(--ease);
+
+        /* Ombre */
+        --sh-sm: 0 1px 2px rgba(0,0,0,0.35);
+        --sh-md: 0 8px 24px -8px rgba(0,0,0,0.6);
+        --sh-lg: 0 24px 60px -20px rgba(0,0,0,0.85);
+        --sh-glow: 0 0 0 4px rgba(255,255,255,0.02);
+    }
+
+    /* ============================================================
+       2. RESET & BASE
+       ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+
+    body {
+        font-family: var(--font);
+        font-size: 14px;
+        letter-spacing: -0.005em;
+        color: var(--text);
+        background: var(--bg);
+        display: flex;
+        overflow: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(58% 42% at 78% -6%, rgba(217, 119, 87, 0.055), transparent 70%),
+            radial-gradient(50% 38% at 10% 106%, rgba(122, 148, 255, 0.040), transparent 70%);
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255,255,255,0.08);
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background-clip: content-box;
+    }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.16); background-clip: content-box; }
+
+    :focus-visible {
+        outline: 1px solid var(--border-3);
+        outline-offset: 2px;
+        border-radius: var(--r-sm);
+    }
+
+    button, input, textarea, select { font-family: inherit; }
+
+    /* ============================================================
+       3. LAYOUT
+       ============================================================ */
+    .layout { display: flex; width: 100%; height: 100vh; position: relative; z-index: 1; }
+
+    /* --- Sidebar --- */
+    .sg-sidebar {
+        width: 240px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        background: rgba(14, 14, 16, 0.72);
+        backdrop-filter: blur(24px) saturate(140%);
+        -webkit-backdrop-filter: blur(24px) saturate(140%);
+        border-right: 1px solid var(--border);
+        user-select: none;
+    }
+
+    .sg-brand {
+        padding: 20px 18px 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        border-bottom: 1px solid var(--border);
+    }
+    .sg-brand-mark {
+        width: 24px;
+        height: 24px;
+        border-radius: var(--r-sm);
+        background: linear-gradient(145deg, rgba(217,119,87,0.9), rgba(217,119,87,0.35));
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.15);
+        display: grid; place-items: center;
+        font-size: 11px; font-weight: 700; color: #1A0F0A;
+    }
+    .sg-brand-text { display: flex; flex-direction: column; line-height: 1.2; }
+    .sg-brand-text strong { font-size: 13px; font-weight: 600; letter-spacing: -0.01em; }
+    .sg-brand-text span { font-size: 10.5px; color: var(--text-3); letter-spacing: 0.04em; }
+
+    .sg-nav {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px 10px 20px;
+    }
+
+    .sg-nav-group { margin-bottom: 12px; }
+
+    .sg-nav-title {
+        padding: 8px 10px 6px;
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-4);
+    }
+
+    .sg-nav a {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: var(--r-sm);
+        font-size: 12.5px;
+        font-weight: 450;
+        color: var(--text-2);
+        text-decoration: none;
+        transition: background var(--t), color var(--t);
+    }
+    .sg-nav a::before {
+        content: "";
+        width: 2px;
+        height: 12px;
+        border-radius: 2px;
+        background: transparent;
+        transition: background var(--t);
+    }
+    .sg-nav a:hover { background: var(--hover); color: var(--text); text-decoration: none; }
+    .sg-nav a.active { background: var(--active); color: var(--text); }
+    .sg-nav a.active::before { background: var(--accent); }
+
+    /* --- Content --- */
+    .sg-main {
+        flex: 1;
+        overflow-y: auto;
+        scroll-behavior: smooth;
+    }
+
+    .sg-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 48px 120px;
+    }
+
+    .sg-hero {
+        padding: 32px 0 40px;
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 48px;
+    }
+    .sg-hero h1 {
+        font-size: 34px;
+        font-weight: 500;
+        letter-spacing: -0.032em;
+        background: linear-gradient(180deg, #FFFFFF 0%, #A8A8B0 130%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+    }
+    .sg-hero p {
+        max-width: 620px;
+        font-size: 14px;
+        line-height: 1.6;
+        color: var(--text-2);
+    }
+    .sg-hero .sg-meta {
+        display: flex;
+        gap: 16px;
+        margin-top: 20px;
+        font-size: 11.5px;
+        color: var(--text-3);
+    }
+    .sg-hero .sg-meta span { display: flex; align-items: center; gap: 6px; }
+    .sg-hero .sg-meta span::before {
+        content: "";
+        width: 5px; height: 5px; border-radius: 50%;
+        background: var(--accent);
+    }
+
+    /* --- Section --- */
+    .sg-section {
+        margin-bottom: 72px;
+        scroll-margin-top: 24px;
+    }
+    .sg-section-head {
+        display: flex;
+        align-items: baseline;
+        gap: 14px;
+        margin-bottom: 8px;
+    }
+    .sg-section-num {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--text-4);
+        letter-spacing: 0.04em;
+    }
+    .sg-section h2 {
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        color: var(--text);
+    }
+    .sg-section-desc {
+        font-size: 13px;
+        color: var(--text-3);
+        line-height: 1.6;
+        max-width: 680px;
+        margin-bottom: 28px;
+    }
+
+    .sg-sub {
+        margin-top: 32px;
+        margin-bottom: 14px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-4);
+    }
+
+    /* --- Showcase panels --- */
+    .sg-grid {
+        display: grid;
+        gap: 14px;
+    }
+    .sg-grid.cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .sg-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .sg-grid.cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+    .panel {
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        background: var(--glass);
+        backdrop-filter: blur(20px) saturate(150%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%);
+    }
+    .panel-title {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--text-4);
+        margin-bottom: 14px;
+    }
+    .panel-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+    }
+    .panel-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    /* --- Code --- */
+    .sg-code {
+        margin-top: 14px;
+        padding: 14px 16px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        background: rgba(0, 0, 0, 0.35);
+        font-family: var(--font-mono);
+        font-size: 11.5px;
+        line-height: 1.7;
+        color: var(--text-2);
+        overflow-x: auto;
+        white-space: pre;
+    }
+    .sg-code .tk-key { color: var(--accent); }
+    .sg-code .tk-str { color: var(--green); }
+    .sg-code .tk-cmt { color: var(--text-4); }
+
+    /* ============================================================
+       4. TOKEN SWATCHES
+       ============================================================ */
+    .swatch {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        background: rgba(255, 255, 255, 0.015);
+        transition: border-color var(--t);
+    }
+    .swatch:hover { border-color: var(--border-2); }
+    .swatch-chip {
+        width: 34px;
+        height: 34px;
+        flex-shrink: 0;
+        border-radius: var(--r-sm);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    }
+    .swatch-meta { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .swatch-name { font-size: 12.5px; font-weight: 500; color: var(--text); }
+    .swatch-val {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--text-3);
+        letter-spacing: 0.01em;
+    }
+
+    /* ============================================================
+       5. TYPOGRAPHY
+       ============================================================ */
+    .type-row {
+        display: flex;
+        align-items: baseline;
+        gap: 20px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .type-row:last-child { border-bottom: none; }
+    .type-label {
+        flex-shrink: 0;
+        width: 140px;
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        color: var(--text-4);
+        letter-spacing: 0.02em;
+    }
+    .t-display { font-size: 34px; font-weight: 500; letter-spacing: -0.032em; }
+    .t-h1 { font-size: 24px; font-weight: 500; letter-spacing: -0.024em; }
+    .t-h2 { font-size: 18px; font-weight: 500; letter-spacing: -0.018em; }
+    .t-h3 { font-size: 15px; font-weight: 550; letter-spacing: -0.01em; }
+    .t-body { font-size: 14px; font-weight: 400; color: var(--text); }
+    .t-body-sm { font-size: 12.5px; font-weight: 400; color: var(--text-2); }
+    .t-caption { font-size: 11.5px; font-weight: 400; color: var(--text-3); }
+    .t-label { font-size: 10.5px; font-weight: 600; letter-spacing: 0.09em; text-transform: uppercase; color: var(--text-4); }
+    .t-mono { font-family: var(--font-mono); font-size: 12px; color: var(--text-2); }
+
+    /* ============================================================
+       6. BUTTONS
+       ============================================================ */
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        background: rgba(255, 255, 255, 0.02);
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--text-2);
+        cursor: pointer;
+        transition: background var(--t), color var(--t), border-color var(--t),
+                    transform var(--t-fast), box-shadow var(--t);
+        white-space: nowrap;
+        user-select: none;
+    }
+    .btn svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.7; fill: none; }
+    .btn:hover { background: var(--hover); border-color: var(--border-2); color: var(--text); }
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+        background: var(--text);
+        color: #0A0A0B;
+        border-color: var(--text);
+    }
+    .btn-primary:hover {
+        background: #FFFFFF;
+        border-color: #FFFFFF;
+        color: #0A0A0B;
+        box-shadow: 0 6px 20px -8px rgba(255,255,255,0.25);
+    }
+
+    .btn-accent {
+        background: var(--accent-soft);
+        border-color: var(--accent-line);
+        color: var(--accent);
+    }
+    .btn-accent:hover {
+        background: rgba(217,119,87,0.18);
+        border-color: var(--accent);
+        color: var(--accent);
+    }
+
+    .btn-ghost {
+        background: transparent;
+        border-color: transparent;
+        color: var(--text-2);
+    }
+    .btn-ghost:hover { background: var(--hover); border-color: transparent; color: var(--text); }
+
+    .btn-danger {
+        background: var(--red-soft);
+        border-color: rgba(229,72,77,0.35);
+        color: var(--red);
+    }
+    .btn-danger:hover { background: rgba(229,72,77,0.18); border-color: var(--red); color: var(--red); }
+
+    .btn-sm { padding: 6px 10px; font-size: 11.5px; border-radius: var(--r-sm); }
+    .btn-lg { padding: 10px 18px; font-size: 13.5px; border-radius: var(--r-md); }
+    .btn-icon { padding: 8px; width: 32px; height: 32px; }
+    .btn-icon.btn-sm { width: 28px; height: 28px; padding: 6px; }
+    .btn-block { width: 100%; }
+
+    .btn[disabled], .btn:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+        pointer-events: none;
+    }
+
+    .btn-loading { position: relative; color: transparent !important; }
+    .btn-loading::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        width: 12px; height: 12px;
+        border-radius: 50%;
+        border: 1.5px solid currentColor;
+        border-top-color: transparent;
+        color: var(--text);
+        animation: spin 0.7s linear infinite;
+    }
+    .btn-primary.btn-loading::after { color: #0A0A0B; }
+
+    /* ============================================================
+       7. INPUTS & FORMS
+       ============================================================ */
+    .field { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+    .field-label .req { color: var(--accent); }
+    .field-hint { font-size: 11px; color: var(--text-3); }
+    .field-error { font-size: 11px; color: var(--red); display: flex; align-items: center; gap: 5px; }
+    .field-error svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+    .field-success { font-size: 11px; color: var(--green); display: flex; align-items: center; gap: 5px; }
+    .field-success svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+
+    .input, .textarea, .select {
+        width: 100%;
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        background: rgba(255, 255, 255, 0.02);
+        color: var(--text);
+        font-size: 13px;
+        line-height: 1.5;
+        outline: none;
+        transition: border-color var(--t), background var(--t), box-shadow var(--t);
+    }
+    .input::placeholder, .textarea::placeholder { color: var(--text-4); }
+    .input:hover, .textarea:hover, .select:hover { border-color: var(--border-2); }
+    .input:focus, .textarea:focus, .select:focus {
+        border-color: var(--border-3);
+        background: rgba(255, 255, 255, 0.035);
+        box-shadow: var(--sh-glow);
+    }
+    .textarea { min-height: 84px; resize: vertical; font-family: inherit; }
+
+    .input.error, .textarea.error, .select.error { border-color: rgba(229,72,77,0.55); }
+    .input.error:focus, .textarea.error:focus { box-shadow: 0 0 0 4px rgba(229,72,77,0.08); }
+
+    .input.success, .textarea.success, .select.success { border-color: rgba(127,184,148,0.55); }
+    .input.success:focus, .textarea.success:focus { box-shadow: 0 0 0 4px rgba(127,184,148,0.08); }
+
+    .input-wrap { position: relative; }
+    .input-wrap .input { padding-left: 34px; }
+    .input-wrap .input-icon {
+        position: absolute;
+        left: 11px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 15px; height: 15px;
+        stroke: var(--text-3);
+        stroke-width: 1.7;
+        fill: none;
+        pointer-events: none;
+    }
+    .input-wrap .input-suffix {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 11px;
+        color: var(--text-3);
+    }
+
+    .checkbox, .radio {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 13px;
+        color: var(--text-2);
+        cursor: pointer;
+        user-select: none;
+    }
+    .checkbox input, .radio input { position: absolute; opacity: 0; pointer-events: none; }
+    .checkbox .box, .radio .dot {
+        width: 16px; height: 16px;
+        flex-shrink: 0;
+        border: 1px solid var(--border-2);
+        border-radius: var(--r-xs);
+        background: rgba(255,255,255,0.02);
+        display: grid;
+        place-items: center;
+        transition: background var(--t), border-color var(--t);
+    }
+    .radio .dot { border-radius: 50%; }
+    .checkbox .box svg {
+        width: 10px; height: 10px;
+        stroke: #0A0A0B;
+        stroke-width: 3;
+        fill: none;
+        opacity: 0;
+        transform: scale(0.6);
+        transition: opacity var(--t), transform var(--t);
+    }
+    .radio .dot::after {
+        content: "";
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #0A0A0B;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: opacity var(--t), transform var(--t);
+    }
+    .checkbox input:checked + .box,
+    .radio input:checked + .dot {
+        background: var(--text);
+        border-color: var(--text);
+    }
+    .checkbox input:checked + .box svg { opacity: 1; transform: scale(1); }
+    .radio input:checked + .dot::after { opacity: 1; transform: scale(1); }
+    .checkbox:hover .box, .radio:hover .dot { border-color: var(--border-3); }
+
+    /* Toggle switch */
+    .switch {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text-2);
+        cursor: pointer;
+        user-select: none;
+    }
+    .switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .switch .track {
+        width: 34px; height: 20px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        border: 1px solid var(--border);
+        position: relative;
+        transition: background var(--t), border-color var(--t);
+    }
+    .switch .track::after {
+        content: "";
+        position: absolute;
+        left: 2px; top: 50%;
+        width: 14px; height: 14px;
+        border-radius: 50%;
+        background: var(--text-2);
+        transform: translateY(-50%);
+        transition: transform var(--t), background var(--t);
+    }
+    .switch input:checked + .track {
+        background: rgba(217,119,87,0.25);
+        border-color: var(--accent-line);
+    }
+    .switch input:checked + .track::after {
+        transform: translate(14px, -50%);
+        background: var(--accent);
+    }
+
+    /* ============================================================
+       8. CARDS
+       ============================================================ */
+    .card {
+        padding: 18px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        background: var(--glass);
+        backdrop-filter: blur(20px) saturate(150%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%);
+        transition: border-color var(--t), transform var(--t), box-shadow var(--t);
+    }
+    .card-hover:hover {
+        border-color: var(--border-2);
+        transform: translateY(-2px);
+        box-shadow: var(--sh-md);
+    }
+    .card-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+    .card-title { font-size: 14px; font-weight: 550; letter-spacing: -0.01em; color: var(--text); }
+    .card-sub { font-size: 12px; color: var(--text-3); margin-top: 3px; }
+    .card-body { font-size: 12.5px; line-height: 1.6; color: var(--text-2); }
+    .card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid var(--border);
+    }
+    .card-icon {
+        width: 32px; height: 32px;
+        display: grid; place-items: center;
+        border-radius: var(--r-sm);
+        background: rgba(255,255,255,0.04);
+        border: 1px solid var(--border);
+        color: var(--accent);
+    }
+    .card-icon svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 1.7; fill: none; }
+
+    /* Metric / budget card */
+    .metric-label { font-size: 11px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-4); }
+    .metric-value { font-size: 26px; font-weight: 500; letter-spacing: -0.028em; color: var(--text); margin-top: 6px; }
+    .metric-value small { font-size: 13px; color: var(--text-3); font-weight: 400; margin-left: 4px; }
+    .metric-delta { font-size: 11.5px; margin-top: 6px; display: inline-flex; align-items: center; gap: 4px; }
+    .metric-delta.up { color: var(--green); }
+    .metric-delta.down { color: var(--red); }
+
+    /* ============================================================
+       9. BADGES & CHIPS
+       ============================================================ */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 2px 8px;
+        border-radius: var(--r-full);
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        border: 1px solid var(--border);
+        color: var(--text-2);
+        background: rgba(255,255,255,0.03);
+        line-height: 1.6;
+    }
+    .badge .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+    .badge-accent { color: var(--accent); background: var(--accent-soft); border-color: var(--accent-line); }
+    .badge-green  { color: var(--green);  background: var(--green-soft);  border-color: rgba(127,184,148,0.35); }
+    .badge-red    { color: var(--red);    background: var(--red-soft);    border-color: rgba(229,72,77,0.35); }
+    .badge-yellow { color: var(--yellow); background: var(--yellow-soft); border-color: rgba(229,184,77,0.35); }
+    .badge-blue   { color: var(--blue);   background: var(--blue-soft);   border-color: rgba(107,148,217,0.35); }
+
+    .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 6px 12px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-full);
+        background: rgba(255,255,255,0.015);
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-3);
+        cursor: pointer;
+        transition: background var(--t), border-color var(--t), color var(--t);
+        user-select: none;
+    }
+    .chip svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 1.7; fill: none; opacity: 0.85; }
+    .chip:hover { background: var(--hover); border-color: var(--border-2); color: var(--text-2); }
+    .chip.active { background: rgba(255,255,255,0.06); border-color: var(--border-2); color: var(--text); }
+    .chip .close {
+        width: 13px; height: 13px;
+        display: grid; place-items: center;
+        opacity: 0.6;
+        transition: opacity var(--t);
+    }
+    .chip .close:hover { opacity: 1; }
+
+    /* ============================================================
+       10. PROGRESS & LOADING
+       ============================================================ */
+    .progress {
+        width: 100%;
+        height: 6px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        overflow: hidden;
+    }
+    .progress > span {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent);
+        transition: width var(--t-slow);
+    }
+    .progress.thin { height: 3px; }
+    .progress.thick { height: 10px; }
+
+    .progress-meta {
+        display: flex;
+        justify-content: space-between;
+        font-size: 11px;
+        color: var(--text-3);
+        margin-bottom: 6px;
+    }
+
+    .spinner {
+        width: 18px; height: 18px;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.10);
+        border-top-color: var(--accent);
+        animation: spin 0.85s linear infinite;
+    }
+    .spinner.sm { width: 12px; height: 12px; border-width: 1.5px; }
+    .spinner.lg { width: 26px; height: 26px; border-width: 2.5px; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .dots { display: inline-flex; gap: 4px; }
+    .dots span {
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: var(--text-3);
+        animation: pulse 1.2s ease-in-out infinite;
+    }
+    .dots span:nth-child(2) { animation-delay: 0.15s; }
+    .dots span:nth-child(3) { animation-delay: 0.30s; }
+    @keyframes pulse {
+        0%, 80%, 100% { opacity: 0.3; transform: scale(0.9); }
+        40% { opacity: 1; transform: scale(1); }
+    }
+
+    .skeleton {
+        background: linear-gradient(90deg,
+            rgba(255,255,255,0.04) 0%,
+            rgba(255,255,255,0.08) 50%,
+            rgba(255,255,255,0.04) 100%);
+        background-size: 200% 100%;
+        border-radius: var(--r-sm);
+        animation: shimmer 1.6s linear infinite;
+    }
+    .skeleton.line { height: 10px; }
+    .skeleton.line.sm { width: 40%; }
+    .skeleton.line.md { width: 70%; }
+    .skeleton.line.full { width: 100%; }
+    .skeleton.avatar { width: 32px; height: 32px; border-radius: 50%; }
+    .skeleton.block { height: 80px; }
+    @keyframes shimmer {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    /* ============================================================
+       11. NOTIFICATIONS / TOAST
+       ============================================================ */
+    .toast {
+        display: flex;
+        gap: 12px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        background: var(--glass-strong);
+        backdrop-filter: blur(24px) saturate(150%);
+        -webkit-backdrop-filter: blur(24px) saturate(150%);
+        box-shadow: var(--sh-md);
+        align-items: flex-start;
+    }
+    .toast-icon {
+        width: 20px; height: 20px;
+        flex-shrink: 0;
+        display: grid; place-items: center;
+        border-radius: 50%;
+        margin-top: 1px;
+    }
+    .toast-icon svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2.4; fill: none; }
+    .toast-body { flex: 1; min-width: 0; }
+    .toast-title { font-size: 13px; font-weight: 500; color: var(--text); }
+    .toast-desc { font-size: 11.5px; color: var(--text-3); margin-top: 3px; line-height: 1.5; }
+    .toast-close {
+        width: 22px; height: 22px;
+        display: grid; place-items: center;
+        border: none; background: transparent;
+        color: var(--text-4); cursor: pointer;
+        border-radius: var(--r-xs);
+        transition: background var(--t), color var(--t);
+    }
+    .toast-close:hover { background: var(--hover); color: var(--text-2); }
+    .toast-close svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; fill: none; }
+
+    .toast.success .toast-icon { background: var(--green-soft); color: var(--green); }
+    .toast.error   .toast-icon { background: var(--red-soft);   color: var(--red); }
+    .toast.warning .toast-icon { background: var(--yellow-soft); color: var(--yellow); }
+    .toast.info    .toast-icon { background: var(--blue-soft);   color: var(--blue); }
+
+    /* ============================================================
+       12. TABS
+       ============================================================ */
+    .tabs {
+        display: flex;
+        gap: 2px;
+        padding: 3px;
+        border: 1px solid var(--border);
+        border-radius: var(--r-md);
+        background: rgba(255,255,255,0.015);
+        width: max-content;
+    }
+    .tab {
+        padding: 6px 12px;
+        border: none;
+        border-radius: var(--r-sm);
+        background: transparent;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--text-3);
+        cursor: pointer;
+        transition: background var(--t), color var(--t);
+    }
+    .tab:hover { color: var(--text-2); }
+    .tab.active { background: rgba(255,255,255,0.06); color: var(--text); }
+
+    .tabs-underline {
+        display: flex;
+        gap: 20px;
+        border-bottom: 1px solid var(--border);
+    }
+    .tabs-underline .tab {
+        padding: 10px 0;
+        border-radius: 0;
+        background: transparent;
+        border-bottom: 1px solid transparent;
+        margin-bottom: -1px;
+    }
+    .tabs-underline .tab.active {
+        background: transparent;
+        color: var(--text);
+        border-bottom-color: var(--accent);
+    }
+
+    /* ============================================================
+       13. BREADCRUMB & PAGINATION
+       ============================================================ */
+    .breadcrumb {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--text-3);
+    }
+    .breadcrumb a { color: var(--text-3); }
+    .breadcrumb a:hover { color: var(--text-2); text-decoration: none; }
+    .breadcrumb .sep { color: var(--text-4); }
+    .breadcrumb .current { color: var(--text); font-weight: 500; }
+
+    .pagination { display: flex; gap: 4px; align-items: center; }
+    .page {
+        min-width: 28px; height: 28px;
+        padding: 0 8px;
+        display: grid; place-items: center;
+        border: 1px solid transparent;
+        border-radius: var(--r-sm);
+        background: transparent;
+        font-size: 12px;
+        color: var(--text-3);
+        cursor: pointer;
+        transition: background var(--t), color var(--t), border-color var(--t);
+    }
+    .page:hover { background: var(--hover); color: var(--text); }
+    .page.active { background: rgba(255,255,255,0.06); border-color: var(--border-2); color: var(--text); }
+    .page svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+    /* ============================================================
+       14. TABLE
+       ============================================================ */
+    .table-wrap {
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        overflow: hidden;
+        background: var(--glass);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+    }
+    table.tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.tbl th {
+        text-align: left;
+        padding: 10px 14px;
+        font-size: 10.5px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--text-4);
+        background: rgba(255,255,255,0.02);
+        border-bottom: 1px solid var(--border);
+    }
+    table.tbl td {
+        padding: 11px 14px;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-2);
+        vertical-align: middle;
+    }
+    table.tbl tr:last-child td { border-bottom: none; }
+    table.tbl tbody tr { transition: background var(--t); }
+    table.tbl tbody tr:hover { background: rgba(255,255,255,0.02); }
+    table.tbl td .strong { color: var(--text); font-weight: 500; }
+
+    /* ============================================================
+       15. AVATARS
+       ============================================================ */
+    .avatar {
+        width: 32px; height: 32px;
+        border-radius: 50%;
+        display: grid; place-items: center;
+        font-size: 12px;
+        font-weight: 600;
+        color: #F5E6DF;
+        background: linear-gradient(145deg, rgba(217,119,87,0.85), rgba(217,119,87,0.35));
+        box-shadow: inset 0 0 0 1px rgba(255,255,255,0.12);
+        flex-shrink: 0;
+    }
+    .avatar.sm { width: 24px; height: 24px; font-size: 10px; }
+    .avatar.lg { width: 44px; height: 44px; font-size: 15px; }
+    .avatar.green  { background: linear-gradient(145deg, rgba(127,184,148,0.85), rgba(127,184,148,0.3)); color: #0E1F16; }
+    .avatar.blue   { background: linear-gradient(145deg, rgba(107,148,217,0.85), rgba(107,148,217,0.3)); color: #0A1526; }
+    .avatar.yellow { background: linear-gradient(145deg, rgba(229,184,77,0.9), rgba(229,184,77,0.35)); color: #241A05; }
+
+    .avatar-stack { display: flex; }
+    .avatar-stack .avatar {
+        margin-left: -8px;
+        box-shadow: 0 0 0 2px var(--bg), inset 0 0 0 1px rgba(255,255,255,0.12);
+    }
+    .avatar-stack .avatar:first-child { margin-left: 0; }
+
+    .avatar-status { position: relative; display: inline-block; }
+    .avatar-status::after {
+        content: "";
+        position: absolute;
+        right: -1px; bottom: -1px;
+        width: 9px; height: 9px;
+        border-radius: 50%;
+        background: var(--green);
+        box-shadow: 0 0 0 2px var(--bg);
+    }
+
+    /* ============================================================
+       16. FEED
+       ============================================================ */
+    .feed { display: flex; flex-direction: column; }
+    .feed-item {
+        display: flex;
+        gap: 12px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    .feed-item:last-child { border-bottom: none; }
+    .feed-body { flex: 1; min-width: 0; }
+    .feed-head { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; }
+    .feed-head strong { font-size: 13px; font-weight: 550; color: var(--text); }
+    .feed-head span { font-size: 11.5px; color: var(--text-4); }
+    .feed-text { font-size: 12.5px; color: var(--text-2); line-height: 1.55; margin-top: 4px; }
+    .feed-actions { display: flex; gap: 14px; margin-top: 8px; font-size: 11.5px; color: var(--text-3); }
+    .feed-actions button {
+        display: inline-flex; align-items: center; gap: 5px;
+        background: transparent; border: none; color: inherit; cursor: pointer;
+        transition: color var(--t);
+    }
+    .feed-actions button:hover { color: var(--text); }
+    .feed-actions svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 1.7; fill: none; }
+
+    /* ============================================================
+       17. MODAL / DROPDOWN / TOOLTIP
+       ============================================================ */
+    .modal-demo {
+        padding: 22px;
+        border: 1px solid var(--border-2);
+        border-radius: var(--r-lg);
+        background: var(--glass-strong);
+        backdrop-filter: blur(28px) saturate(150%);
+        -webkit-backdrop-filter: blur(28px) saturate(150%);
+        box-shadow: var(--sh-lg);
+        max-width: 420px;
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .modal-title { font-size: 15px; font-weight: 550; letter-spacing: -0.01em; }
+    .modal-desc { font-size: 12.5px; color: var(--text-3); line-height: 1.55; margin-bottom: 18px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
+
+    .dropdown-demo {
+        width: 260px;
+        padding: 6px;
+        border: 1px solid var(--border-2);
+        border-radius: var(--r-lg);
+        background: var(--glass-strong);
+        backdrop-filter: blur(28px) saturate(150%);
+        -webkit-backdrop-filter: blur(28px) saturate(150%);
+        box-shadow: var(--sh-lg);
+    }
+    .dropdown-demo .item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: var(--r-sm);
+        font-size: 12.5px;
+        color: var(--text-2);
+        cursor: pointer;
+        transition: background var(--t), color var(--t);
+    }
+    .dropdown-demo .item:hover { background: var(--hover); color: var(--text); }
+    .dropdown-demo .item svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 1.7; fill: none; opacity: 0.7; }
+    .dropdown-demo .divider { height: 1px; background: var(--border); margin: 6px 4px; }
+
+    .tooltip-demo {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: var(--r-sm);
+        background: rgba(0,0,0,0.9);
+        border: 1px solid var(--border-2);
+        font-size: 11.5px;
+        color: var(--text);
+        box-shadow: var(--sh-md);
+        position: relative;
+    }
+    .tooltip-demo::after {
+        content: "";
+        position: absolute;
+        left: 50%; bottom: -4px;
+        width: 7px; height: 7px;
+        background: rgba(0,0,0,0.9);
+        border-right: 1px solid var(--border-2);
+        border-bottom: 1px solid var(--border-2);
+        transform: translateX(-50%) rotate(45deg);
+    }
+
+    /* ============================================================
+       18. CHART (SVG / sparkline / bars)
+       ============================================================ */
+    .spark { width: 100%; height: 60px; display: block; }
+    .spark path.line { fill: none; stroke: var(--accent); stroke-width: 1.5; }
+    .spark path.area { fill: url(#sparkGrad); }
+
+    .bars { display: flex; align-items: flex-end; gap: 6px; height: 90px; }
+    .bars > div {
+        flex: 1;
+        border-radius: 4px 4px 2px 2px;
+        background: linear-gradient(180deg, var(--accent) 0%, rgba(217,119,87,0.35) 100%);
+        animation: grow 700ms var(--ease) both;
+    }
+    @keyframes grow {
+        from { transform: scaleY(0); transform-origin: bottom; }
+        to   { transform: scaleY(1); transform-origin: bottom; }
+    }
+
+    .donut { position: relative; width: 120px; height: 120px; }
+    .donut svg { transform: rotate(-90deg); }
+    .donut .center {
+        position: absolute; inset: 0;
+        display: grid; place-items: center;
+        flex-direction: column;
+        font-size: 20px; font-weight: 500; letter-spacing: -0.02em;
+    }
+    .donut .center small { font-size: 10px; color: var(--text-3); font-weight: 400; letter-spacing: 0.06em; text-transform: uppercase; margin-top: 2px; }
+
+    /* ============================================================
+       19. EMPTY & ERROR STATES
+       ============================================================ */
+    .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        text-align: center;
+        border: 1px dashed var(--border-2);
+        border-radius: var(--r-lg);
+        background: rgba(255,255,255,0.01);
+    }
+    .empty-icon {
+        width: 40px; height: 40px;
+        display: grid; place-items: center;
+        border-radius: var(--r-md);
+        background: rgba(255,255,255,0.03);
+        border: 1px solid var(--border);
+        margin-bottom: 14px;
+        color: var(--text-3);
+    }
+    .empty-icon svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+    .empty-title { font-size: 13.5px; font-weight: 550; color: var(--text); }
+    .empty-desc { font-size: 12px; color: var(--text-3); margin-top: 4px; max-width: 320px; line-height: 1.55; }
+    .empty .btn { margin-top: 16px; }
+    .empty.error .empty-icon { color: var(--red); background: var(--red-soft); border-color: rgba(229,72,77,0.3); }
+
+    /* ============================================================
+       20. WINDOW / PANEL
+       ============================================================ */
+    .win {
+        border: 1px solid var(--border);
+        border-radius: var(--r-lg);
+        background: var(--glass);
+        backdrop-filter: blur(20px) saturate(150%);
+        -webkit-backdrop-filter: blur(20px) saturate(150%);
+        overflow: hidden;
+    }
+    .win-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(0,0,0,0.2);
+    }
+    .win-dots { display: flex; gap: 6px; }
+    .win-dots span {
+        width: 9px; height: 9px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.12);
+    }
+    .win-title { flex: 1; font-size: 11.5px; color: var(--text-3); font-family: var(--font-mono); }
+    .win-body { padding: 16px; font-size: 12.5px; color: var(--text-2); line-height: 1.6; }
+
+    /* ============================================================
+       21. ANIMAZIONI DI SUCCESSO
+       ============================================================ */
+    .success-ring {
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        border: 2px solid var(--green);
+        display: grid; place-items: center;
+        animation: pop 500ms var(--ease) both;
+        position: relative;
+    }
+    .success-ring::after {
+        content: "";
+        position: absolute;
+        inset: -4px;
+        border-radius: 50%;
+        border: 2px solid var(--green);
+        opacity: 0;
+        animation: ring 900ms var(--ease) forwards;
+    }
+    .success-ring svg {
+        width: 20px; height: 20px;
+        stroke: var(--green);
+        stroke-width: 2.6;
+        fill: none;
+        stroke-dasharray: 30;
+        stroke-dashoffset: 30;
+        animation: draw 500ms var(--ease) 200ms forwards;
+    }
+    @keyframes pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes ring { 0% { opacity: 0.9; transform: scale(0.9); } 100% { opacity: 0; transform: scale(1.35); } }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+
+    /* ============================================================
+       22. FEEDBACK BAR (inline)
+       ============================================================ */
+    .inline-feedback {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 14px;
+        border-radius: var(--r-md);
+        border: 1px solid var(--border);
+        font-size: 12.5px;
+    }
+    .inline-feedback.success { color: var(--green); background: var(--green-soft); border-color: rgba(127,184,148,0.3); }
+    .inline-feedback.error   { color: var(--red);   background: var(--red-soft);   border-color: rgba(229,72,77,0.3); }
+    .inline-feedback.warning { color: var(--yellow); background: var(--yellow-soft); border-color: rgba(229,184,77,0.3); }
+    .inline-feedback.info    { color: var(--blue);   background: var(--blue-soft);   border-color: rgba(107,148,217,0.3); }
+    .inline-feedback svg { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; fill: none; flex-shrink: 0; }
+
+    /* ============================================================
+       23. RESPONSIVE
+       ============================================================ */
+    @media (max-width: 1000px) {
+        .sg-container { padding: 32px 24px 80px; }
+        .sg-grid.cols-3, .sg-grid.cols-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .sg-sidebar { display: none; }
+    }
+    @media (max-width: 640px) {
+        .sg-grid.cols-2, .sg-grid.cols-3, .sg-grid.cols-4 { grid-template-columns: 1fr; }
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+            scroll-behavior: auto !important;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <aside class="sg-sidebar">
+        <div class="sg-brand">
+            <div class="sg-brand-mark">T</div>
+            <div class="sg-brand-text">
+                <strong>TRAE</strong>
+                <span>STYLEGUIDE v1.0</span>
+            </div>
+        </div>
+
+        <nav class="sg-nav">
+            <div class="sg-nav-group">
+                <div class="sg-nav-title">Fondamenta</div>
+                <a href="#tokens">01 · Design Tokens</a>
+                <a href="#typography">02 · Tipografia</a>
+                <a href="#spacing">03 · Spacing & Radii</a>
+                <a href="#motion">04 · Motion</a>
+            </div>
+            <div class="sg-nav-group">
+                <div class="sg-nav-title">Controlli</div>
+                <a href="#buttons">05 · Buttons</a>
+                <a href="#forms">06 · Form & Input</a>
+                <a href="#choices">07 · Check, Radio, Switch</a>
+            </div>
+            <div class="sg-nav-group">
+                <div class="sg-nav-title">Dati & Contenuti</div>
+                <a href="#cards">08 · Cards & Metric</a>
+                <a href="#badges">09 · Badge & Chip</a>
+                <a href="#table">10 · Tabelle</a>
+                <a href="#feed">11 · Feed</a>
+                <a href="#avatars">12 · Avatars</a>
+            </div>
+            <div class="sg-nav-group">
+                <div class="sg-nav-title">Stato & Feedback</div>
+                <a href="#progress">13 · Progress</a>
+                <a href="#loading">14 · Loading & Skeleton</a>
+                <a href="#toast">15 · Notifiche</a>
+                <a href="#states">16 · Empty & Error</a>
+                <a href="#success">17 · Successo</a>
+            </div>
+            <div class="sg-nav-group">
+                <div class="sg-nav-title">Navigazione</div>
+                <a href="#tabs">18 · Tabs</a>
+                <a href="#breadcrumb">19 · Breadcrumb & Pagination</a>
+            </div>
+            <div class="sg-nav-group">
+                <div class="sg-nav-title">Overlay</div>
+                <a href="#modal">20 · Modal</a>
+                <a href="#dropdown">21 · Dropdown & Tooltip</a>
+                <a href="#window">22 · Window & Panel</a>
+            </div>
+            <div class="sg-nav-group">
+                <div class="sg-nav-title">Visualizzazione</div>
+                <a href="#charts">23 · Grafici</a>
+            </div>
+        </nav>
+    </aside>
+
+    <!-- ============================================================
+         MAIN
+         ============================================================ -->
+    <main class="sg-main">
+        <div class="sg-container">
+
+            <!-- HERO -->
+            <header class="sg-hero">
+                <h1>TRAE Styleguide</h1>
+                <p>
+                    Sistema visivo unificato per interfacce soft, glass e professionali.
+                    Ogni componente è costruito sui design tokens definiti in questa guida:
+                    palette desaturata con accento terracotta, tipografia Inter, motion con
+                    easing <em>custom</em>, glassmorphism discreto.
+                </p>
+                <div class="sg-meta">
+                    <span>v1.0</span>
+                    <span>Dark first</span>
+                    <span>Glass · Soft · Codex-like</span>
+                </div>
+            </header>
+
+            <!-- ============================================================
+                 01 · DESIGN TOKENS
+                 ============================================================ -->
+            <section class="sg-section" id="tokens">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">01</span>
+                    <h2>Design Tokens</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Fondamenta cromatiche dell'interfaccia. Palette volutamente contenuta:
+                    tre livelli di testo, due bordi, superfici glass e accenti semantici
+                    usati con parsimonia.
+                </p>
+
+                <div class="sg-sub">Superfici</div>
+                <div class="sg-grid cols-4">
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#0A0A0B"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">bg</span>
+                            <span class="swatch-val">#0A0A0B</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#0F0F12"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">bg-elev</span>
+                            <span class="swatch-val">#0F0F12</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:rgba(20,20,23,0.55); backdrop-filter:blur(8px);"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">glass</span>
+                            <span class="swatch-val">rgba(20,20,23,.55)</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:rgba(20,20,23,0.82); backdrop-filter:blur(8px);"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">glass-strong</span>
+                            <span class="swatch-val">rgba(20,20,23,.82)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sg-sub">Bordi</div>
+                <div class="sg-grid cols-3">
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:transparent; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.07)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">border</span>
+                            <span class="swatch-val">white 7%</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:transparent; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.13)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">border-2</span>
+                            <span class="swatch-val">white 13%</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:transparent; box-shadow:inset 0 0 0 1px rgba(255,255,255,0.20)"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">border-3</span>
+                            <span class="swatch-val">white 20%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sg-sub">Testo</div>
+                <div class="sg-grid cols-4">
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#EDEDEF"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">text</span>
+                            <span class="swatch-val">#EDEDEF</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#98989F"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">text-2</span>
+                            <span class="swatch-val">#98989F</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#66666E"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">text-3</span>
+                            <span class="swatch-val">#66666E</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#44444A"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">text-4</span>
+                            <span class="swatch-val">#44444A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sg-sub">Accenti & Semantici</div>
+                <div class="sg-grid cols-4">
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#D97757"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">accent</span>
+                            <span class="swatch-val">#D97757</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#7FB894"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">green / success</span>
+                            <span class="swatch-val">#7FB894</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#E5B84D"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">yellow / warning</span>
+                            <span class="swatch-val">#E5B84D</span>
+                        </div>
+                    </div>
+                    <div class="swatch">
+                        <div class="swatch-chip" style="background:#E5484D"></div>
+                        <div class="swatch-meta">
+                            <span class="swatch-name">red / danger</span>
+                            <span class="swatch-val">#E5484D</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 02 · TIPOGRAFIA
+                 ============================================================ -->
+            <section class="sg-section" id="typography">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">02</span>
+                    <h2>Tipografia</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Inter come font primario, JetBrains Mono per il codice. Scale fluide,
+                    letter-spacing negativo sui titoli per un feeling editoriale e compatto.
+                </p>
+
+                <div class="panel">
+                    <div class="type-row"><span class="type-label">display / 34 / 500</span><span class="t-display">Build with TRAE</span></div>
+                    <div class="type-row"><span class="type-label">h1 / 24 / 500</span><span class="t-h1">Workspace personale</span></div>
+                    <div class="type-row"><span class="type-label">h2 / 18 / 500</span><span class="t-h2">Panoramica progetto</span></div>
+                    <div class="type-row"><span class="type-label">h3 / 15 / 550</span><span class="t-h3">Impostazioni avanzate</span></div>
+                    <div class="type-row"><span class="type-label">body / 14 / 400</span><span class="t-body">Il testo principale dell'interfaccia. Leggibile, calmo, mai invadente.</span></div>
+                    <div class="type-row"><span class="type-label">body-sm / 12.5 / 400</span><span class="t-body-sm">Testo secondario per descrizioni, metadati e paragrafi di supporto.</span></div>
+                    <div class="type-row"><span class="type-label">caption / 11.5</span><span class="t-caption">Nota a piè di componente · timestamp · hint</span></div>
+                    <div class="type-row"><span class="type-label">label / 10.5 / 600</span><span class="t-label">Sezione · Categoria · Etichetta</span></div>
+                    <div class="type-row"><span class="type-label">mono / 12</span><span class="t-mono">const trae = new Workspace();</span></div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 03 · SPACING & RADII
+                 ============================================================ -->
+            <section class="sg-section" id="spacing">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">03</span>
+                    <h2>Spacing & Radii</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Griglia a 4px. Raggi progressivi dal micro al macro. Ogni componente
+                    sceglie il raggio in base alla propria densità e al contesto d'uso.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Spacing scale</div>
+                        <div class="panel-stack">
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:4px; height:16px; background:var(--accent); border-radius:2px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">4px · --s-1</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:8px; height:16px; background:var(--accent); border-radius:2px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">8px · --s-2</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:12px; height:16px; background:var(--accent); border-radius:2px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">12px · --s-3</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:16px; height:16px; background:var(--accent); border-radius:2px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">16px · --s-4</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:24px; height:16px; background:var(--accent); border-radius:2px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">24px · --s-6</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:32px; height:16px; background:var(--accent); border-radius:2px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">32px · --s-8</span>
+                            </div>
+                            <div style="display:flex; align-items:center; gap:12px;">
+                                <div style="width:48px; height:16px; background:var(--accent); border-radius:2px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">48px · --s-12</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Radii</div>
+                        <div class="sg-grid cols-3">
+                            <div class="panel-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                                <div style="width:56px; height:40px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:6px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">6 · xs</span>
+                            </div>
+                            <div class="panel-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                                <div style="width:56px; height:40px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:8px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">8 · sm</span>
+                            </div>
+                            <div class="panel-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                                <div style="width:56px; height:40px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:10px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">10 · md</span>
+                            </div>
+                            <div class="panel-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                                <div style="width:56px; height:40px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:14px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">14 · lg</span>
+                            </div>
+                            <div class="panel-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                                <div style="width:56px; height:40px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:18px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">18 · xl</span>
+                            </div>
+                            <div class="panel-row" style="flex-direction:column; align-items:flex-start; gap:6px;">
+                                <div style="width:56px; height:40px; background:rgba(255,255,255,0.06); border:1px solid var(--border); border-radius:999px;"></div>
+                                <span class="t-caption" style="font-family:var(--font-mono);">999 · full</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 04 · MOTION
+                 ============================================================ -->
+            <section class="sg-section" id="motion">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">04</span>
+                    <h2>Motion</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Movimento discreto, mai teatrale. Easing custom <em>cubic-bezier(0.22, 1, 0.36, 1)</em>
+                    su tutte le transizioni, tre velocità in base al contesto.
+                </p>
+
+                <div class="panel">
+                    <div class="panel-row">
+                        <div class="chip" style="pointer-events:none;">140ms · fast</div>
+                        <div class="chip" style="pointer-events:none;">220ms · base</div>
+                        <div class="chip" style="pointer-events:none;">380ms · slow</div>
+                    </div>
+                    <div class="panel-stack" style="margin-top:18px;">
+                        <div class="inline-feedback info">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+                            Hover e cambi colore: 140–220ms
+                        </div>
+                        <div class="inline-feedback info">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+                            Modali, dropdown, espansioni: 220–380ms
+                        </div>
+                        <div class="inline-feedback info">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+                            Animazioni decorative (success, skeleton): 500–900ms
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 05 · BUTTONS
+                 ============================================================ -->
+            <section class="sg-section" id="buttons">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">05</span>
+                    <h2>Buttons</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Sei varianti: primary, default, ghost, accent, danger, icon. Tre taglie.
+                    Stato di caricamento integrato, disabilitazione a bassa opacità.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Varianti</div>
+                        <div class="panel-row">
+                            <button class="btn btn-primary">Primary</button>
+                            <button class="btn">Default</button>
+                            <button class="btn btn-ghost">Ghost</button>
+                            <button class="btn btn-accent">Accent</button>
+                            <button class="btn btn-danger">Danger</button>
+                        </div>
+                        <div class="panel-row" style="margin-top:14px;">
+                            <button class="btn btn-icon" title="Add">
+                                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            </button>
+                            <button class="btn btn-icon" title="Settings">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Taglie & stati</div>
+                        <div class="panel-row">
+                            <button class="btn btn-sm btn-primary">Small</button>
+                            <button class="btn btn-primary">Default</button>
+                            <button class="btn btn-lg btn-primary">Large</button>
+                        </div>
+                        <div class="panel-row" style="margin-top:14px;">
+                            <button class="btn btn-primary btn-loading">Loading</button>
+                            <button class="btn" disabled>Disabled</button>
+                            <button class="btn btn-primary" disabled>Disabled</button>
+                        </div>
+                        <div class="panel-row" style="margin-top:14px;">
+                            <button class="btn btn-accent">
+                                <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                Con icona
+                            </button>
+                            <button class="btn btn-block">Block button</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 06 · FORM & INPUT
+                 ============================================================ -->
+            <section class="sg-section" id="forms">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">06</span>
+                    <h2>Form & Input</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Campi con label, hint, stati di errore e successo. Icona leading opzionale
+                    e suffisso testuale. Focus con glow discreto.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel panel-stack">
+                        <div class="field">
+                            <label class="field-label">Email <span class="req">*</span></label>
+                            <input class="input" type="email" placeholder="nome@dominio.com">
+                            <span class="field-hint">Riceverai una conferma via email.</span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label">Email</label>
+                            <input class="input error" type="email" value="nome@invalid">
+                            <span class="field-error">
+                                <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+                                Formato email non valido
+                            </span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label">Username</label>
+                            <input class="input success" type="text" value="emanuele627">
+                            <span class="field-success">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                                Disponibile
+                            </span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label">Ricerca</label>
+                            <div class="input-wrap">
+                                <svg class="input-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <input class="input" placeholder="Cerca un componente…">
+                                <span class="input-suffix">⌘K</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-stack">
+                        <div class="field">
+                            <label class="field-label">Messaggio</label>
+                            <textarea class="textarea" placeholder="Scrivi qui il tuo messaggio…"></textarea>
+                            <span class="field-hint">Massimo 500 caratteri. Shift+Invio per andare a capo.</span>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label">Ruolo</label>
+                            <select class="select">
+                                <option>Amministratore</option>
+                                <option>Editor</option>
+                                <option>Viewer</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label class="field-label">API key</label>
+                            <div class="input-wrap">
+                                <input class="input" type="text" value="sk-••••••••••••••••••••" readonly>
+                                <span class="input-suffix" style="cursor:pointer;">Copia</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 07 · CHECK · RADIO · SWITCH
+                 ============================================================ -->
+            <section class="sg-section" id="choices">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">07</span>
+                    <h2>Checkbox · Radio · Switch</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Controlli binari con animazioni fluide. Riempimento netto su selezione,
+                    hover che ammorbidisce il bordo.
+                </p>
+
+                <div class="sg-grid cols-3">
+                    <div class="panel panel-stack">
+                        <div class="panel-title">Checkbox</div>
+                        <label class="checkbox">
+                            <input type="checkbox" checked>
+                            <span class="box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            Abilita notifiche
+                        </label>
+                        <label class="checkbox">
+                            <input type="checkbox">
+                            <span class="box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            Modalità anonima
+                        </label>
+                        <label class="checkbox" style="opacity:0.5; pointer-events:none;">
+                            <input type="checkbox" disabled>
+                            <span class="box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                            Disabilitato
+                        </label>
+                    </div>
+
+                    <div class="panel panel-stack">
+                        <div class="panel-title">Radio</div>
+                        <label class="radio">
+                            <input type="radio" name="r1" checked>
+                            <span class="dot"></span>
+                            Tutti gli aggiornamenti
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="r1">
+                            <span class="dot"></span>
+                            Solo menzioni
+                        </label>
+                        <label class="radio">
+                            <input type="radio" name="r1">
+                            <span class="dot"></span>
+                            Nessuno
+                        </label>
+                    </div>
+
+                    <div class="panel panel-stack">
+                        <div class="panel-title">Switch</div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="track"></span>
+                            Sync automatico
+                        </label>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="track"></span>
+                            Modalità compatta
+                        </label>
+                        <label class="switch" style="opacity:0.5; pointer-events:none;">
+                            <input type="checkbox" disabled>
+                            <span class="track"></span>
+                            Disabilitato
+                        </label>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 08 · CARDS & METRIC
+                 ============================================================ -->
+            <section class="sg-section" id="cards">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">08</span>
+                    <h2>Cards & Metric</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Card generiche, card interattive con hover, card metrica per KPI
+                    e card budget con progressivo.
+                </p>
+
+                <div class="sg-sub">Card standard</div>
+                <div class="sg-grid cols-3">
+                    <div class="card">
+                        <div class="card-head">
+                            <div>
+                                <div class="card-title">Deploy produzione</div>
+                                <div class="card-sub">Aggiornato 5 minuti fa</div>
+                            </div>
+                            <div class="badge badge-green"><span class="dot"></span>Attivo</div>
+                        </div>
+                        <div class="card-body">
+                            Il servizio è stabile. Ultimo deploy completato senza errori.
+                        </div>
+                        <div class="card-foot">
+                            <span class="t-caption">v2.4.1</span>
+                            <button class="btn btn-sm">Dettagli</button>
+                        </div>
+                    </div>
+
+                    <div class="card card-hover">
+                        <div class="card-icon">
+                            <svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        </div>
+                        <div class="card-title" style="margin-top:14px;">Automazioni</div>
+                        <div class="card-sub" style="margin-top:4px;">12 attive · 2 in pausa</div>
+                        <div class="card-body" style="margin-top:10px;">
+                            Gestisci le tue automazioni e i trigger associati.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="metric-label">Utilizzo mensile</div>
+                        <div class="metric-value">€ 248<small>/ € 400</small></div>
+                        <div class="metric-delta up">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 15 12 9 18 15"/></svg>
+                            12% sotto budget
+                        </div>
+                        <div class="progress" style="margin-top:16px;">
+                            <span style="width:62%"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 09 · BADGE & CHIP
+                 ============================================================ -->
+            <section class="sg-section" id="badges">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">09</span>
+                    <h2>Badge & Chip</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Badge semantici con dot, chip interattivi con stato attivo,
+                    chip con azione di chiusura.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Badge</div>
+                        <div class="panel-row">
+                            <span class="badge">Neutro</span>
+                            <span class="badge badge-accent">Accent</span>
+                            <span class="badge badge-green"><span class="dot"></span>Online</span>
+                            <span class="badge badge-yellow"><span class="dot"></span>In attesa</span>
+                            <span class="badge badge-red"><span class="dot"></span>Errore</span>
+                            <span class="badge badge-blue"><span class="dot"></span>Info</span>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Chip</div>
+                        <div class="panel-row">
+                            <div class="chip active">
+                                <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                                Game Creativity
+                            </div>
+                            <div class="chip">
+                                <svg viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                                Automation
+                            </div>
+                            <div class="chip">
+                                Design
+                                <span class="close">
+                                    <svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" fill="none" width="11" height="11"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 10 · TABELLE
+                 ============================================================ -->
+            <section class="sg-section" id="table">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">10</span>
+                    <h2>Tabelle & Dati</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Tabella con header uppercase compatto, righe con hover discreto,
+                    celle con contenuto misto (testo, badge, avatar).
+                </p>
+
+                <div class="table-wrap">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Utente</th>
+                                <th>Progetto</th>
+                                <th>Ruolo</th>
+                                <th>Stato</th>
+                                <th style="text-align:right;">Ultimo accesso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div class="avatar sm">E</div>
+                                        <span class="strong">Emanuele627</span>
+                                    </div>
+                                </td>
+                                <td>ferraro3d-app</td>
+                                <td>Owner</td>
+                                <td><span class="badge badge-green"><span class="dot"></span>Attivo</span></td>
+                                <td style="text-align:right;">2 min fa</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div class="avatar sm blue">M</div>
+                                        <span class="strong">Marco_R</span>
+                                    </div>
+                                </td>
+                                <td>pdf-to-rag</td>
+                                <td>Editor</td>
+                                <td><span class="badge badge-blue"><span class="dot"></span>Online</span></td>
+                                <td style="text-align:right;">1 h fa</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div class="avatar sm yellow">S</div>
+                                        <span class="strong">Sara_B</span>
+                                    </div>
+                                </td>
+                                <td>netv2</td>
+                                <td>Viewer</td>
+                                <td><span class="badge badge-yellow"><span class="dot"></span>In pausa</span></td>
+                                <td style="text-align:right;">3 g fa</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 11 · FEED
+                 ============================================================ -->
+            <section class="sg-section" id="feed">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">11</span>
+                    <h2>Feed</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Lista attività con avatar, autore, testo, azioni inline.
+                    Separatori sottili, alta densità.
+                </p>
+
+                <div class="panel">
+                    <div class="feed">
+                        <div class="feed-item">
+                            <div class="avatar">E</div>
+                            <div class="feed-body">
+                                <div class="feed-head">
+                                    <strong>Emanuele627</strong>
+                                    <span>· ha committato su</span>
+                                    <a href="#" style="font-size:12px;">ferraro3d-app</a>
+                                </div>
+                                <div class="feed-text">Fix CSRF token refresh after login flow refactor.</div>
+                                <div class="feed-actions">
+                                    <button>
+                                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                        12
+                                    </button>
+                                    <button>
+                                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                        4
+                                    </button>
+                                    <button>2 h fa</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="feed-item">
+                            <div class="avatar green">M</div>
+                            <div class="feed-body">
+                                <div class="feed-head">
+                                    <strong>Marco_R</strong>
+                                    <span>· ha creato una nuova issue</span>
+                                </div>
+                                <div class="feed-text">Ottimizzare chunking nella pipeline RAG per documenti > 200 pagine.</div>
+                                <div class="feed-actions">
+                                    <button>
+                                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                        8
+                                    </button>
+                                    <button>5 h fa</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 12 · AVATARS
+                 ============================================================ -->
+            <section class="sg-section" id="avatars">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">12</span>
+                    <h2>Avatars</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Avatar con gradiente, taglie multiple, colori semantici, stack
+                    sovrapposto e indicatore di stato.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Taglie & colori</div>
+                        <div class="panel-row">
+                            <div class="avatar sm">A</div>
+                            <div class="avatar">B</div>
+                            <div class="avatar lg">C</div>
+                            <div class="avatar green">D</div>
+                            <div class="avatar blue">E</div>
+                            <div class="avatar yellow">F</div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Stack & status</div>
+                        <div class="panel-row" style="gap:24px;">
+                            <div class="avatar-stack">
+                                <div class="avatar sm">A</div>
+                                <div class="avatar sm green">B</div>
+                                <div class="avatar sm blue">C</div>
+                                <div class="avatar sm yellow">+4</div>
+                            </div>
+                            <div class="avatar-status">
+                                <div class="avatar">E</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 13 · PROGRESS
+                 ============================================================ -->
+            <section class="sg-section" id="progress">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">13</span>
+                    <h2>Progress</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Tre spessori. Con meta-label sopra, animazione fluida su width.
+                </p>
+
+                <div class="panel panel-stack">
+                    <div>
+                        <div class="progress-meta">
+                            <span>Upload file</span>
+                            <span>68%</span>
+                        </div>
+                        <div class="progress"><span style="width:68%"></span></div>
+                    </div>
+                    <div>
+                        <div class="progress-meta">
+                            <span>Sincronizzazione</span>
+                            <span>32%</span>
+                        </div>
+                        <div class="progress thin"><span style="width:32%"></span></div>
+                    </div>
+                    <div>
+                        <div class="progress-meta">
+                            <span>Elaborazione batch</span>
+                            <span>91%</span>
+                        </div>
+                        <div class="progress thick"><span style="width:91%"></span></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 14 · LOADING & SKELETON
+                 ============================================================ -->
+            <section class="sg-section" id="loading">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">14</span>
+                    <h2>Loading & Skeleton</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Spinner a tre taglie, dots pulsanti, skeleton shimmer per placeholder
+                    di contenuto in caricamento.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Spinner & dots</div>
+                        <div class="panel-row">
+                            <div class="spinner sm"></div>
+                            <div class="spinner"></div>
+                            <div class="spinner lg"></div>
+                            <div class="dots" style="margin-left:12px;">
+                                <span></span><span></span><span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Skeleton</div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <div class="skeleton avatar"></div>
+                            <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
+                                <div class="skeleton line md"></div>
+                                <div class="skeleton line full"></div>
+                                <div class="skeleton line sm"></div>
+                            </div>
+                        </div>
+                        <div class="skeleton block" style="margin-top:14px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 15 · NOTIFICHE
+                 ============================================================ -->
+            <section class="sg-section" id="toast">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">15</span>
+                    <h2>Notifiche</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Toast semantici (success, error, warning, info) con icona a pallino colorato,
+                    titolo, descrizione e close opzionale.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="toast success">
+                        <div class="toast-icon">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        </div>
+                        <div class="toast-body">
+                            <div class="toast-title">Deploy completato</div>
+                            <div class="toast-desc">La nuova versione è online su produzione.</div>
+                        </div>
+                        <button class="toast-close">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="toast error">
+                        <div class="toast-icon">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </div>
+                        <div class="toast-body">
+                            <div class="toast-title">Connessione fallita</div>
+                            <div class="toast-desc">Impossibile raggiungere il server. Riprova.</div>
+                        </div>
+                        <button class="toast-close">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="toast warning">
+                        <div class="toast-icon">
+                            <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                        </div>
+                        <div class="toast-body">
+                            <div class="toast-title">Spazio quasi esaurito</div>
+                            <div class="toast-desc">Hai utilizzato il 92% del piano gratuito.</div>
+                        </div>
+                        <button class="toast-close">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="toast info">
+                        <div class="toast-icon">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+                        </div>
+                        <div class="toast-body">
+                            <div class="toast-title">Nuova versione disponibile</div>
+                            <div class="toast-desc">Aggiorna TRAE per ottenere le ultime feature.</div>
+                        </div>
+                        <button class="toast-close">
+                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 16 · EMPTY & ERROR STATES
+                 ============================================================ -->
+            <section class="sg-section" id="states">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">16</span>
+                    <h2>Empty & Error States</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Stati vuoti e di errore coerenti. Icona, titolo, descrizione e azione
+                    primaria opzionale.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="empty">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                        </div>
+                        <div class="empty-title">Nessun progetto</div>
+                        <div class="empty-desc">Inizia creando il tuo primo progetto per vedere qui i contenuti.</div>
+                        <button class="btn btn-primary">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Nuovo progetto
+                        </button>
+                    </div>
+
+                    <div class="empty error">
+                        <div class="empty-icon">
+                            <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                        </div>
+                        <div class="empty-title">Qualcosa è andato storto</div>
+                        <div class="empty-desc">Non è stato possibile caricare i dati. Riprova tra qualche istante.</div>
+                        <button class="btn">Riprova</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 17 · ANIMAZIONI DI SUCCESSO
+                 ============================================================ -->
+            <section class="sg-section" id="success">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">17</span>
+                    <h2>Successo</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Feedback visivo di conferma: ring che si espande, checkmark che si disegna,
+                    barre inline per messaggi contestuali.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Success ring</div>
+                        <div style="display:flex; align-items:center; gap:20px;">
+                            <div class="success-ring">
+                                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <div>
+                                <div class="card-title">Operazione completata</div>
+                                <div class="card-sub" style="margin-top:4px;">Le modifiche sono state salvate.</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel panel-stack">
+                        <div class="panel-title">Inline feedback</div>
+                        <div class="inline-feedback success">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                            Modifiche salvate correttamente.
+                        </div>
+                        <div class="inline-feedback error">
+                            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+                            Salvataggio non riuscito. Riprova.
+                        </div>
+                        <div class="inline-feedback warning">
+                            <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                            Alcuni campi richiedono attenzione.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 18 · TABS
+                 ============================================================ -->
+            <section class="sg-section" id="tabs">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">18</span>
+                    <h2>Tabs</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Due stili: pill container e underline. Stato attivo discreto,
+                    transizione morbida.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Pill</div>
+                        <div class="tabs">
+                            <button class="tab active">Panoramica</button>
+                            <button class="tab">Attività</button>
+                            <button class="tab">Impostazioni</button>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Underline</div>
+                        <div class="tabs-underline">
+                            <button class="tab active">Generale</button>
+                            <button class="tab">Membri</button>
+                            <button class="tab">API</button>
+                            <button class="tab">Fatturazione</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 19 · BREADCRUMB & PAGINATION
+                 ============================================================ -->
+            <section class="sg-section" id="breadcrumb">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">19</span>
+                    <h2>Breadcrumb & Pagination</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Navigazione contestuale con separatori tenui e pagina corrente evidenziata.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel">
+                        <div class="panel-title">Breadcrumb</div>
+                        <div class="breadcrumb">
+                            <a href="#">Workspace</a>
+                            <span class="sep">/</span>
+                            <a href="#">ferraro3d-app</a>
+                            <span class="sep">/</span>
+                            <span class="current">Deploy</span>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Pagination</div>
+                        <div class="pagination">
+                            <button class="page">
+                                <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+                            </button>
+                            <button class="page active">1</button>
+                            <button class="page">2</button>
+                            <button class="page">3</button>
+                            <button class="page">4</button>
+                            <button class="page">…</button>
+                            <button class="page">12</button>
+                            <button class="page">
+                                <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 20 · MODAL
+                 ============================================================ -->
+            <section class="sg-section" id="modal">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">20</span>
+                    <h2>Modal</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Pannello vetroso con header, descrizione, azioni allineate a destra.
+                    Sfondo con blur quando sovrapposto.
+                </p>
+
+                <div class="panel" style="display:flex; justify-content:center; padding:32px;">
+                    <div class="modal-demo">
+                        <div class="modal-head">
+                            <div>
+                                <div class="modal-title">Eliminare il progetto?</div>
+                            </div>
+                            <button class="toast-close">
+                                <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                            </button>
+                        </div>
+                        <div class="modal-desc">
+                            L'operazione è irreversibile. Tutti i task, gli artifact e le
+                            automazioni associate verranno rimossi definitivamente.
+                        </div>
+                        <div class="modal-actions">
+                            <button class="btn">Annulla</button>
+                            <button class="btn btn-danger">Elimina progetto</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 21 · DROPDOWN & TOOLTIP
+                 ============================================================ -->
+            <section class="sg-section" id="dropdown">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">21</span>
+                    <h2>Dropdown & Tooltip</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Menu a comparsa con blur e ombra profonda. Tooltip con freccia,
+                    alto contrasto, testo compatto.
+                </p>
+
+                <div class="sg-grid cols-2">
+                    <div class="panel" style="display:flex; justify-content:center; padding:28px;">
+                        <div class="dropdown-demo">
+                            <div class="item">
+                                <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                                Rinomina
+                            </div>
+                            <div class="item">
+                                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                                Duplica
+                            </div>
+                            <div class="item">
+                                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                Esporta
+                            </div>
+                            <div class="divider"></div>
+                            <div class="item" style="color:var(--red);">
+                                <svg viewBox="0 0 24 24" style="color:var(--red);"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                Elimina
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="panel" style="display:flex; align-items:center; justify-content:center; padding:36px;">
+                        <div class="tooltip-demo">Salva con ⌘S</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 22 · WINDOW & PANEL
+                 ============================================================ -->
+            <section class="sg-section" id="window">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">22</span>
+                    <h2>Window & Panel</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Finestra compatta stile editor con barra titolo, dots semaforici
+                    e contenuto scrollabile.
+                </p>
+
+                <div class="win" style="max-width:640px;">
+                    <div class="win-bar">
+                        <div class="win-dots">
+                            <span></span><span></span><span></span>
+                        </div>
+                        <div class="win-title">trae-workspace / main</div>
+                    </div>
+                    <div class="win-body">
+                        <div class="t-mono" style="color:var(--text-3);">
+                            <div><span style="color:var(--accent);">const</span> <span style="color:var(--text);">workspace</span> = <span style="color:var(--accent);">new</span> <span style="color:var(--green);">Trae</span>({</div>
+                            <div>&nbsp;&nbsp;mode: <span style="color:var(--green);">'auto'</span>,</div>
+                            <div>&nbsp;&nbsp;model: <span style="color:var(--green);">'deepseek-v4-flash'</span>,</div>
+                            <div>});</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================================
+                 23 · GRAFICI
+                 ============================================================ -->
+            <section class="sg-section" id="charts">
+                <div class="sg-section-head">
+                    <span class="sg-section-num">23</span>
+                    <h2>Grafici</h2>
+                </div>
+                <p class="sg-section-desc">
+                    Visualizzazioni essenziali: sparkline con gradiente, bar chart animato,
+                    donut chart con percentuale centrale.
+                </p>
+
+                <div class="sg-grid cols-3">
+                    <div class="panel">
+                        <div class="panel-title">Sparkline</div>
+                        <svg class="spark" viewBox="0 0 200 60" preserveAspectRatio="none">
+                            <defs>
+                                <linearGradient id="sparkGrad" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="rgba(217,119,87,0.35)"/>
+                                    <stop offset="100%" stop-color="rgba(217,119,87,0)"/>
+                                </linearGradient>
+                            </defs>
+                            <path class="area" d="M0,40 L20,35 L40,42 L60,28 L80,32 L100,18 L120,24 L140,12 L160,20 L180,8 L200,14 L200,60 L0,60 Z"/>
+                            <path class="line" d="M0,40 L20,35 L40,42 L60,28 L80,32 L100,18 L120,24 L140,12 L160,20 L180,8 L200,14"/>
+                        </svg>
+                        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                            <span class="t-caption">7 giorni</span>
+                            <span class="t-caption" style="color:var(--green);">+24%</span>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Bar chart</div>
+                        <div class="bars">
+                            <div style="height:40%"></div>
+                            <div style="height:62%"></div>
+                            <div style="height:35%"></div>
+                            <div style="height:78%"></div>
+                            <div style="height:55%"></div>
+                            <div style="height:88%"></div>
+                            <div style="height:70%"></div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-top:10px;">
+                            <span class="t-caption">Lun</span>
+                            <span class="t-caption">Dom</span>
+                        </div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="panel-title">Donut</div>
+                        <div style="display:flex; align-items:center; gap:18px;">
+                            <div class="donut">
+                                <svg width="120" height="120" viewBox="0 0 120 120">
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="10"/>
+                                    <circle cx="60" cy="60" r="50" fill="none" stroke="var(--accent)" stroke-width="10"
+                                            stroke-dasharray="220 314" stroke-linecap="round"/>
+                                </svg>
+                                <div class="center">
+                                    70<small>%</small>
+                                    <small>utilizzo</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+</div>
+
+<script>
+    /* Navigazione laterale: scroll + highlight */
+    const links = document.querySelectorAll('.sg-nav a');
+    const sections = [...links].map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+
+    const setActive = (id) => {
+        links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) setActive(entry.target.id);
+        });
+    }, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+    sections.forEach(s => observer.observe(s));
+
+    links.forEach(a => {
+        a.addEventListener('click', (e) => {
+            e.preventDefault();
+            const el = document.querySelector(a.getAttribute('href'));
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAE — Examples</title>
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="typography.css">
+<link rel="stylesheet" href="components.css">
+<style>
+    /* Stili specifici degli esempi */
+    body {
+        background: var(--color-bg);
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+            radial-gradient(58% 42% at 78% -6%, rgba(217, 119, 87, 0.055), transparent 70%),
+            radial-gradient(50% 38% at 10% 106%, rgba(122, 148, 255, 0.040), transparent 70%);
+    }
+    .ex-wrap {
+        position: relative;
+        z-index: 1;
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 48px 32px 120px;
+    }
+    .ex-header {
+        padding-bottom: 32px;
+        margin-bottom: 40px;
+        border-bottom: 1px solid var(--color-border);
+    }
+    .ex-header h1 {
+        font-size: 30px;
+        font-weight: 500;
+        letter-spacing: -0.03em;
+        background: linear-gradient(180deg, #FFFFFF 0%, #A8A8B0 130%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 8px;
+    }
+    .ex-header p { color: var(--color-text-2); max-width: 620px; line-height: 1.6; }
+
+    .ex-section { margin-bottom: 72px; }
+    .ex-section > h2 {
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        margin-bottom: 6px;
+    }
+    .ex-section > p {
+        font-size: 13px;
+        color: var(--color-text-3);
+        margin-bottom: 24px;
+        line-height: 1.6;
+        max-width: 640px;
+    }
+    .ex-num {
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--color-text-4);
+        letter-spacing: 0.04em;
+    }
+
+    /* Mini applicazione: dashboard */
+    .app-shell {
+        display: grid;
+        grid-template-columns: 220px 1fr;
+        gap: 0;
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-xl);
+        background: var(--color-glass);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        overflow: hidden;
+        min-height: 520px;
+    }
+    .app-side {
+        padding: 18px 12px;
+        border-right: 1px solid var(--color-border);
+        background: rgba(0, 0, 0, 0.2);
+    }
+    .app-side .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 7px 10px;
+        border-radius: var(--r-sm);
+        font-size: 12.5px;
+        color: var(--color-text-2);
+        cursor: pointer;
+        transition: background var(--t), color var(--t);
+    }
+    .app-side .nav-item svg { width: 15px; height: 15px; stroke: currentColor; stroke-width: 1.6; fill: none; opacity: 0.8; }
+    .app-side .nav-item:hover { background: var(--color-hover); color: var(--color-text); }
+    .app-side .nav-item.active { background: var(--color-active); color: var(--color-text); }
+    .app-side .nav-item.active svg { color: var(--color-accent); opacity: 1; }
+    .app-side .group-title {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-4);
+        padding: 14px 10px 6px;
+    }
+    .app-main {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .app-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+    }
+    .app-topbar h3 {
+        font-size: 17px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+    }
+    .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+    .chart-card { padding: 18px; }
+    .chart-card .bars { height: 110px; }
+
+    /* Login card */
+    .login-demo {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 32px;
+        border: 1px solid var(--color-border);
+        border-radius: var(--r-xl);
+        background: var(--color-glass);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+        box-shadow: var(--sh-lg);
+    }
+    .login-demo h2 {
+        font-size: 20px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        text-align: center;
+        margin-bottom: 6px;
+    }
+    .login-demo > p {
+        font-size: 12.5px;
+        color: var(--color-text-3);
+        text-align: center;
+        margin-bottom: 24px;
+    }
+    .login-demo .field { margin-bottom: 14px; }
+    .login-demo .btn { margin-top: 8px; }
+    .login-demo .alt-action {
+        text-align: center;
+        font-size: 12px;
+        color: var(--color-text-3);
+        margin-top: 18px;
+    }
+
+    /* Notification center */
+    .notif-list {
+        max-width: 480px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    @media (max-width: 800px) {
+        .app-shell { grid-template-columns: 1fr; }
+        .app-side { display: none; }
+        .metric-grid { grid-template-columns: 1fr; }
+        .ex-wrap { padding: 32px 20px 80px; }
+    }
+</style>
+</head>
+<body>
+
+<div class="ex-wrap">
+
+    <!-- HEADER -->
+    <header class="ex-header">
+        <h1>Examples</h1>
+        <p>
+            Esempi reali di interfaccia TRAE costruiti esclusivamente con i componenti
+            e i token del sistema. Ogni esempio è pronto da copiare come base di partenza.
+        </p>
+    </header>
+
+    <!-- ============================================================
+         EXAMPLE 1 · DASHBOARD
+         ============================================================ -->
+    <section class="ex-section">
+        <span class="ex-num">EXAMPLE 01</span>
+        <h2>Dashboard workspace</h2>
+        <p>
+            Layout completo con sidebar, topbar, KPI cards, grafico a barre e tabella
+            utenti. Dimostra l'uso combinato di card, metric, badge, avatar e tabella.
+        </p>
+
+        <div class="app-shell">
+            <aside class="app-side">
+                <div class="nav-item active">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                    Dashboard
+                </div>
+                <div class="nav-item">
+                    <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    Progetti
+                </div>
+                <div class="nav-item">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Attività
+                </div>
+                <div class="nav-item">
+                    <svg viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>
+                    Editor
+                </div>
+
+                <div class="group-title">Team</div>
+                <div class="nav-item">
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    Membri
+                </div>
+                <div class="nav-item">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    Impostazioni
+                </div>
+            </aside>
+
+            <div class="app-main">
+                <div class="app-topbar">
+                    <div>
+                        <h3>Panoramica</h3>
+                        <div class="t-caption">Ultimo aggiornamento 2 minuti fa</div>
+                    </div>
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn btn-sm">Esporta</button>
+                        <button class="btn btn-sm btn-primary">
+                            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Nuovo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="metric-grid">
+                    <div class="card">
+                        <div class="metric-label">Progetti attivi</div>
+                        <div class="metric-value">12</div>
+                        <div class="metric-delta up">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 15 12 9 18 15"/></svg>
+                            +3 questa settimana
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="metric-label">Task completati</div>
+                        <div class="metric-value">148</div>
+                        <div class="metric-delta up">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polyline points="6 15 12 9 18 15"/></svg>
+                            +22%
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="metric-label">Utilizzo budget</div>
+                        <div class="metric-value">€248<small>/ €400</small></div>
+                        <div class="progress" style="margin-top:12px;"><span style="width:62%"></span></div>
+                    </div>
+                </div>
+
+                <div class="card chart-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+                        <div>
+                            <div class="card-title">Attività settimanale</div>
+                            <div class="card-sub">Commit, deploy e test eseguiti</div>
+                        </div>
+                        <span class="badge badge-green"><span class="dot"></span>+18%</span>
+                    </div>
+                    <div class="bars">
+                        <div style="height:40%"></div>
+                        <div style="height:62%"></div>
+                        <div style="height:35%"></div>
+                        <div style="height:78%"></div>
+                        <div style="height:55%"></div>
+                        <div style="height:88%"></div>
+                        <div style="height:70%"></div>
+                    </div>
+                </div>
+
+                <div class="table-wrap">
+                    <table class="tbl">
+                        <thead>
+                            <tr>
+                                <th>Utente</th>
+                                <th>Ruolo</th>
+                                <th>Stato</th>
+                                <th style="text-align:right;">Ultimo accesso</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div class="avatar sm">E</div>
+                                        <span class="strong">Emanuele627</span>
+                                    </div>
+                                </td>
+                                <td>Owner</td>
+                                <td><span class="badge badge-green"><span class="dot"></span>Attivo</span></td>
+                                <td style="text-align:right;">2 min fa</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="display:flex; align-items:center; gap:10px;">
+                                        <div class="avatar sm blue">M</div>
+                                        <span class="strong">Marco_R</span>
+                                    </div>
+                                </td>
+                                <td>Editor</td>
+                                <td><span class="badge badge-blue"><span class="dot"></span>Online</span></td>
+                                <td style="text-align:right;">1 h fa</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         EXAMPLE 2 · LOGIN
+         ============================================================ -->
+    <section class="ex-section">
+        <span class="ex-num">EXAMPLE 02</span>
+        <h2>Login form</h2>
+        <p>
+            Form di autenticazione con validazione inline, stato di caricamento
+            e feedback di errore. Dimostra field, input error, checkbox e btn-loading.
+        </p>
+
+        <div class="login-demo">
+            <h2>Accedi al workspace</h2>
+            <p>Usa le tue credenziali per continuare</p>
+
+            <div class="field">
+                <label class="field-label">Email</label>
+                <input class="input" type="email" placeholder="nome@dominio.com">
+            </div>
+
+            <div class="field">
+                <label class="field-label">Password</label>
+                <input class="input error" type="password" value="••••••••">
+                <span class="field-error">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
+                    Password troppo corta
+                </span>
+            </div>
+
+            <label class="checkbox" style="margin: 6px 0 14px;">
+                <input type="checkbox" checked>
+                <span class="box"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></span>
+                Ricordami su questo dispositivo
+            </label>
+
+            <button class="btn btn-primary btn-block">Accedi</button>
+
+            <div class="alt-action">
+                Non hai un account? <a href="#">Registrati</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         EXAMPLE 3 · NOTIFICATION CENTER
+         ============================================================ -->
+    <section class="ex-section">
+        <span class="ex-num">EXAMPLE 03</span>
+        <h2>Notification center</h2>
+        <p>
+            Stack di toast con le quattro semantiche (success, error, warning, info),
+            ciascuno con icona, testo e chiusura.
+        </p>
+
+        <div class="notif-list">
+            <div class="toast success">
+                <div class="toast-icon">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Deploy completato</div>
+                    <div class="toast-desc">La nuova versione è online su produzione.</div>
+                </div>
+                <button class="toast-close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="toast error">
+                <div class="toast-icon">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Connessione fallita</div>
+                    <div class="toast-desc">Impossibile raggiungere il server. Riprova tra poco.</div>
+                </div>
+                <button class="toast-close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="toast warning">
+                <div class="toast-icon">
+                    <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><circle cx="12" cy="17" r="0.5" fill="currentColor"/></svg>
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Spazio quasi esaurito</div>
+                    <div class="toast-desc">Hai utilizzato il 92% del piano gratuito.</div>
+                </div>
+                <button class="toast-close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+
+            <div class="toast info">
+                <div class="toast-icon">
+                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><circle cx="12" cy="8" r="0.5" fill="currentColor"/></svg>
+                </div>
+                <div class="toast-body">
+                    <div class="toast-title">Nuova versione disponibile</div>
+                    <div class="toast-desc">Aggiorna TRAE per ottenere le ultime feature.</div>
+                </div>
+                <button class="toast-close">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         EXAMPLE 4 · EMPTY STATE
+         ============================================================ -->
+    <section class="ex-section">
+        <span class="ex-num">EXAMPLE 04</span>
+        <h2>Empty state</h2>
+        <p>
+            Stato vuoto con icona, titolo, descrizione e call-to-action primaria.
+            Pattern standard per liste e collezioni senza contenuti.
+        </p>
+
+        <div style="max-width: 520px;">
+            <div class="empty">
+                <div class="empty-icon">
+                    <svg viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                </div>
+                <div class="empty-title">Nessun progetto</div>
+                <div class="empty-desc">Inizia creando il tuo primo progetto per vedere qui i contenuti.</div>
+                <button class="btn btn-primary">
+                    <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Nuovo progetto
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         EXAMPLE 5 · SUCCESS FLOW
+         ============================================================ -->
+    <section class="ex-section">
+        <span class="ex-num">EXAMPLE 05</span>
+        <h2>Success flow</h2>
+        <p>
+            Conferma post-azione con ring animato, checkmark disegnato e riepilogo.
+            Da usare a fine form, deploy o operazioni critiche.
+        </p>
+
+        <div class="card" style="max-width: 480px; text-align:center; padding: 32px;">
+            <div style="display:flex; justify-content:center; margin-bottom: 20px;">
+                <div class="success-ring">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+            </div>
+            <div class="card-title" style="font-size:16px;">Deploy completato</div>
+            <div class="card-sub" style="margin-top:6px;">
+                La versione <span class="t-mono" style="color:var(--color-text-2);">v2.4.1</span>
+                è online su produzione.
+            </div>
+            <div style="display:flex; gap:8px; justify-content:center; margin-top:20px;">
+                <button class="btn">Visualizza log</button>
+                <button class="btn btn-primary">Apri app</button>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+</body>
+</html>

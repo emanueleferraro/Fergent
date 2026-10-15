@@ -1,0 +1,143 @@
+# CI: lint, test, and build the Rust workspaces and the pnpm workspace.
+# Runs on every push and pull request. Mirrors the quality gates documented in
+# CONTRIBUTING.md and required by ROADMAP Phase 0 / STACK.md section 18.3.
+#
+# There are two Cargo workspaces:
+#   - the kernel workspace at the repo root (`crates/*`), and
+#   - the desktop app at `apps/desktop/src-tauri` (standalone, because its
+#     Tauri build script requires a staged `fergentsd` sidecar binary).
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+# Cancel superseded runs on the same ref to save CI minutes.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust:
+    name: Rust (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: kernel
+
+      - name: Format check
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: Test
+        run: cargo test --workspace
+
+      - name: Build
+        run: cargo build --workspace
+
+  desktop:
+    name: Desktop (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux GUI dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev libgtk-3-dev \
+            libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: desktop
+          workspaces: apps/desktop/src-tauri
+
+      # The Tauri build script requires the `fergentsd` sidecar to exist under
+      # `binaries/fergentsd-<host-triple>` (see apps/desktop/src-tauri/lib.rs).
+      - name: Build and stage the kernel sidecar
+        shell: bash
+        run: |
+          cargo build -p fergentsd
+          triple="$(rustc -vV | sed -n 's/^host: //p')"
+          ext=""
+          if [ "$RUNNER_OS" = "Windows" ]; then ext=".exe"; fi
+          mkdir -p apps/desktop/src-tauri/binaries
+          cp "target/debug/fergentsd${ext}" \
+             "apps/desktop/src-tauri/binaries/fergentsd-${triple}${ext}"
+
+      - name: Format check
+        run: cargo fmt --manifest-path apps/desktop/src-tauri/Cargo.toml -- --check
+
+      - name: Clippy
+        run: cargo clippy --manifest-path apps/desktop/src-tauri/Cargo.toml --all-targets -- -D warnings
+
+      - name: Build
+        run: cargo build --manifest-path apps/desktop/src-tauri/Cargo.toml
+
+  node:
+    name: Node
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # The pnpm lockfile is committed to the repository; --frozen-lockfile
+      # ensures CI uses the exact locked dependency versions.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 12
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
+      - name: Typecheck
+        run: pnpm -r typecheck
+
+      - name: Test
+        run: pnpm -r test
+
+      - name: Build
+        run: pnpm build

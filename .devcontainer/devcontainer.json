@@ -1,0 +1,33 @@
+{
+  // Fergents Phase 0 dev container. The reference development environment
+  // (STACK.md section 22.3). Builds the image in the sibling Dockerfile and
+  // declares the Rust + Node features so VS Code surfaces language support.
+  "name": "Fergents (Phase 0)",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/rust:1": {
+      "version": "stable",
+      "profile": "minimal"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    }
+  },
+  // No ports are forwarded: the kernel communicates only over a local socket.
+  "forwardPorts": [],
+  "postCreateCommand": "cargo --version && node --version && pnpm --version",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "tauri-apps.tauri-vscode",
+        "alexcvzz.vscode-sqlite"
+      ]
+    }
+  },
+  "remoteUser": "root"
+}

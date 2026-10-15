@@ -1,0 +1,23 @@
+[package]
+name = "fergents-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents kernel core: wiring, registries, and subsystems."
+
+[dependencies]
+fergents-storage = { workspace = true }
+fergents-events = { workspace = true }
+fergents-protocol = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+ulid = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

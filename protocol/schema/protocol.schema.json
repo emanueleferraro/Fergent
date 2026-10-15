@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fergents.dev/protocol/protocol.schema.json",
+  "description": "Contract for the Fergents kernel JSON-RPC 2.0 protocol over the local socket. Source of truth for Rust and TypeScript codegen.",
+  "$defs": {
+    "Event": {
+      "title": "Event",
+      "description": "A kernel event emitted on the bus (ARCHITECTURE.md §4.2).",
+      "type": "object",
+      "required": ["id", "ts", "kind", "source", "payload", "version"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "description": "ULID, monotonic." },
+        "ts": { "type": "integer", "format": "int64", "description": "Milliseconds since the Unix epoch." },
+        "kind": { "type": "string", "description": "Namespaced topic, e.g. kernel.started." },
+        "source": { "type": "string", "description": "Who emitted the event, e.g. agent:ferg-01." },
+        "correlation_id": { "type": ["string", "null"], "description": "Groups events in one logical operation." },
+        "brain_id": { "type": ["string", "null"], "description": "Optional brain scope." },
+        "project_id": { "type": ["string", "null"], "description": "Optional project scope." },
+        "payload": { "description": "Topic-specific payload (arbitrary JSON)." },
+        "version": { "type": "integer", "format": "uint32", "description": "Event schema version." }
+      }
+    },
+    "HealthStatus": {
+      "title": "HealthStatus",
+      "type": "string",
+      "enum": ["healthy", "degraded", "unhealthy"]
+    },
+    "StorageStatus": {
+      "title": "StorageStatus",
+      "type": "string",
+      "enum": ["ok", "readonly", "error"]
+    },
+    "HealthSnapshot": {
+      "title": "HealthSnapshot",
+      "description": "Result of the system.health command.",
+      "type": "object",
+      "required": ["status", "uptime_ms", "kernel_version", "protocol_version", "storage"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "$ref": "#/$defs/HealthStatus" },
+        "uptime_ms": { "type": "integer", "format": "int64" },
+        "kernel_version": { "type": "string" },
+        "protocol_version": { "type": "integer", "format": "uint32" },
+        "storage": { "$ref": "#/$defs/StorageStatus" }
+      }
+    },
+    "HelloParams": {
+      "title": "HelloParams",
+      "description": "First command sent by a client after connecting.",
+      "type": "object",
+      "required": ["protocol_version", "client_kind"],
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": { "type": "integer", "format": "uint32" },
+        "client_kind": { "type": "string", "description": "desktop | cli | mobile | mcp" },
+        "client_version": { "type": ["string", "null"] },
+        "capabilities": { "type": ["array", "null"], "items": { "type": "string" } }
+      }
+    },
+    "WelcomeResult": {
+      "title": "WelcomeResult",
+      "description": "Kernel reply to hello when the client version is compatible.",
+      "type": "object",
+      "required": ["protocol_version", "kernel_version", "session_id"],
+      "additionalProperties": false,
+      "properties": {
+        "protocol_version": { "type": "integer", "format": "uint32" },
+        "kernel_version": { "type": "string" },
+        "session_id": { "type": "string" },
+        "server_capabilities": { "type": ["array", "null"], "items": { "type": "string" } }
+      }
+    },
+    "PingResult": {
+      "title": "PingResult",
+      "description": "Liveness probe reply; carries no diagnostics.",
+      "type": "object",
+      "required": ["pong", "ts"],
+      "additionalProperties": false,
+      "properties": {
+        "pong": { "type": "boolean" },
+        "ts": { "type": "integer", "format": "int64" }
+      }
+    },
+    "SystemInfoResult": {
+      "title": "SystemInfoResult",
+      "type": "object",
+      "required": ["kernel_version", "protocol_version", "os", "pid"],
+      "additionalProperties": false,
+      "properties": {
+        "kernel_version": { "type": "string" },
+        "protocol_version": { "type": "integer", "format": "uint32" },
+        "os": { "type": "string" },
+        "pid": { "type": "integer", "format": "uint32" }
+      }
+    },
+    "SubscribeParams": {
+      "title": "SubscribeParams",
+      "type": "object",
+      "required": ["topics"],
+      "additionalProperties": false,
+      "properties": {
+        "topics": { "type": "array", "items": { "type": "string" }, "description": "Topic prefixes, e.g. kernel. or file.changed." }
+      }
+    },
+    "UnsubscribeParams": {
+      "title": "UnsubscribeParams",
+      "type": "object",
+      "required": ["topics"],
+      "additionalProperties": false,
+      "properties": {
+        "topics": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ReplayParams": {
+      "title": "ReplayParams",
+      "type": "object",
+      "required": ["topics"],
+      "additionalProperties": false,
+      "properties": {
+        "topics": { "type": "array", "items": { "type": "string" } },
+        "from_id": { "type": ["string", "null"], "description": "Deliver events strictly after this id." },
+        "limit": { "type": ["integer", "null"] }
+      }
+    },
+    "BrainSummary": {
+      "title": "BrainSummary",
+      "type": "object",
+      "required": ["brain_id", "name", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "role": { "type": ["string", "null"] }
+      }
+    },
+    "BrainListResult": {
+      "title": "BrainListResult",
+      "type": "object",
+      "required": ["brains"],
+      "additionalProperties": false,
+      "properties": {
+        "brains": { "type": "array", "items": { "$ref": "#/$defs/BrainSummary" } }
+      }
+    },
+    "EventsDroppedNotice": {
+      "title": "EventsDroppedNotice",
+      "description": "Payload of the events.dropped notice.",
+      "type": "object",
+      "required": ["dropped", "last_seen_id"],
+      "additionalProperties": false,
+      "properties": {
+        "dropped": { "type": "integer" },
+        "last_seen_id": { "type": ["string", "null"] }
+      }
+    }
+  }
+}

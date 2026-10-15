@@ -1,0 +1,80 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/protocol",
+    "crates/storage",
+    "crates/events",
+    "crates/core",
+    "crates/api",
+    "crates/supervisor",
+    "crates/fergentsd",
+    "crates/fergents",
+]
+
+# The desktop app (`apps/desktop/src-tauri`) is a standalone Cargo workspace:
+# its Tauri build script requires the staged `fergentsd` sidecar
+# (`binaries/fergentsd-<target-triple>`), which is produced per build target.
+# Keeping it out of this workspace keeps `cargo build/test/clippy/fmt` here
+# hermetic and platform-independent.
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+license = "AGPL-3.0-or-later"
+authors = ["Fergents contributors"]
+repository = "https://github.com/fergents/fergents"
+homepage = "https://github.com/fergents/fergents"
+description = "Fergents: a local-first, agent-native workspace."
+
+[workspace.dependencies]
+# Internal crates
+fergents-protocol = { path = "crates/protocol", version = "0.1.0" }
+fergents-storage = { path = "crates/storage", version = "0.1.0" }
+fergents-events = { path = "crates/events", version = "0.1.0" }
+fergents-core = { path = "crates/core", version = "0.1.0" }
+fergents-api = { path = "crates/api", version = "0.1.0" }
+fergents-supervisor = { path = "crates/supervisor", version = "0.1.0" }
+
+# Runtime
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "sync", "time", "signal", "fs"] }
+tokio-util = { version = "0.7", features = ["codec"] }
+futures = "0.3"
+
+# Serialization
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Storage
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# Identifiers, hashing, time
+ulid = { version = "1", features = ["serde"] }
+sha2 = "0.10"
+hex = "0.4"
+
+# Errors
+thiserror = "1"
+anyhow = "1"
+
+# CLI
+clap = { version = "4", features = ["derive"] }
+
+# TUI
+ratatui = "0.29"
+crossterm = "0.28"
+
+# Logging / observability
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json", "fmt"] }
+tracing-appender = "0.2"
+
+# Codegen (protocol contract)
+typify = "0.2"
+
+# Dev
+tempfile = "3"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

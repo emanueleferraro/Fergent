@@ -1,0 +1,39 @@
+[package]
+name = "fergents-desktop"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.82"
+license = "AGPL-3.0-or-later"
+authors = ["Fergents contributors"]
+description = "Fergents desktop shell (Tauri v2 + React 19)."
+
+# Standalone workspace: the Tauri build script requires the staged `fergentsd`
+# sidecar (`binaries/fergentsd-<target-triple>`), which is produced per build
+# target. Keeping this crate out of the kernel workspace keeps the kernel's
+# `cargo build/test/clippy/fmt` hermetic. Build it with:
+#   cargo build -p fergentsd  # from the repo root
+#   cp target/{debug,release}/fergentsd \
+#      apps/desktop/src-tauri/binaries/fergentsd-$(rustc -vV | sed -n 's/host: //p')$( [ "$OS" = "Windows_NT" ] && echo .exe )
+#   cd apps/desktop/src-tauri && cargo check
+[workspace]
+
+[lib]
+name = "fergents_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "fergents-desktop"
+path = "src/main.rs"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+fergents-api = { path = "../../../crates/api" }
+fergents-core = { path = "../../../crates/core" }
+fergents-protocol = { path = "../../../crates/protocol" }
+tauri = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "sync", "time", "signal", "fs"] }

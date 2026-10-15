@@ -1,0 +1,23 @@
+[package]
+name = "fergents-protocol"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents kernel protocol: JSON-RPC 2.0 types, schemas, and codegen."
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+typify = { workspace = true }
+schemars = "0.8"
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[[bin]]
+name = "gen-protocol"
+path = "src/bin/gen_protocol.rs"

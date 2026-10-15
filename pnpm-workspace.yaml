@@ -1,0 +1,10 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+
+# Dependencies whose install scripts are allowed to run (pnpm blocks them by
+# default). esbuild ships platform binaries and es5-ext is pulled in by
+# json-schema-to-typescript.
+allowBuilds:
+  esbuild: true
+  es5-ext: true

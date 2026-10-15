@@ -1,0 +1,11 @@
+/* Fergents design system — single entry point for the desktop shell.
+ *
+ * The three files below are copied verbatim from the repository `style/`
+ * directory (the single source of truth) into `src/styles/` so the Vite
+ * webview can load them. Include order is mandatory:
+ *   tokens.css → typography.css → components.css
+ * Keep them byte-identical to `style/`; edit `style/` first, then re-copy.
+ */
+@import './tokens.css';
+@import './typography.css';
+@import './components.css';

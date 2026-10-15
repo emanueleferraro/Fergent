@@ -1,0 +1,128 @@
+/* Desktop shell layout. Composes the design-system tokens/classes only —
+ * no inline colors, spacing, radii or motion. Structural sizes come from
+ * UI.md §3.2 and are expressed through tokens where possible. */
+
+:root {
+  --shell-rail-w: var(--s-12); /* 48px (UI.md §3.2) */
+  --shell-sidebar-w: calc(var(--s-12) * 6); /* 288px, within 240–320 (UI.md §3.2) */
+  --shell-status-h: calc(var(--s-8) - var(--s-1)); /* 28px (UI.md §3.2) */
+}
+
+body {
+  margin: 0;
+  background: var(--surface-1);
+}
+
+#root {
+  height: 100vh;
+}
+
+.shell {
+  display: grid;
+  height: 100vh;
+  grid-template-columns: var(--shell-rail-w) var(--shell-sidebar-w) 1fr;
+  grid-template-rows: 1fr var(--shell-status-h);
+  grid-template-areas:
+    'rail sidebar main'
+    'status status status';
+  background: var(--surface-1);
+  color: var(--text-strong);
+}
+
+/* Rail (UI.md §4) */
+.shell__rail {
+  grid-area: rail;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-2) 0;
+  border-right: 1px solid var(--border-default);
+  background: var(--surface-2);
+}
+
+.rail-item {
+  width: 100%;
+  height: var(--s-10);
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  transition:
+    color var(--t),
+    background var(--t);
+}
+
+.rail-item svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  fill: none;
+}
+
+.rail-item:hover {
+  background: var(--color-hover);
+  color: var(--text-default);
+}
+
+.rail-item[aria-current='page'] {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+/* Sidebar (UI.md §5) */
+.shell__sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-4);
+  overflow-y: auto;
+  border-right: 1px solid var(--border-default);
+  background: var(--surface-2);
+}
+
+/* Main area (UI.md §6) */
+.shell__main {
+  grid-area: main;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  padding: var(--s-6);
+  overflow: auto;
+}
+
+/* Status bar (UI.md §9) */
+.shell__status {
+  grid-area: status;
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  padding: 0 var(--s-4);
+  border-top: 1px solid var(--border-default);
+  background: var(--surface-2);
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+
+.shell__status .spacer {
+  margin-left: auto;
+}
+
+/* Command palette wrapper: positions the #cmdk pattern as a modal. */
+.palette-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: start center;
+  padding-top: var(--s-12);
+  background: var(--color-glass);
+  backdrop-filter: blur(var(--blur-glass));
+  -webkit-backdrop-filter: blur(var(--blur-glass));
+}
+
+.palette-list {
+  display: flex;
+  flex-direction: column;
+}

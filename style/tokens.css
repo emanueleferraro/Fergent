@@ -1,0 +1,203 @@
+/* ============================================================
+   TRAE Design Tokens — CSS Custom Properties
+   v1.0.0 · Dark-first · Glass · Soft
+   Ogni variabile qui è la fonte di verità per tutto il sistema.
+   ============================================================ */
+
+:root {
+    /* ----------------------------------------------------------
+       COLOR · Surface
+       ---------------------------------------------------------- */
+    --color-bg:             #0A0A0B;
+    --color-bg-elev:        #0F0F12;
+    --color-glass:          rgba(20, 20, 23, 0.55);
+    --color-glass-strong:   rgba(20, 20, 23, 0.82);
+    --color-hover:          rgba(255, 255, 255, 0.045);
+    --color-active:         rgba(255, 255, 255, 0.075);
+
+    /* ----------------------------------------------------------
+       COLOR · Border
+       ---------------------------------------------------------- */
+    --color-border:         rgba(255, 255, 255, 0.07);
+    --color-border-2:       rgba(255, 255, 255, 0.13);
+    --color-border-3:       rgba(255, 255, 255, 0.20);
+
+    /* ----------------------------------------------------------
+       COLOR · Text
+       ---------------------------------------------------------- */
+    --color-text:           #EDEDEF;
+    --color-text-2:         #98989F;
+    --color-text-3:         #66666E;
+    --color-text-4:         #44444A;
+
+    /* ----------------------------------------------------------
+       COLOR · Accent
+       ---------------------------------------------------------- */
+    --color-accent:         #D97757;
+    --color-accent-soft:    rgba(217, 119, 87, 0.12);
+    --color-accent-line:    rgba(217, 119, 87, 0.35);
+
+    /* ----------------------------------------------------------
+       COLOR · Semantic
+       ---------------------------------------------------------- */
+    --color-success:        #7FB894;
+    --color-success-soft:   rgba(127, 184, 148, 0.12);
+    --color-danger:         #E5484D;
+    --color-danger-soft:    rgba(229, 72, 77, 0.12);
+    --color-warning:        #E5B84D;
+    --color-warning-soft:   rgba(229, 184, 77, 0.12);
+    --color-info:           #6B94D9;
+    --color-info-soft:      rgba(107, 148, 217, 0.12);
+
+    /* ----------------------------------------------------------
+       RADIUS
+       ---------------------------------------------------------- */
+    --r-xs:   6px;
+    --r-sm:   8px;
+    --r-md:   10px;
+    --r-lg:   14px;
+    --r-xl:   18px;
+    --r-full: 999px;
+
+    /* ----------------------------------------------------------
+       SPACING (grid 4px)
+       ---------------------------------------------------------- */
+    --s-1:  4px;
+    --s-2:  8px;
+    --s-3:  12px;
+    --s-4:  16px;
+    --s-5:  20px;
+    --s-6:  24px;
+    --s-8:  32px;
+    --s-10: 40px;
+    --s-12: 48px;
+
+    /* ----------------------------------------------------------
+       TYPOGRAPHY
+       ---------------------------------------------------------- */
+    --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 Roboto, Helvetica, Arial, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular,
+                 Menlo, Consolas, monospace;
+
+    /* Size */
+    --fs-display: 34px;
+    --fs-h1:      24px;
+    --fs-h2:      18px;
+    --fs-h3:      15px;
+    --fs-body:    14px;
+    --fs-body-sm: 12.5px;
+    --fs-caption: 11.5px;
+    --fs-label:   10.5px;
+    --fs-mono:    12px;
+
+    /* Weight */
+    --fw-regular:  400;
+    --fw-medium:   500;
+    --fw-semibold: 550;
+    --fw-bold:     600;
+
+    /* Line height */
+    --lh-tight:   1.2;
+    --lh-normal:  1.5;
+    --lh-relaxed: 1.6;
+
+    /* Letter spacing */
+    --ls-tight:  -0.032em;
+    --ls-snug:   -0.02em;
+    --ls-normal: -0.005em;
+    --ls-label:   0.09em;
+
+    /* ----------------------------------------------------------
+       MOTION
+       ---------------------------------------------------------- */
+    --ease:   cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-2: cubic-bezier(0.4, 0, 0.2, 1);
+
+    --t-fast: 140ms var(--ease);
+    --t:      220ms var(--ease);
+    --t-slow: 380ms var(--ease);
+    --t-deco: 620ms var(--ease);
+
+    /* ----------------------------------------------------------
+       SHADOWS
+       ---------------------------------------------------------- */
+    --sh-sm:   0 1px 2px rgba(0, 0, 0, 0.35);
+    --sh-md:   0 8px 24px -8px rgba(0, 0, 0, 0.6);
+    --sh-lg:   0 24px 60px -20px rgba(0, 0, 0, 0.85);
+    --sh-glow: 0 0 0 4px rgba(255, 255, 255, 0.02);
+
+    /* ----------------------------------------------------------
+       BLUR
+       ---------------------------------------------------------- */
+    --blur-glass:        20px;
+    --blur-glass-strong: 28px;
+    --blur-sidebar:      24px;
+
+    /* ----------------------------------------------------------
+       Z-INDEX
+       ---------------------------------------------------------- */
+    --z-base:     0;
+    --z-sticky:   10;
+    --z-sidebar:  20;
+    --z-dropdown: 100;
+    --z-modal:    1000;
+    --z-toast:    2000;
+}
+
+/* ============================================================
+   THEME · Light (opt-in)
+   Il tema scuro è il default (`:root`). Attivando
+   `[data-theme="light"]` sull'elemento radice si sovrascrivono solo i
+   token colore di base; gli alias semantici si risolvono di conseguenza.
+   ============================================================ */
+:root[data-theme='light'] {
+    --color-bg:             #F7F7F8;
+    --color-bg-elev:        #FFFFFF;
+    --color-glass:          rgba(255, 255, 255, 0.72);
+    --color-glass-strong:   rgba(255, 255, 255, 0.90);
+    --color-hover:          rgba(0, 0, 0, 0.04);
+    --color-active:         rgba(0, 0, 0, 0.07);
+
+    --color-border:         rgba(0, 0, 0, 0.10);
+    --color-border-2:       rgba(0, 0, 0, 0.16);
+    --color-border-3:       rgba(0, 0, 0, 0.24);
+
+    --color-text:           #16161A;
+    --color-text-2:         #55555E;
+    --color-text-3:         #85858E;
+    --color-text-4:         #A8A8B0;
+
+    --color-accent:         #C4633F;
+    --color-accent-soft:    rgba(196, 99, 63, 0.12);
+    --color-accent-line:    rgba(196, 99, 63, 0.35);
+
+    --color-success:        #3E8E5A;
+    --color-success-soft:   rgba(62, 142, 90, 0.12);
+    --color-danger:         #CE3B40;
+    --color-danger-soft:    rgba(206, 59, 64, 0.12);
+    --color-warning:        #B08428;
+    --color-warning-soft:   rgba(176, 132, 40, 0.14);
+    --color-info:           #3E6DB5;
+    --color-info-soft:      rgba(62, 109, 181, 0.12);
+}
+
+/* ============================================================
+   ALIAS SEMANTICI
+   Uso consigliato: preferire gli alias nel codice dei componenti.
+   ============================================================ */
+:root {
+    --surface-1: var(--color-bg);
+    --surface-2: var(--color-bg-elev);
+    --surface-3: var(--color-glass);
+    --surface-4: var(--color-glass-strong);
+
+    --border-default: var(--color-border);
+    --border-hover:   var(--color-border-2);
+    --border-focus:   var(--color-border-3);
+
+    --text-strong:    var(--color-text);
+    --text-default:   var(--color-text-2);
+    --text-muted:     var(--color-text-3);
+    --text-ghost:     var(--color-text-4);
+}

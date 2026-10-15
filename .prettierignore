@@ -1,0 +1,22 @@
+# Node
+node_modules/
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+pnpm-lock.yaml
+
+# Rust
+target/
+
+# Generated / non-TS deliverables this task must not touch
+**/src/generated.ts
+protocol/schema/
+style/
+crates/
+*.md
+
+# Design-system CSS is copied verbatim (byte-identical) from style/
+apps/desktop/src/styles/tokens.css
+apps/desktop/src/styles/typography.css
+apps/desktop/src/styles/components.css
