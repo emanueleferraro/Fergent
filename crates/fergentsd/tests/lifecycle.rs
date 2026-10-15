@@ -115,6 +115,18 @@ async fn wait_for_exit(child: &mut Child, within: Duration) -> bool {
     }
 }
 
+/// Poll the socket until it refuses connections or the deadline passes.
+async fn wait_until_unreachable(socket: &SocketPath, within: Duration) -> bool {
+    let deadline = Instant::now() + within;
+    while Instant::now() < deadline {
+        if connect_stream(socket).await.is_err() {
+            return true;
+        }
+        sleep(Duration::from_millis(50)).await;
+    }
+    false
+}
+
 /// Build a `Command` for a one-shot `fergentsd` invocation in `home`.
 fn daemon_command(home: &Path, socket: &SocketPath, args: &[&str]) -> Command {
     let mut command = Command::new(BIN);
@@ -223,5 +235,37 @@ async fn graceful_shutdown_on_sigterm() {
     assert!(
         !daemon.home.path().join("fergentsd.pid").exists(),
         "pid file should be removed on graceful shutdown"
+    );
+}
+
+#[tokio::test]
+async fn detached_start_survives_spawner_exit() {
+    let home = tempfile::tempdir().unwrap();
+    let socket = unique_socket(home.path());
+
+    // `start` (without `--run`/`--foreground`) spawns a detached child and
+    // returns; `output()` waits for that spawner process to exit.
+    let output = daemon_command(home.path(), &socket, &["start"])
+        .output()
+        .expect("run detached start");
+    assert!(
+        output.status.success(),
+        "start failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    // The spawner has exited; the detached daemon must still become reachable.
+    assert!(
+        wait_until_reachable(&socket, Duration::from_secs(15)).await,
+        "detached daemon did not come up after the spawner exited"
+    );
+
+    // Clean up: ask the daemon to shut down, then confirm it goes away.
+    if let Ok(client) = KernelClient::connect(&socket).await {
+        let _ = client.call("kernel.shutdown", serde_json::json!({})).await;
+    }
+    assert!(
+        wait_until_unreachable(&socket, Duration::from_secs(15)).await,
+        "detached daemon did not stop"
     );
 }

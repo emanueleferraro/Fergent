@@ -482,6 +482,7 @@ dependencies = [
  "fergents-protocol",
  "fergents-storage",
  "fergents-supervisor",
+ "libc",
  "serde",
  "serde_json",
  "tempfile",
