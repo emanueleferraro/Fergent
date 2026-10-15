@@ -9,8 +9,13 @@
 
 name: CI
 
+# Run on every pull request, and on pushes to main. Feature branches are
+# covered by their pull request, so restricting `push` to main avoids emitting
+# duplicate check runs for the same commit (which confuses required status
+# checks on a protected branch).
 on:
   push:
+    branches: [main]
   pull_request:
 
 # Cancel superseded runs on the same ref to save CI minutes.
