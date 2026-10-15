@@ -269,3 +269,79 @@ async fn detached_start_survives_spawner_exit() {
         "detached daemon did not stop"
     );
 }
+
+#[tokio::test]
+async fn stop_terminates_running_daemon() {
+    let mut daemon = Daemon::start().await;
+
+    let output = daemon_command(daemon.home.path(), &daemon.socket, &["stop"])
+        .output()
+        .expect("run stop");
+    assert!(
+        output.status.success(),
+        "stop failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("stopped"),
+        "unexpected stdout: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+
+    assert!(
+        wait_for_exit(&mut daemon.child, Duration::from_secs(15)).await,
+        "daemon did not exit after stop"
+    );
+    assert!(
+        !daemon.home.path().join("fergentsd.pid").exists(),
+        "pid file should be removed after stop"
+    );
+}
+
+#[tokio::test]
+async fn stop_reports_not_running_when_absent() {
+    let home = tempfile::tempdir().unwrap();
+    let socket = unique_socket(home.path());
+
+    let output = daemon_command(home.path(), &socket, &["stop"])
+        .output()
+        .expect("run stop");
+    assert!(output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("not running"),
+        "unexpected stdout: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn status_reports_dead_process_as_not_running() {
+    let mut daemon = Daemon::start().await;
+
+    // Kill the daemon without a graceful shutdown, leaving a stale PID file.
+    let killed = Command::new("kill")
+        .args(["-KILL", &daemon.child.id().to_string()])
+        .status()
+        .expect("send SIGKILL");
+    assert!(killed.success());
+    assert!(wait_for_exit(&mut daemon.child, Duration::from_secs(15)).await);
+    assert!(
+        daemon.home.path().join("fergentsd.pid").exists(),
+        "pid file should remain after an abrupt kill"
+    );
+
+    let output = daemon_command(daemon.home.path(), &daemon.socket, &["status"])
+        .output()
+        .expect("run status");
+    assert!(output.status.success());
+    assert!(
+        String::from_utf8_lossy(&output.stdout).contains("not running"),
+        "unexpected stdout: {}",
+        String::from_utf8_lossy(&output.stdout)
+    );
+    assert!(
+        !daemon.home.path().join("fergentsd.pid").exists(),
+        "stale pid file should be removed by status"
+    );
+}

@@ -5,6 +5,7 @@ mod logs;
 
 use std::path::PathBuf;
 use std::process::{ExitCode, Stdio};
+use std::time::Duration;
 
 use clap::{Parser, Subcommand};
 use config::GlobalConfig;
@@ -13,6 +14,7 @@ use fergents_core::{default_data_dir, find_migrations_dir, Kernel, KernelConfig}
 use fergents_protocol::HealthSnapshot;
 use fergents_supervisor::{shutdown_signal, PidFile};
 use tokio::sync::watch;
+use tokio::time::{sleep, Instant};
 use tracing_subscriber::prelude::*;
 
 /// The Fergents kernel daemon.
@@ -220,43 +222,121 @@ async fn wait_for_shutdown(rx: &mut watch::Receiver<bool>) {
     let _ = rx.changed().await;
 }
 
+/// Stop a running daemon: request a graceful shutdown over IPC, send a
+/// termination signal where the OS supports it, then wait up to 10 s.
 async fn stop(data_dir: &std::path::Path, socket: &SocketPath) -> anyhow::Result<()> {
-    match KernelClient::connect(socket).await {
-        Ok(client) => {
-            let pid = PidFile::in_dir(data_dir).read().unwrap_or(0);
-            let _ = client.call("kernel.shutdown", serde_json::json!({})).await;
-            println!("stopping (pid {pid})");
-        }
-        Err(_) => {
-            println!("not running");
-        }
+    let pid_file = PidFile::in_dir(data_dir);
+    let Some(pid) = pid_file.read() else {
+        println!("not running");
+        return Ok(());
+    };
+
+    // Graceful shutdown over IPC (available on every platform).
+    if let Ok(client) = KernelClient::connect(socket).await {
+        let _ = client.call("kernel.shutdown", serde_json::json!({})).await;
     }
-    Ok(())
+    // Termination signal where available (Unix SIGTERM; no-op on Windows).
+    send_terminate(pid);
+
+    if wait_for_exit(pid, socket, Duration::from_secs(10)).await {
+        pid_file.remove()?;
+        println!("stopped (pid {pid})");
+        Ok(())
+    } else {
+        anyhow::bail!("daemon (pid {pid}) did not stop within 10s");
+    }
 }
 
+/// Show daemon status, checking process existence (not only socket
+/// reachability) and clearing a stale PID file.
 async fn status(data_dir: &std::path::Path, socket: &SocketPath) -> anyhow::Result<()> {
     let pid_file = PidFile::in_dir(data_dir);
-    match KernelClient::connect(socket).await {
-        Ok(client) => {
-            let health: HealthSnapshot = client.call_typed("system.health", &()).await?;
-            let pid = pid_file
-                .read()
-                .map_or_else(|| "?".to_string(), |p| p.to_string());
-            println!(
-                "running (pid {pid}) status={} storage={} uptime={}ms kernel={}",
-                health.status, health.storage, health.uptime_ms, health.kernel_version
-            );
+    match pid_file.read() {
+        Some(pid) if process_alive(pid) => match KernelClient::connect(socket).await {
+            Ok(client) => {
+                let health: HealthSnapshot = match client.call_typed("system.health", &()).await {
+                    Ok(health) => health,
+                    Err(_) => {
+                        println!("running (pid {pid}) (not responding)");
+                        return Ok(());
+                    }
+                };
+                println!(
+                    "running (pid {pid}) status={} storage={} uptime={}ms kernel={}",
+                    health.status, health.storage, health.uptime_ms, health.kernel_version
+                );
+            }
+            Err(_) => println!("running (pid {pid}) (unreachable)"),
+        },
+        Some(_) => {
+            pid_file.remove()?;
+            println!("not running (stale pid file removed)");
         }
-        Err(_) => {
-            if pid_file.read().is_some() {
-                pid_file.remove()?;
-                println!("not running (stale pid file removed)");
+        None => {
+            if KernelClient::connect(socket).await.is_ok() {
+                println!("running (pid unknown)");
             } else {
                 println!("not running");
             }
         }
     }
     Ok(())
+}
+
+/// Send a termination signal to `pid` where the platform supports it.
+#[cfg(unix)]
+fn send_terminate(pid: u32) {
+    // SAFETY: `kill` is called with SIGTERM and a pid read from our own PID
+    // file; an invalid/absent pid simply returns ESRCH, which we ignore.
+    unsafe {
+        libc::kill(pid as libc::pid_t, libc::SIGTERM);
+    }
+}
+
+#[cfg(windows)]
+fn send_terminate(_pid: u32) {
+    // Windows has no external graceful signal without sharing a console; the
+    // IPC `kernel.shutdown` request above performs the graceful stop.
+}
+
+/// Whether a process with `pid` currently exists.
+#[cfg(unix)]
+fn process_alive(pid: u32) -> bool {
+    // `kill -0` succeeds iff the process exists and we may signal it.
+    let pid_arg = pid.to_string();
+    std::process::Command::new("kill")
+        .args(["-0", pid_arg.as_str()])
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map(|status| status.success())
+        .unwrap_or(false)
+}
+
+#[cfg(windows)]
+fn process_alive(pid: u32) -> bool {
+    let filter = format!("PID eq {pid}");
+    let output = std::process::Command::new("tasklist")
+        .args(["/FI", filter.as_str(), "/NH"])
+        .output();
+    match output {
+        Ok(out) => String::from_utf8_lossy(&out.stdout).contains(&pid.to_string()),
+        Err(_) => false,
+    }
+}
+
+/// Wait up to `within` for the daemon to exit (process gone or socket closed).
+async fn wait_for_exit(pid: u32, socket: &SocketPath, within: Duration) -> bool {
+    let deadline = Instant::now() + within;
+    loop {
+        if !process_alive(pid) || KernelClient::connect(socket).await.is_err() {
+            return true;
+        }
+        if Instant::now() >= deadline {
+            return false;
+        }
+        sleep(Duration::from_millis(50)).await;
+    }
 }
 
 /// Initialize tracing: JSON logs to a daily-rotating file under
