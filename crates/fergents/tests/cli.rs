@@ -12,6 +12,27 @@ use ratatui::backend::TestBackend;
 use ratatui::Terminal;
 use tokio::sync::watch;
 
+/// A unique, platform-appropriate address for a test endpoint.
+///
+/// Unix uses a socket file under `dir`; Windows uses a unique named pipe
+/// (a filesystem path is not a valid Windows endpoint).
+fn test_socket(dir: &Path) -> SocketPath {
+    #[cfg(unix)]
+    {
+        SocketPath::from_path(dir.join("t.sock").to_string_lossy().into_owned())
+    }
+    #[cfg(windows)]
+    {
+        let _ = dir;
+        static COUNTER: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(0);
+        let index = COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        SocketPath::from_path(format!(
+            r"\\.\pipe\fergents-cli-test-{}-{index}",
+            std::process::id()
+        ))
+    }
+}
+
 /// Start a kernel + server on a temp socket and wait until it accepts.
 async fn start_kernel() -> (tempfile::TempDir, SocketPath, ServerHandle) {
     let dir = tempfile::tempdir().unwrap();
@@ -22,7 +43,7 @@ async fn start_kernel() -> (tempfile::TempDir, SocketPath, ServerHandle) {
         event_capacity: 128,
     })
     .unwrap();
-    let socket = SocketPath::from_path(dir.path().join("t.sock").to_string_lossy().into_owned());
+    let socket = test_socket(dir.path());
     let (tx, rx) = watch::channel(false);
     let handle = ServerHandle::spawn(kernel, socket.clone(), tx, rx);
     for _ in 0..100 {

@@ -1,0 +1,20 @@
+# Line endings.
+#
+# Source and configuration files are always stored and checked out with LF so
+# that `cargo fmt` (rustfmt.toml: newline_style = "Unix") and prettier
+# (.prettierrc: endOfLine = "lf") pass on every platform. GitHub's Windows
+# runners default to `core.autocrlf=true`, which would otherwise check these
+# files out as CRLF and fail the format checks.
+* text=auto eol=lf
+
+# Binary assets must never be normalized.
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.icns  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.otf   binary

@@ -113,11 +113,31 @@ pub async fn connect_stream(socket: &SocketPath) -> Result<BoxStream, ApiError> 
     }
     #[cfg(windows)]
     {
+        // A named pipe accepts one client per instance, so a connect can
+        // transiently fail with ERROR_PIPE_BUSY (231) while the listener arms
+        // its next instance, or ERROR_FILE_NOT_FOUND (2) before the first one
+        // exists. Retry briefly, mirroring `WaitNamedPipe`.
+        const ERROR_FILE_NOT_FOUND: i32 = 2;
+        const ERROR_PIPE_BUSY: i32 = 231;
         tokio::task::spawn_blocking({
             let path = socket.path.clone();
             move || -> Result<BoxStream, ApiError> {
-                let client = tokio::net::windows::named_pipe::ClientOptions::new().open(&path)?;
-                Ok(Box::new(client))
+                let deadline = std::time::Instant::now() + std::time::Duration::from_secs(5);
+                loop {
+                    match tokio::net::windows::named_pipe::ClientOptions::new().open(&path) {
+                        Ok(client) => return Ok(Box::new(client) as BoxStream),
+                        Err(err)
+                            if std::time::Instant::now() < deadline
+                                && matches!(
+                                    err.raw_os_error(),
+                                    Some(ERROR_FILE_NOT_FOUND) | Some(ERROR_PIPE_BUSY)
+                                ) =>
+                        {
+                            std::thread::sleep(std::time::Duration::from_millis(20));
+                        }
+                        Err(err) => return Err(ApiError::Io(err)),
+                    }
+                }
             }
         })
         .await

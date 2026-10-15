@@ -61,6 +61,10 @@ impl Drop for Daemon {
 }
 
 /// A unique socket address for this test, isolated from other tests.
+///
+/// `home` only participates in the Unix socket path; Windows uses a named pipe
+/// addressed by process id, so the parameter is unused there by design. It is
+/// kept so the signature is identical on every platform.
 fn unique_socket(home: &Path) -> SocketPath {
     static COUNTER: AtomicU32 = AtomicU32::new(0);
     let index = COUNTER.fetch_add(1, Ordering::SeqCst);
@@ -70,7 +74,10 @@ fn unique_socket(home: &Path) -> SocketPath {
         .to_string_lossy()
         .into_owned();
     #[cfg(windows)]
-    let path = format!(r"\\.\pipe\fergentsd-test-{}-{index}", std::process::id());
+    let path = {
+        let _ = home;
+        format!(r"\\.\pipe\fergentsd-test-{}-{index}", std::process::id())
+    };
     SocketPath::from_path(path)
 }
 

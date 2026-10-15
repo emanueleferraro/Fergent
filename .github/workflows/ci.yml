@@ -9,8 +9,13 @@
 
 name: CI
 
+# Run on every pull request, and on pushes to main. Feature branches are
+# covered by their pull request, so restricting `push` to main avoids emitting
+# duplicate check runs for the same commit (which confuses required status
+# checks on a protected branch).
 on:
   push:
+    branches: [main]
   pull_request:
 
 # Cancel superseded runs on the same ref to save CI minutes.
@@ -113,10 +118,11 @@ jobs:
 
       # The pnpm lockfile is committed to the repository; --frozen-lockfile
       # ensures CI uses the exact locked dependency versions.
+      # The pnpm version is pinned via `packageManager` in package.json, which
+      # pnpm/action-setup reads automatically. Passing `version` here as well
+      # makes pnpm abort with "Multiple versions of pnpm specified".
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 12
 
       - name: Setup Node
         uses: actions/setup-node@v4
