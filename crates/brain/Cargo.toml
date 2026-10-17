@@ -1,0 +1,10 @@
+[package]
+name = "fergents-brain"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents brain model: brain.toml, vault layout, lifecycle, and multi-brain operations."
+
+[dependencies]

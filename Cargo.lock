@@ -378,6 +378,10 @@ dependencies = [
 ]
 
 [[package]]
+name = "fergents-brain"
+version = "0.1.0"
+
+[[package]]
 name = "fergents-cli"
 version = "0.1.0"
 dependencies = [
@@ -431,6 +435,18 @@ dependencies = [
  "tracing",
  "ulid",
 ]
+
+[[package]]
+name = "fergents-graph"
+version = "0.1.0"
+
+[[package]]
+name = "fergents-index"
+version = "0.1.0"
+
+[[package]]
+name = "fergents-markdown"
+version = "0.1.0"
 
 [[package]]
 name = "fergents-protocol"

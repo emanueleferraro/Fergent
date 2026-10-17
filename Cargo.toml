@@ -7,6 +7,10 @@ members = [
     "crates/core",
     "crates/api",
     "crates/supervisor",
+    "crates/markdown",
+    "crates/brain",
+    "crates/index",
+    "crates/graph",
     "crates/fergentsd",
     "crates/fergents",
 ]
@@ -35,6 +39,10 @@ fergents-events = { path = "crates/events", version = "0.1.0" }
 fergents-core = { path = "crates/core", version = "0.1.0" }
 fergents-api = { path = "crates/api", version = "0.1.0" }
 fergents-supervisor = { path = "crates/supervisor", version = "0.1.0" }
+fergents-markdown = { path = "crates/markdown", version = "0.1.0" }
+fergents-brain = { path = "crates/brain", version = "0.1.0" }
+fergents-index = { path = "crates/index", version = "0.1.0" }
+fergents-graph = { path = "crates/graph", version = "0.1.0" }
 
 # Runtime
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "io-util", "sync", "time", "signal", "fs"] }
