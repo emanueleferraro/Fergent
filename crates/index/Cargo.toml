@@ -1,0 +1,10 @@
+[package]
+name = "fergents-index"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents per-brain index: schema, chunking, embeddings, FTS5, and hybrid search."
+
+[dependencies]
