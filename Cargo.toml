@@ -65,6 +65,14 @@ sqlite-vec = "0.1"
 # Tokenization for chunk sizing (cl100k_base, bundled vocab) — spec Chunking
 tiktoken-rs = "0.11"
 
+# Local embeddings (BGE-M3) behind the `embed-real` feature — spec Dependencies.
+# Feature-gated so the default build and CI only compile the deterministic stub
+# and never fetch the ORT runtime or the model.
+fastembed = { version = "6.1", default-features = false, features = [
+    "ort-download-binaries-native-tls",
+    "hf-hub-native-tls",
+] }
+
 # Vault traversal and .brainignore (gitignore syntax) — spec Dependencies
 walkdir = "2"
 ignore = "0.4"
