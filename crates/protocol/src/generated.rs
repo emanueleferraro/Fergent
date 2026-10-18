@@ -2863,6 +2863,69 @@ impl std::convert::TryFrom<String> for DocumentKind {
         value.parse()
     }
 }
+#[doc = "Payload of the embedding.created event (SEARCH.md §4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"EmbeddingCreatedPayload\","]
+#[doc = "  \"description\": \"Payload of the embedding.created event (SEARCH.md §4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"chunk_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"chunk_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct EmbeddingCreatedPayload {
+    pub chunk_id: String,
+}
+impl From<&EmbeddingCreatedPayload> for EmbeddingCreatedPayload {
+    fn from(value: &EmbeddingCreatedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the embedding.failed event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"EmbeddingFailedPayload\","]
+#[doc = "  \"description\": \"Payload of the embedding.failed event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"chunk_id\","]
+#[doc = "    \"error\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"chunk_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"error\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct EmbeddingFailedPayload {
+    pub chunk_id: String,
+    pub error: String,
+}
+impl From<&EmbeddingFailedPayload> for EmbeddingFailedPayload {
+    fn from(value: &EmbeddingFailedPayload) -> Self {
+        value.clone()
+    }
+}
 #[doc = "A graph entity (GRAPH.md §5.1, CozoDB `entity`)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -3072,6 +3135,127 @@ pub struct EventsDroppedNotice {
 }
 impl From<&EventsDroppedNotice> for EventsDroppedNotice {
     fn from(value: &EventsDroppedNotice) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the file.changed event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileChangedPayload\","]
+#[doc = "  \"description\": \"Payload of the file.changed event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct FileChangedPayload {
+    pub path: String,
+}
+impl From<&FileChangedPayload> for FileChangedPayload {
+    fn from(value: &FileChangedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the file.created event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileCreatedPayload\","]
+#[doc = "  \"description\": \"Payload of the file.created event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct FileCreatedPayload {
+    pub path: String,
+}
+impl From<&FileCreatedPayload> for FileCreatedPayload {
+    fn from(value: &FileCreatedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the file.deleted event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileDeletedPayload\","]
+#[doc = "  \"description\": \"Payload of the file.deleted event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct FileDeletedPayload {
+    pub path: String,
+}
+impl From<&FileDeletedPayload> for FileDeletedPayload {
+    fn from(value: &FileDeletedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the file.renamed event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileRenamedPayload\","]
+#[doc = "  \"description\": \"Payload of the file.renamed event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"from_path\","]
+#[doc = "    \"to_path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"from_path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"to_path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct FileRenamedPayload {
+    pub from_path: String,
+    pub to_path: String,
+}
+impl From<&FileRenamedPayload> for FileRenamedPayload {
+    fn from(value: &FileRenamedPayload) -> Self {
         value.clone()
     }
 }
@@ -3790,6 +3974,40 @@ impl From<&HelloParams> for HelloParams {
         value.clone()
     }
 }
+#[doc = "Payload of the index.completed event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexCompletedPayload\","]
+#[doc = "  \"description\": \"Payload of the index.completed event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct IndexCompletedPayload {
+    pub brain_id: String,
+    pub path: String,
+}
+impl From<&IndexCompletedPayload> for IndexCompletedPayload {
+    fn from(value: &IndexCompletedPayload) -> Self {
+        value.clone()
+    }
+}
 #[doc = "The [index] section of brain.toml (BRAIN.md §6.1)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -3849,6 +4067,356 @@ pub struct IndexConfig {
 }
 impl From<&IndexConfig> for IndexConfig {
     fn from(value: &IndexConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the index.failed event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexFailedPayload\","]
+#[doc = "  \"description\": \"Payload of the index.failed event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"error\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"error\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct IndexFailedPayload {
+    pub brain_id: String,
+    pub error: String,
+    pub path: String,
+}
+impl From<&IndexFailedPayload> for IndexFailedPayload {
+    fn from(value: &IndexFailedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Index job operation (spec Appendix B, index_jobs.op)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexJobOp\","]
+#[doc = "  \"description\": \"Index job operation (spec Appendix B, index_jobs.op).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"upsert\","]
+#[doc = "    \"delete\","]
+#[doc = "    \"reindex\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum IndexJobOp {
+    #[serde(rename = "upsert")]
+    Upsert,
+    #[serde(rename = "delete")]
+    Delete,
+    #[serde(rename = "reindex")]
+    Reindex,
+}
+impl From<&IndexJobOp> for IndexJobOp {
+    fn from(value: &IndexJobOp) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for IndexJobOp {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Upsert => write!(f, "upsert"),
+            Self::Delete => write!(f, "delete"),
+            Self::Reindex => write!(f, "reindex"),
+        }
+    }
+}
+impl std::str::FromStr for IndexJobOp {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "upsert" => Ok(Self::Upsert),
+            "delete" => Ok(Self::Delete),
+            "reindex" => Ok(Self::Reindex),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for IndexJobOp {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for IndexJobOp {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for IndexJobOp {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Indexing pipeline step (SEARCH.md §13.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexPhase\","]
+#[doc = "  \"description\": \"Indexing pipeline step (SEARCH.md §13.2).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"detect\","]
+#[doc = "    \"parse\","]
+#[doc = "    \"chunk\","]
+#[doc = "    \"embed\","]
+#[doc = "    \"store\","]
+#[doc = "    \"extract_entities\","]
+#[doc = "    \"update_graph\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum IndexPhase {
+    #[serde(rename = "detect")]
+    Detect,
+    #[serde(rename = "parse")]
+    Parse,
+    #[serde(rename = "chunk")]
+    Chunk,
+    #[serde(rename = "embed")]
+    Embed,
+    #[serde(rename = "store")]
+    Store,
+    #[serde(rename = "extract_entities")]
+    ExtractEntities,
+    #[serde(rename = "update_graph")]
+    UpdateGraph,
+}
+impl From<&IndexPhase> for IndexPhase {
+    fn from(value: &IndexPhase) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for IndexPhase {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Detect => write!(f, "detect"),
+            Self::Parse => write!(f, "parse"),
+            Self::Chunk => write!(f, "chunk"),
+            Self::Embed => write!(f, "embed"),
+            Self::Store => write!(f, "store"),
+            Self::ExtractEntities => write!(f, "extract_entities"),
+            Self::UpdateGraph => write!(f, "update_graph"),
+        }
+    }
+}
+impl std::str::FromStr for IndexPhase {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "detect" => Ok(Self::Detect),
+            "parse" => Ok(Self::Parse),
+            "chunk" => Ok(Self::Chunk),
+            "embed" => Ok(Self::Embed),
+            "store" => Ok(Self::Store),
+            "extract_entities" => Ok(Self::ExtractEntities),
+            "update_graph" => Ok(Self::UpdateGraph),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for IndexPhase {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for IndexPhase {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for IndexPhase {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Payload of the index.progress event (SEARCH.md §13.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexProgressPayload\","]
+#[doc = "  \"description\": \"Payload of the index.progress event (SEARCH.md §13.2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"phase\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"done\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"phase\": {"]
+#[doc = "      \"$ref\": \"#/$defs/IndexPhase\""]
+#[doc = "    },"]
+#[doc = "    \"total\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct IndexProgressPayload {
+    pub brain_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub done: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    pub phase: IndexPhase,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub total: Option<i64>,
+}
+impl From<&IndexProgressPayload> for IndexProgressPayload {
+    fn from(value: &IndexProgressPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the index.queued event (spec Appendix B, index_jobs)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexQueuedPayload\","]
+#[doc = "  \"description\": \"Payload of the index.queued event (spec Appendix B, index_jobs).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"op\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"op\": {"]
+#[doc = "      \"$ref\": \"#/$defs/IndexJobOp\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct IndexQueuedPayload {
+    pub brain_id: String,
+    pub op: IndexJobOp,
+    pub path: String,
+}
+impl From<&IndexQueuedPayload> for IndexQueuedPayload {
+    fn from(value: &IndexQueuedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the index.started event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexStartedPayload\","]
+#[doc = "  \"description\": \"Payload of the index.started event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct IndexStartedPayload {
+    pub brain_id: String,
+    pub path: String,
+}
+impl From<&IndexStartedPayload> for IndexStartedPayload {
+    fn from(value: &IndexStartedPayload) -> Self {
         value.clone()
     }
 }
@@ -4124,6 +4692,35 @@ pub struct LinkRef {
 }
 impl From<&LinkRef> for LinkRef {
     fn from(value: &LinkRef) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the link.updated event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinkUpdatedPayload\","]
+#[doc = "  \"description\": \"Payload of the link.updated event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"link\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"link\": {"]
+#[doc = "      \"$ref\": \"#/$defs/LinkRef\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinkUpdatedPayload {
+    pub link: LinkRef,
+}
+impl From<&LinkUpdatedPayload> for LinkUpdatedPayload {
+    fn from(value: &LinkUpdatedPayload) -> Self {
         value.clone()
     }
 }
@@ -4461,6 +5058,64 @@ impl From<&Mention> for Mention {
         value.clone()
     }
 }
+#[doc = "Payload of the note.created event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"NoteCreatedPayload\","]
+#[doc = "  \"description\": \"Payload of the note.created event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct NoteCreatedPayload {
+    pub document: Document,
+}
+impl From<&NoteCreatedPayload> for NoteCreatedPayload {
+    fn from(value: &NoteCreatedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the note.linked event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"NoteLinkedPayload\","]
+#[doc = "  \"description\": \"Payload of the note.linked event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"link\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"link\": {"]
+#[doc = "      \"$ref\": \"#/$defs/LinkRef\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct NoteLinkedPayload {
+    pub link: LinkRef,
+}
+impl From<&NoteLinkedPayload> for NoteLinkedPayload {
+    fn from(value: &NoteLinkedPayload) -> Self {
+        value.clone()
+    }
+}
 #[doc = "A lightweight reference to a note."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -4497,6 +5152,35 @@ pub struct NoteRef {
 }
 impl From<&NoteRef> for NoteRef {
     fn from(value: &NoteRef) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the note.updated event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"NoteUpdatedPayload\","]
+#[doc = "  \"description\": \"Payload of the note.updated event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct NoteUpdatedPayload {
+    pub document: Document,
+}
+impl From<&NoteUpdatedPayload> for NoteUpdatedPayload {
+    fn from(value: &NoteUpdatedPayload) -> Self {
         value.clone()
     }
 }
@@ -5960,6 +6644,35 @@ pub struct TagRenameResult {
 }
 impl From<&TagRenameResult> for TagRenameResult {
     fn from(value: &TagRenameResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the tag.updated event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TagUpdatedPayload\","]
+#[doc = "  \"description\": \"Payload of the tag.updated event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"tag\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"tag\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Tag\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TagUpdatedPayload {
+    pub tag: Tag,
+}
+impl From<&TagUpdatedPayload> for TagUpdatedPayload {
+    fn from(value: &TagUpdatedPayload) -> Self {
         value.clone()
     }
 }
