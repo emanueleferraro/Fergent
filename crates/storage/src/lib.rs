@@ -9,7 +9,7 @@ mod storage;
 
 pub use audit::{append, canonical_bytes, entry_hash, verify_chain, AuditEntry, GENESIS_PREV_HASH};
 pub use error::StorageError;
-pub use migrations::{load_migrations, Migration};
+pub use migrations::{load_migrations, load_migrations_from, Migration};
 pub use sqlite::SqliteStorage;
 pub use storage::{Key, Row, Storage, Value};
 

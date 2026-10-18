@@ -12,6 +12,7 @@
 mod config;
 mod error;
 mod ignore;
+mod store;
 mod vault;
 
 pub use config::{
@@ -20,4 +21,7 @@ pub use config::{
 };
 pub use error::BrainError;
 pub use ignore::{brainignore_path, BrainIgnore, BRAINIGNORE, BUILTIN_IGNORES};
+pub use store::{
+    available_schema_version, register_sqlite_vec, BrainStore, BRAIN_MIGRATIONS_SUBDIR, INDEX_DB,
+};
 pub use vault::{VaultLayout, BRAIN_META_DIR};

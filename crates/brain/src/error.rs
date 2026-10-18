@@ -37,6 +37,10 @@ pub enum BrainError {
     /// The configuration parsed but failed semantic validation.
     #[error("invalid brain configuration: {0}")]
     Invalid(String),
+
+    /// The per-brain store could not be opened or migrated.
+    #[error(transparent)]
+    Storage(#[from] fergents_storage::StorageError),
 }
 
 impl BrainError {
