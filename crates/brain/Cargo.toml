@@ -9,11 +9,17 @@ description = "Fergents brain model: brain.toml, vault layout, lifecycle, and mu
 
 [dependencies]
 fergents-storage.workspace = true
+fergents-index.workspace = true
 serde.workspace = true
 serde_json.workspace = true
 toml.workspace = true
 thiserror.workspace = true
 ignore.workspace = true
+ulid.workspace = true
+chrono.workspace = true
+sha2.workspace = true
+hex.workspace = true
+zip.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

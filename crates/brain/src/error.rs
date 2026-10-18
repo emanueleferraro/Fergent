@@ -41,6 +41,18 @@ pub enum BrainError {
     /// The per-brain store could not be opened or migrated.
     #[error(transparent)]
     Storage(#[from] fergents_storage::StorageError),
+
+    /// The indexing pipeline failed for a brain.
+    #[error("indexing failed: {0}")]
+    Index(String),
+
+    /// A `.fergbrain` archive could not be written, read, or validated.
+    #[error("archive error: {0}")]
+    Archive(String),
+
+    /// A JSON document (e.g. an archive manifest) could not be handled.
+    #[error(transparent)]
+    Json(#[from] serde_json::Error),
 }
 
 impl BrainError {
