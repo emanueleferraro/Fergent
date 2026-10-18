@@ -12,6 +12,7 @@ mod embed;
 mod embedding;
 mod error;
 mod events;
+mod notes;
 mod pipeline;
 mod queue;
 mod scan;
@@ -31,6 +32,12 @@ pub use embedding::{
 };
 pub use error::IndexError;
 pub use events::{EventSink, NullSink, RecordingSink};
+pub use notes::{
+    backlinks, broken_links, classify_link, clear_note_data, dead_ends, delete_tag,
+    frontmatter_tags, link_kinds, list_tags, orphans, outline, persist_links, persist_tags,
+    rename_tag, resolve_target, unlinked_mentions, upsert_notes_meta, LinkRecord, NoteRef,
+    OutlineEntry, Tag, UnlinkedMention,
+};
 pub use pipeline::{
     IndexOutcome, Indexer, IndexerConfig, ProcessReport, ScanReport, DEFAULT_MAX_EMBED_TOKENS,
     DEFAULT_MAX_FILE_BYTES,
