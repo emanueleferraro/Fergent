@@ -19,6 +19,7 @@ use crate::embed::Embedder;
 use crate::embedding::{EmbedInput, EmbeddingPipeline};
 use crate::error::IndexError;
 use crate::events::EventSink;
+use crate::notes;
 use crate::queue::{IndexJob, IndexJobOp, IndexQueue, QueueStats};
 use crate::scan::{DocumentKind, VaultScanner};
 use crate::vector::VectorStore;
@@ -295,6 +296,18 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
             ],
         )?;
 
+        // Refresh the note's links, tags, and metadata (Task 9).
+        notes::clear_note_data(&self.storage, &document_id)?;
+        if kind == DocumentKind::Note {
+            if let Some(parsed) = &parsed {
+                notes::persist_links(&self.storage, &document_id, &parsed.links, &parsed.body)?;
+                let mut tags = parsed.tags.clone();
+                tags.extend(notes::frontmatter_tags(parsed.frontmatter.as_ref()));
+                notes::persist_tags(&self.storage, &document_id, &tags)?;
+                notes::upsert_notes_meta(&self.storage, &document_id, parsed.frontmatter.as_ref())?;
+            }
+        }
+
         if let Some(text) = &text {
             self.replace_chunks(&document_id, text, kind)?;
         }
@@ -339,6 +352,7 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
             &[Value::from(now_ms()), Value::String(state.id.clone())],
         )?;
         self.remove_chunks(&state.id)?;
+        notes::clear_note_data(&self.storage, &state.id)?;
         Ok(IndexOutcome::Deleted)
     }
 
