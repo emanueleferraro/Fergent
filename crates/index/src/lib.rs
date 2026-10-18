@@ -10,11 +10,14 @@
 mod chunk;
 mod embed;
 mod embedding;
+mod engine;
 mod error;
 mod events;
+mod fusion;
 mod notes;
 mod pipeline;
 mod queue;
+mod rerank;
 mod scan;
 mod search;
 mod vector;
@@ -31,8 +34,10 @@ pub use embedding::{
     content_hash, EmbedInput, EmbedReport, EmbeddingCache, EmbeddingMeta, EmbeddingPipeline,
     EmbeddingWorker,
 };
+pub use engine::SearchEngine;
 pub use error::IndexError;
 pub use events::{EventSink, NullSink, RecordingSink};
+pub use fusion::{reciprocal_rank_fusion, FusedHit, RankedList, Stage, StageScore, RRF_K};
 pub use notes::{
     backlinks, broken_links, classify_link, clear_note_data, dead_ends, delete_tag,
     frontmatter_tags, link_kinds, list_tags, orphans, outline, persist_links, persist_tags,
@@ -44,10 +49,13 @@ pub use pipeline::{
     DEFAULT_MAX_FILE_BYTES,
 };
 pub use queue::{IndexJob, IndexJobOp, IndexQueue, QueueStats};
+#[cfg(feature = "rerank-real")]
+pub use rerank::{CrossEncoderReranker, REAL_RERANK_MODEL};
+pub use rerank::{Reranker, StubReranker, RERANK_MIN_TOKENS, RERANK_TOP_K, STUB_RERANK_MODEL};
 pub use scan::{classify, DocumentKind, ScannedFile, VaultScanner, BUILTIN_IGNORES};
 pub use search::{
-    analyze_query, search, AnalyzedQuery, SearchFilters, SearchHit, SearchMode, SearchRequest,
-    SearchResponse, DEFAULT_TOP_K,
+    analyze_query, AnalyzedQuery, CandidateCounts, HitMetadata, SearchFilters, SearchHit,
+    SearchMode, SearchRequest, SearchResponse, StageScores, CANDIDATE_K, DEFAULT_TOP_K,
 };
 pub use vector::{SqliteVecStore, VectorHit, VectorStore};
 pub use watcher::VaultWatcher;

@@ -1,12 +1,12 @@
-//! Integration tests for FTS5 BM25 search, query analysis, and filters
-//! (`SEARCH.md` §5, §9, §10).
+//! Integration tests for query analysis and structured filters (BM25 leg,
+//! `SEARCH.md` §5, §9, §10). The hybrid pipeline is covered in `hybrid.rs`.
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
 use fergents_index::{
-    analyze_query, search, EmbeddingCache, EmbeddingPipeline, Indexer, IndexerConfig, SearchMode,
-    SearchRequest, SqliteVecStore, StubEmbedder, DEFAULT_EMBED_DIM,
+    analyze_query, EmbeddingCache, EmbeddingPipeline, Indexer, IndexerConfig, NullSink,
+    SearchEngine, SearchMode, SearchRequest, SqliteVecStore, StubEmbedder, DEFAULT_EMBED_DIM,
 };
 use fergents_storage::{load_migrations_from, register_sqlite_vec, SqliteStorage, Storage};
 use serde_json::Value;
@@ -97,13 +97,26 @@ fn setup() -> (tempfile::TempDir, Arc<dyn Storage>) {
     (vault, storage)
 }
 
+fn engine(storage: &Arc<dyn Storage>) -> SearchEngine {
+    SearchEngine::new(
+        storage.clone(),
+        "personal",
+        Arc::new(StubEmbedder::default()),
+        Arc::new(SqliteVecStore::new(storage.clone(), DEFAULT_EMBED_DIM)),
+        None,
+        Arc::new(NullSink),
+    )
+}
+
 fn paths(response: &fergents_index::SearchResponse) -> Vec<String> {
     response.results.iter().map(|h| h.path.clone()).collect()
 }
 
+/// Run a BM25-only query (the Task 10 leg).
 fn run(storage: &Arc<dyn Storage>, query: &str) -> Vec<String> {
-    let request = SearchRequest::new(query);
-    paths(&search(storage, "personal", &request).unwrap())
+    let mut request = SearchRequest::new(query);
+    request.mode = SearchMode::Bm25;
+    paths(&engine(storage).search(&request).unwrap())
 }
 
 // --- Query analysis --------------------------------------------------------
@@ -168,14 +181,6 @@ fn negation_excludes_documents_containing_the_term() {
     assert!(!results.contains(&"notes/beta.md".to_string()));
     assert!(results.contains(&"notes/design.md".to_string()));
     assert!(results.contains(&"code/sample.rs".to_string()));
-}
-
-#[test]
-fn non_bm25_modes_are_rejected_until_task_11() {
-    let (_vault, storage) = setup();
-    let mut request = SearchRequest::new("apple");
-    request.mode = SearchMode::Hybrid;
-    assert!(search(&storage, "personal", &request).is_err());
 }
 
 // --- Filters ---------------------------------------------------------------
@@ -280,10 +285,10 @@ fn frontmatter_filter_matches_a_field_value() {
 fn invalid_filters_are_reported() {
     let (_vault, storage) = setup();
     let bad_date = SearchRequest::new("apple after:not-a-date");
-    assert!(search(&storage, "personal", &bad_date).is_err());
+    assert!(engine(&storage).search(&bad_date).is_err());
 
     let bad_has = SearchRequest::new("apple has:nonsense");
-    assert!(search(&storage, "personal", &bad_has).is_err());
+    assert!(engine(&storage).search(&bad_has).is_err());
 }
 
 // --- Cross-brain filter ----------------------------------------------------
@@ -295,24 +300,26 @@ fn brain_filter_only_searches_the_requested_brain() {
     // This storage is the "personal" brain.
     let mut request = SearchRequest::new("apple");
     request.brains = vec!["personal".to_string()];
-    let hit = search(&storage, "personal", &request).unwrap();
+    let hit = engine(&storage).search(&request).unwrap();
     assert!(!hit.results.is_empty());
 
     // A request for another brain finds nothing here.
     let mut other = SearchRequest::new("apple");
     other.brains = vec!["work".to_string()];
-    let empty = search(&storage, "personal", &other).unwrap();
+    let empty = engine(&storage).search(&other).unwrap();
     assert!(empty.results.is_empty());
-    assert_eq!(empty.candidates, 0);
+    assert_eq!(empty.candidates.bm25, 0);
 
     // The inline `brain:` token behaves the same way.
     let inline_other = SearchRequest::new("apple brain:work");
-    assert!(search(&storage, "personal", &inline_other)
+    assert!(engine(&storage)
+        .search(&inline_other)
         .unwrap()
         .results
         .is_empty());
     let inline_self = SearchRequest::new("apple brain:personal");
-    assert!(!search(&storage, "personal", &inline_self)
+    assert!(!engine(&storage)
+        .search(&inline_self)
         .unwrap()
         .results
         .is_empty());
@@ -321,11 +328,13 @@ fn brain_filter_only_searches_the_requested_brain() {
 #[test]
 fn result_carries_snippet_and_metadata() {
     let (_vault, storage) = setup();
-    let response = search(&storage, "personal", &SearchRequest::new("apple apple")).unwrap();
+    let mut request = SearchRequest::new("apple apple");
+    request.mode = SearchMode::Bm25;
+    let response = engine(&storage).search(&request).unwrap();
     let top = response.results.first().expect("a result");
     assert_eq!(top.path, "notes/apple.md");
     assert_eq!(top.title, "Apple");
     assert!(!top.snippet.is_empty());
     assert!(top.score > 0.0, "score should be positive: {}", top.score);
-    assert_eq!(top.score, top.bm25);
+    assert_eq!(top.scores.bm25, Some(top.score));
 }
