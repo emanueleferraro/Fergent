@@ -8,3 +8,36 @@ authors.workspace = true
 description = "Fergents graph store: CozoDB entity graph with a SQLite mirror."
 
 [dependencies]
+fergents-storage.workspace = true
+fergents-index.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+serde_yaml.workspace = true
+thiserror.workspace = true
+ulid.workspace = true
+sha2.workspace = true
+hex.workspace = true
+cozo.workspace = true
+regex.workspace = true
+
+# The real NER classifier (ONNX token classification). Optional so the default
+# build and CI only compile the regex extractor (decision D4).
+ort = { version = "2.0.0-rc.13", default-features = false, features = [
+    "std",
+    "download-binaries",
+    "tls-native",
+], optional = true }
+# `fancy-regex` (pure Rust) provides tokenizers' regex backend without the
+# native `onig` build dependency.
+tokenizers = { version = "0.23", default-features = false, features = [
+    "fancy-regex",
+], optional = true }
+
+[features]
+default = []
+# The real NER extractor (ONNX token classification via `ort`). Off by default
+# so the default build and CI only compile the regex extractor (decision D4).
+ner-real = ["dep:ort", "dep:tokenizers"]
+
+[dev-dependencies]
+tempfile.workspace = true
