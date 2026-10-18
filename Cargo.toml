@@ -73,6 +73,18 @@ fastembed = { version = "6.1", default-features = false, features = [
     "hf-hub-native-tls",
 ] }
 
+# Embedded graph database (Datalog) — spec Dependencies / ADR-013.
+# `storage-sled` (pure Rust) is used because Cozo's `storage-sqlite` links the
+# native `sqlite3`, which conflicts with `rusqlite`'s bundled SQLite in this
+# workspace (both declare `links = "sqlite3"`).
+cozo = { version = "0.7", default-features = false, features = [
+    "storage-sled",
+    "graph-algo",
+] }
+
+# Entity extraction (URLs, emails, ...) — spec Dependencies (GRAPH.md §3.2)
+regex = "1"
+
 # Vault traversal and .brainignore (gitignore syntax) — spec Dependencies
 walkdir = "2"
 ignore = "0.4"
