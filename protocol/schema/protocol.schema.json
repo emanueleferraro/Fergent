@@ -144,6 +144,535 @@
         "brains": { "type": "array", "items": { "$ref": "#/$defs/BrainSummary" } }
       }
     },
+    "BrainListParams": {
+      "title": "BrainListParams",
+      "description": "Params of brain.list. `brain.list` is extended in Phase 1 with an archived filter.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "include_archived": { "type": ["boolean", "null"], "description": "Include archived brains (default false)." }
+      }
+    },
+    "BrainState": {
+      "title": "BrainState",
+      "description": "Brain lifecycle state (BRAIN.md §9.1).",
+      "type": "string",
+      "enum": ["created", "indexing", "ready", "archived", "deleted"]
+    },
+    "BrainRole": {
+      "title": "BrainRole",
+      "description": "A brain's role within a project (BRAIN.md §8.1).",
+      "type": "string",
+      "enum": ["primary", "read-only", "scratch"]
+    },
+    "BrainCreatedPayload": {
+      "title": "BrainCreatedPayload",
+      "description": "Payload of the brain.created event.",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainOpenedPayload": {
+      "title": "BrainOpenedPayload",
+      "description": "Payload of the brain.opened event.",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainClosedPayload": {
+      "title": "BrainClosedPayload",
+      "description": "Payload of the brain.closed event.",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainUpdatedPayload": {
+      "title": "BrainUpdatedPayload",
+      "description": "Payload of the brain.updated event.",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainArchivedPayload": {
+      "title": "BrainArchivedPayload",
+      "description": "Payload of the brain.archived event.",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainDeletedPayload": {
+      "title": "BrainDeletedPayload",
+      "description": "Payload of the brain.deleted event.",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainExportedPayload": {
+      "title": "BrainExportedPayload",
+      "description": "Payload of the brain.exported event.",
+      "type": "object",
+      "required": ["brain_id", "output"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "output": { "type": "string" }
+      }
+    },
+    "BrainImportedPayload": {
+      "title": "BrainImportedPayload",
+      "description": "Payload of the brain.imported event.",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainIndexedPayload": {
+      "title": "BrainIndexedPayload",
+      "description": "Payload of the brain.indexed event.",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainCreateParams": {
+      "title": "BrainCreateParams",
+      "description": "Params of brain.create (BRAIN.md §9.2, §7.1, §18.1).",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "template": { "type": ["string", "null"], "description": "Template name, e.g. blank, personal, research, coding, team (BRAIN.md §7.1)." },
+        "path": { "type": ["string", "null"], "description": "Filesystem path for the new brain." },
+        "color": { "type": ["string", "null"] },
+        "icon": { "type": ["string", "null"] }
+      }
+    },
+    "BrainCreateResult": {
+      "title": "BrainCreateResult",
+      "type": "object",
+      "required": ["brain", "state"],
+      "additionalProperties": false,
+      "properties": {
+        "brain": { "$ref": "#/$defs/BrainSummary" },
+        "state": { "$ref": "#/$defs/BrainState" }
+      }
+    },
+    "BrainOpenParams": {
+      "title": "BrainOpenParams",
+      "description": "Params of brain.open (BRAIN.md §9.3).",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainOpenResult": {
+      "title": "BrainOpenResult",
+      "type": "object",
+      "required": ["brain", "state"],
+      "additionalProperties": false,
+      "properties": {
+        "brain": { "$ref": "#/$defs/BrainSummary" },
+        "state": { "$ref": "#/$defs/BrainState" }
+      }
+    },
+    "BrainCloseParams": {
+      "title": "BrainCloseParams",
+      "description": "Params of brain.close (BRAIN.md §9.4).",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainCloseResult": {
+      "title": "BrainCloseResult",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainGetParams": {
+      "title": "BrainGetParams",
+      "description": "Params of brain.get.",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainGetResult": {
+      "title": "BrainGetResult",
+      "description": "Result of brain.get: the brain summary, its lifecycle state, and its brain.toml config (BRAIN.md §6.1).",
+      "type": "object",
+      "required": ["brain", "state", "config"],
+      "additionalProperties": false,
+      "properties": {
+        "brain": { "$ref": "#/$defs/BrainSummary" },
+        "state": { "$ref": "#/$defs/BrainState" },
+        "config": { "$ref": "#/$defs/BrainConfig" }
+      }
+    },
+    "BrainUpdateParams": {
+      "title": "BrainUpdateParams",
+      "description": "Params of brain.update: mutable identity fields (BRAIN.md §6.1 [brain]).",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "name": { "type": ["string", "null"] },
+        "color": { "type": ["string", "null"] },
+        "icon": { "type": ["string", "null"] }
+      }
+    },
+    "BrainUpdateResult": {
+      "title": "BrainUpdateResult",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainDuplicateParams": {
+      "title": "BrainDuplicateParams",
+      "description": "Params of brain.duplicate (BRAIN.md §8.5).",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "name": { "type": ["string", "null"], "description": "Name for the copy." },
+        "path": { "type": ["string", "null"], "description": "Filesystem path for the copy." },
+        "rewrite_links": { "type": ["boolean", "null"], "description": "Rewrite internal links to the new brain id (BRAIN.md §8.5)." },
+        "include_attachments": { "type": ["boolean", "null"], "description": "Copy attachments and large files." }
+      }
+    },
+    "BrainDuplicateResult": {
+      "title": "BrainDuplicateResult",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainMoveParams": {
+      "title": "BrainMoveParams",
+      "description": "Params of brain.move: relocate a brain folder (BRAIN.md §10.1).",
+      "type": "object",
+      "required": ["brain_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "BrainMoveResult": {
+      "title": "BrainMoveResult",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainArchiveParams": {
+      "title": "BrainArchiveParams",
+      "description": "Params of brain.archive (BRAIN.md §9.5).",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainArchiveResult": {
+      "title": "BrainArchiveResult",
+      "type": "object",
+      "required": ["brain_id", "state"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "state": { "$ref": "#/$defs/BrainState" }
+      }
+    },
+    "BrainUnarchiveParams": {
+      "title": "BrainUnarchiveParams",
+      "description": "Params of brain.unarchive (BRAIN.md §9.5).",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainUnarchiveResult": {
+      "title": "BrainUnarchiveResult",
+      "type": "object",
+      "required": ["brain_id", "state"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "state": { "$ref": "#/$defs/BrainState" }
+      }
+    },
+    "BrainDeleteParams": {
+      "title": "BrainDeleteParams",
+      "description": "Params of brain.delete (BRAIN.md §9.6).",
+      "type": "object",
+      "required": ["brain_id", "confirm_name"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "confirm_name": { "type": "string", "description": "The brain name, typed to confirm deletion (BRAIN.md §9.6)." },
+        "export_first": { "type": ["boolean", "null"], "description": "Export an archive before deleting (BRAIN.md §9.6)." },
+        "permanent": { "type": ["boolean", "null"], "description": "Delete permanently instead of moving to trash (BRAIN.md §9.6)." }
+      }
+    },
+    "BrainDeleteResult": {
+      "title": "BrainDeleteResult",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "BrainExportParams": {
+      "title": "BrainExportParams",
+      "description": "Params of brain.export (BRAIN.md §14.1, §14.3, §18.4).",
+      "type": "object",
+      "required": ["brain_id", "output"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "output": { "type": "string", "description": "Path of the .fergbrain archive to write." },
+        "include_index": { "type": ["boolean", "null"], "description": "Include index.sqlite and graph.db (excluded by default; BRAIN.md §14.1)." }
+      }
+    },
+    "BrainExportResult": {
+      "title": "BrainExportResult",
+      "type": "object",
+      "required": ["output"],
+      "additionalProperties": false,
+      "properties": { "output": { "type": "string" } }
+    },
+    "BrainImportParams": {
+      "title": "BrainImportParams",
+      "description": "Params of brain.import (BRAIN.md §14.2).",
+      "type": "object",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string", "description": "Path of the .fergbrain archive to import." },
+        "target_path": { "type": ["string", "null"], "description": "Filesystem path to extract the brain into." }
+      }
+    },
+    "BrainImportResult": {
+      "title": "BrainImportResult",
+      "type": "object",
+      "required": ["brain"],
+      "additionalProperties": false,
+      "properties": { "brain": { "$ref": "#/$defs/BrainSummary" } }
+    },
+    "BrainAttachParams": {
+      "title": "BrainAttachParams",
+      "description": "Params of brain.attach (BRAIN.md §8.1, §18.2).",
+      "type": "object",
+      "required": ["brain_id", "project_id", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "role": { "$ref": "#/$defs/BrainRole" }
+      }
+    },
+    "BrainAttachResult": {
+      "title": "BrainAttachResult",
+      "type": "object",
+      "required": ["brain_id", "project_id", "role"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "role": { "$ref": "#/$defs/BrainRole" }
+      }
+    },
+    "BrainDetachParams": {
+      "title": "BrainDetachParams",
+      "description": "Params of brain.detach (BRAIN.md §8.1).",
+      "type": "object",
+      "required": ["brain_id", "project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "project_id": { "type": "string" }
+      }
+    },
+    "BrainDetachResult": {
+      "title": "BrainDetachResult",
+      "type": "object",
+      "required": ["brain_id", "project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "project_id": { "type": "string" }
+      }
+    },
+    "BrainReindexParams": {
+      "title": "BrainReindexParams",
+      "description": "Params of brain.reindex (BRAIN.md §5.2, §5.3).",
+      "type": "object",
+      "required": ["brain_id"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "full": { "type": ["boolean", "null"], "description": "Force a full reindex instead of an incremental one." }
+      }
+    },
+    "BrainReindexResult": {
+      "title": "BrainReindexResult",
+      "type": "object",
+      "required": ["brain_id", "state"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "state": { "$ref": "#/$defs/BrainState" }
+      }
+    },
+    "BrainTemplateSaveParams": {
+      "title": "BrainTemplateSaveParams",
+      "description": "Params of brain.template.save (BRAIN.md §7.2).",
+      "type": "object",
+      "required": ["brain_id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "brain_id": { "type": "string" },
+        "name": { "type": "string", "description": "Template name to create." },
+        "exclude_private": { "type": ["boolean", "null"], "description": "Exclude personal data from the template (BRAIN.md §7.2)." }
+      }
+    },
+    "BrainTemplateSaveResult": {
+      "title": "BrainTemplateSaveResult",
+      "type": "object",
+      "required": ["name", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "BrainIdentityConfig": {
+      "title": "BrainIdentityConfig",
+      "description": "The [brain] section of brain.toml (BRAIN.md §6.1).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": ["string", "null"] },
+        "name": { "type": ["string", "null"] },
+        "slug": { "type": ["string", "null"] },
+        "template": { "type": ["string", "null"] },
+        "color": { "type": ["string", "null"] },
+        "icon": { "type": ["string", "null"] },
+        "created_at": { "type": ["string", "null"] }
+      }
+    },
+    "VaultConfig": {
+      "title": "VaultConfig",
+      "description": "The [vault] section of brain.toml (BRAIN.md §6.1).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": ["string", "null"] },
+        "default_note_folder": { "type": ["string", "null"] },
+        "daily_folder": { "type": ["string", "null"] },
+        "daily_format": { "type": ["string", "null"] },
+        "attachments_folder": { "type": ["string", "null"] },
+        "templates_folder": { "type": ["string", "null"] }
+      }
+    },
+    "MarkdownConfig": {
+      "title": "MarkdownConfig",
+      "description": "The [markdown] section of brain.toml (BRAIN.md §6.1).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "wiki_links": { "type": ["boolean", "null"] },
+        "embeds": { "type": ["boolean", "null"] },
+        "block_refs": { "type": ["boolean", "null"] },
+        "callouts": { "type": ["boolean", "null"] },
+        "math": { "type": ["boolean", "null"] },
+        "mermaid": { "type": ["boolean", "null"] }
+      }
+    },
+    "IndexConfig": {
+      "title": "IndexConfig",
+      "description": "The [index] section of brain.toml (BRAIN.md §6.1).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "embedding_model": { "type": ["string", "null"] },
+        "chunk_size": { "type": ["integer", "null"] },
+        "chunk_overlap": { "type": ["integer", "null"] },
+        "auto_index": { "type": ["boolean", "null"] },
+        "watch": { "type": ["boolean", "null"] }
+      }
+    },
+    "GraphConfig": {
+      "title": "GraphConfig",
+      "description": "The [graph] section of brain.toml (BRAIN.md §6.1).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": ["boolean", "null"] },
+        "extract_entities": { "type": ["boolean", "null"] },
+        "extract_relations": { "type": ["boolean", "null"] },
+        "llm_extraction": { "type": ["boolean", "null"] }
+      }
+    },
+    "SearchConfig": {
+      "title": "SearchConfig",
+      "description": "The [search] section of brain.toml (BRAIN.md §6.1).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "default_mode": { "type": ["string", "null"], "description": "hybrid | bm25 | vector | sparse." },
+        "default_top_k": { "type": ["integer", "null"] },
+        "rerank": { "type": ["boolean", "null"] }
+      }
+    },
+    "SyncConfig": {
+      "title": "SyncConfig",
+      "description": "The [sync] section of brain.toml. Parsed and preserved only in Phase 1 (no runtime effect).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": ["boolean", "null"] },
+        "scope": { "type": ["string", "null"], "description": "full | notes-only | custom." },
+        "peers": { "type": ["array", "null"], "items": { "type": "string" } }
+      }
+    },
+    "GitConfig": {
+      "title": "GitConfig",
+      "description": "The [git] section of brain.toml. Parsed and preserved only in Phase 1 (no runtime effect).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": ["boolean", "null"] },
+        "auto_commit": { "type": ["boolean", "null"] },
+        "commit_message_template": { "type": ["string", "null"] }
+      }
+    },
+    "BrainConfig": {
+      "title": "BrainConfig",
+      "description": "The full brain.toml configuration (BRAIN.md §6.1).",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "brain": { "$ref": "#/$defs/BrainIdentityConfig" },
+        "vault": { "$ref": "#/$defs/VaultConfig" },
+        "markdown": { "$ref": "#/$defs/MarkdownConfig" },
+        "index": { "$ref": "#/$defs/IndexConfig" },
+        "graph": { "$ref": "#/$defs/GraphConfig" },
+        "search": { "$ref": "#/$defs/SearchConfig" },
+        "sync": { "$ref": "#/$defs/SyncConfig" },
+        "git": { "$ref": "#/$defs/GitConfig" }
+      }
+    },
     "EventsDroppedNotice": {
       "title": "EventsDroppedNotice",
       "description": "Payload of the events.dropped notice.",
