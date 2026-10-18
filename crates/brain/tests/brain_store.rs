@@ -21,15 +21,15 @@ fn open_applies_migrations_and_is_idempotent() {
     let migrations = brain_migrations_dir();
 
     let store = open(dir.path());
-    assert_eq!(store.schema_version().unwrap(), 1);
+    assert_eq!(store.schema_version().unwrap(), 2);
     assert!(store.path().ends_with("index.sqlite"));
     drop(store);
 
     // Reopen: migrations are already applied, so the version is unchanged.
     let store = open(dir.path());
-    assert_eq!(store.schema_version().unwrap(), 1);
+    assert_eq!(store.schema_version().unwrap(), 2);
 
-    assert_eq!(available_schema_version(&migrations).unwrap(), 1);
+    assert_eq!(available_schema_version(&migrations).unwrap(), 2);
 }
 
 #[test]
@@ -94,7 +94,7 @@ fn refuses_a_store_whose_schema_is_newer() {
     match err {
         BrainError::Storage(StorageError::NewerSchema { found, available }) => {
             assert_eq!(found, 999);
-            assert_eq!(available, 1);
+            assert_eq!(available, 2);
         }
         other => panic!("expected NewerSchema, got {other:?}"),
     }
@@ -105,14 +105,33 @@ fn fts5_chunks_fts_is_usable() {
     let dir = tempfile::tempdir().unwrap();
     let store = open(dir.path());
 
+    // `chunks_fts` is an external-content FTS5 table (migration 0002): the text
+    // lives in `chunks`, and the FTS row is kept in sync via `content_rowid`.
     store
         .storage()
         .execute(
-            "INSERT INTO chunks_fts (content, heading_path) VALUES (?1, ?2)",
-            &[
-                Value::String("A force directed graph layout for the brain".to_string()),
-                Value::String("Graph".to_string()),
-            ],
+            "INSERT INTO documents \
+             (id, path, kind, title, mime, size, hash, word_count, reading_time_s, \
+              created_at, updated_at, indexed_at) \
+             VALUES ('d1', 'doc.md', 'note', 'Doc', 'text/markdown', 0, '', 0, 0, 0, 0, 0)",
+            &[],
+        )
+        .unwrap();
+    store
+        .storage()
+        .execute(
+            "INSERT INTO chunks \
+             (id, document_id, ordinal, content, token_count, start_offset, end_offset, heading_path) \
+             VALUES ('c1', 'd1', 0, 'A force directed graph layout for the brain', 8, 0, 44, 'Graph')",
+            &[],
+        )
+        .unwrap();
+    store
+        .storage()
+        .execute(
+            "INSERT INTO chunks_fts (rowid, content, heading_path) \
+             SELECT rowid, content, heading_path FROM chunks WHERE id = 'c1'",
+            &[],
         )
         .unwrap();
 
