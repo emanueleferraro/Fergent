@@ -1,4 +1,8 @@
-//! Loading and applying numbered SQL migrations from `migrations/global/`.
+//! Loading and applying numbered SQL migrations.
+//!
+//! The global schema lives in `migrations/global/`; other schema directories
+//! (e.g. the per-brain `migrations/brain/`) are loaded with
+//! [`load_migrations_from`].
 
 use std::path::Path;
 
@@ -18,10 +22,19 @@ pub struct Migration {
 }
 
 /// Load every `*.sql` migration in `<dir>/global`, sorted ascending by version.
+///
+/// This is the global-schema loader (Phase 0). Per-brain schemas use
+/// [`load_migrations_from`] with `migrations/brain`.
 pub fn load_migrations(dir: &Path) -> Result<Vec<Migration>, StorageError> {
-    let global = dir.join("global");
+    load_migrations_from(&dir.join("global"))
+}
+
+/// Load every `*.sql` migration directly in `dir`, sorted ascending by version.
+///
+/// Used for non-global schema directories (e.g. `migrations/brain`).
+pub fn load_migrations_from(dir: &Path) -> Result<Vec<Migration>, StorageError> {
     let mut migrations = Vec::new();
-    for entry in std::fs::read_dir(&global)? {
+    for entry in std::fs::read_dir(dir)? {
         let path = entry?.path();
         if path.extension().and_then(|e| e.to_str()) != Some("sql") {
             continue;

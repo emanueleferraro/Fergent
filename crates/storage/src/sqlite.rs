@@ -21,7 +21,7 @@ use std::thread::JoinHandle;
 use serde_json::Value;
 
 use crate::error::StorageError;
-use crate::migrations::{apply_migrations, load_migrations};
+use crate::migrations::{apply_migrations, load_migrations, Migration};
 use crate::storage::{Key, Row, Storage};
 
 /// A shared, individually-locked SQLite connection.
@@ -69,12 +69,24 @@ impl SqliteStorage {
     /// Creates a pool of `min(4, cpu_count)` read connections and a single
     /// writer task. WAL mode and foreign keys are enabled on every connection.
     pub fn open(db_path: &Path, migrations_dir: &Path) -> Result<Self, StorageError> {
+        let migrations = load_migrations(migrations_dir)?;
+        Self::open_with_migrations(db_path, &migrations)
+    }
+
+    /// Open (or create) the database at `db_path` and apply the given
+    /// migrations.
+    ///
+    /// This is the parameterized entry point used for schemas that do not live
+    /// under `<root>/global` (e.g. the per-brain schema in `migrations/brain`).
+    pub fn open_with_migrations(
+        db_path: &Path,
+        migrations: &[Migration],
+    ) -> Result<Self, StorageError> {
         // The writer connection applies migrations first so the pool of
         // read-only connections always observes a fully-migrated schema.
         let mut writer_conn = rusqlite::Connection::open(db_path)?;
         configure(&writer_conn)?;
-        let migrations = load_migrations(migrations_dir)?;
-        apply_migrations(&mut writer_conn, &migrations)?;
+        apply_migrations(&mut writer_conn, migrations)?;
 
         let mut readers = Vec::with_capacity(read_pool_size());
         for _ in 0..read_pool_size() {
@@ -97,10 +109,15 @@ impl SqliteStorage {
 
     /// Open a private in-memory database and apply migrations. Useful for tests.
     pub fn open_in_memory(migrations_dir: &Path) -> Result<Self, StorageError> {
+        let migrations = load_migrations(migrations_dir)?;
+        Self::open_in_memory_with_migrations(&migrations)
+    }
+
+    /// Open a private in-memory database and apply the given migrations.
+    pub fn open_in_memory_with_migrations(migrations: &[Migration]) -> Result<Self, StorageError> {
         let mut conn = rusqlite::Connection::open_in_memory()?;
         configure(&conn)?;
-        let migrations = load_migrations(migrations_dir)?;
-        apply_migrations(&mut conn, &migrations)?;
+        apply_migrations(&mut conn, migrations)?;
 
         let shared: SharedConn = Arc::new(Mutex::new(conn));
         Ok(Self {
