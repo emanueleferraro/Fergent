@@ -26,4 +26,8 @@ pub enum IndexError {
     /// A filesystem operation failed.
     #[error("io error: {0}")]
     Io(String),
+
+    /// A search query or one of its filters was invalid.
+    #[error("invalid query: {0}")]
+    InvalidQuery(String),
 }

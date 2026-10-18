@@ -16,6 +16,7 @@ mod notes;
 mod pipeline;
 mod queue;
 mod scan;
+mod search;
 mod vector;
 mod watcher;
 
@@ -44,5 +45,9 @@ pub use pipeline::{
 };
 pub use queue::{IndexJob, IndexJobOp, IndexQueue, QueueStats};
 pub use scan::{classify, DocumentKind, ScannedFile, VaultScanner, BUILTIN_IGNORES};
+pub use search::{
+    analyze_query, search, AnalyzedQuery, SearchFilters, SearchHit, SearchMode, SearchRequest,
+    SearchResponse, DEFAULT_TOP_K,
+};
 pub use vector::{SqliteVecStore, VectorHit, VectorStore};
 pub use watcher::VaultWatcher;

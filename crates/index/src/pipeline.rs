@@ -420,12 +420,18 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
                 chunk.symbol.clone().map_or(Value::Null, Value::String),
             ],
         )?;
+        // Mirror the new row into the external-content FTS index (Task 10).
+        self.storage.execute(
+            "INSERT INTO chunks_fts (rowid, content, heading_path) \
+             SELECT rowid, content, heading_path FROM chunks WHERE id = ?1",
+            &[Value::String(chunk_id.to_string())],
+        )?;
         Ok(())
     }
 
     fn remove_chunks(&self, document_id: &str) -> Result<(), IndexError> {
         let rows = self.storage.query(
-            "SELECT id FROM chunks WHERE document_id = ?1",
+            "SELECT id, rowid, content, heading_path FROM chunks WHERE document_id = ?1",
             &[Value::String(document_id.to_string())],
         )?;
         for row in &rows {
@@ -433,6 +439,18 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
                 self.embeddings.store().delete(id)?;
                 self.embeddings.cache().remove(id)?;
             }
+            // `chunks_fts` is external-content, so its rows must be removed with
+            // the special `'delete'` command, which needs the original values
+            // (a plain `DELETE` is a silent no-op for FTS5 external content).
+            self.storage.execute(
+                "INSERT INTO chunks_fts (chunks_fts, rowid, content, heading_path) \
+                 VALUES ('delete', ?1, ?2, ?3)",
+                &[
+                    row.get("rowid").cloned().unwrap_or(Value::Null),
+                    row.get("content").cloned().unwrap_or(Value::Null),
+                    row.get("heading_path").cloned().unwrap_or(Value::Null),
+                ],
+            )?;
         }
         self.storage.execute(
             "DELETE FROM chunks WHERE document_id = ?1",
