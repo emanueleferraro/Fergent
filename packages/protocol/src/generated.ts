@@ -1272,6 +1272,141 @@ export interface GraphUpdatedPayload {
 }
 
 /**
+ * Index job operation (spec Appendix B, index_jobs.op).
+ */
+export type IndexJobOp = 'upsert' | 'delete' | 'reindex';
+
+/**
+ * Indexing pipeline step (SEARCH.md §13.2).
+ */
+export type IndexPhase =
+  'detect' | 'parse' | 'chunk' | 'embed' | 'store' | 'extract_entities' | 'update_graph';
+
+/**
+ * Payload of the file.created event.
+ */
+export interface FileCreatedPayload {
+  path: string;
+}
+
+/**
+ * Payload of the file.changed event.
+ */
+export interface FileChangedPayload {
+  path: string;
+}
+
+/**
+ * Payload of the file.deleted event.
+ */
+export interface FileDeletedPayload {
+  path: string;
+}
+
+/**
+ * Payload of the file.renamed event.
+ */
+export interface FileRenamedPayload {
+  from_path: string;
+  to_path: string;
+}
+
+/**
+ * Payload of the note.created event.
+ */
+export interface NoteCreatedPayload {
+  document: Document;
+}
+
+/**
+ * Payload of the note.updated event.
+ */
+export interface NoteUpdatedPayload {
+  document: Document;
+}
+
+/**
+ * Payload of the note.linked event.
+ */
+export interface NoteLinkedPayload {
+  link: LinkRef;
+}
+
+/**
+ * Payload of the index.queued event (spec Appendix B, index_jobs).
+ */
+export interface IndexQueuedPayload {
+  brain_id: string;
+  path: string;
+  op: IndexJobOp;
+}
+
+/**
+ * Payload of the index.started event.
+ */
+export interface IndexStartedPayload {
+  brain_id: string;
+  path: string;
+}
+
+/**
+ * Payload of the index.progress event (SEARCH.md §13.2).
+ */
+export interface IndexProgressPayload {
+  brain_id: string;
+  path?: string | null;
+  phase: IndexPhase;
+  done?: number | null;
+  total?: number | null;
+}
+
+/**
+ * Payload of the index.completed event.
+ */
+export interface IndexCompletedPayload {
+  brain_id: string;
+  path: string;
+}
+
+/**
+ * Payload of the index.failed event.
+ */
+export interface IndexFailedPayload {
+  brain_id: string;
+  path: string;
+  error: string;
+}
+
+/**
+ * Payload of the embedding.created event (SEARCH.md §4).
+ */
+export interface EmbeddingCreatedPayload {
+  chunk_id: string;
+}
+
+/**
+ * Payload of the embedding.failed event.
+ */
+export interface EmbeddingFailedPayload {
+  chunk_id: string;
+  error: string;
+}
+
+/**
+ * Payload of the tag.updated event.
+ */
+export interface TagUpdatedPayload {
+  tag: Tag;
+}
+
+/**
+ * Payload of the link.updated event.
+ */
+export interface LinkUpdatedPayload {
+  link: LinkRef;
+}
+
+/**
  * Payload of the events.dropped notice.
  */
 export interface EventsDroppedNotice {

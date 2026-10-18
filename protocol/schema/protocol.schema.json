@@ -1336,6 +1336,156 @@
       "required": ["brain_id"],
       "properties": { "brain_id": { "type": "string" } }
     },
+    "IndexJobOp": {
+      "title": "IndexJobOp",
+      "description": "Index job operation (spec Appendix B, index_jobs.op).",
+      "type": "string",
+      "enum": ["upsert", "delete", "reindex"]
+    },
+    "IndexPhase": {
+      "title": "IndexPhase",
+      "description": "Indexing pipeline step (SEARCH.md §13.2).",
+      "type": "string",
+      "enum": ["detect", "parse", "chunk", "embed", "store", "extract_entities", "update_graph"]
+    },
+    "FileCreatedPayload": {
+      "title": "FileCreatedPayload",
+      "description": "Payload of the file.created event.",
+      "type": "object",
+      "required": ["path"],
+      "properties": { "path": { "type": "string" } }
+    },
+    "FileChangedPayload": {
+      "title": "FileChangedPayload",
+      "description": "Payload of the file.changed event.",
+      "type": "object",
+      "required": ["path"],
+      "properties": { "path": { "type": "string" } }
+    },
+    "FileDeletedPayload": {
+      "title": "FileDeletedPayload",
+      "description": "Payload of the file.deleted event.",
+      "type": "object",
+      "required": ["path"],
+      "properties": { "path": { "type": "string" } }
+    },
+    "FileRenamedPayload": {
+      "title": "FileRenamedPayload",
+      "description": "Payload of the file.renamed event.",
+      "type": "object",
+      "required": ["from_path", "to_path"],
+      "properties": {
+        "from_path": { "type": "string" },
+        "to_path": { "type": "string" }
+      }
+    },
+    "NoteCreatedPayload": {
+      "title": "NoteCreatedPayload",
+      "description": "Payload of the note.created event.",
+      "type": "object",
+      "required": ["document"],
+      "properties": { "document": { "$ref": "#/$defs/Document" } }
+    },
+    "NoteUpdatedPayload": {
+      "title": "NoteUpdatedPayload",
+      "description": "Payload of the note.updated event.",
+      "type": "object",
+      "required": ["document"],
+      "properties": { "document": { "$ref": "#/$defs/Document" } }
+    },
+    "NoteLinkedPayload": {
+      "title": "NoteLinkedPayload",
+      "description": "Payload of the note.linked event.",
+      "type": "object",
+      "required": ["link"],
+      "properties": { "link": { "$ref": "#/$defs/LinkRef" } }
+    },
+    "IndexQueuedPayload": {
+      "title": "IndexQueuedPayload",
+      "description": "Payload of the index.queued event (spec Appendix B, index_jobs).",
+      "type": "object",
+      "required": ["brain_id", "path", "op"],
+      "properties": {
+        "brain_id": { "type": "string" },
+        "path": { "type": "string" },
+        "op": { "$ref": "#/$defs/IndexJobOp" }
+      }
+    },
+    "IndexStartedPayload": {
+      "title": "IndexStartedPayload",
+      "description": "Payload of the index.started event.",
+      "type": "object",
+      "required": ["brain_id", "path"],
+      "properties": {
+        "brain_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "IndexProgressPayload": {
+      "title": "IndexProgressPayload",
+      "description": "Payload of the index.progress event (SEARCH.md §13.2).",
+      "type": "object",
+      "required": ["brain_id", "phase"],
+      "properties": {
+        "brain_id": { "type": "string" },
+        "path": { "type": ["string", "null"] },
+        "phase": { "$ref": "#/$defs/IndexPhase" },
+        "done": { "type": ["integer", "null"] },
+        "total": { "type": ["integer", "null"] }
+      }
+    },
+    "IndexCompletedPayload": {
+      "title": "IndexCompletedPayload",
+      "description": "Payload of the index.completed event.",
+      "type": "object",
+      "required": ["brain_id", "path"],
+      "properties": {
+        "brain_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "IndexFailedPayload": {
+      "title": "IndexFailedPayload",
+      "description": "Payload of the index.failed event.",
+      "type": "object",
+      "required": ["brain_id", "path", "error"],
+      "properties": {
+        "brain_id": { "type": "string" },
+        "path": { "type": "string" },
+        "error": { "type": "string" }
+      }
+    },
+    "EmbeddingCreatedPayload": {
+      "title": "EmbeddingCreatedPayload",
+      "description": "Payload of the embedding.created event (SEARCH.md §4).",
+      "type": "object",
+      "required": ["chunk_id"],
+      "properties": { "chunk_id": { "type": "string" } }
+    },
+    "EmbeddingFailedPayload": {
+      "title": "EmbeddingFailedPayload",
+      "description": "Payload of the embedding.failed event.",
+      "type": "object",
+      "required": ["chunk_id", "error"],
+      "properties": {
+        "chunk_id": { "type": "string" },
+        "error": { "type": "string" }
+      }
+    },
+    "TagUpdatedPayload": {
+      "title": "TagUpdatedPayload",
+      "description": "Payload of the tag.updated event.",
+      "type": "object",
+      "required": ["tag"],
+      "properties": { "tag": { "$ref": "#/$defs/Tag" } }
+    },
+    "LinkUpdatedPayload": {
+      "title": "LinkUpdatedPayload",
+      "description": "Payload of the link.updated event.",
+      "type": "object",
+      "required": ["link"],
+      "properties": { "link": { "$ref": "#/$defs/LinkRef" } }
+    },
     "EventsDroppedNotice": {
       "title": "EventsDroppedNotice",
       "description": "Payload of the events.dropped notice.",
