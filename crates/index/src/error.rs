@@ -30,4 +30,8 @@ pub enum IndexError {
     /// A search query or one of its filters was invalid.
     #[error("invalid query: {0}")]
     InvalidQuery(String),
+
+    /// Input for a daily note or template operation was invalid.
+    #[error("invalid input: {0}")]
+    Invalid(String),
 }
