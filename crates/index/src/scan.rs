@@ -66,6 +66,7 @@ pub struct ScannedFile {
 /// Walks a vault and classifies its files.
 pub struct VaultScanner {
     root: PathBuf,
+    root_canonical: PathBuf,
     matcher: Gitignore,
 }
 
@@ -74,6 +75,10 @@ impl VaultScanner {
     /// plus the built-in ignores.
     pub fn new(root: impl Into<PathBuf>) -> Result<Self, IndexError> {
         let root = root.into();
+        // The root may be reached through a symlink (e.g. macOS `/var` →
+        // `/private/var`); canonicalize so watcher paths — which resolve
+        // symlinks — can still be made vault-relative.
+        let root_canonical = std::fs::canonicalize(&root).unwrap_or_else(|_| root.clone());
         let mut builder = GitignoreBuilder::new(&root);
         let _ = builder.add(root.join(".brainignore"));
         for pattern in BUILTIN_IGNORES {
@@ -82,7 +87,11 @@ impl VaultScanner {
         let matcher = builder
             .build()
             .map_err(|err| IndexError::Io(err.to_string()))?;
-        Ok(Self { root, matcher })
+        Ok(Self {
+            root,
+            root_canonical,
+            matcher,
+        })
     }
 
     /// The vault root.
@@ -90,10 +99,33 @@ impl VaultScanner {
         &self.root
     }
 
-    /// Whether `rel_path` (vault-relative, `/` separators) is ignored.
-    pub fn is_ignored(&self, rel_path: &str, is_dir: bool) -> bool {
+    /// Make `path` vault-relative, or `None` if it is outside the vault.
+    pub fn to_relative(&self, path: &Path) -> Option<PathBuf> {
+        if path.is_absolute() {
+            path.strip_prefix(&self.root)
+                .or_else(|_| path.strip_prefix(&self.root_canonical))
+                .ok()
+                .map(Path::to_path_buf)
+        } else {
+            Some(path.to_path_buf())
+        }
+    }
+
+    /// Whether `path` (vault-relative or absolute) is ignored.
+    ///
+    /// Returns `true` for anything outside the vault, so the watcher can never
+    /// escape its scope. Accepted as a `&str` with `/` separators.
+    pub fn is_ignored(&self, path: &str, is_dir: bool) -> bool {
+        let candidate = Path::new(path);
+        let relative = match self.to_relative(candidate) {
+            Some(relative) => relative,
+            None => return true,
+        };
+        if relative.as_os_str().is_empty() {
+            return false;
+        }
         self.matcher
-            .matched_path_or_any_parents(Path::new(rel_path), is_dir)
+            .matched_path_or_any_parents(&relative, is_dir)
             .is_ignore()
     }
 
@@ -128,12 +160,11 @@ impl VaultScanner {
         files
     }
 
-    /// A vault-relative path with `/` separators.
+    /// A vault-relative path with `/` separators (empty if outside the vault).
     pub fn relative(&self, abs: &Path) -> String {
-        abs.strip_prefix(&self.root)
-            .unwrap_or(abs)
-            .to_string_lossy()
-            .replace('\\', "/")
+        self.to_relative(abs)
+            .map(|p| p.to_string_lossy().replace('\\', "/"))
+            .unwrap_or_default()
     }
 }
 
