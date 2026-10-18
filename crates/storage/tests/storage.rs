@@ -29,6 +29,15 @@ const TABLES: [&str; 9] = [
     "settings",
 ];
 
+/// The number of global migration files currently shipped (`migrations/global/*.sql`).
+fn global_migration_count() -> i64 {
+    std::fs::read_dir(repo_migrations_dir().join("global"))
+        .unwrap()
+        .filter_map(Result::ok)
+        .filter(|entry| entry.path().extension().is_some_and(|ext| ext == "sql"))
+        .count() as i64
+}
+
 #[test]
 fn migrations_apply_on_fresh_db() {
     let storage = SqliteStorage::open_in_memory(&repo_migrations_dir()).unwrap();
@@ -50,7 +59,7 @@ fn migrations_apply_on_fresh_db() {
     let count = storage
         .query("SELECT COUNT(*) AS n FROM schema_version", &[])
         .unwrap();
-    assert_eq!(count[0]["n"].as_i64().unwrap(), 1);
+    assert_eq!(count[0]["n"].as_i64().unwrap(), global_migration_count());
 }
 
 #[test]
@@ -65,7 +74,7 @@ fn reopening_is_idempotent() {
     let count = storage
         .query("SELECT COUNT(*) AS n FROM schema_version", &[])
         .unwrap();
-    assert_eq!(count[0]["n"].as_i64().unwrap(), 1);
+    assert_eq!(count[0]["n"].as_i64().unwrap(), global_migration_count());
 }
 
 #[test]
@@ -81,7 +90,7 @@ fn refuses_newer_schema() {
     match SqliteStorage::open(&db, empty.path()) {
         Ok(_) => panic!("expected NewerSchema error"),
         Err(StorageError::NewerSchema { found, available }) => {
-            assert_eq!(found, 1);
+            assert_eq!(found, global_migration_count());
             assert_eq!(available, 0);
         }
         Err(other) => panic!("unexpected error: {other}"),
