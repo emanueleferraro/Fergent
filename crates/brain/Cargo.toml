@@ -8,3 +8,10 @@ authors.workspace = true
 description = "Fergents brain model: brain.toml, vault layout, lifecycle, and multi-brain operations."
 
 [dependencies]
+serde.workspace = true
+toml.workspace = true
+thiserror.workspace = true
+ignore.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true

@@ -57,6 +57,10 @@ toml = "0.8"
 # Storage
 rusqlite = { version = "0.32", features = ["bundled"] }
 
+# Vault traversal and .brainignore (gitignore syntax) — spec Dependencies
+walkdir = "2"
+ignore = "0.4"
+
 # Identifiers, hashing, time
 ulid = { version = "1", features = ["serde"] }
 sha2 = "0.10"
