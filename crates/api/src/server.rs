@@ -4,12 +4,18 @@ use std::collections::HashSet;
 use std::sync::Arc;
 use std::time::Duration;
 
-use fergents_core::Kernel;
+use fergents_core::{CoreError, Kernel};
 use fergents_events::{now_ms, topic_matches, Subscription};
 use fergents_protocol::{
-    BrainListResult, ErrorCode, ErrorResponse, HelloParams, JsonRpcError, Notification, PingResult,
-    ReplayParams, Request, RequestId, Response, SubscribeParams, UnsubscribeParams, WelcomeResult,
-    KERNEL_VERSION, PROTOCOL_VERSION,
+    BrainArchiveParams, BrainAttachParams, BrainCloseParams, BrainCreateParams, BrainDeleteParams,
+    BrainDetachParams, BrainDuplicateParams, BrainExportParams, BrainGetParams, BrainImportParams,
+    BrainListParams, BrainMoveParams, BrainOpenParams, BrainReindexParams, BrainTemplateSaveParams,
+    BrainUnarchiveParams, BrainUpdateParams, DailyOpenParams, DocWriteParams, ErrorCode,
+    ErrorResponse, GraphAlgoParams, GraphEntitiesMergeParams, GraphNeighborsParams,
+    GraphQueryParams, GraphSubgraphParams, HelloParams, JsonRpcError, Notification, PingResult,
+    ReplayParams, Request, RequestId, Response, SearchQueryParams, SubscribeParams,
+    TemplateCreateParams, TemplateRenderParams, UnsubscribeParams, WelcomeResult, KERNEL_VERSION,
+    PROTOCOL_VERSION,
 };
 use serde::Serialize;
 use serde_json::Value;
@@ -286,10 +292,213 @@ async fn dispatch(
             Ok(serde_json::json!({ "events": events }))
         }
         "brain.list" => {
-            let brains = kernel
-                .list_brains()
-                .map_err(|e| (ErrorCode::StorageError, e.to_string()))?;
-            Ok(to_value(&BrainListResult { brains }))
+            let include_archived = if params.is_null() {
+                false
+            } else {
+                from_params::<BrainListParams>(&params)?
+                    .include_archived
+                    .unwrap_or(false)
+            };
+            let service = kernel.brains_service().clone();
+            let result = run_blocking(move || service.brains(include_archived)).await?;
+            Ok(to_value(&result))
+        }
+        "brain.create" => {
+            let p: BrainCreateParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.create(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.open" => {
+            let p: BrainOpenParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.open(&p.brain_id))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.close" => {
+            let p: BrainCloseParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.close(&p.brain_id))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.get" => {
+            let p: BrainGetParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.get(&p.brain_id))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.update" => {
+            let p: BrainUpdateParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.update(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.archive" => {
+            let p: BrainArchiveParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.archive(&p.brain_id))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.unarchive" => {
+            let p: BrainUnarchiveParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.unarchive(&p.brain_id))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.delete" => {
+            let p: BrainDeleteParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.delete(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.duplicate" => {
+            let p: BrainDuplicateParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.duplicate(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.move" => {
+            let p: BrainMoveParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.mv(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.export" => {
+            let p: BrainExportParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.export(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.import" => {
+            let p: BrainImportParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.import(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.attach" => {
+            let p: BrainAttachParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.attach(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.detach" => {
+            let p: BrainDetachParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.detach(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.reindex" => {
+            let p: BrainReindexParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.reindex(&p.brain_id))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "brain.template.save" => {
+            let p: BrainTemplateSaveParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.save_template(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "daily.open" => {
+            let p: DailyOpenParams = if params.is_null() {
+                DailyOpenParams { date: None }
+            } else {
+                from_params(&params)?
+            };
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.open_daily(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "template.list" => {
+            let brain_id = params
+                .get("brain")
+                .or_else(|| params.get("brain_id"))
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.list_templates(brain_id.as_deref()))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "template.create" => {
+            let p: TemplateCreateParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.create_template(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "template.render" => {
+            let p: TemplateRenderParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.render_template(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "doc.write" => {
+            let p: DocWriteParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.write_note(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "search.query" => {
+            let p: SearchQueryParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.search_query(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "graph.query" => {
+            let p: GraphQueryParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.graph_query(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "graph.algo" => {
+            let p: GraphAlgoParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.graph_algo(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "graph.neighbors" => {
+            let p: GraphNeighborsParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.graph_neighbors(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "graph.subgraph" => {
+            let p: GraphSubgraphParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.graph_subgraph(&p))
+                .await
+                .map(|r| to_value(&r))
+        }
+        "graph.entities.merge" => {
+            let p: GraphEntitiesMergeParams = from_params(&params)?;
+            let service = kernel.brains_service().clone();
+            run_blocking(move || service.graph_merge_entities(&p))
+                .await
+                .map(|r| to_value(&r))
         }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
@@ -333,6 +542,41 @@ fn to_value<T: Serialize>(value: &T) -> Value {
 fn from_params<T: serde::de::DeserializeOwned>(params: &Value) -> Result<T, (ErrorCode, String)> {
     serde_json::from_value(params.clone())
         .map_err(|e| (ErrorCode::InvalidParams, format!("invalid params: {e}")))
+}
+
+/// Run a synchronous [`fergents_core`] brain operation on the blocking pool.
+///
+/// The brain subsystems do blocking I/O (SQLite, the filesystem, graph), so
+/// dispatch must never call them directly on the async runtime.
+async fn run_blocking<T, F>(f: F) -> Result<T, (ErrorCode, String)>
+where
+    T: Send + 'static,
+    F: FnOnce() -> Result<T, CoreError> + Send + 'static,
+{
+    tokio::task::spawn_blocking(f)
+        .await
+        .map_err(|e| {
+            (
+                ErrorCode::InternalError,
+                format!("blocking task failed: {e}"),
+            )
+        })?
+        .map_err(map_core_error)
+}
+
+/// Map a core error to the closest wire error code.
+fn map_core_error(err: CoreError) -> (ErrorCode, String) {
+    match &err {
+        CoreError::Storage(_) => (ErrorCode::StorageError, err.to_string()),
+        CoreError::Brain(fergents_brain::BrainError::Invalid(_))
+        | CoreError::Index(
+            fergents_index::IndexError::Invalid(_) | fergents_index::IndexError::InvalidQuery(_),
+        )
+        | CoreError::Graph(fergents_graph::GraphError::Invalid(_)) => {
+            (ErrorCode::InvalidParams, err.to_string())
+        }
+        _ => (ErrorCode::InternalError, err.to_string()),
+    }
 }
 
 async fn respond_result<T: Serialize>(

@@ -1126,9 +1126,14 @@ name = "fergents-api"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
+ "fergents-brain",
  "fergents-core",
  "fergents-events",
+ "fergents-graph",
+ "fergents-index",
  "fergents-protocol",
+ "fergents-storage",
  "futures",
  "serde",
  "serde_json",
@@ -1184,7 +1189,11 @@ name = "fergents-core"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
+ "fergents-brain",
  "fergents-events",
+ "fergents-graph",
+ "fergents-index",
  "fergents-protocol",
  "fergents-storage",
  "serde",
