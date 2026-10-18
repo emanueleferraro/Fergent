@@ -27,6 +27,11 @@ default = []
 # The real BGE-M3 embedder (downloads the ORT runtime at build time and the
 # model at run time). Off by default so CI never touches the 2.3 GB model.
 embed-real = ["dep:fastembed"]
+# The real BGE cross-encoder reranker (same ORT runtime; downloads the model at
+# run time). Off by default for the same reason.
+rerank-real = ["dep:fastembed"]
+# The `bench/search/` recall benchmark runner (nightly job only).
+bench = []
 
 [dev-dependencies]
 tempfile.workspace = true
