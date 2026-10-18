@@ -622,6 +622,438 @@
         "git": { "$ref": "#/$defs/GitConfig" }
       }
     },
+    "DocumentKind": {
+      "title": "DocumentKind",
+      "description": "Document kind (spec Appendix B, documents.kind).",
+      "type": "string",
+      "enum": ["note", "attachment", "code", "other"]
+    },
+    "LinkKind": {
+      "title": "LinkKind",
+      "description": "Link kind (spec Appendix B, links.kind).",
+      "type": "string",
+      "enum": ["wiki", "md", "embed", "cross_brain", "by_id"]
+    },
+    "Document": {
+      "title": "Document",
+      "description": "A row of the documents table (spec Appendix B).",
+      "type": "object",
+      "required": ["id", "path", "kind", "title", "word_count", "created_at", "updated_at"],
+      "properties": {
+        "id": { "type": "string", "description": "ULID." },
+        "path": { "type": "string", "description": "Vault-relative path." },
+        "kind": { "$ref": "#/$defs/DocumentKind" },
+        "title": { "type": "string" },
+        "mime": { "type": ["string", "null"] },
+        "size": { "type": ["integer", "null"] },
+        "hash": { "type": ["string", "null"] },
+        "frontmatter": { "type": ["string", "null"], "description": "Raw YAML frontmatter as JSON (single source of truth)." },
+        "word_count": { "type": "integer" },
+        "reading_time_s": { "type": ["integer", "null"] },
+        "created_at": { "type": "integer", "format": "int64" },
+        "updated_at": { "type": "integer", "format": "int64" },
+        "indexed_at": { "type": ["integer", "null"], "format": "int64" },
+        "deleted_at": { "type": ["integer", "null"], "format": "int64", "description": "Set when the document is soft-deleted." }
+      }
+    },
+    "NoteRef": {
+      "title": "NoteRef",
+      "description": "A lightweight reference to a note.",
+      "type": "object",
+      "required": ["document_id", "path", "title"],
+      "properties": {
+        "document_id": { "type": "string" },
+        "path": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "LinkRef": {
+      "title": "LinkRef",
+      "description": "A row of the links table (spec Appendix B).",
+      "type": "object",
+      "required": ["src_document_id", "kind", "unresolved"],
+      "properties": {
+        "id": { "type": ["string", "null"] },
+        "src_document_id": { "type": "string" },
+        "dst_document_id": { "type": ["string", "null"] },
+        "dst_path": { "type": ["string", "null"] },
+        "dst_heading": { "type": ["string", "null"] },
+        "dst_block": { "type": ["string", "null"] },
+        "display_text": { "type": ["string", "null"] },
+        "anchor": { "type": ["string", "null"], "description": "Surrounding context (the paragraph)." },
+        "kind": { "$ref": "#/$defs/LinkKind" },
+        "unresolved": { "type": "boolean", "description": "True when the target does not exist yet." }
+      }
+    },
+    "OutlineEntry": {
+      "title": "OutlineEntry",
+      "description": "A heading in a note's outline, in document order (BRAIN.md §4.2). The tree is derived from `level`.",
+      "type": "object",
+      "required": ["level", "text"],
+      "properties": {
+        "level": { "type": "integer", "description": "Heading level (1-6)." },
+        "text": { "type": "string" }
+      }
+    },
+    "UnlinkedMention": {
+      "title": "UnlinkedMention",
+      "description": "A place where a note's title appears as plain text, not a link (GRAPH.md §7.3).",
+      "type": "object",
+      "required": ["document_id", "path", "title"],
+      "properties": {
+        "document_id": { "type": "string" },
+        "path": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "Tag": {
+      "title": "Tag",
+      "description": "A row of the tags table (spec Appendix B).",
+      "type": "object",
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "description": "ULID." },
+        "name": { "type": "string" },
+        "parent": { "type": ["string", "null"] }
+      }
+    },
+    "TemplateRef": {
+      "title": "TemplateRef",
+      "description": "A note template in vault/templates/ (BRAIN.md §4.5).",
+      "type": "object",
+      "required": ["name", "path"],
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "IndexStatusParams": {
+      "title": "IndexStatusParams",
+      "description": "Params of index.status.",
+      "type": "object",
+      "required": ["brain_id"],
+      "properties": { "brain_id": { "type": "string" } }
+    },
+    "IndexStatusResult": {
+      "title": "IndexStatusResult",
+      "description": "Index status: the persisted, observable job queue (SEARCH.md §13.2, §13.4; spec Appendix B index_jobs).",
+      "type": "object",
+      "required": ["brain_id", "indexing", "queued", "running", "attempts"],
+      "properties": {
+        "brain_id": { "type": "string" },
+        "indexing": { "type": "boolean", "description": "Whether indexing is currently active." },
+        "queued": { "type": "integer", "description": "Jobs waiting in the persisted queue." },
+        "running": { "type": "integer", "description": "Jobs currently being processed." },
+        "attempts": { "type": "integer", "description": "Total retry attempts across queued/running jobs (index_jobs.attempts)." }
+      }
+    },
+    "DocListParams": {
+      "title": "DocListParams",
+      "description": "Params of doc.list.",
+      "type": "object",
+      "properties": {
+        "kind": { "type": ["string", "null"], "description": "Filter by document kind." },
+        "include_deleted": { "type": ["boolean", "null"], "description": "Include soft-deleted documents (default false)." }
+      }
+    },
+    "DocListResult": {
+      "title": "DocListResult",
+      "type": "object",
+      "required": ["documents"],
+      "properties": { "documents": { "type": "array", "items": { "$ref": "#/$defs/Document" } } }
+    },
+    "DocGetParams": {
+      "title": "DocGetParams",
+      "description": "Params of doc.get.",
+      "type": "object",
+      "required": ["document_id"],
+      "properties": { "document_id": { "type": "string" } }
+    },
+    "DocGetResult": {
+      "title": "DocGetResult",
+      "type": "object",
+      "required": ["document", "content"],
+      "properties": {
+        "document": { "$ref": "#/$defs/Document" },
+        "content": { "type": "string", "description": "The note's markdown source." }
+      }
+    },
+    "DocCreateParams": {
+      "title": "DocCreateParams",
+      "description": "Params of doc.create.",
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string", "description": "Vault-relative path of the new note." },
+        "title": { "type": ["string", "null"] },
+        "content": { "type": ["string", "null"] }
+      }
+    },
+    "DocCreateResult": {
+      "title": "DocCreateResult",
+      "type": "object",
+      "required": ["document"],
+      "properties": { "document": { "$ref": "#/$defs/Document" } }
+    },
+    "DocWriteParams": {
+      "title": "DocWriteParams",
+      "description": "Params of doc.write.",
+      "type": "object",
+      "required": ["document_id", "content"],
+      "properties": {
+        "document_id": { "type": "string" },
+        "content": { "type": "string" }
+      }
+    },
+    "DocWriteResult": {
+      "title": "DocWriteResult",
+      "type": "object",
+      "required": ["document"],
+      "properties": { "document": { "$ref": "#/$defs/Document" } }
+    },
+    "DocRenameParams": {
+      "title": "DocRenameParams",
+      "description": "Params of doc.rename.",
+      "type": "object",
+      "required": ["document_id", "title"],
+      "properties": {
+        "document_id": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "DocRenameResult": {
+      "title": "DocRenameResult",
+      "type": "object",
+      "required": ["document"],
+      "properties": { "document": { "$ref": "#/$defs/Document" } }
+    },
+    "DocMoveParams": {
+      "title": "DocMoveParams",
+      "description": "Params of doc.move.",
+      "type": "object",
+      "required": ["document_id", "path"],
+      "properties": {
+        "document_id": { "type": "string" },
+        "path": { "type": "string", "description": "New vault-relative path." }
+      }
+    },
+    "DocMoveResult": {
+      "title": "DocMoveResult",
+      "type": "object",
+      "required": ["document"],
+      "properties": { "document": { "$ref": "#/$defs/Document" } }
+    },
+    "DocDeleteParams": {
+      "title": "DocDeleteParams",
+      "description": "Params of doc.delete (soft delete; spec Task 8.4).",
+      "type": "object",
+      "required": ["document_id"],
+      "properties": { "document_id": { "type": "string" } }
+    },
+    "DocDeleteResult": {
+      "title": "DocDeleteResult",
+      "type": "object",
+      "required": ["document_id"],
+      "properties": { "document_id": { "type": "string" } }
+    },
+    "DocRestoreParams": {
+      "title": "DocRestoreParams",
+      "description": "Params of doc.restore.",
+      "type": "object",
+      "required": ["document_id"],
+      "properties": { "document_id": { "type": "string" } }
+    },
+    "DocRestoreResult": {
+      "title": "DocRestoreResult",
+      "type": "object",
+      "required": ["document"],
+      "properties": { "document": { "$ref": "#/$defs/Document" } }
+    },
+    "DocBacklinksParams": {
+      "title": "DocBacklinksParams",
+      "description": "Params of doc.backlinks (GRAPH.md §7.1).",
+      "type": "object",
+      "required": ["document_id"],
+      "properties": { "document_id": { "type": "string" } }
+    },
+    "DocBacklinksResult": {
+      "title": "DocBacklinksResult",
+      "description": "Incoming links, including unresolved targets (GRAPH.md §7.2).",
+      "type": "object",
+      "required": ["backlinks"],
+      "properties": { "backlinks": { "type": "array", "items": { "$ref": "#/$defs/LinkRef" } } }
+    },
+    "DocOutlineParams": {
+      "title": "DocOutlineParams",
+      "description": "Params of doc.outline.",
+      "type": "object",
+      "required": ["document_id"],
+      "properties": { "document_id": { "type": "string" } }
+    },
+    "DocOutlineResult": {
+      "title": "DocOutlineResult",
+      "description": "The heading outline of a note, in document order (levels imply nesting).",
+      "type": "object",
+      "required": ["outline"],
+      "properties": { "outline": { "type": "array", "items": { "$ref": "#/$defs/OutlineEntry" } } }
+    },
+    "DocUnlinkedMentionsParams": {
+      "title": "DocUnlinkedMentionsParams",
+      "description": "Params of doc.unlinked_mentions (GRAPH.md §7.3).",
+      "type": "object",
+      "required": ["document_id"],
+      "properties": { "document_id": { "type": "string" } }
+    },
+    "DocUnlinkedMentionsResult": {
+      "title": "DocUnlinkedMentionsResult",
+      "type": "object",
+      "required": ["mentions"],
+      "properties": { "mentions": { "type": "array", "items": { "$ref": "#/$defs/UnlinkedMention" } } }
+    },
+    "LinksBrokenParams": {
+      "title": "LinksBrokenParams",
+      "description": "Params of links.broken.",
+      "type": "object",
+      "properties": {}
+    },
+    "LinksBrokenResult": {
+      "title": "LinksBrokenResult",
+      "description": "Links whose target is unresolved (spec Appendix B, links.unresolved).",
+      "type": "object",
+      "required": ["links"],
+      "properties": { "links": { "type": "array", "items": { "$ref": "#/$defs/LinkRef" } } }
+    },
+    "LinksOrphansParams": {
+      "title": "LinksOrphansParams",
+      "description": "Params of links.orphans (GRAPH.md §7.4).",
+      "type": "object",
+      "properties": {}
+    },
+    "LinksOrphansResult": {
+      "title": "LinksOrphansResult",
+      "description": "Notes with no incoming links (GRAPH.md §7.4).",
+      "type": "object",
+      "required": ["notes"],
+      "properties": { "notes": { "type": "array", "items": { "$ref": "#/$defs/NoteRef" } } }
+    },
+    "LinksDeadEndsParams": {
+      "title": "LinksDeadEndsParams",
+      "description": "Params of links.dead_ends (GRAPH.md §7.4).",
+      "type": "object",
+      "properties": {}
+    },
+    "LinksDeadEndsResult": {
+      "title": "LinksDeadEndsResult",
+      "description": "Notes with no outgoing links (GRAPH.md §7.4).",
+      "type": "object",
+      "required": ["notes"],
+      "properties": { "notes": { "type": "array", "items": { "$ref": "#/$defs/NoteRef" } } }
+    },
+    "TagListParams": {
+      "title": "TagListParams",
+      "description": "Params of tag.list.",
+      "type": "object",
+      "properties": {}
+    },
+    "TagListResult": {
+      "title": "TagListResult",
+      "type": "object",
+      "required": ["tags"],
+      "properties": { "tags": { "type": "array", "items": { "$ref": "#/$defs/Tag" } } }
+    },
+    "TagRenameParams": {
+      "title": "TagRenameParams",
+      "description": "Params of tag.rename.",
+      "type": "object",
+      "required": ["tag_id", "new_name"],
+      "properties": {
+        "tag_id": { "type": "string" },
+        "new_name": { "type": "string" }
+      }
+    },
+    "TagRenameResult": {
+      "title": "TagRenameResult",
+      "type": "object",
+      "required": ["tag"],
+      "properties": { "tag": { "$ref": "#/$defs/Tag" } }
+    },
+    "TagDeleteParams": {
+      "title": "TagDeleteParams",
+      "description": "Params of tag.delete.",
+      "type": "object",
+      "required": ["tag_id"],
+      "properties": { "tag_id": { "type": "string" } }
+    },
+    "TagDeleteResult": {
+      "title": "TagDeleteResult",
+      "type": "object",
+      "required": ["tag_id"],
+      "properties": { "tag_id": { "type": "string" } }
+    },
+    "DailyOpenParams": {
+      "title": "DailyOpenParams",
+      "description": "Params of daily.open (BRAIN.md §4.4).",
+      "type": "object",
+      "properties": {
+        "date": { "type": ["string", "null"], "description": "ISO date (defaults to today)." }
+      }
+    },
+    "DailyOpenResult": {
+      "title": "DailyOpenResult",
+      "description": "The daily note, created on first open of the day (BRAIN.md §4.4).",
+      "type": "object",
+      "required": ["document", "created"],
+      "properties": {
+        "document": { "$ref": "#/$defs/Document" },
+        "created": { "type": "boolean", "description": "True when the note was created by this call." }
+      }
+    },
+    "TemplateListParams": {
+      "title": "TemplateListParams",
+      "description": "Params of template.list.",
+      "type": "object",
+      "properties": {}
+    },
+    "TemplateListResult": {
+      "title": "TemplateListResult",
+      "type": "object",
+      "required": ["templates"],
+      "properties": { "templates": { "type": "array", "items": { "$ref": "#/$defs/TemplateRef" } } }
+    },
+    "TemplateCreateParams": {
+      "title": "TemplateCreateParams",
+      "description": "Params of template.create (BRAIN.md §4.5).",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "content": { "type": ["string", "null"] }
+      }
+    },
+    "TemplateCreateResult": {
+      "title": "TemplateCreateResult",
+      "type": "object",
+      "required": ["template"],
+      "properties": { "template": { "$ref": "#/$defs/TemplateRef" } }
+    },
+    "TemplateRenderParams": {
+      "title": "TemplateRenderParams",
+      "description": "Params of template.render. Variables from BRAIN.md §4.5 (date/time/datetime are computed; title/selection/clipboard are provided).",
+      "type": "object",
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "selection": { "type": ["string", "null"] },
+        "clipboard": { "type": ["string", "null"] }
+      }
+    },
+    "TemplateRenderResult": {
+      "title": "TemplateRenderResult",
+      "type": "object",
+      "required": ["content"],
+      "properties": { "content": { "type": "string" } }
+    },
     "EventsDroppedNotice": {
       "title": "EventsDroppedNotice",
       "description": "Payload of the events.dropped notice.",
