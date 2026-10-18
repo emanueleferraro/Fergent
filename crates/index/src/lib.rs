@@ -8,6 +8,7 @@
 //! backlinks (`SEARCH.md`).
 
 mod chunk;
+mod daily;
 mod embed;
 mod embedding;
 mod engine;
@@ -20,12 +21,17 @@ mod queue;
 mod rerank;
 mod scan;
 mod search;
+mod templates;
 mod vector;
 mod watcher;
 
 pub use chunk::{
     chunk_attachment_text, chunk_markdown, chunk_plain_text, count_tokens, Chunk, ChunkConfig,
     DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE, DEFAULT_MAX_CHUNK_SIZE, DEFAULT_MIN_CHUNK_SIZE,
+};
+pub use daily::{
+    now_local, validate_format, DailyNote, DailyNotes, NoteIndexer, DEFAULT_DAILY_FORMAT,
+    DEFAULT_DAILY_TEMPLATE,
 };
 pub use embed::{Embedder, StubEmbedder, DEFAULT_EMBED_BATCH, DEFAULT_EMBED_DIM, STUB_MODEL};
 #[cfg(feature = "embed-real")]
@@ -56,6 +62,10 @@ pub use scan::{classify, DocumentKind, ScannedFile, VaultScanner, BUILTIN_IGNORE
 pub use search::{
     analyze_query, AnalyzedQuery, CandidateCounts, HitMetadata, SearchFilters, SearchHit,
     SearchMode, SearchRequest, SearchResponse, StageScores, CANDIDATE_K, DEFAULT_TOP_K,
+};
+pub use templates::{
+    create_template, list_templates, render, template_file_name, RenderedTemplate, TemplateInfo,
+    TemplateVariables, DATETIME_FORMAT, DATE_FORMAT, TIME_FORMAT,
 };
 pub use vector::{SqliteVecStore, VectorHit, VectorStore};
 pub use watcher::VaultWatcher;

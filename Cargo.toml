@@ -97,6 +97,9 @@ ulid = { version = "1", features = ["serde"] }
 sha2 = "0.10"
 hex = "0.4"
 
+# Local wall-clock formatting for daily notes and templates (`strftime`, D10)
+chrono = "0.4"
+
 # Errors
 thiserror = "1"
 anyhow = "1"

@@ -1211,6 +1211,7 @@ dependencies = [
 name = "fergents-index"
 version = "0.1.0"
 dependencies = [
+ "chrono",
  "fastembed",
  "fergents-markdown",
  "fergents-storage",
