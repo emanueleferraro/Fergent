@@ -314,7 +314,8 @@ impl BrainManager {
 
         // Phase 1 has no trash configuration: files are removed permanently.
         if record.path.exists() {
-            std::fs::remove_dir_all(&record.path).map_err(|e| BrainError::io(&record.path, e))?;
+            retry_io(|| std::fs::remove_dir_all(&record.path))
+                .map_err(|e| BrainError::io(&record.path, e))?;
         }
         self.global.execute(
             "DELETE FROM brains WHERE brain_id = ?1",
@@ -377,7 +378,8 @@ impl BrainManager {
         if let Some(parent) = target.parent() {
             std::fs::create_dir_all(parent).map_err(|e| BrainError::io(parent, e))?;
         }
-        std::fs::rename(&record.path, target).map_err(|e| BrainError::io(target, e))?;
+        retry_io(|| std::fs::rename(&record.path, target))
+            .map_err(|e| BrainError::io(target, e))?;
         self.global.execute(
             "UPDATE brains SET path = ?1 WHERE brain_id = ?2",
             &[
@@ -641,6 +643,24 @@ impl BrainManager {
         }
         self.sink.emit(kind, payload);
     }
+}
+
+/// Retry a filesystem operation that may transiently fail while a just-closed
+/// SQLite handle is released (a common Windows sharing violation).
+fn retry_io<T>(mut op: impl FnMut() -> std::io::Result<T>) -> std::io::Result<T> {
+    let mut last = None;
+    for attempt in 0..40 {
+        match op() {
+            Ok(value) => return Ok(value),
+            Err(error) => {
+                last = Some(error);
+                if attempt < 39 {
+                    std::thread::sleep(std::time::Duration::from_millis(25));
+                }
+            }
+        }
+    }
+    Err(last.expect("at least one attempt was made"))
 }
 
 /// Refuse a target directory that already exists and is non-empty.
