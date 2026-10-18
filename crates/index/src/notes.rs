@@ -119,13 +119,14 @@ pub fn resolve_incoming_links(
     let candidates = target_candidates(path, title);
     let resolved = storage.execute(
         "UPDATE links SET dst_document_id = ?1, unresolved = 0, dst_path = NULL \
-         WHERE unresolved = 1 AND LOWER(dst_path) IN (?2, ?3, ?4, ?5)",
+         WHERE unresolved = 1 AND LOWER(dst_path) IN (?2, ?3, ?4, ?5, ?6)",
         &[
             Value::String(document_id.to_string()),
             Value::String(candidates[0].clone()),
             Value::String(candidates[1].clone()),
             Value::String(candidates[2].clone()),
             Value::String(candidates[3].clone()),
+            Value::String(candidates[4].clone()),
         ],
     )?;
     Ok(resolved)
@@ -266,13 +267,14 @@ pub fn backlinks(
     };
     let candidates = target_candidates(&doc.path, &doc.title);
     let rows = storage.query(
-        "SELECT * FROM links WHERE dst_document_id = ?1 OR LOWER(dst_path) IN (?2, ?3, ?4, ?5)",
+        "SELECT * FROM links WHERE dst_document_id = ?1 OR LOWER(dst_path) IN (?2, ?3, ?4, ?5, ?6)",
         &[
             Value::String(document_id.to_string()),
             Value::String(candidates[0].clone()),
             Value::String(candidates[1].clone()),
             Value::String(candidates[2].clone()),
             Value::String(candidates[3].clone()),
+            Value::String(candidates[4].clone()),
         ],
     )?;
     Ok(rows.iter().map(row_to_link).collect())
@@ -463,12 +465,20 @@ pub fn resolve_target(
             .file_stem()
             .and_then(|s| s.to_str())
             .unwrap_or_default();
+        // The bare file name, so `[[diagram.png]]` resolves to
+        // `assets/diagram.png` (matching the stem+ext candidate used by
+        // `resolve_incoming_links`).
+        let file_name = Path::new(path)
+            .file_name()
+            .and_then(|s| s.to_str())
+            .unwrap_or_default();
         let path_no_ext = path.strip_suffix(".md").unwrap_or(path);
 
         if path.eq_ignore_ascii_case(target)
             || path.eq_ignore_ascii_case(target_no_ext)
             || path_no_ext.eq_ignore_ascii_case(target_no_ext)
             || stem.eq_ignore_ascii_case(target_no_ext)
+            || file_name.eq_ignore_ascii_case(target)
         {
             return Ok(Some((id.to_string(), path.to_string())));
         }
@@ -597,17 +607,25 @@ fn all_links(storage: &Arc<dyn Storage>) -> Result<Vec<LinkRecord>, IndexError> 
     Ok(rows.iter().map(row_to_link).collect())
 }
 
-fn target_candidates(path: &str, title: &str) -> [String; 4] {
-    let stem = Path::new(path)
+fn target_candidates(path: &str, title: &str) -> [String; 5] {
+    let path_ref = Path::new(path);
+    let stem = path_ref
         .file_stem()
         .and_then(|s| s.to_str())
         .unwrap_or_default();
+    // The bare file name (e.g. `diagram.png`) so a link written as
+    // `[[diagram.png]]` resolves to `assets/diagram.png`.
+    let file_name = path_ref
+        .file_name()
+        .and_then(|s| s.to_str())
+        .unwrap_or(path);
     let no_ext = path.strip_suffix(".md").unwrap_or(path);
     [
         path.to_lowercase(),
         no_ext.to_lowercase(),
         stem.to_lowercase(),
         title.to_lowercase(),
+        file_name.to_lowercase(),
     ]
 }
 

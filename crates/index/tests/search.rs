@@ -29,6 +29,21 @@ fn write(vault: &Path, rel: &str, content: &str) {
     std::fs::write(path, content).unwrap();
 }
 
+/// Set a file's modification time (the pipeline stores it in `updated_at`).
+fn set_modified(vault: &Path, rel: &str, unix_secs: u64) {
+    let file = std::fs::File::options()
+        .write(true)
+        .open(vault.join(rel))
+        .unwrap();
+    let time = std::time::UNIX_EPOCH + std::time::Duration::from_secs(unix_secs);
+    file.set_modified(time).unwrap();
+}
+
+/// 2024-06-01T00:00:00Z.
+const APPLE_MTIME: u64 = 1_717_200_000;
+/// 2025-06-01T00:00:00Z.
+const BETA_MTIME: u64 = 1_748_736_000;
+
 struct NullSinkStub;
 impl fergents_index::EventSink for NullSinkStub {
     fn emit(&self, _kind: &str, _payload: Value) {}
@@ -61,9 +76,13 @@ fn setup() -> (tempfile::TempDir, Arc<dyn Storage>) {
     write(
         vault.path(),
         "notes/design.md",
-        "# Design\n\nSee ![[assets/diagram.png]] apple diagram\n",
+        "# Design\n\nSee ![[diagram.png]] apple diagram\n",
     );
     write(vault.path(), "assets/diagram.png", "PNGBYTES");
+
+    // Distinct file modification times so the date filters have real subjects.
+    set_modified(vault.path(), "notes/apple.md", APPLE_MTIME);
+    set_modified(vault.path(), "notes/beta.md", BETA_MTIME);
 
     let storage = memory_storage();
     let pipeline = EmbeddingPipeline::new(
@@ -85,18 +104,6 @@ fn paths(response: &fergents_index::SearchResponse) -> Vec<String> {
 fn run(storage: &Arc<dyn Storage>, query: &str) -> Vec<String> {
     let request = SearchRequest::new(query);
     paths(&search(storage, "personal", &request).unwrap())
-}
-
-fn set_updated_at(storage: &Arc<dyn Storage>, path: &str, iso_day: &str) {
-    storage
-        .execute(
-            "UPDATE documents SET updated_at = (strftime('%s', ?1) * 1000) WHERE path = ?2",
-            &[
-                Value::String(iso_day.to_string()),
-                Value::String(path.to_string()),
-            ],
-        )
-        .unwrap();
 }
 
 // --- Query analysis --------------------------------------------------------
@@ -233,10 +240,8 @@ fn language_filter_restricts_code_chunks() {
 }
 
 #[test]
-fn after_and_before_filters_bound_the_update_date() {
+fn after_and_before_filters_bound_the_file_mtime() {
     let (_vault, storage) = setup();
-    set_updated_at(&storage, "notes/apple.md", "2024-06-01");
-    set_updated_at(&storage, "notes/beta.md", "2025-06-01");
 
     let after = run(&storage, "apple after:2025-01-01");
     assert!(!after.contains(&"notes/apple.md".to_string()));

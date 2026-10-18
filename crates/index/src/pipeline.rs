@@ -266,6 +266,8 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
             .unwrap_or_else(|| ulid::Ulid::new().to_string());
 
         let now = now_ms();
+        let (created_at, updated_at) = file_times(&metadata);
+        let indexed_at = now;
         let frontmatter = parsed
             .as_ref()
             .and_then(|p| p.frontmatter.as_ref())
@@ -275,7 +277,7 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
             "INSERT INTO documents \
              (id, path, kind, title, mime, size, hash, frontmatter, word_count, reading_time_s, \
               created_at, updated_at, indexed_at) \
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?11, ?11) \
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13) \
              ON CONFLICT(path) DO UPDATE SET kind = excluded.kind, title = excluded.title, \
              mime = excluded.mime, size = excluded.size, hash = excluded.hash, \
              frontmatter = excluded.frontmatter, word_count = excluded.word_count, \
@@ -292,7 +294,9 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
                 frontmatter.map_or(Value::Null, Value::String),
                 Value::from(u64::from(word_count)),
                 Value::from(u64::from(reading_time_s)),
-                Value::from(now),
+                Value::from(created_at),
+                Value::from(updated_at),
+                Value::from(indexed_at),
             ],
         )?;
 
@@ -324,9 +328,9 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
             "hash": hash,
             "word_count": word_count,
             "reading_time_s": reading_time_s,
-            "created_at": now,
-            "updated_at": now,
-            "indexed_at": now,
+            "created_at": created_at,
+            "updated_at": updated_at,
+            "indexed_at": indexed_at,
             "deleted_at": Json::Null,
         });
         if kind == DocumentKind::Note {
@@ -573,4 +577,25 @@ fn now_ms() -> i64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_or(0, |d| d.as_millis() as i64)
+}
+
+/// The document's `(created_at, updated_at)` in epoch ms, taken from the file's
+/// filesystem timestamps so date filters reflect the file, not the index time.
+///
+/// `created()` is unavailable on some platforms/filesystems; it then falls back
+/// to the modification time, and both fall back to "now" if the filesystem
+/// exposes neither.
+fn file_times(metadata: &std::fs::Metadata) -> (i64, i64) {
+    let modified = metadata.modified().ok().and_then(system_time_ms);
+    let created = metadata.created().ok().and_then(system_time_ms);
+    let updated = modified.unwrap_or_else(now_ms);
+    let created = created.or(modified).unwrap_or(updated);
+    (created, updated)
+}
+
+fn system_time_ms(time: std::time::SystemTime) -> Option<i64> {
+    use std::time::UNIX_EPOCH;
+    time.duration_since(UNIX_EPOCH)
+        .ok()
+        .map(|d| d.as_millis() as i64)
 }

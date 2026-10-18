@@ -104,6 +104,34 @@ fn backlinks_resolve_and_unresolved_links_are_reported() {
 }
 
 #[test]
+fn link_to_a_file_by_name_resolves_when_the_target_is_indexed_later() {
+    let vault = tempfile::tempdir().unwrap();
+    // The note links to an asset that does not exist yet.
+    write(
+        vault.path(),
+        "design.md",
+        "# Design\n\nSee [[diagram.png]]\n",
+    );
+    let (indexer, storage) = build(vault.path());
+    indexer.scan_and_enqueue().unwrap();
+    indexer.process_pending().unwrap();
+    assert_eq!(broken_links(&storage).unwrap().len(), 1);
+
+    // The asset appears later, in a subfolder.
+    std::fs::create_dir_all(vault.path().join("assets")).unwrap();
+    std::fs::write(vault.path().join("assets/diagram.png"), "PNGBYTES").unwrap();
+    indexer.scan_and_enqueue().unwrap();
+    indexer.process_pending().unwrap();
+
+    let png = id_of(&storage, "assets/diagram.png");
+    let inbound = backlinks(&storage, &png).unwrap();
+    assert_eq!(inbound.len(), 1, "backlinks: {inbound:?}");
+    assert_eq!(inbound[0].dst_document_id.as_deref(), Some(png.as_str()));
+    assert!(!inbound[0].unresolved);
+    assert!(broken_links(&storage).unwrap().is_empty());
+}
+
+#[test]
 fn unlinked_mentions_are_suggested_but_linked_notes_are_not() {
     let (_vault, storage) = setup();
     let alpha = id_of(&storage, "alpha.md");
