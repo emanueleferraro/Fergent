@@ -27,6 +27,1199 @@ pub mod error {
         }
     }
 }
+#[doc = "Params of brain.archive (BRAIN.md §9.5)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainArchiveParams\","]
+#[doc = "  \"description\": \"Params of brain.archive (BRAIN.md §9.5).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainArchiveParams {
+    pub brain_id: String,
+}
+impl From<&BrainArchiveParams> for BrainArchiveParams {
+    fn from(value: &BrainArchiveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainArchiveResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainArchiveResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"state\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainState\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainArchiveResult {
+    pub brain_id: String,
+    pub state: BrainState,
+}
+impl From<&BrainArchiveResult> for BrainArchiveResult {
+    fn from(value: &BrainArchiveResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.archived event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainArchivedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.archived event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainArchivedPayload {
+    pub brain_id: String,
+}
+impl From<&BrainArchivedPayload> for BrainArchivedPayload {
+    fn from(value: &BrainArchivedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.attach (BRAIN.md §8.1, §18.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainAttachParams\","]
+#[doc = "  \"description\": \"Params of brain.attach (BRAIN.md §8.1, §18.2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"role\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"role\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainRole\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainAttachParams {
+    pub brain_id: String,
+    pub project_id: String,
+    pub role: BrainRole,
+}
+impl From<&BrainAttachParams> for BrainAttachParams {
+    fn from(value: &BrainAttachParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainAttachResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainAttachResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"role\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"role\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainRole\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainAttachResult {
+    pub brain_id: String,
+    pub project_id: String,
+    pub role: BrainRole,
+}
+impl From<&BrainAttachResult> for BrainAttachResult {
+    fn from(value: &BrainAttachResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.close (BRAIN.md §9.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainCloseParams\","]
+#[doc = "  \"description\": \"Params of brain.close (BRAIN.md §9.4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainCloseParams {
+    pub brain_id: String,
+}
+impl From<&BrainCloseParams> for BrainCloseParams {
+    fn from(value: &BrainCloseParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainCloseResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainCloseResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainCloseResult {
+    pub brain_id: String,
+}
+impl From<&BrainCloseResult> for BrainCloseResult {
+    fn from(value: &BrainCloseResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.closed event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainClosedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.closed event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainClosedPayload {
+    pub brain_id: String,
+}
+impl From<&BrainClosedPayload> for BrainClosedPayload {
+    fn from(value: &BrainClosedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The full brain.toml configuration (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainConfig\","]
+#[doc = "  \"description\": \"The full brain.toml configuration (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainIdentityConfig\""]
+#[doc = "    },"]
+#[doc = "    \"git\": {"]
+#[doc = "      \"$ref\": \"#/$defs/GitConfig\""]
+#[doc = "    },"]
+#[doc = "    \"graph\": {"]
+#[doc = "      \"$ref\": \"#/$defs/GraphConfig\""]
+#[doc = "    },"]
+#[doc = "    \"index\": {"]
+#[doc = "      \"$ref\": \"#/$defs/IndexConfig\""]
+#[doc = "    },"]
+#[doc = "    \"markdown\": {"]
+#[doc = "      \"$ref\": \"#/$defs/MarkdownConfig\""]
+#[doc = "    },"]
+#[doc = "    \"search\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchConfig\""]
+#[doc = "    },"]
+#[doc = "    \"sync\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SyncConfig\""]
+#[doc = "    },"]
+#[doc = "    \"vault\": {"]
+#[doc = "      \"$ref\": \"#/$defs/VaultConfig\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brain: Option<BrainIdentityConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub git: Option<GitConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub graph: Option<GraphConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub index: Option<IndexConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub markdown: Option<MarkdownConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub search: Option<SearchConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sync: Option<SyncConfig>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vault: Option<VaultConfig>,
+}
+impl From<&BrainConfig> for BrainConfig {
+    fn from(value: &BrainConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.create (BRAIN.md §9.2, §7.1, §18.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainCreateParams\","]
+#[doc = "  \"description\": \"Params of brain.create (BRAIN.md §9.2, §7.1, §18.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"color\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"icon\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"description\": \"Filesystem path for the new brain.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"template\": {"]
+#[doc = "      \"description\": \"Template name, e.g. blank, personal, research, coding, team (BRAIN.md §7.1).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainCreateParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+    pub name: String,
+    #[doc = "Filesystem path for the new brain."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    #[doc = "Template name, e.g. blank, personal, research, coding, team (BRAIN.md §7.1)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub template: Option<String>,
+}
+impl From<&BrainCreateParams> for BrainCreateParams {
+    fn from(value: &BrainCreateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainCreateResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainCreateResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\","]
+#[doc = "    \"state\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainState\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainCreateResult {
+    pub brain: BrainSummary,
+    pub state: BrainState,
+}
+impl From<&BrainCreateResult> for BrainCreateResult {
+    fn from(value: &BrainCreateResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.created event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainCreatedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.created event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainCreatedPayload {
+    pub brain: BrainSummary,
+}
+impl From<&BrainCreatedPayload> for BrainCreatedPayload {
+    fn from(value: &BrainCreatedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.delete (BRAIN.md §9.6)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainDeleteParams\","]
+#[doc = "  \"description\": \"Params of brain.delete (BRAIN.md §9.6).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"confirm_name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"confirm_name\": {"]
+#[doc = "      \"description\": \"The brain name, typed to confirm deletion (BRAIN.md §9.6).\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"export_first\": {"]
+#[doc = "      \"description\": \"Export an archive before deleting (BRAIN.md §9.6).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"permanent\": {"]
+#[doc = "      \"description\": \"Delete permanently instead of moving to trash (BRAIN.md §9.6).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainDeleteParams {
+    pub brain_id: String,
+    #[doc = "The brain name, typed to confirm deletion (BRAIN.md §9.6)."]
+    pub confirm_name: String,
+    #[doc = "Export an archive before deleting (BRAIN.md §9.6)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub export_first: Option<bool>,
+    #[doc = "Delete permanently instead of moving to trash (BRAIN.md §9.6)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub permanent: Option<bool>,
+}
+impl From<&BrainDeleteParams> for BrainDeleteParams {
+    fn from(value: &BrainDeleteParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainDeleteResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainDeleteResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainDeleteResult {
+    pub brain_id: String,
+}
+impl From<&BrainDeleteResult> for BrainDeleteResult {
+    fn from(value: &BrainDeleteResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.deleted event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainDeletedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.deleted event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainDeletedPayload {
+    pub brain_id: String,
+}
+impl From<&BrainDeletedPayload> for BrainDeletedPayload {
+    fn from(value: &BrainDeletedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.detach (BRAIN.md §8.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainDetachParams\","]
+#[doc = "  \"description\": \"Params of brain.detach (BRAIN.md §8.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainDetachParams {
+    pub brain_id: String,
+    pub project_id: String,
+}
+impl From<&BrainDetachParams> for BrainDetachParams {
+    fn from(value: &BrainDetachParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainDetachResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainDetachResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainDetachResult {
+    pub brain_id: String,
+    pub project_id: String,
+}
+impl From<&BrainDetachResult> for BrainDetachResult {
+    fn from(value: &BrainDetachResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.duplicate (BRAIN.md §8.5)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainDuplicateParams\","]
+#[doc = "  \"description\": \"Params of brain.duplicate (BRAIN.md §8.5).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"include_attachments\": {"]
+#[doc = "      \"description\": \"Copy attachments and large files.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"description\": \"Name for the copy.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"description\": \"Filesystem path for the copy.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"rewrite_links\": {"]
+#[doc = "      \"description\": \"Rewrite internal links to the new brain id (BRAIN.md §8.5).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainDuplicateParams {
+    pub brain_id: String,
+    #[doc = "Copy attachments and large files."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub include_attachments: Option<bool>,
+    #[doc = "Name for the copy."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[doc = "Filesystem path for the copy."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    #[doc = "Rewrite internal links to the new brain id (BRAIN.md §8.5)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rewrite_links: Option<bool>,
+}
+impl From<&BrainDuplicateParams> for BrainDuplicateParams {
+    fn from(value: &BrainDuplicateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainDuplicateResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainDuplicateResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainDuplicateResult {
+    pub brain: BrainSummary,
+}
+impl From<&BrainDuplicateResult> for BrainDuplicateResult {
+    fn from(value: &BrainDuplicateResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.export (BRAIN.md §14.1, §14.3, §18.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainExportParams\","]
+#[doc = "  \"description\": \"Params of brain.export (BRAIN.md §14.1, §14.3, §18.4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"output\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"include_index\": {"]
+#[doc = "      \"description\": \"Include index.sqlite and graph.db (excluded by default; BRAIN.md §14.1).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"output\": {"]
+#[doc = "      \"description\": \"Path of the .fergbrain archive to write.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainExportParams {
+    pub brain_id: String,
+    #[doc = "Include index.sqlite and graph.db (excluded by default; BRAIN.md §14.1)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub include_index: Option<bool>,
+    #[doc = "Path of the .fergbrain archive to write."]
+    pub output: String,
+}
+impl From<&BrainExportParams> for BrainExportParams {
+    fn from(value: &BrainExportParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainExportResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainExportResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"output\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"output\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainExportResult {
+    pub output: String,
+}
+impl From<&BrainExportResult> for BrainExportResult {
+    fn from(value: &BrainExportResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.exported event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainExportedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.exported event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"output\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"output\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainExportedPayload {
+    pub brain_id: String,
+    pub output: String,
+}
+impl From<&BrainExportedPayload> for BrainExportedPayload {
+    fn from(value: &BrainExportedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.get."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainGetParams\","]
+#[doc = "  \"description\": \"Params of brain.get.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainGetParams {
+    pub brain_id: String,
+}
+impl From<&BrainGetParams> for BrainGetParams {
+    fn from(value: &BrainGetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of brain.get: the brain summary, its lifecycle state, and its brain.toml config (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainGetResult\","]
+#[doc = "  \"description\": \"Result of brain.get: the brain summary, its lifecycle state, and its brain.toml config (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\","]
+#[doc = "    \"config\","]
+#[doc = "    \"state\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    },"]
+#[doc = "    \"config\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainConfig\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainState\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainGetResult {
+    pub brain: BrainSummary,
+    pub config: BrainConfig,
+    pub state: BrainState,
+}
+impl From<&BrainGetResult> for BrainGetResult {
+    fn from(value: &BrainGetResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The [brain] section of brain.toml (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainIdentityConfig\","]
+#[doc = "  \"description\": \"The [brain] section of brain.toml (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"color\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"icon\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"slug\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"template\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainIdentityConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub slug: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub template: Option<String>,
+}
+impl From<&BrainIdentityConfig> for BrainIdentityConfig {
+    fn from(value: &BrainIdentityConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.import (BRAIN.md §14.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainImportParams\","]
+#[doc = "  \"description\": \"Params of brain.import (BRAIN.md §14.2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"description\": \"Path of the .fergbrain archive to import.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"target_path\": {"]
+#[doc = "      \"description\": \"Filesystem path to extract the brain into.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainImportParams {
+    #[doc = "Path of the .fergbrain archive to import."]
+    pub path: String,
+    #[doc = "Filesystem path to extract the brain into."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_path: Option<String>,
+}
+impl From<&BrainImportParams> for BrainImportParams {
+    fn from(value: &BrainImportParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainImportResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainImportResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainImportResult {
+    pub brain: BrainSummary,
+}
+impl From<&BrainImportResult> for BrainImportResult {
+    fn from(value: &BrainImportResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.imported event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainImportedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.imported event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainImportedPayload {
+    pub brain: BrainSummary,
+}
+impl From<&BrainImportedPayload> for BrainImportedPayload {
+    fn from(value: &BrainImportedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.indexed event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainIndexedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.indexed event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainIndexedPayload {
+    pub brain_id: String,
+}
+impl From<&BrainIndexedPayload> for BrainIndexedPayload {
+    fn from(value: &BrainIndexedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.list. `brain.list` is extended in Phase 1 with an archived filter."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainListParams\","]
+#[doc = "  \"description\": \"Params of brain.list. `brain.list` is extended in Phase 1 with an archived filter.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"include_archived\": {"]
+#[doc = "      \"description\": \"Include archived brains (default false).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainListParams {
+    #[doc = "Include archived brains (default false)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub include_archived: Option<bool>,
+}
+impl From<&BrainListParams> for BrainListParams {
+    fn from(value: &BrainListParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "BrainListResult"]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -58,6 +1251,415 @@ pub struct BrainListResult {
 impl From<&BrainListResult> for BrainListResult {
     fn from(value: &BrainListResult) -> Self {
         value.clone()
+    }
+}
+#[doc = "Params of brain.move: relocate a brain folder (BRAIN.md §10.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainMoveParams\","]
+#[doc = "  \"description\": \"Params of brain.move: relocate a brain folder (BRAIN.md §10.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainMoveParams {
+    pub brain_id: String,
+    pub path: String,
+}
+impl From<&BrainMoveParams> for BrainMoveParams {
+    fn from(value: &BrainMoveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainMoveResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainMoveResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainMoveResult {
+    pub brain: BrainSummary,
+}
+impl From<&BrainMoveResult> for BrainMoveResult {
+    fn from(value: &BrainMoveResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.open (BRAIN.md §9.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainOpenParams\","]
+#[doc = "  \"description\": \"Params of brain.open (BRAIN.md §9.3).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainOpenParams {
+    pub brain_id: String,
+}
+impl From<&BrainOpenParams> for BrainOpenParams {
+    fn from(value: &BrainOpenParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainOpenResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainOpenResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\","]
+#[doc = "    \"state\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainState\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainOpenResult {
+    pub brain: BrainSummary,
+    pub state: BrainState,
+}
+impl From<&BrainOpenResult> for BrainOpenResult {
+    fn from(value: &BrainOpenResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.opened event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainOpenedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.opened event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainOpenedPayload {
+    pub brain: BrainSummary,
+}
+impl From<&BrainOpenedPayload> for BrainOpenedPayload {
+    fn from(value: &BrainOpenedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.reindex (BRAIN.md §5.2, §5.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainReindexParams\","]
+#[doc = "  \"description\": \"Params of brain.reindex (BRAIN.md §5.2, §5.3).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"full\": {"]
+#[doc = "      \"description\": \"Force a full reindex instead of an incremental one.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainReindexParams {
+    pub brain_id: String,
+    #[doc = "Force a full reindex instead of an incremental one."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub full: Option<bool>,
+}
+impl From<&BrainReindexParams> for BrainReindexParams {
+    fn from(value: &BrainReindexParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainReindexResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainReindexResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"state\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainState\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainReindexResult {
+    pub brain_id: String,
+    pub state: BrainState,
+}
+impl From<&BrainReindexResult> for BrainReindexResult {
+    fn from(value: &BrainReindexResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A brain's role within a project (BRAIN.md §8.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainRole\","]
+#[doc = "  \"description\": \"A brain's role within a project (BRAIN.md §8.1).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"primary\","]
+#[doc = "    \"read-only\","]
+#[doc = "    \"scratch\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum BrainRole {
+    #[serde(rename = "primary")]
+    Primary,
+    #[serde(rename = "read-only")]
+    ReadOnly,
+    #[serde(rename = "scratch")]
+    Scratch,
+}
+impl From<&BrainRole> for BrainRole {
+    fn from(value: &BrainRole) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for BrainRole {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Primary => write!(f, "primary"),
+            Self::ReadOnly => write!(f, "read-only"),
+            Self::Scratch => write!(f, "scratch"),
+        }
+    }
+}
+impl std::str::FromStr for BrainRole {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "primary" => Ok(Self::Primary),
+            "read-only" => Ok(Self::ReadOnly),
+            "scratch" => Ok(Self::Scratch),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for BrainRole {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for BrainRole {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for BrainRole {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Brain lifecycle state (BRAIN.md §9.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainState\","]
+#[doc = "  \"description\": \"Brain lifecycle state (BRAIN.md §9.1).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"created\","]
+#[doc = "    \"indexing\","]
+#[doc = "    \"ready\","]
+#[doc = "    \"archived\","]
+#[doc = "    \"deleted\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum BrainState {
+    #[serde(rename = "created")]
+    Created,
+    #[serde(rename = "indexing")]
+    Indexing,
+    #[serde(rename = "ready")]
+    Ready,
+    #[serde(rename = "archived")]
+    Archived,
+    #[serde(rename = "deleted")]
+    Deleted,
+}
+impl From<&BrainState> for BrainState {
+    fn from(value: &BrainState) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for BrainState {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Created => write!(f, "created"),
+            Self::Indexing => write!(f, "indexing"),
+            Self::Ready => write!(f, "ready"),
+            Self::Archived => write!(f, "archived"),
+            Self::Deleted => write!(f, "deleted"),
+        }
+    }
+}
+impl std::str::FromStr for BrainState {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "created" => Ok(Self::Created),
+            "indexing" => Ok(Self::Indexing),
+            "ready" => Ok(Self::Ready),
+            "archived" => Ok(Self::Archived),
+            "deleted" => Ok(Self::Deleted),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for BrainState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for BrainState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for BrainState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
     }
 }
 #[doc = "BrainSummary"]
@@ -105,6 +1707,271 @@ pub struct BrainSummary {
 }
 impl From<&BrainSummary> for BrainSummary {
     fn from(value: &BrainSummary) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.template.save (BRAIN.md §7.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainTemplateSaveParams\","]
+#[doc = "  \"description\": \"Params of brain.template.save (BRAIN.md §7.2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"exclude_private\": {"]
+#[doc = "      \"description\": \"Exclude personal data from the template (BRAIN.md §7.2).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"description\": \"Template name to create.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainTemplateSaveParams {
+    pub brain_id: String,
+    #[doc = "Exclude personal data from the template (BRAIN.md §7.2)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub exclude_private: Option<bool>,
+    #[doc = "Template name to create."]
+    pub name: String,
+}
+impl From<&BrainTemplateSaveParams> for BrainTemplateSaveParams {
+    fn from(value: &BrainTemplateSaveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainTemplateSaveResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainTemplateSaveResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainTemplateSaveResult {
+    pub name: String,
+    pub path: String,
+}
+impl From<&BrainTemplateSaveResult> for BrainTemplateSaveResult {
+    fn from(value: &BrainTemplateSaveResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.unarchive (BRAIN.md §9.5)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainUnarchiveParams\","]
+#[doc = "  \"description\": \"Params of brain.unarchive (BRAIN.md §9.5).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainUnarchiveParams {
+    pub brain_id: String,
+}
+impl From<&BrainUnarchiveParams> for BrainUnarchiveParams {
+    fn from(value: &BrainUnarchiveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainUnarchiveResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainUnarchiveResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"state\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainState\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainUnarchiveResult {
+    pub brain_id: String,
+    pub state: BrainState,
+}
+impl From<&BrainUnarchiveResult> for BrainUnarchiveResult {
+    fn from(value: &BrainUnarchiveResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of brain.update: mutable identity fields (BRAIN.md §6.1 [brain])."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainUpdateParams\","]
+#[doc = "  \"description\": \"Params of brain.update: mutable identity fields (BRAIN.md §6.1 [brain]).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"color\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"icon\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainUpdateParams {
+    pub brain_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+}
+impl From<&BrainUpdateParams> for BrainUpdateParams {
+    fn from(value: &BrainUpdateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "BrainUpdateResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainUpdateResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainUpdateResult {
+    pub brain: BrainSummary,
+}
+impl From<&BrainUpdateResult> for BrainUpdateResult {
+    fn from(value: &BrainUpdateResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the brain.updated event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BrainUpdatedPayload\","]
+#[doc = "  \"description\": \"Payload of the brain.updated event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct BrainUpdatedPayload {
+    pub brain: BrainSummary,
+}
+impl From<&BrainUpdatedPayload> for BrainUpdatedPayload {
+    fn from(value: &BrainUpdatedPayload) -> Self {
         value.clone()
     }
 }
@@ -243,6 +2110,110 @@ pub struct EventsDroppedNotice {
 }
 impl From<&EventsDroppedNotice> for EventsDroppedNotice {
     fn from(value: &EventsDroppedNotice) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The [git] section of brain.toml. Parsed and preserved only in Phase 1 (no runtime effect)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitConfig\","]
+#[doc = "  \"description\": \"The [git] section of brain.toml. Parsed and preserved only in Phase 1 (no runtime effect).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"auto_commit\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"commit_message_template\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_commit: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub commit_message_template: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+}
+impl From<&GitConfig> for GitConfig {
+    fn from(value: &GitConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The [graph] section of brain.toml (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphConfig\","]
+#[doc = "  \"description\": \"The [graph] section of brain.toml (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"extract_entities\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"extract_relations\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"llm_extraction\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GraphConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extract_entities: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub extract_relations: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub llm_extraction: Option<bool>,
+}
+impl From<&GraphConfig> for GraphConfig {
+    fn from(value: &GraphConfig) -> Self {
         value.clone()
     }
 }
@@ -436,6 +2407,142 @@ impl From<&HelloParams> for HelloParams {
         value.clone()
     }
 }
+#[doc = "The [index] section of brain.toml (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexConfig\","]
+#[doc = "  \"description\": \"The [index] section of brain.toml (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"auto_index\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"chunk_overlap\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"chunk_size\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"embedding_model\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"watch\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct IndexConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_index: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chunk_overlap: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chunk_size: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub embedding_model: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub watch: Option<bool>,
+}
+impl From<&IndexConfig> for IndexConfig {
+    fn from(value: &IndexConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The [markdown] section of brain.toml (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MarkdownConfig\","]
+#[doc = "  \"description\": \"The [markdown] section of brain.toml (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"block_refs\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"callouts\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"embeds\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"math\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"mermaid\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"wiki_links\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct MarkdownConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub block_refs: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub callouts: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub embeds: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub math: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mermaid: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub wiki_links: Option<bool>,
+}
+impl From<&MarkdownConfig> for MarkdownConfig {
+    fn from(value: &MarkdownConfig) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Liveness probe reply; carries no diagnostics."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -521,6 +2628,56 @@ pub struct ReplayParams {
 }
 impl From<&ReplayParams> for ReplayParams {
     fn from(value: &ReplayParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The [search] section of brain.toml (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchConfig\","]
+#[doc = "  \"description\": \"The [search] section of brain.toml (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"default_mode\": {"]
+#[doc = "      \"description\": \"hybrid | bm25 | vector | sparse.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"default_top_k\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"rerank\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SearchConfig {
+    #[doc = "hybrid | bm25 | vector | sparse."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_mode: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_top_k: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rerank: Option<bool>,
+}
+impl From<&SearchConfig> for SearchConfig {
+    fn from(value: &SearchConfig) -> Self {
         value.clone()
     }
 }
@@ -638,6 +2795,59 @@ impl From<&SubscribeParams> for SubscribeParams {
         value.clone()
     }
 }
+#[doc = "The [sync] section of brain.toml. Parsed and preserved only in Phase 1 (no runtime effect)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SyncConfig\","]
+#[doc = "  \"description\": \"The [sync] section of brain.toml. Parsed and preserved only in Phase 1 (no runtime effect).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"peers\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"scope\": {"]
+#[doc = "      \"description\": \"full | notes-only | custom.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SyncConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub peers: Option<Vec<String>>,
+    #[doc = "full | notes-only | custom."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scope: Option<String>,
+}
+impl From<&SyncConfig> for SyncConfig {
+    fn from(value: &SyncConfig) -> Self {
+        value.clone()
+    }
+}
 #[doc = "SystemInfoResult"]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -715,6 +2925,78 @@ pub struct UnsubscribeParams {
 }
 impl From<&UnsubscribeParams> for UnsubscribeParams {
     fn from(value: &UnsubscribeParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The [vault] section of brain.toml (BRAIN.md §6.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"VaultConfig\","]
+#[doc = "  \"description\": \"The [vault] section of brain.toml (BRAIN.md §6.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"attachments_folder\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"daily_folder\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"daily_format\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"default_note_folder\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"templates_folder\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct VaultConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub attachments_folder: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub daily_folder: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub daily_format: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_note_folder: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub templates_folder: Option<String>,
+}
+impl From<&VaultConfig> for VaultConfig {
+    fn from(value: &VaultConfig) -> Self {
         value.clone()
     }
 }
