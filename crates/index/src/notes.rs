@@ -107,6 +107,30 @@ pub fn clear_note_data(storage: &Arc<dyn Storage>, document_id: &str) -> Result<
     Ok(())
 }
 
+/// Re-resolve previously unresolved links that point at a document that has
+/// just been indexed. This makes resolution independent of indexing order: a
+/// note linking to a not-yet-indexed target is fixed once the target appears.
+pub fn resolve_incoming_links(
+    storage: &Arc<dyn Storage>,
+    document_id: &str,
+    path: &str,
+    title: &str,
+) -> Result<usize, IndexError> {
+    let candidates = target_candidates(path, title);
+    let resolved = storage.execute(
+        "UPDATE links SET dst_document_id = ?1, unresolved = 0, dst_path = NULL \
+         WHERE unresolved = 1 AND LOWER(dst_path) IN (?2, ?3, ?4, ?5)",
+        &[
+            Value::String(document_id.to_string()),
+            Value::String(candidates[0].clone()),
+            Value::String(candidates[1].clone()),
+            Value::String(candidates[2].clone()),
+            Value::String(candidates[3].clone()),
+        ],
+    )?;
+    Ok(resolved)
+}
+
 /// Persist a note's outgoing links, resolving internal targets against
 /// `documents`. Returns the number of links written.
 pub fn persist_links(

@@ -298,6 +298,9 @@ impl<E: Embedder, V: VectorStore> Indexer<E, V> {
 
         // Refresh the note's links, tags, and metadata (Task 9).
         notes::clear_note_data(&self.storage, &document_id)?;
+        // Resolve other notes' earlier links that now point at this document,
+        // so resolution never depends on indexing order.
+        notes::resolve_incoming_links(&self.storage, &document_id, rel_path, &title)?;
         if kind == DocumentKind::Note {
             if let Some(parsed) = &parsed {
                 notes::persist_links(&self.storage, &document_id, &parsed.links, &parsed.body)?;

@@ -117,6 +117,10 @@ fn unlinked_mentions_are_suggested_but_linked_notes_are_not() {
         !ids.contains(&beta.as_str()),
         "a note that links to the target must not be suggested"
     );
+    assert!(
+        !ids.contains(&alpha.as_str()),
+        "the note must not mention itself"
+    );
 }
 
 #[test]
