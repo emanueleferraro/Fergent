@@ -70,3 +70,14 @@ fn brain_events_payload_roundtrip() {
     );
     assert_roundtrip::<BrainClosedPayload>(json!({"brain_id": "b1"}));
 }
+
+#[test]
+fn phase1_types_tolerate_unknown_fields() {
+    // Rule 3: the schema is additive, so unknown future fields must not break
+    // parsing of the Phase 1 types. (The Phase 0 types stay strict and are
+    // migrated to permissive parsing in a separate PR.)
+    let params: BrainCreateParams =
+        serde_json::from_value(json!({"name": "X", "future_field": 42}))
+            .expect("new Phase 1 types tolerate unknown fields");
+    assert_eq!(params.name, "X");
+}

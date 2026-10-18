@@ -43,13 +43,11 @@ pub mod error {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainArchiveParams {
     pub brain_id: String,
 }
@@ -77,13 +75,11 @@ impl From<&BrainArchiveParams> for BrainArchiveParams {
 #[doc = "    \"state\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainState\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainArchiveResult {
     pub brain_id: String,
     pub state: BrainState,
@@ -109,13 +105,11 @@ impl From<&BrainArchiveResult> for BrainArchiveResult {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainArchivedPayload {
     pub brain_id: String,
 }
@@ -148,13 +142,11 @@ impl From<&BrainArchivedPayload> for BrainArchivedPayload {
 #[doc = "    \"role\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainRole\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainAttachParams {
     pub brain_id: String,
     pub project_id: String,
@@ -188,13 +180,11 @@ impl From<&BrainAttachParams> for BrainAttachParams {
 #[doc = "    \"role\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainRole\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainAttachResult {
     pub brain_id: String,
     pub project_id: String,
@@ -221,13 +211,11 @@ impl From<&BrainAttachResult> for BrainAttachResult {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainCloseParams {
     pub brain_id: String,
 }
@@ -251,13 +239,11 @@ impl From<&BrainCloseParams> for BrainCloseParams {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainCloseResult {
     pub brain_id: String,
 }
@@ -282,13 +268,11 @@ impl From<&BrainCloseResult> for BrainCloseResult {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainClosedPayload {
     pub brain_id: String,
 }
@@ -331,13 +315,11 @@ impl From<&BrainClosedPayload> for BrainClosedPayload {
 #[doc = "    \"vault\": {"]
 #[doc = "      \"$ref\": \"#/$defs/VaultConfig\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub brain: Option<BrainIdentityConfig>,
@@ -403,13 +385,11 @@ impl From<&BrainConfig> for BrainConfig {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainCreateParams {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<String>,
@@ -447,13 +427,11 @@ impl From<&BrainCreateParams> for BrainCreateParams {
 #[doc = "    \"state\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainState\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainCreateResult {
     pub brain: BrainSummary,
     pub state: BrainState,
@@ -479,13 +457,11 @@ impl From<&BrainCreateResult> for BrainCreateResult {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainCreatedPayload {
     pub brain: BrainSummary,
 }
@@ -529,13 +505,11 @@ impl From<&BrainCreatedPayload> for BrainCreatedPayload {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainDeleteParams {
     pub brain_id: String,
     #[doc = "The brain name, typed to confirm deletion (BRAIN.md §9.6)."]
@@ -567,13 +541,11 @@ impl From<&BrainDeleteParams> for BrainDeleteParams {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainDeleteResult {
     pub brain_id: String,
 }
@@ -598,13 +570,11 @@ impl From<&BrainDeleteResult> for BrainDeleteResult {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainDeletedPayload {
     pub brain_id: String,
 }
@@ -633,13 +603,11 @@ impl From<&BrainDeletedPayload> for BrainDeletedPayload {
 #[doc = "    \"project_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainDetachParams {
     pub brain_id: String,
     pub project_id: String,
@@ -668,13 +636,11 @@ impl From<&BrainDetachParams> for BrainDetachParams {
 #[doc = "    \"project_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainDetachResult {
     pub brain_id: String,
     pub project_id: String,
@@ -728,13 +694,11 @@ impl From<&BrainDetachResult> for BrainDetachResult {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainDuplicateParams {
     pub brain_id: String,
     #[doc = "Copy attachments and large files."]
@@ -770,13 +734,11 @@ impl From<&BrainDuplicateParams> for BrainDuplicateParams {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainDuplicateResult {
     pub brain: BrainSummary,
 }
@@ -813,13 +775,11 @@ impl From<&BrainDuplicateResult> for BrainDuplicateResult {
 #[doc = "      \"description\": \"Path of the .fergbrain archive to write.\","]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainExportParams {
     pub brain_id: String,
     #[doc = "Include index.sqlite and graph.db (excluded by default; BRAIN.md §14.1)."]
@@ -848,13 +808,11 @@ impl From<&BrainExportParams> for BrainExportParams {
 #[doc = "    \"output\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainExportResult {
     pub output: String,
 }
@@ -883,13 +841,11 @@ impl From<&BrainExportResult> for BrainExportResult {
 #[doc = "    \"output\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainExportedPayload {
     pub brain_id: String,
     pub output: String,
@@ -915,13 +871,11 @@ impl From<&BrainExportedPayload> for BrainExportedPayload {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainGetParams {
     pub brain_id: String,
 }
@@ -954,13 +908,11 @@ impl From<&BrainGetParams> for BrainGetParams {
 #[doc = "    \"state\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainState\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainGetResult {
     pub brain: BrainSummary,
     pub config: BrainConfig,
@@ -1023,13 +975,11 @@ impl From<&BrainGetResult> for BrainGetResult {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainIdentityConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub color: Option<String>,
@@ -1075,13 +1025,11 @@ impl From<&BrainIdentityConfig> for BrainIdentityConfig {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainImportParams {
     #[doc = "Path of the .fergbrain archive to import."]
     pub path: String,
@@ -1109,13 +1057,11 @@ impl From<&BrainImportParams> for BrainImportParams {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainImportResult {
     pub brain: BrainSummary,
 }
@@ -1140,13 +1086,11 @@ impl From<&BrainImportResult> for BrainImportResult {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainImportedPayload {
     pub brain: BrainSummary,
 }
@@ -1171,13 +1115,11 @@ impl From<&BrainImportedPayload> for BrainImportedPayload {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainIndexedPayload {
     pub brain_id: String,
 }
@@ -1203,13 +1145,11 @@ impl From<&BrainIndexedPayload> for BrainIndexedPayload {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainListParams {
     #[doc = "Include archived brains (default false)."]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1273,13 +1213,11 @@ impl From<&BrainListResult> for BrainListResult {
 #[doc = "    \"path\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainMoveParams {
     pub brain_id: String,
     pub path: String,
@@ -1304,13 +1242,11 @@ impl From<&BrainMoveParams> for BrainMoveParams {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainMoveResult {
     pub brain: BrainSummary,
 }
@@ -1335,13 +1271,11 @@ impl From<&BrainMoveResult> for BrainMoveResult {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainOpenParams {
     pub brain_id: String,
 }
@@ -1369,13 +1303,11 @@ impl From<&BrainOpenParams> for BrainOpenParams {
 #[doc = "    \"state\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainState\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainOpenResult {
     pub brain: BrainSummary,
     pub state: BrainState,
@@ -1401,13 +1333,11 @@ impl From<&BrainOpenResult> for BrainOpenResult {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainOpenedPayload {
     pub brain: BrainSummary,
 }
@@ -1439,13 +1369,11 @@ impl From<&BrainOpenedPayload> for BrainOpenedPayload {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainReindexParams {
     pub brain_id: String,
     #[doc = "Force a full reindex instead of an incremental one."]
@@ -1476,13 +1404,11 @@ impl From<&BrainReindexParams> for BrainReindexParams {
 #[doc = "    \"state\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainState\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainReindexResult {
     pub brain_id: String,
     pub state: BrainState,
@@ -1738,13 +1664,11 @@ impl From<&BrainSummary> for BrainSummary {
 #[doc = "      \"description\": \"Template name to create.\","]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainTemplateSaveParams {
     pub brain_id: String,
     #[doc = "Exclude personal data from the template (BRAIN.md §7.2)."]
@@ -1777,13 +1701,11 @@ impl From<&BrainTemplateSaveParams> for BrainTemplateSaveParams {
 #[doc = "    \"path\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainTemplateSaveResult {
     pub name: String,
     pub path: String,
@@ -1809,13 +1731,11 @@ impl From<&BrainTemplateSaveResult> for BrainTemplateSaveResult {
 #[doc = "    \"brain_id\": {"]
 #[doc = "      \"type\": \"string\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainUnarchiveParams {
     pub brain_id: String,
 }
@@ -1843,13 +1763,11 @@ impl From<&BrainUnarchiveParams> for BrainUnarchiveParams {
 #[doc = "    \"state\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainState\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainUnarchiveResult {
     pub brain_id: String,
     pub state: BrainState,
@@ -1893,13 +1811,11 @@ impl From<&BrainUnarchiveResult> for BrainUnarchiveResult {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainUpdateParams {
     pub brain_id: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -1929,13 +1845,11 @@ impl From<&BrainUpdateParams> for BrainUpdateParams {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainUpdateResult {
     pub brain: BrainSummary,
 }
@@ -1960,13 +1874,11 @@ impl From<&BrainUpdateResult> for BrainUpdateResult {
 #[doc = "    \"brain\": {"]
 #[doc = "      \"$ref\": \"#/$defs/BrainSummary\""]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct BrainUpdatedPayload {
     pub brain: BrainSummary,
 }
@@ -2141,13 +2053,11 @@ impl From<&EventsDroppedNotice> for EventsDroppedNotice {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct GitConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_commit: Option<bool>,
@@ -2195,13 +2105,11 @@ impl From<&GitConfig> for GitConfig {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct GraphConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
@@ -2447,13 +2355,11 @@ impl From<&HelloParams> for HelloParams {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct IndexConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub auto_index: Option<bool>,
@@ -2517,13 +2423,11 @@ impl From<&IndexConfig> for IndexConfig {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct MarkdownConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub block_refs: Option<bool>,
@@ -2660,13 +2564,11 @@ impl From<&ReplayParams> for ReplayParams {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct SearchConfig {
     #[doc = "hybrid | bm25 | vector | sparse."]
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -2827,13 +2729,11 @@ impl From<&SubscribeParams> for SubscribeParams {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct SyncConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub enabled: Option<bool>,
@@ -2974,13 +2874,11 @@ impl From<&UnsubscribeParams> for UnsubscribeParams {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    }"]
-#[doc = "  },"]
-#[doc = "  \"additionalProperties\": false"]
+#[doc = "  }"]
 #[doc = "}"]
 #[doc = r" ```"]
 #[doc = r" </details>"]
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
-#[serde(deny_unknown_fields)]
 pub struct VaultConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub attachments_folder: Option<String>,
