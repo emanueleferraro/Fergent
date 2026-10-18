@@ -1887,6 +1887,982 @@ impl From<&BrainUpdatedPayload> for BrainUpdatedPayload {
         value.clone()
     }
 }
+#[doc = "Params of daily.open (BRAIN.md §4.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DailyOpenParams\","]
+#[doc = "  \"description\": \"Params of daily.open (BRAIN.md §4.4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"date\": {"]
+#[doc = "      \"description\": \"ISO date (defaults to today).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DailyOpenParams {
+    #[doc = "ISO date (defaults to today)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub date: Option<String>,
+}
+impl From<&DailyOpenParams> for DailyOpenParams {
+    fn from(value: &DailyOpenParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The daily note, created on first open of the day (BRAIN.md §4.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DailyOpenResult\","]
+#[doc = "  \"description\": \"The daily note, created on first open of the day (BRAIN.md §4.4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"created\","]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"created\": {"]
+#[doc = "      \"description\": \"True when the note was created by this call.\","]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DailyOpenResult {
+    #[doc = "True when the note was created by this call."]
+    pub created: bool,
+    pub document: Document,
+}
+impl From<&DailyOpenResult> for DailyOpenResult {
+    fn from(value: &DailyOpenResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.backlinks (GRAPH.md §7.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocBacklinksParams\","]
+#[doc = "  \"description\": \"Params of doc.backlinks (GRAPH.md §7.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocBacklinksParams {
+    pub document_id: String,
+}
+impl From<&DocBacklinksParams> for DocBacklinksParams {
+    fn from(value: &DocBacklinksParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Incoming links, including unresolved targets (GRAPH.md §7.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocBacklinksResult\","]
+#[doc = "  \"description\": \"Incoming links, including unresolved targets (GRAPH.md §7.2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"backlinks\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"backlinks\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/LinkRef\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocBacklinksResult {
+    pub backlinks: Vec<LinkRef>,
+}
+impl From<&DocBacklinksResult> for DocBacklinksResult {
+    fn from(value: &DocBacklinksResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.create."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocCreateParams\","]
+#[doc = "  \"description\": \"Params of doc.create.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"description\": \"Vault-relative path of the new note.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocCreateParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content: Option<String>,
+    #[doc = "Vault-relative path of the new note."]
+    pub path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+}
+impl From<&DocCreateParams> for DocCreateParams {
+    fn from(value: &DocCreateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocCreateResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocCreateResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocCreateResult {
+    pub document: Document,
+}
+impl From<&DocCreateResult> for DocCreateResult {
+    fn from(value: &DocCreateResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.delete (soft delete; spec Task 8.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocDeleteParams\","]
+#[doc = "  \"description\": \"Params of doc.delete (soft delete; spec Task 8.4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocDeleteParams {
+    pub document_id: String,
+}
+impl From<&DocDeleteParams> for DocDeleteParams {
+    fn from(value: &DocDeleteParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocDeleteResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocDeleteResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocDeleteResult {
+    pub document_id: String,
+}
+impl From<&DocDeleteResult> for DocDeleteResult {
+    fn from(value: &DocDeleteResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.get."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocGetParams\","]
+#[doc = "  \"description\": \"Params of doc.get.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocGetParams {
+    pub document_id: String,
+}
+impl From<&DocGetParams> for DocGetParams {
+    fn from(value: &DocGetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocGetResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocGetResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"description\": \"The note's markdown source.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocGetResult {
+    #[doc = "The note's markdown source."]
+    pub content: String,
+    pub document: Document,
+}
+impl From<&DocGetResult> for DocGetResult {
+    fn from(value: &DocGetResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocListParams\","]
+#[doc = "  \"description\": \"Params of doc.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"include_deleted\": {"]
+#[doc = "      \"description\": \"Include soft-deleted documents (default false).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"description\": \"Filter by document kind.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocListParams {
+    #[doc = "Include soft-deleted documents (default false)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub include_deleted: Option<bool>,
+    #[doc = "Filter by document kind."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub kind: Option<String>,
+}
+impl From<&DocListParams> for DocListParams {
+    fn from(value: &DocListParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocListResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocListResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"documents\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"documents\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/Document\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocListResult {
+    pub documents: Vec<Document>,
+}
+impl From<&DocListResult> for DocListResult {
+    fn from(value: &DocListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.move."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocMoveParams\","]
+#[doc = "  \"description\": \"Params of doc.move.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"description\": \"New vault-relative path.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocMoveParams {
+    pub document_id: String,
+    #[doc = "New vault-relative path."]
+    pub path: String,
+}
+impl From<&DocMoveParams> for DocMoveParams {
+    fn from(value: &DocMoveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocMoveResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocMoveResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocMoveResult {
+    pub document: Document,
+}
+impl From<&DocMoveResult> for DocMoveResult {
+    fn from(value: &DocMoveResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.outline."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocOutlineParams\","]
+#[doc = "  \"description\": \"Params of doc.outline.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocOutlineParams {
+    pub document_id: String,
+}
+impl From<&DocOutlineParams> for DocOutlineParams {
+    fn from(value: &DocOutlineParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The heading outline of a note, in document order (levels imply nesting)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocOutlineResult\","]
+#[doc = "  \"description\": \"The heading outline of a note, in document order (levels imply nesting).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"outline\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"outline\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/OutlineEntry\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocOutlineResult {
+    pub outline: Vec<OutlineEntry>,
+}
+impl From<&DocOutlineResult> for DocOutlineResult {
+    fn from(value: &DocOutlineResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.rename."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocRenameParams\","]
+#[doc = "  \"description\": \"Params of doc.rename.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\","]
+#[doc = "    \"title\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocRenameParams {
+    pub document_id: String,
+    pub title: String,
+}
+impl From<&DocRenameParams> for DocRenameParams {
+    fn from(value: &DocRenameParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocRenameResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocRenameResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocRenameResult {
+    pub document: Document,
+}
+impl From<&DocRenameResult> for DocRenameResult {
+    fn from(value: &DocRenameResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.restore."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocRestoreParams\","]
+#[doc = "  \"description\": \"Params of doc.restore.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocRestoreParams {
+    pub document_id: String,
+}
+impl From<&DocRestoreParams> for DocRestoreParams {
+    fn from(value: &DocRestoreParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocRestoreResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocRestoreResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocRestoreResult {
+    pub document: Document,
+}
+impl From<&DocRestoreResult> for DocRestoreResult {
+    fn from(value: &DocRestoreResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.unlinked_mentions (GRAPH.md §7.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocUnlinkedMentionsParams\","]
+#[doc = "  \"description\": \"Params of doc.unlinked_mentions (GRAPH.md §7.3).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocUnlinkedMentionsParams {
+    pub document_id: String,
+}
+impl From<&DocUnlinkedMentionsParams> for DocUnlinkedMentionsParams {
+    fn from(value: &DocUnlinkedMentionsParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocUnlinkedMentionsResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocUnlinkedMentionsResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"mentions\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"mentions\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/UnlinkedMention\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocUnlinkedMentionsResult {
+    pub mentions: Vec<UnlinkedMention>,
+}
+impl From<&DocUnlinkedMentionsResult> for DocUnlinkedMentionsResult {
+    fn from(value: &DocUnlinkedMentionsResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of doc.write."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocWriteParams\","]
+#[doc = "  \"description\": \"Params of doc.write.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"document_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocWriteParams {
+    pub content: String,
+    pub document_id: String,
+}
+impl From<&DocWriteParams> for DocWriteParams {
+    fn from(value: &DocWriteParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "DocWriteResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocWriteResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Document\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct DocWriteResult {
+    pub document: Document,
+}
+impl From<&DocWriteResult> for DocWriteResult {
+    fn from(value: &DocWriteResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A row of the documents table (spec Appendix B)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Document\","]
+#[doc = "  \"description\": \"A row of the documents table (spec Appendix B).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"kind\","]
+#[doc = "    \"path\","]
+#[doc = "    \"title\","]
+#[doc = "    \"updated_at\","]
+#[doc = "    \"word_count\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"deleted_at\": {"]
+#[doc = "      \"description\": \"Set when the document is soft-deleted.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"frontmatter\": {"]
+#[doc = "      \"description\": \"Raw YAML frontmatter as JSON (single source of truth).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"hash\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"description\": \"ULID.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"indexed_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"$ref\": \"#/$defs/DocumentKind\""]
+#[doc = "    },"]
+#[doc = "    \"mime\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"description\": \"Vault-relative path.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"reading_time_s\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"size\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"updated_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"word_count\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Document {
+    pub created_at: i64,
+    #[doc = "Set when the document is soft-deleted."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub deleted_at: Option<i64>,
+    #[doc = "Raw YAML frontmatter as JSON (single source of truth)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub frontmatter: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub hash: Option<String>,
+    #[doc = "ULID."]
+    pub id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub indexed_at: Option<i64>,
+    pub kind: DocumentKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mime: Option<String>,
+    #[doc = "Vault-relative path."]
+    pub path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reading_time_s: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size: Option<i64>,
+    pub title: String,
+    pub updated_at: i64,
+    pub word_count: i64,
+}
+impl From<&Document> for Document {
+    fn from(value: &Document) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Document kind (spec Appendix B, documents.kind)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"DocumentKind\","]
+#[doc = "  \"description\": \"Document kind (spec Appendix B, documents.kind).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"note\","]
+#[doc = "    \"attachment\","]
+#[doc = "    \"code\","]
+#[doc = "    \"other\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum DocumentKind {
+    #[serde(rename = "note")]
+    Note,
+    #[serde(rename = "attachment")]
+    Attachment,
+    #[serde(rename = "code")]
+    Code,
+    #[serde(rename = "other")]
+    Other,
+}
+impl From<&DocumentKind> for DocumentKind {
+    fn from(value: &DocumentKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for DocumentKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Note => write!(f, "note"),
+            Self::Attachment => write!(f, "attachment"),
+            Self::Code => write!(f, "code"),
+            Self::Other => write!(f, "other"),
+        }
+    }
+}
+impl std::str::FromStr for DocumentKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "note" => Ok(Self::Note),
+            "attachment" => Ok(Self::Attachment),
+            "code" => Ok(Self::Code),
+            "other" => Ok(Self::Other),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for DocumentKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for DocumentKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for DocumentKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
 #[doc = "A kernel event emitted on the bus (ARCHITECTURE.md §4.2)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -2377,6 +3353,482 @@ impl From<&IndexConfig> for IndexConfig {
         value.clone()
     }
 }
+#[doc = "Params of index.status."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexStatusParams\","]
+#[doc = "  \"description\": \"Params of index.status.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct IndexStatusParams {
+    pub brain_id: String,
+}
+impl From<&IndexStatusParams> for IndexStatusParams {
+    fn from(value: &IndexStatusParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Index status: the persisted, observable job queue (SEARCH.md §13.2, §13.4; spec Appendix B index_jobs)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"IndexStatusResult\","]
+#[doc = "  \"description\": \"Index status: the persisted, observable job queue (SEARCH.md §13.2, §13.4; spec Appendix B index_jobs).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"attempts\","]
+#[doc = "    \"brain_id\","]
+#[doc = "    \"indexing\","]
+#[doc = "    \"queued\","]
+#[doc = "    \"running\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"attempts\": {"]
+#[doc = "      \"description\": \"Total retry attempts across queued/running jobs (index_jobs.attempts).\","]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"indexing\": {"]
+#[doc = "      \"description\": \"Whether indexing is currently active.\","]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"queued\": {"]
+#[doc = "      \"description\": \"Jobs waiting in the persisted queue.\","]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"running\": {"]
+#[doc = "      \"description\": \"Jobs currently being processed.\","]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct IndexStatusResult {
+    #[doc = "Total retry attempts across queued/running jobs (index_jobs.attempts)."]
+    pub attempts: i64,
+    pub brain_id: String,
+    #[doc = "Whether indexing is currently active."]
+    pub indexing: bool,
+    #[doc = "Jobs waiting in the persisted queue."]
+    pub queued: i64,
+    #[doc = "Jobs currently being processed."]
+    pub running: i64,
+}
+impl From<&IndexStatusResult> for IndexStatusResult {
+    fn from(value: &IndexStatusResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Link kind (spec Appendix B, links.kind)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinkKind\","]
+#[doc = "  \"description\": \"Link kind (spec Appendix B, links.kind).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"wiki\","]
+#[doc = "    \"md\","]
+#[doc = "    \"embed\","]
+#[doc = "    \"cross_brain\","]
+#[doc = "    \"by_id\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum LinkKind {
+    #[serde(rename = "wiki")]
+    Wiki,
+    #[serde(rename = "md")]
+    Md,
+    #[serde(rename = "embed")]
+    Embed,
+    #[serde(rename = "cross_brain")]
+    CrossBrain,
+    #[serde(rename = "by_id")]
+    ById,
+}
+impl From<&LinkKind> for LinkKind {
+    fn from(value: &LinkKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for LinkKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Wiki => write!(f, "wiki"),
+            Self::Md => write!(f, "md"),
+            Self::Embed => write!(f, "embed"),
+            Self::CrossBrain => write!(f, "cross_brain"),
+            Self::ById => write!(f, "by_id"),
+        }
+    }
+}
+impl std::str::FromStr for LinkKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "wiki" => Ok(Self::Wiki),
+            "md" => Ok(Self::Md),
+            "embed" => Ok(Self::Embed),
+            "cross_brain" => Ok(Self::CrossBrain),
+            "by_id" => Ok(Self::ById),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for LinkKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for LinkKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for LinkKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "A row of the links table (spec Appendix B)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinkRef\","]
+#[doc = "  \"description\": \"A row of the links table (spec Appendix B).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"kind\","]
+#[doc = "    \"src_document_id\","]
+#[doc = "    \"unresolved\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"anchor\": {"]
+#[doc = "      \"description\": \"Surrounding context (the paragraph).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"display_text\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"dst_block\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"dst_document_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"dst_heading\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"dst_path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"$ref\": \"#/$defs/LinkKind\""]
+#[doc = "    },"]
+#[doc = "    \"src_document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"unresolved\": {"]
+#[doc = "      \"description\": \"True when the target does not exist yet.\","]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinkRef {
+    #[doc = "Surrounding context (the paragraph)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub anchor: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub display_text: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dst_block: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dst_document_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dst_heading: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dst_path: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
+    pub kind: LinkKind,
+    pub src_document_id: String,
+    #[doc = "True when the target does not exist yet."]
+    pub unresolved: bool,
+}
+impl From<&LinkRef> for LinkRef {
+    fn from(value: &LinkRef) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of links.broken."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinksBrokenParams\","]
+#[doc = "  \"description\": \"Params of links.broken.\","]
+#[doc = "  \"type\": \"object\""]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinksBrokenParams(pub ::serde_json::Map<String, ::serde_json::Value>);
+impl ::std::ops::Deref for LinksBrokenParams {
+    type Target = ::serde_json::Map<String, ::serde_json::Value>;
+    fn deref(&self) -> &::serde_json::Map<String, ::serde_json::Value> {
+        &self.0
+    }
+}
+impl From<LinksBrokenParams> for ::serde_json::Map<String, ::serde_json::Value> {
+    fn from(value: LinksBrokenParams) -> Self {
+        value.0
+    }
+}
+impl From<&LinksBrokenParams> for LinksBrokenParams {
+    fn from(value: &LinksBrokenParams) -> Self {
+        value.clone()
+    }
+}
+impl From<::serde_json::Map<String, ::serde_json::Value>> for LinksBrokenParams {
+    fn from(value: ::serde_json::Map<String, ::serde_json::Value>) -> Self {
+        Self(value)
+    }
+}
+#[doc = "Links whose target is unresolved (spec Appendix B, links.unresolved)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinksBrokenResult\","]
+#[doc = "  \"description\": \"Links whose target is unresolved (spec Appendix B, links.unresolved).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"links\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"links\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/LinkRef\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinksBrokenResult {
+    pub links: Vec<LinkRef>,
+}
+impl From<&LinksBrokenResult> for LinksBrokenResult {
+    fn from(value: &LinksBrokenResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of links.dead_ends (GRAPH.md §7.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinksDeadEndsParams\","]
+#[doc = "  \"description\": \"Params of links.dead_ends (GRAPH.md §7.4).\","]
+#[doc = "  \"type\": \"object\""]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinksDeadEndsParams(pub ::serde_json::Map<String, ::serde_json::Value>);
+impl ::std::ops::Deref for LinksDeadEndsParams {
+    type Target = ::serde_json::Map<String, ::serde_json::Value>;
+    fn deref(&self) -> &::serde_json::Map<String, ::serde_json::Value> {
+        &self.0
+    }
+}
+impl From<LinksDeadEndsParams> for ::serde_json::Map<String, ::serde_json::Value> {
+    fn from(value: LinksDeadEndsParams) -> Self {
+        value.0
+    }
+}
+impl From<&LinksDeadEndsParams> for LinksDeadEndsParams {
+    fn from(value: &LinksDeadEndsParams) -> Self {
+        value.clone()
+    }
+}
+impl From<::serde_json::Map<String, ::serde_json::Value>> for LinksDeadEndsParams {
+    fn from(value: ::serde_json::Map<String, ::serde_json::Value>) -> Self {
+        Self(value)
+    }
+}
+#[doc = "Notes with no outgoing links (GRAPH.md §7.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinksDeadEndsResult\","]
+#[doc = "  \"description\": \"Notes with no outgoing links (GRAPH.md §7.4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"notes\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"notes\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/NoteRef\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinksDeadEndsResult {
+    pub notes: Vec<NoteRef>,
+}
+impl From<&LinksDeadEndsResult> for LinksDeadEndsResult {
+    fn from(value: &LinksDeadEndsResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of links.orphans (GRAPH.md §7.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinksOrphansParams\","]
+#[doc = "  \"description\": \"Params of links.orphans (GRAPH.md §7.4).\","]
+#[doc = "  \"type\": \"object\""]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinksOrphansParams(pub ::serde_json::Map<String, ::serde_json::Value>);
+impl ::std::ops::Deref for LinksOrphansParams {
+    type Target = ::serde_json::Map<String, ::serde_json::Value>;
+    fn deref(&self) -> &::serde_json::Map<String, ::serde_json::Value> {
+        &self.0
+    }
+}
+impl From<LinksOrphansParams> for ::serde_json::Map<String, ::serde_json::Value> {
+    fn from(value: LinksOrphansParams) -> Self {
+        value.0
+    }
+}
+impl From<&LinksOrphansParams> for LinksOrphansParams {
+    fn from(value: &LinksOrphansParams) -> Self {
+        value.clone()
+    }
+}
+impl From<::serde_json::Map<String, ::serde_json::Value>> for LinksOrphansParams {
+    fn from(value: ::serde_json::Map<String, ::serde_json::Value>) -> Self {
+        Self(value)
+    }
+}
+#[doc = "Notes with no incoming links (GRAPH.md §7.4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LinksOrphansResult\","]
+#[doc = "  \"description\": \"Notes with no incoming links (GRAPH.md §7.4).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"notes\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"notes\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/NoteRef\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct LinksOrphansResult {
+    pub notes: Vec<NoteRef>,
+}
+impl From<&LinksOrphansResult> for LinksOrphansResult {
+    fn from(value: &LinksOrphansResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "The [markdown] section of brain.toml (BRAIN.md §6.1)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -2444,6 +3896,81 @@ pub struct MarkdownConfig {
 }
 impl From<&MarkdownConfig> for MarkdownConfig {
     fn from(value: &MarkdownConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A lightweight reference to a note."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"NoteRef\","]
+#[doc = "  \"description\": \"A lightweight reference to a note.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\","]
+#[doc = "    \"path\","]
+#[doc = "    \"title\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct NoteRef {
+    pub document_id: String,
+    pub path: String,
+    pub title: String,
+}
+impl From<&NoteRef> for NoteRef {
+    fn from(value: &NoteRef) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A heading in a note's outline, in document order (BRAIN.md §4.2). The tree is derived from `level`."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"OutlineEntry\","]
+#[doc = "  \"description\": \"A heading in a note's outline, in document order (BRAIN.md §4.2). The tree is derived from `level`.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"level\","]
+#[doc = "    \"text\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"level\": {"]
+#[doc = "      \"description\": \"Heading level (1-6).\","]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"text\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct OutlineEntry {
+    #[doc = "Heading level (1-6)."]
+    pub level: i64,
+    pub text: String,
+}
+impl From<&OutlineEntry> for OutlineEntry {
+    fn from(value: &OutlineEntry) -> Self {
         value.clone()
     }
 }
@@ -2792,6 +4319,520 @@ pub struct SystemInfoResult {
 }
 impl From<&SystemInfoResult> for SystemInfoResult {
     fn from(value: &SystemInfoResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A row of the tags table (spec Appendix B)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Tag\","]
+#[doc = "  \"description\": \"A row of the tags table (spec Appendix B).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"description\": \"ULID.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"parent\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Tag {
+    #[doc = "ULID."]
+    pub id: String,
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parent: Option<String>,
+}
+impl From<&Tag> for Tag {
+    fn from(value: &Tag) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of tag.delete."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TagDeleteParams\","]
+#[doc = "  \"description\": \"Params of tag.delete.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"tag_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"tag_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TagDeleteParams {
+    pub tag_id: String,
+}
+impl From<&TagDeleteParams> for TagDeleteParams {
+    fn from(value: &TagDeleteParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "TagDeleteResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TagDeleteResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"tag_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"tag_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TagDeleteResult {
+    pub tag_id: String,
+}
+impl From<&TagDeleteResult> for TagDeleteResult {
+    fn from(value: &TagDeleteResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of tag.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TagListParams\","]
+#[doc = "  \"description\": \"Params of tag.list.\","]
+#[doc = "  \"type\": \"object\""]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TagListParams(pub ::serde_json::Map<String, ::serde_json::Value>);
+impl ::std::ops::Deref for TagListParams {
+    type Target = ::serde_json::Map<String, ::serde_json::Value>;
+    fn deref(&self) -> &::serde_json::Map<String, ::serde_json::Value> {
+        &self.0
+    }
+}
+impl From<TagListParams> for ::serde_json::Map<String, ::serde_json::Value> {
+    fn from(value: TagListParams) -> Self {
+        value.0
+    }
+}
+impl From<&TagListParams> for TagListParams {
+    fn from(value: &TagListParams) -> Self {
+        value.clone()
+    }
+}
+impl From<::serde_json::Map<String, ::serde_json::Value>> for TagListParams {
+    fn from(value: ::serde_json::Map<String, ::serde_json::Value>) -> Self {
+        Self(value)
+    }
+}
+#[doc = "TagListResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TagListResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"tags\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"tags\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/Tag\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TagListResult {
+    pub tags: Vec<Tag>,
+}
+impl From<&TagListResult> for TagListResult {
+    fn from(value: &TagListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of tag.rename."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TagRenameParams\","]
+#[doc = "  \"description\": \"Params of tag.rename.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"new_name\","]
+#[doc = "    \"tag_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"new_name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"tag_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TagRenameParams {
+    pub new_name: String,
+    pub tag_id: String,
+}
+impl From<&TagRenameParams> for TagRenameParams {
+    fn from(value: &TagRenameParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "TagRenameResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TagRenameResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"tag\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"tag\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Tag\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TagRenameResult {
+    pub tag: Tag,
+}
+impl From<&TagRenameResult> for TagRenameResult {
+    fn from(value: &TagRenameResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of template.create (BRAIN.md §4.5)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TemplateCreateParams\","]
+#[doc = "  \"description\": \"Params of template.create (BRAIN.md §4.5).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TemplateCreateParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content: Option<String>,
+    pub name: String,
+}
+impl From<&TemplateCreateParams> for TemplateCreateParams {
+    fn from(value: &TemplateCreateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "TemplateCreateResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TemplateCreateResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"template\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"template\": {"]
+#[doc = "      \"$ref\": \"#/$defs/TemplateRef\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TemplateCreateResult {
+    pub template: TemplateRef,
+}
+impl From<&TemplateCreateResult> for TemplateCreateResult {
+    fn from(value: &TemplateCreateResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of template.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TemplateListParams\","]
+#[doc = "  \"description\": \"Params of template.list.\","]
+#[doc = "  \"type\": \"object\""]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TemplateListParams(pub ::serde_json::Map<String, ::serde_json::Value>);
+impl ::std::ops::Deref for TemplateListParams {
+    type Target = ::serde_json::Map<String, ::serde_json::Value>;
+    fn deref(&self) -> &::serde_json::Map<String, ::serde_json::Value> {
+        &self.0
+    }
+}
+impl From<TemplateListParams> for ::serde_json::Map<String, ::serde_json::Value> {
+    fn from(value: TemplateListParams) -> Self {
+        value.0
+    }
+}
+impl From<&TemplateListParams> for TemplateListParams {
+    fn from(value: &TemplateListParams) -> Self {
+        value.clone()
+    }
+}
+impl From<::serde_json::Map<String, ::serde_json::Value>> for TemplateListParams {
+    fn from(value: ::serde_json::Map<String, ::serde_json::Value>) -> Self {
+        Self(value)
+    }
+}
+#[doc = "TemplateListResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TemplateListResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"templates\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"templates\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/TemplateRef\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TemplateListResult {
+    pub templates: Vec<TemplateRef>,
+}
+impl From<&TemplateListResult> for TemplateListResult {
+    fn from(value: &TemplateListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A note template in vault/templates/ (BRAIN.md §4.5)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TemplateRef\","]
+#[doc = "  \"description\": \"A note template in vault/templates/ (BRAIN.md §4.5).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TemplateRef {
+    pub name: String,
+    pub path: String,
+}
+impl From<&TemplateRef> for TemplateRef {
+    fn from(value: &TemplateRef) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of template.render. Variables from BRAIN.md §4.5 (date/time/datetime are computed; title/selection/clipboard are provided)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TemplateRenderParams\","]
+#[doc = "  \"description\": \"Params of template.render. Variables from BRAIN.md §4.5 (date/time/datetime are computed; title/selection/clipboard are provided).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"clipboard\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"selection\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TemplateRenderParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub clipboard: Option<String>,
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selection: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+}
+impl From<&TemplateRenderParams> for TemplateRenderParams {
+    fn from(value: &TemplateRenderParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "TemplateRenderResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TemplateRenderResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct TemplateRenderResult {
+    pub content: String,
+}
+impl From<&TemplateRenderResult> for TemplateRenderResult {
+    fn from(value: &TemplateRenderResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A place where a note's title appears as plain text, not a link (GRAPH.md §7.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"UnlinkedMention\","]
+#[doc = "  \"description\": \"A place where a note's title appears as plain text, not a link (GRAPH.md §7.3).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"document_id\","]
+#[doc = "    \"path\","]
+#[doc = "    \"title\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct UnlinkedMention {
+    pub document_id: String,
+    pub path: String,
+    pub title: String,
+}
+impl From<&UnlinkedMention> for UnlinkedMention {
+    fn from(value: &UnlinkedMention) -> Self {
         value.clone()
     }
 }

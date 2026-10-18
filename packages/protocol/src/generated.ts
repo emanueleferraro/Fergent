@@ -581,6 +581,422 @@ export interface BrainConfig {
 }
 
 /**
+ * Document kind (spec Appendix B, documents.kind).
+ */
+export type DocumentKind = 'note' | 'attachment' | 'code' | 'other';
+
+/**
+ * Link kind (spec Appendix B, links.kind).
+ */
+export type LinkKind = 'wiki' | 'md' | 'embed' | 'cross_brain' | 'by_id';
+
+/**
+ * A row of the documents table (spec Appendix B).
+ */
+export interface Document {
+  /**
+   * ULID.
+   */
+  id: string;
+  /**
+   * Vault-relative path.
+   */
+  path: string;
+  kind: DocumentKind;
+  title: string;
+  mime?: string | null;
+  size?: number | null;
+  hash?: string | null;
+  /**
+   * Raw YAML frontmatter as JSON (single source of truth).
+   */
+  frontmatter?: string | null;
+  word_count: number;
+  reading_time_s?: number | null;
+  created_at: number;
+  updated_at: number;
+  indexed_at?: number | null;
+  /**
+   * Set when the document is soft-deleted.
+   */
+  deleted_at?: number | null;
+}
+
+/**
+ * A lightweight reference to a note.
+ */
+export interface NoteRef {
+  document_id: string;
+  path: string;
+  title: string;
+}
+
+/**
+ * A row of the links table (spec Appendix B).
+ */
+export interface LinkRef {
+  id?: string | null;
+  src_document_id: string;
+  dst_document_id?: string | null;
+  dst_path?: string | null;
+  dst_heading?: string | null;
+  dst_block?: string | null;
+  display_text?: string | null;
+  /**
+   * Surrounding context (the paragraph).
+   */
+  anchor?: string | null;
+  kind: LinkKind;
+  /**
+   * True when the target does not exist yet.
+   */
+  unresolved: boolean;
+}
+
+/**
+ * A heading in a note's outline, in document order (BRAIN.md §4.2). The tree is derived from `level`.
+ */
+export interface OutlineEntry {
+  /**
+   * Heading level (1-6).
+   */
+  level: number;
+  text: string;
+}
+
+/**
+ * A place where a note's title appears as plain text, not a link (GRAPH.md §7.3).
+ */
+export interface UnlinkedMention {
+  document_id: string;
+  path: string;
+  title: string;
+}
+
+/**
+ * A row of the tags table (spec Appendix B).
+ */
+export interface Tag {
+  /**
+   * ULID.
+   */
+  id: string;
+  name: string;
+  parent?: string | null;
+}
+
+/**
+ * A note template in vault/templates/ (BRAIN.md §4.5).
+ */
+export interface TemplateRef {
+  name: string;
+  path: string;
+}
+
+/**
+ * Params of index.status.
+ */
+export interface IndexStatusParams {
+  brain_id: string;
+}
+
+/**
+ * Index status: the persisted, observable job queue (SEARCH.md §13.2, §13.4; spec Appendix B index_jobs).
+ */
+export interface IndexStatusResult {
+  brain_id: string;
+  /**
+   * Whether indexing is currently active.
+   */
+  indexing: boolean;
+  /**
+   * Jobs waiting in the persisted queue.
+   */
+  queued: number;
+  /**
+   * Jobs currently being processed.
+   */
+  running: number;
+  /**
+   * Total retry attempts across queued/running jobs (index_jobs.attempts).
+   */
+  attempts: number;
+}
+
+/**
+ * Params of doc.list.
+ */
+export interface DocListParams {
+  /**
+   * Filter by document kind.
+   */
+  kind?: string | null;
+  /**
+   * Include soft-deleted documents (default false).
+   */
+  include_deleted?: boolean | null;
+}
+
+export interface DocListResult {
+  documents: Document[];
+}
+
+/**
+ * Params of doc.get.
+ */
+export interface DocGetParams {
+  document_id: string;
+}
+
+export interface DocGetResult {
+  document: Document;
+  /**
+   * The note's markdown source.
+   */
+  content: string;
+}
+
+/**
+ * Params of doc.create.
+ */
+export interface DocCreateParams {
+  /**
+   * Vault-relative path of the new note.
+   */
+  path: string;
+  title?: string | null;
+  content?: string | null;
+}
+
+export interface DocCreateResult {
+  document: Document;
+}
+
+/**
+ * Params of doc.write.
+ */
+export interface DocWriteParams {
+  document_id: string;
+  content: string;
+}
+
+export interface DocWriteResult {
+  document: Document;
+}
+
+/**
+ * Params of doc.rename.
+ */
+export interface DocRenameParams {
+  document_id: string;
+  title: string;
+}
+
+export interface DocRenameResult {
+  document: Document;
+}
+
+/**
+ * Params of doc.move.
+ */
+export interface DocMoveParams {
+  document_id: string;
+  /**
+   * New vault-relative path.
+   */
+  path: string;
+}
+
+export interface DocMoveResult {
+  document: Document;
+}
+
+/**
+ * Params of doc.delete (soft delete; spec Task 8.4).
+ */
+export interface DocDeleteParams {
+  document_id: string;
+}
+
+export interface DocDeleteResult {
+  document_id: string;
+}
+
+/**
+ * Params of doc.restore.
+ */
+export interface DocRestoreParams {
+  document_id: string;
+}
+
+export interface DocRestoreResult {
+  document: Document;
+}
+
+/**
+ * Params of doc.backlinks (GRAPH.md §7.1).
+ */
+export interface DocBacklinksParams {
+  document_id: string;
+}
+
+/**
+ * Incoming links, including unresolved targets (GRAPH.md §7.2).
+ */
+export interface DocBacklinksResult {
+  backlinks: LinkRef[];
+}
+
+/**
+ * Params of doc.outline.
+ */
+export interface DocOutlineParams {
+  document_id: string;
+}
+
+/**
+ * The heading outline of a note, in document order (levels imply nesting).
+ */
+export interface DocOutlineResult {
+  outline: OutlineEntry[];
+}
+
+/**
+ * Params of doc.unlinked_mentions (GRAPH.md §7.3).
+ */
+export interface DocUnlinkedMentionsParams {
+  document_id: string;
+}
+
+export interface DocUnlinkedMentionsResult {
+  mentions: UnlinkedMention[];
+}
+
+/**
+ * Params of links.broken.
+ */
+export interface LinksBrokenParams {}
+
+/**
+ * Links whose target is unresolved (spec Appendix B, links.unresolved).
+ */
+export interface LinksBrokenResult {
+  links: LinkRef[];
+}
+
+/**
+ * Params of links.orphans (GRAPH.md §7.4).
+ */
+export interface LinksOrphansParams {}
+
+/**
+ * Notes with no incoming links (GRAPH.md §7.4).
+ */
+export interface LinksOrphansResult {
+  notes: NoteRef[];
+}
+
+/**
+ * Params of links.dead_ends (GRAPH.md §7.4).
+ */
+export interface LinksDeadEndsParams {}
+
+/**
+ * Notes with no outgoing links (GRAPH.md §7.4).
+ */
+export interface LinksDeadEndsResult {
+  notes: NoteRef[];
+}
+
+/**
+ * Params of tag.list.
+ */
+export interface TagListParams {}
+
+export interface TagListResult {
+  tags: Tag[];
+}
+
+/**
+ * Params of tag.rename.
+ */
+export interface TagRenameParams {
+  tag_id: string;
+  new_name: string;
+}
+
+export interface TagRenameResult {
+  tag: Tag;
+}
+
+/**
+ * Params of tag.delete.
+ */
+export interface TagDeleteParams {
+  tag_id: string;
+}
+
+export interface TagDeleteResult {
+  tag_id: string;
+}
+
+/**
+ * Params of daily.open (BRAIN.md §4.4).
+ */
+export interface DailyOpenParams {
+  /**
+   * ISO date (defaults to today).
+   */
+  date?: string | null;
+}
+
+/**
+ * The daily note, created on first open of the day (BRAIN.md §4.4).
+ */
+export interface DailyOpenResult {
+  document: Document;
+  /**
+   * True when the note was created by this call.
+   */
+  created: boolean;
+}
+
+/**
+ * Params of template.list.
+ */
+export interface TemplateListParams {}
+
+export interface TemplateListResult {
+  templates: TemplateRef[];
+}
+
+/**
+ * Params of template.create (BRAIN.md §4.5).
+ */
+export interface TemplateCreateParams {
+  name: string;
+  content?: string | null;
+}
+
+export interface TemplateCreateResult {
+  template: TemplateRef;
+}
+
+/**
+ * Params of template.render. Variables from BRAIN.md §4.5 (date/time/datetime are computed; title/selection/clipboard are provided).
+ */
+export interface TemplateRenderParams {
+  name: string;
+  title?: string | null;
+  selection?: string | null;
+  clipboard?: string | null;
+}
+
+export interface TemplateRenderResult {
+  content: string;
+}
+
+/**
  * Payload of the events.dropped notice.
  */
 export interface EventsDroppedNotice {
