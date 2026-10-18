@@ -8,3 +8,5 @@ authors.workspace = true
 description = "Fergents markdown flavor parser: wiki links, tags, embeds, callouts, math, Mermaid, frontmatter."
 
 [dependencies]
+comrak.workspace = true
+serde_yaml.workspace = true
