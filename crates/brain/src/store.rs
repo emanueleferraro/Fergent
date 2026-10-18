@@ -24,16 +24,9 @@ pub const BRAIN_MIGRATIONS_SUBDIR: &str = "brain";
 /// Register the statically linked `sqlite-vec` extension so the `vec0` module
 /// is available on every connection opened afterwards.
 ///
-/// This is process-global and idempotent; it must run before any connection is
-/// opened by [`BrainStore`].
-pub fn register_sqlite_vec() {
-    static INIT: std::sync::Once = std::sync::Once::new();
-    INIT.call_once(|| unsafe {
-        let init: rusqlite::auto_extension::RawAutoExtension =
-            std::mem::transmute(sqlite_vec::sqlite3_vec_init as *const ());
-        let _ = rusqlite::auto_extension::register_auto_extension(init);
-    });
-}
+/// Delegates to [`fergents_storage::register_sqlite_vec`]; kept here for
+/// backward compatibility with callers of the brain crate.
+pub use fergents_storage::register_sqlite_vec;
 
 /// The newest migration version available in `brain_migrations_dir`.
 pub fn available_schema_version(brain_migrations_dir: &Path) -> Result<i64, BrainError> {

@@ -8,4 +8,19 @@ authors.workspace = true
 description = "Fergents per-brain index: schema, chunking, embeddings, FTS5, and hybrid search."
 
 [dependencies]
+fergents-storage.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+sha2.workspace = true
+hex.workspace = true
 tiktoken-rs.workspace = true
+fastembed = { workspace = true, optional = true }
+
+[features]
+default = []
+# The real BGE-M3 embedder (downloads the ORT runtime at build time and the
+# model at run time). Off by default so CI never touches the 2.3 GB model.
+embed-real = ["dep:fastembed"]
+
+[dev-dependencies]
+tempfile.workspace = true
