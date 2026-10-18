@@ -9,11 +9,16 @@ description = "Fergents per-brain index: schema, chunking, embeddings, FTS5, and
 
 [dependencies]
 fergents-storage.workspace = true
+fergents-markdown.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true
 sha2.workspace = true
 hex.workspace = true
 tiktoken-rs.workspace = true
+walkdir.workspace = true
+ignore.workspace = true
+notify.workspace = true
+ulid.workspace = true
 fastembed = { workspace = true, optional = true }
 
 [features]

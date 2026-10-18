@@ -77,6 +77,9 @@ fastembed = { version = "6.1", default-features = false, features = [
 walkdir = "2"
 ignore = "0.4"
 
+# Filesystem watcher — spec Dependencies (SEARCH.md §13.1)
+notify = "8"
+
 # Identifiers, hashing, time
 ulid = { version = "1", features = ["serde"] }
 sha2 = "0.10"
