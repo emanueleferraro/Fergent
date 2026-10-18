@@ -172,6 +172,16 @@ impl<E: Embedder, V: VectorStore> EmbeddingPipeline<E, V> {
         &self.embedder
     }
 
+    /// The vector store used by this pipeline.
+    pub fn store(&self) -> &V {
+        &self.store
+    }
+
+    /// The embedding cache used by this pipeline.
+    pub fn cache(&self) -> &EmbeddingCache {
+        &self.cache
+    }
+
     /// Embed the given chunks, skipping fresh cache hits, and store the vectors.
     pub fn embed(&self, items: &[EmbedInput]) -> Result<EmbedReport, IndexError> {
         let model = self.embedder.model();

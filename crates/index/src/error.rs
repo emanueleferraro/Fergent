@@ -22,4 +22,8 @@ pub enum IndexError {
     /// The vector backend failed.
     #[error("vector store error: {0}")]
     Vector(String),
+
+    /// A filesystem operation failed.
+    #[error("io error: {0}")]
+    Io(String),
 }
