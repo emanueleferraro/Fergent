@@ -1054,6 +1054,288 @@
       "required": ["content"],
       "properties": { "content": { "type": "string" } }
     },
+    "SearchMode": {
+      "title": "SearchMode",
+      "description": "Search mode (SEARCH.md §2, §20).",
+      "type": "string",
+      "enum": ["hybrid", "bm25", "vector", "sparse"]
+    },
+    "SearchGroupBy": {
+      "title": "SearchGroupBy",
+      "description": "Result grouping (SEARCH.md §11.2).",
+      "type": "string",
+      "enum": ["document", "chunk", "section"]
+    },
+    "SearchFilters": {
+      "title": "SearchFilters",
+      "description": "Structured search filters (SEARCH.md §10.1, §10.2).",
+      "type": "object",
+      "properties": {
+        "tags": { "type": ["array", "null"], "items": { "type": "string" } },
+        "exclude_tags": { "type": ["array", "null"], "items": { "type": "string" } },
+        "path": { "type": ["string", "null"], "description": "Path prefix match." },
+        "exclude_path": { "type": ["string", "null"] },
+        "type": { "type": ["string", "null"], "description": "note, attachment, or code." },
+        "language": { "type": ["string", "null"], "description": "For code chunks." },
+        "after": { "type": ["string", "null"], "description": "ISO date." },
+        "before": { "type": ["string", "null"], "description": "ISO date." },
+        "has": { "type": ["string", "null"], "description": "link, backlink, or attachment." },
+        "frontmatter": { "type": ["object", "null"], "description": "frontmatter.<key> filters." },
+        "brain": { "type": ["string", "null"] }
+      }
+    },
+    "SearchScores": {
+      "title": "SearchScores",
+      "description": "Per-signal scores (SEARCH.md §11.1).",
+      "type": "object",
+      "properties": {
+        "bm25": { "type": ["number", "null"] },
+        "vector": { "type": ["number", "null"] },
+        "sparse": { "type": ["number", "null"] },
+        "fusion": { "type": ["number", "null"] },
+        "rerank": { "type": ["number", "null"] }
+      }
+    },
+    "SearchResultMetadata": {
+      "title": "SearchResultMetadata",
+      "description": "Result metadata (SEARCH.md §11.1).",
+      "type": "object",
+      "properties": {
+        "tags": { "type": ["array", "null"], "items": { "type": "string" } },
+        "created": { "type": ["string", "null"] },
+        "brain": { "type": ["string", "null"] }
+      }
+    },
+    "SearchResult": {
+      "title": "SearchResult",
+      "description": "One search result (SEARCH.md §11.1, verbatim shape).",
+      "type": "object",
+      "required": ["chunk_id", "document_id", "path", "title", "content", "snippet", "score"],
+      "properties": {
+        "chunk_id": { "type": "string" },
+        "document_id": { "type": "string" },
+        "path": { "type": "string" },
+        "title": { "type": "string" },
+        "heading_path": { "type": ["string", "null"] },
+        "content": { "type": "string" },
+        "snippet": { "type": "string" },
+        "score": { "type": "number" },
+        "scores": { "$ref": "#/$defs/SearchScores" },
+        "metadata": { "$ref": "#/$defs/SearchResultMetadata" }
+      }
+    },
+    "SearchCandidates": {
+      "title": "SearchCandidates",
+      "description": "Candidate counts per signal (SEARCH.md §20).",
+      "type": "object",
+      "properties": {
+        "bm25": { "type": ["integer", "null"] },
+        "vector": { "type": ["integer", "null"] }
+      }
+    },
+    "SearchCacheInfo": {
+      "title": "SearchCacheInfo",
+      "description": "Cache hit flags (SEARCH.md §20).",
+      "type": "object",
+      "properties": {
+        "query": { "type": ["boolean", "null"] },
+        "embedding": { "type": ["boolean", "null"] },
+        "rerank": { "type": ["boolean", "null"] }
+      }
+    },
+    "SearchMeta": {
+      "title": "SearchMeta",
+      "description": "Search response metadata (SEARCH.md §20).",
+      "type": "object",
+      "properties": {
+        "latency_ms": { "type": ["integer", "null"] },
+        "candidates": { "$ref": "#/$defs/SearchCandidates" },
+        "cache": { "$ref": "#/$defs/SearchCacheInfo" }
+      }
+    },
+    "SearchQueryParams": {
+      "title": "SearchQueryParams",
+      "description": "Params of search.query (SEARCH.md §20, verbatim).",
+      "type": "object",
+      "required": ["query"],
+      "properties": {
+        "query": { "type": "string" },
+        "brains": { "type": ["array", "null"], "items": { "type": "string" } },
+        "mode": { "$ref": "#/$defs/SearchMode" },
+        "top_k": { "type": ["integer", "null"] },
+        "filters": { "$ref": "#/$defs/SearchFilters" },
+        "group_by": { "$ref": "#/$defs/SearchGroupBy" },
+        "rerank": { "type": ["boolean", "null"] },
+        "explain": { "type": ["boolean", "null"] }
+      }
+    },
+    "SearchQueryResult": {
+      "title": "SearchQueryResult",
+      "description": "Result of search.query (SEARCH.md §20).",
+      "type": "object",
+      "required": ["results"],
+      "properties": {
+        "results": { "type": "array", "items": { "$ref": "#/$defs/SearchResult" } },
+        "meta": { "$ref": "#/$defs/SearchMeta" }
+      }
+    },
+    "SearchExecutedPayload": {
+      "title": "SearchExecutedPayload",
+      "description": "Payload of the search.executed event (SEARCH.md §19).",
+      "type": "object",
+      "required": ["query", "results"],
+      "properties": {
+        "query": { "type": "string" },
+        "results": { "type": "integer" },
+        "latency_ms": { "type": ["integer", "null"] }
+      }
+    },
+    "Entity": {
+      "title": "Entity",
+      "description": "A graph entity (GRAPH.md §5.1, CozoDB `entity`).",
+      "type": "object",
+      "required": ["id", "name", "type"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "canonical_name": { "type": ["string", "null"] },
+        "metadata": { "type": ["object", "null"] },
+        "first_seen_at": { "type": ["integer", "null"], "format": "int64" },
+        "last_seen_at": { "type": ["integer", "null"], "format": "int64" }
+      }
+    },
+    "Relation": {
+      "title": "Relation",
+      "description": "A graph relation (GRAPH.md §5.1, CozoDB `relation`).",
+      "type": "object",
+      "required": ["id", "src", "dst", "kind"],
+      "properties": {
+        "id": { "type": "string" },
+        "src": { "type": "string" },
+        "dst": { "type": "string" },
+        "kind": { "type": "string" },
+        "weight": { "type": ["number", "null"] },
+        "confidence": { "type": ["number", "null"] },
+        "metadata": { "type": ["object", "null"] },
+        "source_doc": { "type": ["string", "null"] },
+        "created_at": { "type": ["integer", "null"], "format": "int64" }
+      }
+    },
+    "Mention": {
+      "title": "Mention",
+      "description": "An entity mention (GRAPH.md §5.1, CozoDB `mention`).",
+      "type": "object",
+      "required": ["entity_id", "document_id", "confidence"],
+      "properties": {
+        "entity_id": { "type": "string" },
+        "document_id": { "type": "string" },
+        "chunk_id": { "type": ["string", "null"] },
+        "start_offset": { "type": ["integer", "null"] },
+        "end_offset": { "type": ["integer", "null"] },
+        "confidence": { "type": "number" }
+      }
+    },
+    "GraphQueryParams": {
+      "title": "GraphQueryParams",
+      "description": "Params of graph.query (GRAPH.md §6.3).",
+      "type": "object",
+      "required": ["query"],
+      "properties": {
+        "query": { "type": "string" },
+        "language": { "type": ["string", "null"], "description": "Query language; the doc example uses datalog." },
+        "brain": { "type": ["string", "null"] }
+      }
+    },
+    "GraphQueryResult": {
+      "title": "GraphQueryResult",
+      "description": "Rows returned by a graph query (columns depend on the query).",
+      "type": "object",
+      "required": ["rows"],
+      "properties": { "rows": { "type": "array", "items": { "type": "object" } } }
+    },
+    "GraphAlgoParams": {
+      "title": "GraphAlgoParams",
+      "description": "Params of graph.algo (GRAPH.md §10.3). Algorithms: shortest_path, neighbors, centrality, pagerank, communities, similarity, cycles, subgraph (§10.1).",
+      "type": "object",
+      "required": ["algo"],
+      "properties": {
+        "algo": { "type": "string" },
+        "brain": { "type": ["string", "null"] },
+        "top_k": { "type": ["integer", "null"] }
+      }
+    },
+    "GraphAlgoResult": {
+      "title": "GraphAlgoResult",
+      "description": "Rows returned by a graph algorithm (shape depends on the algorithm).",
+      "type": "object",
+      "required": ["results"],
+      "properties": { "results": { "type": "array", "items": { "type": "object" } } }
+    },
+    "GraphNeighborsParams": {
+      "title": "GraphNeighborsParams",
+      "description": "Params of graph.neighbors (GRAPH.md §10.1).",
+      "type": "object",
+      "required": ["node"],
+      "properties": {
+        "node": { "type": "string", "description": "Entity id." },
+        "depth": { "type": ["integer", "null"] },
+        "brain": { "type": ["string", "null"] }
+      }
+    },
+    "GraphNeighborsResult": {
+      "title": "GraphNeighborsResult",
+      "type": "object",
+      "required": ["entities", "relations"],
+      "properties": {
+        "entities": { "type": "array", "items": { "$ref": "#/$defs/Entity" } },
+        "relations": { "type": "array", "items": { "$ref": "#/$defs/Relation" } }
+      }
+    },
+    "GraphSubgraphParams": {
+      "title": "GraphSubgraphParams",
+      "description": "Params of graph.subgraph (GRAPH.md §10.1).",
+      "type": "object",
+      "required": ["nodes"],
+      "properties": {
+        "nodes": { "type": "array", "items": { "type": "string" } },
+        "depth": { "type": ["integer", "null"] },
+        "brain": { "type": ["string", "null"] }
+      }
+    },
+    "GraphSubgraphResult": {
+      "title": "GraphSubgraphResult",
+      "type": "object",
+      "required": ["entities", "relations"],
+      "properties": {
+        "entities": { "type": "array", "items": { "$ref": "#/$defs/Entity" } },
+        "relations": { "type": "array", "items": { "$ref": "#/$defs/Relation" } }
+      }
+    },
+    "GraphEntitiesMergeParams": {
+      "title": "GraphEntitiesMergeParams",
+      "description": "Params of graph.entities.merge (GRAPH.md §5.3).",
+      "type": "object",
+      "required": ["source_id", "target_id"],
+      "properties": {
+        "source_id": { "type": "string", "description": "Entity to merge." },
+        "target_id": { "type": "string", "description": "Canonical entity kept after the merge." }
+      }
+    },
+    "GraphEntitiesMergeResult": {
+      "title": "GraphEntitiesMergeResult",
+      "description": "The canonical entity after merging (GRAPH.md §5.3).",
+      "type": "object",
+      "required": ["entity"],
+      "properties": { "entity": { "$ref": "#/$defs/Entity" } }
+    },
+    "GraphUpdatedPayload": {
+      "title": "GraphUpdatedPayload",
+      "description": "Payload of the graph.updated event.",
+      "type": "object",
+      "required": ["brain_id"],
+      "properties": { "brain_id": { "type": "string" } }
+    },
     "EventsDroppedNotice": {
       "title": "EventsDroppedNotice",
       "description": "Payload of the events.dropped notice.",
