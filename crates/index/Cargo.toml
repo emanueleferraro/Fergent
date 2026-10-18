@@ -8,3 +8,4 @@ authors.workspace = true
 description = "Fergents per-brain index: schema, chunking, embeddings, FTS5, and hybrid search."
 
 [dependencies]
+tiktoken-rs.workspace = true
