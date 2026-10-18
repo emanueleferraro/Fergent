@@ -74,7 +74,7 @@ async fn status_returns_kernel_health() {
 #[tokio::test]
 async fn brain_list_is_empty_in_phase_0() {
     let (_dir, socket, handle) = start_kernel().await;
-    let result = commands::brain_list(&socket).await.unwrap();
+    let result = commands::brain_list(&socket, false).await.unwrap();
     assert!(result.brains.is_empty());
     shutdown(&socket, handle).await;
 }

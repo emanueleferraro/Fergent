@@ -4,6 +4,8 @@
 //! (tools, providers, brains, sessions) and exposes the operations the API
 //! server dispatches to (`ARCHITECTURE.md` §3.2).
 
+mod brains;
+
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
@@ -15,6 +17,8 @@ use fergents_protocol::{
 };
 use fergents_storage::{SqliteStorage, Storage, StorageError, Value};
 
+pub use brains::{BrainService, BusSink};
+
 /// Errors raised by the kernel core.
 #[derive(Debug, thiserror::Error)]
 pub enum CoreError {
@@ -24,6 +28,15 @@ pub enum CoreError {
     /// An event bus failure.
     #[error("event error: {0}")]
     Event(#[from] fergents_events::EventError),
+    /// A brain subsystem failure.
+    #[error(transparent)]
+    Brain(#[from] fergents_brain::BrainError),
+    /// A per-brain index failure.
+    #[error(transparent)]
+    Index(#[from] fergents_index::IndexError),
+    /// A graph subsystem failure.
+    #[error(transparent)]
+    Graph(#[from] fergents_graph::GraphError),
 }
 
 /// Kernel configuration.
@@ -57,7 +70,8 @@ pub struct ToolInfo {
 /// The kernel facade.
 pub struct Kernel {
     storage: Arc<SqliteStorage>,
-    bus: EventBus,
+    bus: Arc<EventBus>,
+    brains: Arc<BrainService>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -66,15 +80,25 @@ pub struct Kernel {
 
 impl Kernel {
     /// Start the kernel: open storage (applying migrations), reconcile stale
-    /// sessions, create the event bus, and emit `kernel.started`.
+    /// sessions, create the event bus, wire the brain subsystem, and emit
+    /// `kernel.started`.
     pub fn start(config: &KernelConfig) -> Result<Arc<Self>, CoreError> {
         std::fs::create_dir_all(&config.data_dir).ok();
         let storage = SqliteStorage::open(&config.global_db_path(), &config.migrations_dir)?;
         let storage = Arc::new(storage);
-        let bus = EventBus::new(storage.clone(), config.event_capacity);
+        let bus = Arc::new(EventBus::new(storage.clone(), config.event_capacity));
+        let storage_dyn: Arc<dyn Storage> = storage.clone();
+        let brains = Arc::new(BrainService::new(
+            storage_dyn,
+            bus.clone(),
+            config.migrations_dir.join("brain"),
+            config.data_dir.join("templates/brains"),
+            config.data_dir.join("brains"),
+        ));
         let kernel = Arc::new(Self {
             storage,
             bus,
+            brains,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -91,7 +115,17 @@ impl Kernel {
 
     /// The shared event bus.
     pub fn bus(&self) -> &EventBus {
-        &self.bus
+        self.bus.as_ref()
+    }
+
+    /// The brain subsystem (manager, indexer, and resolved paths).
+    pub fn brains(&self) -> &BrainService {
+        self.brains.as_ref()
+    }
+
+    /// The shared brain subsystem handle, for offloading synchronous work.
+    pub fn brains_service(&self) -> &Arc<BrainService> {
+        &self.brains
     }
 
     /// The storage backend.
@@ -181,7 +215,7 @@ impl Kernel {
             .clone()
     }
 
-    /// List the registered brains (empty in Phase 0).
+    /// List the registered brains, ordered by name.
     pub fn list_brains(&self) -> Result<Vec<BrainSummary>, CoreError> {
         let rows = self
             .storage

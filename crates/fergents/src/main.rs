@@ -37,6 +37,20 @@ enum Command {
         #[command(subcommand)]
         command: BrainCommand,
     },
+    /// Search the brains.
+    Search {
+        /// The query string.
+        query: String,
+        /// Maximum number of results.
+        #[arg(long = "top-k")]
+        top_k: Option<i64>,
+        /// Search mode: bm25, vector, or hybrid.
+        #[arg(long)]
+        mode: Option<String>,
+        /// Restrict the search to one brain id.
+        #[arg(long)]
+        brain: Option<String>,
+    },
     /// Launch the interactive TUI.
     Tui,
 }
@@ -50,7 +64,27 @@ enum EventsCommand {
 #[derive(Subcommand, Debug)]
 enum BrainCommand {
     /// List the registered brains.
-    List,
+    List {
+        /// Include archived brains.
+        #[arg(long)]
+        all: bool,
+    },
+    /// Create a new brain.
+    Create {
+        /// Human-readable name.
+        name: String,
+        /// Filesystem path for the brain folder.
+        #[arg(long)]
+        path: Option<String>,
+        /// Template to seed from (blank, personal, research, coding, team).
+        #[arg(long)]
+        template: Option<String>,
+    },
+    /// Open a brain by id.
+    Open {
+        /// The brain id.
+        id: String,
+    },
 }
 
 fn main() -> ExitCode {
@@ -85,8 +119,8 @@ fn main() -> ExitCode {
                 command: EventsCommand::Tail,
             }) => commands::events_tail(&socket).await,
             Some(Command::Brain {
-                command: BrainCommand::List,
-            }) => commands::brain_list(&socket).await.map(|result| {
+                command: BrainCommand::List { all },
+            }) => commands::brain_list(&socket, all).await.map(|result| {
                 if result.brains.is_empty() {
                     println!("no brains registered");
                 } else {
@@ -103,6 +137,45 @@ fn main() -> ExitCode {
                     }
                 }
             }),
+            Some(Command::Brain {
+                command:
+                    BrainCommand::Create {
+                        name,
+                        path,
+                        template,
+                    },
+            }) => commands::brain_create(&socket, &name, path.as_deref(), template.as_deref())
+                .await
+                .map(|result| {
+                    println!(
+                        "created brain {} {} ({})",
+                        result.brain.brain_id, result.brain.name, result.state
+                    );
+                }),
+            Some(Command::Brain {
+                command: BrainCommand::Open { id },
+            }) => commands::brain_open(&socket, &id).await.map(|result| {
+                println!(
+                    "opened brain {} {} ({})",
+                    result.brain.brain_id, result.brain.name, result.state
+                );
+            }),
+            Some(Command::Search {
+                query,
+                top_k,
+                mode,
+                brain,
+            }) => commands::search(&socket, &query, top_k, mode.as_deref(), brain.as_deref())
+                .await
+                .map(|result| {
+                    if result.results.is_empty() {
+                        println!("no results");
+                    } else {
+                        for hit in result.results {
+                            println!("{:.4} {} {}", hit.score, hit.path, hit.title);
+                        }
+                    }
+                }),
             Some(Command::Tui) | None => tui::run(&socket).await,
         }
     });

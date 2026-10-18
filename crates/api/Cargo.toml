@@ -11,6 +11,11 @@ description = "Fergents local IPC transport and JSON-RPC server."
 fergents-core = { workspace = true }
 fergents-events = { workspace = true }
 fergents-protocol = { workspace = true }
+fergents-storage = { workspace = true }
+fergents-brain = { workspace = true }
+fergents-index = { workspace = true }
+fergents-graph = { workspace = true }
+chrono = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
 futures = { workspace = true }
