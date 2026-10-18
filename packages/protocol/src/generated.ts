@@ -997,6 +997,281 @@ export interface TemplateRenderResult {
 }
 
 /**
+ * Search mode (SEARCH.md §2, §20).
+ */
+export type SearchMode = 'hybrid' | 'bm25' | 'vector' | 'sparse';
+
+/**
+ * Result grouping (SEARCH.md §11.2).
+ */
+export type SearchGroupBy = 'document' | 'chunk' | 'section';
+
+/**
+ * Structured search filters (SEARCH.md §10.1, §10.2).
+ */
+export interface SearchFilters {
+  tags?: string[] | null;
+  exclude_tags?: string[] | null;
+  /**
+   * Path prefix match.
+   */
+  path?: string | null;
+  exclude_path?: string | null;
+  /**
+   * note, attachment, or code.
+   */
+  type?: string | null;
+  /**
+   * For code chunks.
+   */
+  language?: string | null;
+  /**
+   * ISO date.
+   */
+  after?: string | null;
+  /**
+   * ISO date.
+   */
+  before?: string | null;
+  /**
+   * link, backlink, or attachment.
+   */
+  has?: string | null;
+  /**
+   * frontmatter.<key> filters.
+   */
+  frontmatter?: {} | null;
+  brain?: string | null;
+}
+
+/**
+ * Per-signal scores (SEARCH.md §11.1).
+ */
+export interface SearchScores {
+  bm25?: number | null;
+  vector?: number | null;
+  sparse?: number | null;
+  fusion?: number | null;
+  rerank?: number | null;
+}
+
+/**
+ * Result metadata (SEARCH.md §11.1).
+ */
+export interface SearchResultMetadata {
+  tags?: string[] | null;
+  created?: string | null;
+  brain?: string | null;
+}
+
+/**
+ * One search result (SEARCH.md §11.1, verbatim shape).
+ */
+export interface SearchResult {
+  chunk_id: string;
+  document_id: string;
+  path: string;
+  title: string;
+  heading_path?: string | null;
+  content: string;
+  snippet: string;
+  score: number;
+  scores?: SearchScores;
+  metadata?: SearchResultMetadata;
+}
+
+/**
+ * Candidate counts per signal (SEARCH.md §20).
+ */
+export interface SearchCandidates {
+  bm25?: number | null;
+  vector?: number | null;
+}
+
+/**
+ * Cache hit flags (SEARCH.md §20).
+ */
+export interface SearchCacheInfo {
+  query?: boolean | null;
+  embedding?: boolean | null;
+  rerank?: boolean | null;
+}
+
+/**
+ * Search response metadata (SEARCH.md §20).
+ */
+export interface SearchMeta {
+  latency_ms?: number | null;
+  candidates?: SearchCandidates;
+  cache?: SearchCacheInfo;
+}
+
+/**
+ * Params of search.query (SEARCH.md §20, verbatim).
+ */
+export interface SearchQueryParams {
+  query: string;
+  brains?: string[] | null;
+  mode?: SearchMode;
+  top_k?: number | null;
+  filters?: SearchFilters;
+  group_by?: SearchGroupBy;
+  rerank?: boolean | null;
+  explain?: boolean | null;
+}
+
+/**
+ * Result of search.query (SEARCH.md §20).
+ */
+export interface SearchQueryResult {
+  results: SearchResult[];
+  meta?: SearchMeta;
+}
+
+/**
+ * Payload of the search.executed event (SEARCH.md §19).
+ */
+export interface SearchExecutedPayload {
+  query: string;
+  results: number;
+  latency_ms?: number | null;
+}
+
+/**
+ * A graph entity (GRAPH.md §5.1, CozoDB `entity`).
+ */
+export interface Entity {
+  id: string;
+  name: string;
+  type: string;
+  canonical_name?: string | null;
+  metadata?: {} | null;
+  first_seen_at?: number | null;
+  last_seen_at?: number | null;
+}
+
+/**
+ * A graph relation (GRAPH.md §5.1, CozoDB `relation`).
+ */
+export interface Relation {
+  id: string;
+  src: string;
+  dst: string;
+  kind: string;
+  weight?: number | null;
+  confidence?: number | null;
+  metadata?: {} | null;
+  source_doc?: string | null;
+  created_at?: number | null;
+}
+
+/**
+ * An entity mention (GRAPH.md §5.1, CozoDB `mention`).
+ */
+export interface Mention {
+  entity_id: string;
+  document_id: string;
+  chunk_id?: string | null;
+  start_offset?: number | null;
+  end_offset?: number | null;
+  confidence: number;
+}
+
+/**
+ * Params of graph.query (GRAPH.md §6.3).
+ */
+export interface GraphQueryParams {
+  query: string;
+  /**
+   * Query language; the doc example uses datalog.
+   */
+  language?: string | null;
+  brain?: string | null;
+}
+
+/**
+ * Rows returned by a graph query (columns depend on the query).
+ */
+export interface GraphQueryResult {
+  rows: {}[];
+}
+
+/**
+ * Params of graph.algo (GRAPH.md §10.3). Algorithms: shortest_path, neighbors, centrality, pagerank, communities, similarity, cycles, subgraph (§10.1).
+ */
+export interface GraphAlgoParams {
+  algo: string;
+  brain?: string | null;
+  top_k?: number | null;
+}
+
+/**
+ * Rows returned by a graph algorithm (shape depends on the algorithm).
+ */
+export interface GraphAlgoResult {
+  results: {}[];
+}
+
+/**
+ * Params of graph.neighbors (GRAPH.md §10.1).
+ */
+export interface GraphNeighborsParams {
+  /**
+   * Entity id.
+   */
+  node: string;
+  depth?: number | null;
+  brain?: string | null;
+}
+
+export interface GraphNeighborsResult {
+  entities: Entity[];
+  relations: Relation[];
+}
+
+/**
+ * Params of graph.subgraph (GRAPH.md §10.1).
+ */
+export interface GraphSubgraphParams {
+  nodes: string[];
+  depth?: number | null;
+  brain?: string | null;
+}
+
+export interface GraphSubgraphResult {
+  entities: Entity[];
+  relations: Relation[];
+}
+
+/**
+ * Params of graph.entities.merge (GRAPH.md §5.3).
+ */
+export interface GraphEntitiesMergeParams {
+  /**
+   * Entity to merge.
+   */
+  source_id: string;
+  /**
+   * Canonical entity kept after the merge.
+   */
+  target_id: string;
+}
+
+/**
+ * The canonical entity after merging (GRAPH.md §5.3).
+ */
+export interface GraphEntitiesMergeResult {
+  entity: Entity;
+}
+
+/**
+ * Payload of the graph.updated event.
+ */
+export interface GraphUpdatedPayload {
+  brain_id: string;
+}
+
+/**
  * Payload of the events.dropped notice.
  */
 export interface EventsDroppedNotice {

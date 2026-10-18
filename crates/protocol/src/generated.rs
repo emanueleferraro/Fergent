@@ -2863,6 +2863,80 @@ impl std::convert::TryFrom<String> for DocumentKind {
         value.parse()
     }
 }
+#[doc = "A graph entity (GRAPH.md §5.1, CozoDB `entity`)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Entity\","]
+#[doc = "  \"description\": \"A graph entity (GRAPH.md §5.1, CozoDB `entity`).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"name\","]
+#[doc = "    \"type\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"canonical_name\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"first_seen_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"last_seen_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"metadata\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"object\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"type\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Entity {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub canonical_name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub first_seen_at: Option<i64>,
+    pub id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub last_seen_at: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<::serde_json::Map<String, ::serde_json::Value>>,
+    pub name: String,
+    #[serde(rename = "type")]
+    pub type_: String,
+}
+impl From<&Entity> for Entity {
+    fn from(value: &Entity) -> Self {
+        value.clone()
+    }
+}
 #[doc = "A kernel event emitted on the bus (ARCHITECTURE.md §4.2)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -3047,6 +3121,83 @@ impl From<&GitConfig> for GitConfig {
         value.clone()
     }
 }
+#[doc = "Params of graph.algo (GRAPH.md §10.3). Algorithms: shortest_path, neighbors, centrality, pagerank, communities, similarity, cycles, subgraph (§10.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphAlgoParams\","]
+#[doc = "  \"description\": \"Params of graph.algo (GRAPH.md §10.3). Algorithms: shortest_path, neighbors, centrality, pagerank, communities, similarity, cycles, subgraph (§10.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"algo\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"algo\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"top_k\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphAlgoParams {
+    pub algo: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brain: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub top_k: Option<i64>,
+}
+impl From<&GraphAlgoParams> for GraphAlgoParams {
+    fn from(value: &GraphAlgoParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Rows returned by a graph algorithm (shape depends on the algorithm)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphAlgoResult\","]
+#[doc = "  \"description\": \"Rows returned by a graph algorithm (shape depends on the algorithm).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"results\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"results\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"object\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphAlgoResult {
+    pub results: Vec<::serde_json::Map<String, ::serde_json::Value>>,
+}
+impl From<&GraphAlgoResult> for GraphAlgoResult {
+    fn from(value: &GraphAlgoResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "The [graph] section of brain.toml (BRAIN.md §6.1)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -3098,6 +3249,354 @@ pub struct GraphConfig {
 }
 impl From<&GraphConfig> for GraphConfig {
     fn from(value: &GraphConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of graph.entities.merge (GRAPH.md §5.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphEntitiesMergeParams\","]
+#[doc = "  \"description\": \"Params of graph.entities.merge (GRAPH.md §5.3).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"source_id\","]
+#[doc = "    \"target_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"source_id\": {"]
+#[doc = "      \"description\": \"Entity to merge.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"target_id\": {"]
+#[doc = "      \"description\": \"Canonical entity kept after the merge.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphEntitiesMergeParams {
+    #[doc = "Entity to merge."]
+    pub source_id: String,
+    #[doc = "Canonical entity kept after the merge."]
+    pub target_id: String,
+}
+impl From<&GraphEntitiesMergeParams> for GraphEntitiesMergeParams {
+    fn from(value: &GraphEntitiesMergeParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The canonical entity after merging (GRAPH.md §5.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphEntitiesMergeResult\","]
+#[doc = "  \"description\": \"The canonical entity after merging (GRAPH.md §5.3).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"entity\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"entity\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Entity\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphEntitiesMergeResult {
+    pub entity: Entity,
+}
+impl From<&GraphEntitiesMergeResult> for GraphEntitiesMergeResult {
+    fn from(value: &GraphEntitiesMergeResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of graph.neighbors (GRAPH.md §10.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphNeighborsParams\","]
+#[doc = "  \"description\": \"Params of graph.neighbors (GRAPH.md §10.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"node\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"depth\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"node\": {"]
+#[doc = "      \"description\": \"Entity id.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphNeighborsParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brain: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub depth: Option<i64>,
+    #[doc = "Entity id."]
+    pub node: String,
+}
+impl From<&GraphNeighborsParams> for GraphNeighborsParams {
+    fn from(value: &GraphNeighborsParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "GraphNeighborsResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphNeighborsResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"entities\","]
+#[doc = "    \"relations\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"entities\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/Entity\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"relations\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/Relation\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphNeighborsResult {
+    pub entities: Vec<Entity>,
+    pub relations: Vec<Relation>,
+}
+impl From<&GraphNeighborsResult> for GraphNeighborsResult {
+    fn from(value: &GraphNeighborsResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of graph.query (GRAPH.md §6.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphQueryParams\","]
+#[doc = "  \"description\": \"Params of graph.query (GRAPH.md §6.3).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"query\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"language\": {"]
+#[doc = "      \"description\": \"Query language; the doc example uses datalog.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"query\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphQueryParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brain: Option<String>,
+    #[doc = "Query language; the doc example uses datalog."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
+    pub query: String,
+}
+impl From<&GraphQueryParams> for GraphQueryParams {
+    fn from(value: &GraphQueryParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Rows returned by a graph query (columns depend on the query)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphQueryResult\","]
+#[doc = "  \"description\": \"Rows returned by a graph query (columns depend on the query).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"rows\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"rows\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"object\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphQueryResult {
+    pub rows: Vec<::serde_json::Map<String, ::serde_json::Value>>,
+}
+impl From<&GraphQueryResult> for GraphQueryResult {
+    fn from(value: &GraphQueryResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of graph.subgraph (GRAPH.md §10.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphSubgraphParams\","]
+#[doc = "  \"description\": \"Params of graph.subgraph (GRAPH.md §10.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"nodes\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"depth\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"nodes\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphSubgraphParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brain: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub depth: Option<i64>,
+    pub nodes: Vec<String>,
+}
+impl From<&GraphSubgraphParams> for GraphSubgraphParams {
+    fn from(value: &GraphSubgraphParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "GraphSubgraphResult"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphSubgraphResult\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"entities\","]
+#[doc = "    \"relations\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"entities\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/Entity\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"relations\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/Relation\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphSubgraphResult {
+    pub entities: Vec<Entity>,
+    pub relations: Vec<Relation>,
+}
+impl From<&GraphSubgraphResult> for GraphSubgraphResult {
+    fn from(value: &GraphSubgraphResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the graph.updated event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GraphUpdatedPayload\","]
+#[doc = "  \"description\": \"Payload of the graph.updated event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"brain_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct GraphUpdatedPayload {
+    pub brain_id: String,
+}
+impl From<&GraphUpdatedPayload> for GraphUpdatedPayload {
+    fn from(value: &GraphUpdatedPayload) -> Self {
         value.clone()
     }
 }
@@ -3899,6 +4398,69 @@ impl From<&MarkdownConfig> for MarkdownConfig {
         value.clone()
     }
 }
+#[doc = "An entity mention (GRAPH.md §5.1, CozoDB `mention`)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Mention\","]
+#[doc = "  \"description\": \"An entity mention (GRAPH.md §5.1, CozoDB `mention`).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"confidence\","]
+#[doc = "    \"document_id\","]
+#[doc = "    \"entity_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"chunk_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"confidence\": {"]
+#[doc = "      \"type\": \"number\""]
+#[doc = "    },"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"end_offset\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"entity_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"start_offset\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Mention {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub chunk_id: Option<String>,
+    pub confidence: f64,
+    pub document_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub end_offset: Option<i64>,
+    pub entity_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub start_offset: Option<i64>,
+}
+impl From<&Mention> for Mention {
+    fn from(value: &Mention) -> Self {
+        value.clone()
+    }
+}
 #[doc = "A lightweight reference to a note."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -4011,6 +4573,91 @@ impl From<&PingResult> for PingResult {
         value.clone()
     }
 }
+#[doc = "A graph relation (GRAPH.md §5.1, CozoDB `relation`)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Relation\","]
+#[doc = "  \"description\": \"A graph relation (GRAPH.md §5.1, CozoDB `relation`).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"dst\","]
+#[doc = "    \"id\","]
+#[doc = "    \"kind\","]
+#[doc = "    \"src\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"confidence\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"dst\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"metadata\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"object\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"source_doc\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"src\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"weight\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Relation {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub confidence: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created_at: Option<i64>,
+    pub dst: String,
+    pub id: String,
+    pub kind: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<::serde_json::Map<String, ::serde_json::Value>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source_doc: Option<String>,
+    pub src: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub weight: Option<f64>,
+}
+impl From<&Relation> for Relation {
+    fn from(value: &Relation) -> Self {
+        value.clone()
+    }
+}
 #[doc = "ReplayParams"]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -4062,6 +4709,90 @@ impl From<&ReplayParams> for ReplayParams {
         value.clone()
     }
 }
+#[doc = "Cache hit flags (SEARCH.md §20)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchCacheInfo\","]
+#[doc = "  \"description\": \"Cache hit flags (SEARCH.md §20).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"embedding\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"query\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"rerank\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchCacheInfo {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub embedding: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub query: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rerank: Option<bool>,
+}
+impl From<&SearchCacheInfo> for SearchCacheInfo {
+    fn from(value: &SearchCacheInfo) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Candidate counts per signal (SEARCH.md §20)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchCandidates\","]
+#[doc = "  \"description\": \"Candidate counts per signal (SEARCH.md §20).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"bm25\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"vector\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchCandidates {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bm25: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vector: Option<i64>,
+}
+impl From<&SearchCandidates> for SearchCandidates {
+    fn from(value: &SearchCandidates) -> Self {
+        value.clone()
+    }
+}
 #[doc = "The [search] section of brain.toml (BRAIN.md §6.1)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -4107,6 +4838,687 @@ pub struct SearchConfig {
 }
 impl From<&SearchConfig> for SearchConfig {
     fn from(value: &SearchConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the search.executed event (SEARCH.md §19)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchExecutedPayload\","]
+#[doc = "  \"description\": \"Payload of the search.executed event (SEARCH.md §19).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"query\","]
+#[doc = "    \"results\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"latency_ms\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"query\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"results\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchExecutedPayload {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub latency_ms: Option<i64>,
+    pub query: String,
+    pub results: i64,
+}
+impl From<&SearchExecutedPayload> for SearchExecutedPayload {
+    fn from(value: &SearchExecutedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Structured search filters (SEARCH.md §10.1, §10.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchFilters\","]
+#[doc = "  \"description\": \"Structured search filters (SEARCH.md §10.1, §10.2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"after\": {"]
+#[doc = "      \"description\": \"ISO date.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"before\": {"]
+#[doc = "      \"description\": \"ISO date.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"exclude_path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"exclude_tags\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"frontmatter\": {"]
+#[doc = "      \"description\": \"frontmatter.<key> filters.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"object\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"has\": {"]
+#[doc = "      \"description\": \"link, backlink, or attachment.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"language\": {"]
+#[doc = "      \"description\": \"For code chunks.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"description\": \"Path prefix match.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"tags\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"type\": {"]
+#[doc = "      \"description\": \"note, attachment, or code.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchFilters {
+    #[doc = "ISO date."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub after: Option<String>,
+    #[doc = "ISO date."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub before: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brain: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub exclude_path: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub exclude_tags: Option<Vec<String>>,
+    #[doc = "frontmatter.<key> filters."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub frontmatter: Option<::serde_json::Map<String, ::serde_json::Value>>,
+    #[doc = "link, backlink, or attachment."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub has: Option<String>,
+    #[doc = "For code chunks."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub language: Option<String>,
+    #[doc = "Path prefix match."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+    #[doc = "note, attachment, or code."]
+    #[serde(rename = "type", default, skip_serializing_if = "Option::is_none")]
+    pub type_: Option<String>,
+}
+impl From<&SearchFilters> for SearchFilters {
+    fn from(value: &SearchFilters) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result grouping (SEARCH.md §11.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchGroupBy\","]
+#[doc = "  \"description\": \"Result grouping (SEARCH.md §11.2).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"document\","]
+#[doc = "    \"chunk\","]
+#[doc = "    \"section\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum SearchGroupBy {
+    #[serde(rename = "document")]
+    Document,
+    #[serde(rename = "chunk")]
+    Chunk,
+    #[serde(rename = "section")]
+    Section,
+}
+impl From<&SearchGroupBy> for SearchGroupBy {
+    fn from(value: &SearchGroupBy) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for SearchGroupBy {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Document => write!(f, "document"),
+            Self::Chunk => write!(f, "chunk"),
+            Self::Section => write!(f, "section"),
+        }
+    }
+}
+impl std::str::FromStr for SearchGroupBy {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "document" => Ok(Self::Document),
+            "chunk" => Ok(Self::Chunk),
+            "section" => Ok(Self::Section),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for SearchGroupBy {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for SearchGroupBy {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for SearchGroupBy {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Search response metadata (SEARCH.md §20)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchMeta\","]
+#[doc = "  \"description\": \"Search response metadata (SEARCH.md §20).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"cache\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchCacheInfo\""]
+#[doc = "    },"]
+#[doc = "    \"candidates\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchCandidates\""]
+#[doc = "    },"]
+#[doc = "    \"latency_ms\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchMeta {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cache: Option<SearchCacheInfo>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub candidates: Option<SearchCandidates>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub latency_ms: Option<i64>,
+}
+impl From<&SearchMeta> for SearchMeta {
+    fn from(value: &SearchMeta) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Search mode (SEARCH.md §2, §20)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchMode\","]
+#[doc = "  \"description\": \"Search mode (SEARCH.md §2, §20).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"hybrid\","]
+#[doc = "    \"bm25\","]
+#[doc = "    \"vector\","]
+#[doc = "    \"sparse\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum SearchMode {
+    #[serde(rename = "hybrid")]
+    Hybrid,
+    #[serde(rename = "bm25")]
+    Bm25,
+    #[serde(rename = "vector")]
+    Vector,
+    #[serde(rename = "sparse")]
+    Sparse,
+}
+impl From<&SearchMode> for SearchMode {
+    fn from(value: &SearchMode) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for SearchMode {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Hybrid => write!(f, "hybrid"),
+            Self::Bm25 => write!(f, "bm25"),
+            Self::Vector => write!(f, "vector"),
+            Self::Sparse => write!(f, "sparse"),
+        }
+    }
+}
+impl std::str::FromStr for SearchMode {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "hybrid" => Ok(Self::Hybrid),
+            "bm25" => Ok(Self::Bm25),
+            "vector" => Ok(Self::Vector),
+            "sparse" => Ok(Self::Sparse),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for SearchMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for SearchMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for SearchMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params of search.query (SEARCH.md §20, verbatim)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchQueryParams\","]
+#[doc = "  \"description\": \"Params of search.query (SEARCH.md §20, verbatim).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"query\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brains\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"explain\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"filters\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchFilters\""]
+#[doc = "    },"]
+#[doc = "    \"group_by\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchGroupBy\""]
+#[doc = "    },"]
+#[doc = "    \"mode\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchMode\""]
+#[doc = "    },"]
+#[doc = "    \"query\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"rerank\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"top_k\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchQueryParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brains: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub explain: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub filters: Option<SearchFilters>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub group_by: Option<SearchGroupBy>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mode: Option<SearchMode>,
+    pub query: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rerank: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub top_k: Option<i64>,
+}
+impl From<&SearchQueryParams> for SearchQueryParams {
+    fn from(value: &SearchQueryParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of search.query (SEARCH.md §20)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchQueryResult\","]
+#[doc = "  \"description\": \"Result of search.query (SEARCH.md §20).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"results\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"meta\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchMeta\""]
+#[doc = "    },"]
+#[doc = "    \"results\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/SearchResult\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchQueryResult {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub meta: Option<SearchMeta>,
+    pub results: Vec<SearchResult>,
+}
+impl From<&SearchQueryResult> for SearchQueryResult {
+    fn from(value: &SearchQueryResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One search result (SEARCH.md §11.1, verbatim shape)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchResult\","]
+#[doc = "  \"description\": \"One search result (SEARCH.md §11.1, verbatim shape).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"chunk_id\","]
+#[doc = "    \"content\","]
+#[doc = "    \"document_id\","]
+#[doc = "    \"path\","]
+#[doc = "    \"score\","]
+#[doc = "    \"snippet\","]
+#[doc = "    \"title\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"chunk_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"document_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"heading_path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"metadata\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchResultMetadata\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"score\": {"]
+#[doc = "      \"type\": \"number\""]
+#[doc = "    },"]
+#[doc = "    \"scores\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SearchScores\""]
+#[doc = "    },"]
+#[doc = "    \"snippet\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchResult {
+    pub chunk_id: String,
+    pub content: String,
+    pub document_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub heading_path: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub metadata: Option<SearchResultMetadata>,
+    pub path: String,
+    pub score: f64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scores: Option<SearchScores>,
+    pub snippet: String,
+    pub title: String,
+}
+impl From<&SearchResult> for SearchResult {
+    fn from(value: &SearchResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result metadata (SEARCH.md §11.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchResultMetadata\","]
+#[doc = "  \"description\": \"Result metadata (SEARCH.md §11.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"brain\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"created\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"tags\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchResultMetadata {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub brain: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub created: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tags: Option<Vec<String>>,
+}
+impl From<&SearchResultMetadata> for SearchResultMetadata {
+    fn from(value: &SearchResultMetadata) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Per-signal scores (SEARCH.md §11.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SearchScores\","]
+#[doc = "  \"description\": \"Per-signal scores (SEARCH.md §11.1).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"bm25\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"fusion\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"rerank\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"sparse\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"vector\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SearchScores {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bm25: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub fusion: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rerank: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sparse: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub vector: Option<f64>,
+}
+impl From<&SearchScores> for SearchScores {
+    fn from(value: &SearchScores) -> Self {
         value.clone()
     }
 }
