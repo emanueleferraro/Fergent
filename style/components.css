@@ -1541,6 +1541,20 @@ mark,
 .settings-label { font-size: var(--fs-body-sm); color: var(--text-strong); }
 .settings-hint { margin-top: 2px; font-size: var(--fs-caption); color: var(--text-muted); }
 .settings-control { flex-shrink: 0; display: flex; align-items: center; gap: var(--s-2); }
+.settings-note {
+    padding: var(--s-3) var(--s-4);
+    border: 1px solid var(--color-accent-line);
+    border-radius: var(--r-md);
+    background: var(--color-accent-soft);
+    font-size: var(--fs-caption);
+    color: var(--text-default);
+}
+.settings-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding-top: var(--s-2);
+}
 
 /* ============================================================
    GRAPH VIEW
