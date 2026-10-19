@@ -135,6 +135,8 @@ export class MockKernelClient implements KernelClient {
         return { backlinks: [] };
       case 'doc.unlinked_mentions':
         return { mentions: [] };
+      case 'search.query':
+        return { results: [] };
       default:
         return null;
     }
