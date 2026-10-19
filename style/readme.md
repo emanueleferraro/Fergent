@@ -53,6 +53,17 @@ Tutti i componenti riutilizzabili del sistema:
 - Window/panel
 - Layout helpers (`.panel`, `.panel-row`, `.panel-stack`)
 
+**Phase 1 additions (brain UI):**
+
+- Tree / explorer (`.tree`, `.tree-row`, `.tree-caret`, `.tree-icon`) — files and tags
+- Tag list (`.tag-list`, `.tag`, `.tag-count`)
+- Search results (`.result-list`, `.result-item`, `.result-snippet`, `.mark`, `.result-score`)
+- Backlinks & outline (`.link-list`, `.link-item`, `.outline-list`, `.outline-item`)
+- Markdown body (`.md`, `.wikilink`, `.callout` note/tip/warning/danger)
+- Keyboard (`.kbd`, `.kbd-group`)
+- Settings (`.settings`, `.settings-section`, `.settings-row`, `.settings-control`)
+- Graph view (`.graph-shell`, `.graph-canvas`, `.graph-toolbar`, `.graph-legend`)
+
 Dipende da `tokens.css` e `typography.css`.
 
 ### `styleguide.html`
