@@ -65,7 +65,7 @@ Tutti i componenti riutilizzabili del sistema:
 - Editor (`.editor-area`, `.editor-tabs`, `.editor-tab`, `.editor-breadcrumb`, `.editor-split`, `.editor-pane`, `.editor-preview`)
 - Brain main area (`.brain-view`, `.brain-view__bar`, `.brain-view__body`)
 - Keyboard (`.kbd`, `.kbd-group`)
-- Settings (`.settings`, `.settings-section`, `.settings-row`, `.settings-control`)
+- Settings (`.settings`, `.settings-section`, `.settings-row`, `.settings-control`, `.settings-note`, `.settings-actions`)
 - Graph view (`.graph-shell`, `.graph-canvas`, `.graph-toolbar`, `.graph-seg`, `.graph-filters`, `.graph-node`, `.graph-legend`)
 
 Dipende da `tokens.css` e `typography.css`.
