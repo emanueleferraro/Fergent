@@ -1005,6 +1005,17 @@ table.tbl td .strong { color: var(--color-text); font-weight: var(--fw-medium); 
 .panel-row { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
 .panel-stack { display: flex; flex-direction: column; gap: var(--s-3); }
 
+/* Main-area wrapper for the brain section: a view switch plus its body. */
+.brain-view { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.brain-view__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    border-bottom: 1px solid var(--color-border);
+}
+.brain-view__body { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+
 /* ============================================================
    Command palette (#cmdk)
    Extracted verbatim from the `#cmdk` block of `patterns.html`
@@ -1533,6 +1544,9 @@ mark,
 
 /* ============================================================
    GRAPH VIEW
+   The brain graph view (GRAPH.md §8, UI.md §6): a React Flow
+   canvas with a floating toolbar, a filter panel, and a legend.
+   All colors/spacing come from tokens.
    ============================================================ */
 .graph-shell { position: relative; display: flex; flex-direction: column; height: 100%; }
 .graph-canvas {
@@ -1552,8 +1566,51 @@ mark,
     left: var(--s-3);
     z-index: var(--z-sticky);
     display: flex;
-    gap: var(--s-1);
-    padding: var(--s-1);
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    background: var(--color-glass-strong);
+    backdrop-filter: blur(var(--blur-glass));
+    -webkit-backdrop-filter: blur(var(--blur-glass));
+}
+.graph-toolbar .input { width: 200px; padding: 6px 10px; font-size: var(--fs-caption); }
+.graph-toolbar .select { width: auto; padding: 6px 10px; font-size: var(--fs-caption); }
+.graph-seg {
+    display: inline-flex;
+    gap: 2px;
+    padding: 2px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-sm);
+    background: rgba(255, 255, 255, 0.02);
+}
+.graph-seg button {
+    padding: 5px 9px;
+    border: none;
+    border-radius: var(--r-xs);
+    background: transparent;
+    font-size: var(--fs-caption);
+    color: var(--text-default);
+    cursor: pointer;
+    transition: background var(--t), color var(--t);
+}
+.graph-seg button:hover { background: var(--color-hover); color: var(--text-strong); }
+.graph-seg button.is-active {
+    background: var(--color-active);
+    color: var(--text-strong);
+    box-shadow: inset 0 0 0 1px var(--color-border-2);
+}
+.graph-filters {
+    position: absolute;
+    top: calc(var(--s-3) + 44px);
+    left: var(--s-3);
+    z-index: var(--z-sticky);
+    display: grid;
+    grid-template-columns: repeat(2, minmax(140px, 1fr));
+    gap: var(--s-3);
+    width: 340px;
+    padding: var(--s-4);
     border: 1px solid var(--color-border);
     border-radius: var(--r-md);
     background: var(--color-glass-strong);
@@ -1590,6 +1647,83 @@ mark,
 .graph-swatch.place { background: var(--color-success); }
 .graph-swatch.file { background: var(--color-warning); }
 .graph-swatch.date { background: var(--color-danger); }
+
+/* Node card rendered by React Flow (a custom node type). */
+.graph-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    max-width: 180px;
+    padding: 5px 10px;
+    border: 1px solid var(--color-border-2);
+    border-radius: var(--r-full);
+    background: var(--color-glass-strong);
+    font-size: var(--fs-caption);
+    color: var(--text-strong);
+    white-space: nowrap;
+    transition: opacity var(--t), border-color var(--t), box-shadow var(--t);
+}
+.graph-node__dot {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    border-radius: var(--r-full);
+    background: var(--node-color, var(--color-text-3));
+}
+.graph-node__label { overflow: hidden; text-overflow: ellipsis; }
+.graph-node--person { --node-color: var(--color-accent); }
+.graph-node--org { --node-color: var(--color-info); }
+.graph-node--place { --node-color: var(--color-success); }
+.graph-node--file { --node-color: var(--color-warning); }
+.graph-node--date { --node-color: var(--color-danger); }
+.graph-node--document { --node-color: var(--color-text-3); }
+.graph-node.is-dimmed { opacity: 0.28; }
+.graph-node.is-focused {
+    border-color: var(--color-accent-line);
+    box-shadow: 0 0 0 3px var(--color-accent-soft);
+}
+.graph-node.is-match { border-color: var(--color-warning); }
+
+/* React Flow overrides: keep the canvas on design-system tokens. */
+.graph-canvas .react-flow__attribution { display: none; }
+.graph-canvas .react-flow__edge-path {
+    stroke: var(--color-border-2);
+    stroke-width: 1.2;
+}
+.graph-canvas .react-flow__edge.is-focused .react-flow__edge-path {
+    stroke: var(--color-accent);
+    stroke-width: 1.8;
+}
+.graph-canvas .react-flow__edge.is-dimmed .react-flow__edge-path { opacity: 0.2; }
+.graph-canvas .react-flow__handle { opacity: 0; }
+.graph-canvas .react-flow__controls {
+    box-shadow: var(--sh-md);
+    border-radius: var(--r-sm);
+    overflow: hidden;
+}
+.graph-canvas .react-flow__controls button {
+    border: none;
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-glass-strong);
+    color: var(--text-default);
+}
+.graph-canvas .react-flow__controls button:hover { background: var(--color-hover); color: var(--text-strong); }
+.graph-canvas .react-flow__controls button svg { fill: currentColor; }
+.graph-canvas .react-flow__minimap {
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-sm);
+    background: var(--color-glass-strong);
+}
+.graph-canvas .react-flow__minimap-mask { fill: var(--color-bg); fill-opacity: 0.6; }
+.graph-empty {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    gap: var(--s-2);
+    text-align: center;
+    color: var(--text-muted);
+}
 
 /* ============================================================
    REDUCED MOTION

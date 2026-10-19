@@ -11,6 +11,7 @@ import { CommandPalette } from './features/palette/CommandPalette';
 import { commands } from './features/palette/commands';
 import { EditorArea } from './features/editor/EditorArea';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
+import { GraphView } from './features/graph/GraphView';
 import { SearchPanel } from './features/search/SearchPanel';
 import { useTheme } from './features/theme/theme';
 import { useKernel, type KernelStatus } from './hooks/useKernel';
@@ -85,6 +86,7 @@ export function App(): ReactElement {
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
+  const [brainView, setBrainView] = useState<'notes' | 'graph'>('notes');
   const openIdsRef = useRef(openIds);
   openIdsRef.current = openIds;
 
@@ -162,23 +164,51 @@ export function App(): ReactElement {
 
       <main className={activeId === 'brain' ? 'shell__main shell__main--flush' : 'shell__main'}>
         {activeId === 'brain' ? (
-          searchQuery ? (
-            <SearchPanel
-              kernel={kernel}
-              query={searchQuery}
-              onOpen={openDocument}
-              onClose={() => setSearchQuery(undefined)}
-            />
-          ) : (
-            <EditorArea
-              kernel={kernel}
-              openIds={openIds}
-              activeId={activeDocId}
-              onSelect={setActiveDocId}
-              onClose={closeDocument}
-              onOpen={openDocument}
-            />
-          )
+          <div className="brain-view">
+            <div className="brain-view__bar">
+              <div className="tabs" role="tablist" aria-label={t('brain.view.label')}>
+                <button
+                  type="button"
+                  role="tab"
+                  className={brainView === 'notes' ? 'tab active' : 'tab'}
+                  aria-selected={brainView === 'notes'}
+                  onClick={() => setBrainView('notes')}
+                >
+                  {t('brain.view.notes')}
+                </button>
+                <button
+                  type="button"
+                  role="tab"
+                  className={brainView === 'graph' ? 'tab active' : 'tab'}
+                  aria-selected={brainView === 'graph'}
+                  onClick={() => setBrainView('graph')}
+                >
+                  {t('brain.view.graph')}
+                </button>
+              </div>
+            </div>
+            <div className="brain-view__body">
+              {searchQuery ? (
+                <SearchPanel
+                  kernel={kernel}
+                  query={searchQuery}
+                  onOpen={openDocument}
+                  onClose={() => setSearchQuery(undefined)}
+                />
+              ) : brainView === 'graph' ? (
+                <GraphView kernel={kernel} onOpen={openDocument} />
+              ) : (
+                <EditorArea
+                  kernel={kernel}
+                  openIds={openIds}
+                  activeId={activeDocId}
+                  onSelect={setActiveDocId}
+                  onClose={closeDocument}
+                  onOpen={openDocument}
+                />
+              )}
+            </div>
+          </div>
         ) : (
           <>
             <h1 className="t-h1">{t('app.name')}</h1>
