@@ -574,6 +574,7 @@ impl BrainService {
         let rendered = render(&template, &vars);
         Ok(TemplateRenderResult {
             content: rendered.content,
+            cursor: rendered.cursor.map(|offset| offset as i64),
         })
     }
 
@@ -604,8 +605,8 @@ impl BrainService {
         };
         let options = AlgoOptions {
             top_k: params.top_k.unwrap_or(0).max(0) as usize,
-            from: None,
-            to: None,
+            from: params.from.clone(),
+            to: params.to.clone(),
         };
         let results = graph.algorithm(algorithm, &options)?;
         Ok(GraphAlgoResult {
@@ -704,6 +705,13 @@ impl BrainService {
 
 /// Adapts the [`BrainIndexer`] to the [`NoteIndexer`] hook `daily.open` needs:
 /// indexing a single note re-runs the brain's incremental index.
+///
+/// The real `BrainIndexer` (`VaultIndexer<E, V>`) deliberately does not
+/// implement `NoteIndexer` itself: it is generic over the embedder and vector
+/// store and owns the whole scan/process pipeline, so a per-note hook would
+/// leak its internals. `daily.open` only needs "this one file changed", which
+/// the incremental `index_brain` already handles correctly, so this thin
+/// adapter is enough.
 struct BrainNoteIndexer<'a> {
     indexer: &'a dyn BrainIndexer,
     brain_id: &'a str,

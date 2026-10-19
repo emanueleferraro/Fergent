@@ -3327,6 +3327,20 @@ impl From<&GitConfig> for GitConfig {
 #[doc = "        \"null\""]
 #[doc = "      ]"]
 #[doc = "    },"]
+#[doc = "    \"from\": {"]
+#[doc = "      \"description\": \"Source node id (shortest_path).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"to\": {"]
+#[doc = "      \"description\": \"Target node id (shortest_path).\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
 #[doc = "    \"top_k\": {"]
 #[doc = "      \"type\": ["]
 #[doc = "        \"integer\","]
@@ -3342,6 +3356,12 @@ pub struct GraphAlgoParams {
     pub algo: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub brain: Option<String>,
+    #[doc = "Source node id (shortest_path)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<String>,
+    #[doc = "Target node id (shortest_path)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub to: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub top_k: Option<i64>,
 }
@@ -6908,6 +6928,13 @@ impl From<&TemplateRenderParams> for TemplateRenderParams {
 #[doc = "  \"properties\": {"]
 #[doc = "    \"content\": {"]
 #[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"cursor\": {"]
+#[doc = "      \"description\": \"Byte offset of the {{cursor}} placeholder in content, if present.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
 #[doc = "    }"]
 #[doc = "  }"]
 #[doc = "}"]
@@ -6916,6 +6943,9 @@ impl From<&TemplateRenderParams> for TemplateRenderParams {
 #[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
 pub struct TemplateRenderResult {
     pub content: String,
+    #[doc = "Byte offset of the {{cursor}} placeholder in content, if present."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cursor: Option<i64>,
 }
 impl From<&TemplateRenderResult> for TemplateRenderResult {
     fn from(value: &TemplateRenderResult) -> Self {
