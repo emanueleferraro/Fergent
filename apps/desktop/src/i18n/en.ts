@@ -66,6 +66,18 @@ export const en = {
   'explorer.backlinks.empty': 'No backlinks',
   'explorer.mentions.label': 'Unlinked mentions',
   'explorer.mentions.empty': 'No unlinked mentions',
+
+  'editor.tabs.label': 'Open notes',
+  'editor.tabs.close': 'Close {title}',
+  'editor.empty.title': 'No note open',
+  'editor.empty.desc': 'Select a note in the sidebar to open it here.',
+  'editor.source.label': 'Markdown source of {title}',
+  'editor.callout.note': 'Note',
+  'editor.callout.tip': 'Tip',
+  'editor.callout.warning': 'Warning',
+  'editor.callout.danger': 'Danger',
+  'editor.callout.info': 'Info',
+  'editor.callout.success': 'Success',
 } as const;
 
 /** A key of the English message catalog. */

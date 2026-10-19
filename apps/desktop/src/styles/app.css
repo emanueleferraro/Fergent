@@ -92,6 +92,14 @@ body {
   overflow: auto;
 }
 
+/* Full-bleed main area (e.g. the editor fills its pane edge to edge). */
+.shell__main--flush {
+  gap: 0;
+  padding: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
 /* Status bar (UI.md §9) */
 .shell__status {
   grid-area: status;

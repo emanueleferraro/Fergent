@@ -14,22 +14,35 @@ import { useBrainExplorer } from './useBrainExplorer';
 export interface BrainExplorerProps {
   /** The connected kernel client. */
   kernel: KernelClient;
+  /** Controlled active document id (owned by the shell). */
+  activeDocumentId?: string | undefined;
+  /** Called when a note should be opened; if omitted, selection stays local. */
+  onOpenDocument?: ((documentId: string) => void) | undefined;
 }
 
 /** The live brain explorer. */
-export function BrainExplorer({ kernel }: BrainExplorerProps): ReactElement {
-  const [activeId, setActiveId] = useState<string | undefined>(undefined);
+export function BrainExplorer({
+  kernel,
+  activeDocumentId,
+  onOpenDocument,
+}: BrainExplorerProps): ReactElement {
+  const [localId, setLocalId] = useState<string | undefined>(undefined);
   const [activeTag, setActiveTag] = useState<string | undefined>(undefined);
   const [activeHeading, setActiveHeading] = useState<string | undefined>(undefined);
+  const activeId = activeDocumentId ?? localId;
+  const openDocument = onOpenDocument ?? setLocalId;
   const data = useBrainExplorer(kernel, activeId);
 
   const activePath = data.documents.find((document) => document.id === activeId)?.path;
 
   const onSelectPath = useCallback(
     (path: string) => {
-      setActiveId(data.documents.find((document) => document.path === path)?.id);
+      const id = data.documents.find((document) => document.path === path)?.id;
+      if (id) {
+        openDocument(id);
+      }
     },
-    [data.documents],
+    [data.documents, openDocument],
   );
 
   const onSelectHeading = useCallback((entry: OutlineEntry) => {
@@ -49,7 +62,7 @@ export function BrainExplorer({ kernel }: BrainExplorerProps): ReactElement {
       onSelectPath={onSelectPath}
       onSelectTag={setActiveTag}
       onSelectHeading={onSelectHeading}
-      onOpenDocument={setActiveId}
+      onOpenDocument={openDocument}
     />
   );
 }
