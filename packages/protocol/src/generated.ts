@@ -994,6 +994,10 @@ export interface TemplateRenderParams {
 
 export interface TemplateRenderResult {
   content: string;
+  /**
+   * Byte offset of the {{cursor}} placeholder in content, if present.
+   */
+  cursor?: number | null;
 }
 
 /**
@@ -1202,6 +1206,14 @@ export interface GraphQueryResult {
 export interface GraphAlgoParams {
   algo: string;
   brain?: string | null;
+  /**
+   * Source node id (shortest_path).
+   */
+  from?: string | null;
+  /**
+   * Target node id (shortest_path).
+   */
+  to?: string | null;
   top_k?: number | null;
 }
 

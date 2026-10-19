@@ -1052,7 +1052,13 @@
       "title": "TemplateRenderResult",
       "type": "object",
       "required": ["content"],
-      "properties": { "content": { "type": "string" } }
+      "properties": {
+        "content": { "type": "string" },
+        "cursor": {
+          "type": ["integer", "null"],
+          "description": "Byte offset of the {{cursor}} placeholder in content, if present."
+        }
+      }
     },
     "SearchMode": {
       "title": "SearchMode",
@@ -1262,6 +1268,8 @@
       "properties": {
         "algo": { "type": "string" },
         "brain": { "type": ["string", "null"] },
+        "from": { "type": ["string", "null"], "description": "Source node id (shortest_path)." },
+        "to": { "type": ["string", "null"], "description": "Target node id (shortest_path)." },
         "top_k": { "type": ["integer", "null"] }
       }
     },
