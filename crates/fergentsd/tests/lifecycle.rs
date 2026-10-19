@@ -244,14 +244,28 @@ async fn detached_start_survives_spawner_exit() {
     let socket = unique_socket(home.path());
 
     // `start` (without `--run`/`--foreground`) spawns a detached child and
-    // returns; `output()` waits for that spawner process to exit.
-    let output = daemon_command(home.path(), &socket, &["start"])
-        .output()
+    // returns; the spawner process then exits.
+    //
+    // The spawner's output goes to a file rather than being captured with
+    // `output()`. On Windows the detached grandchild inherits the spawner's
+    // inheritable stdio handles, so a captured pipe never reaches EOF and
+    // `output()` blocks forever (issue #4). A file has no EOF coupling, and
+    // reading it back preserves the failure diagnostics.
+    let spawner_log = home.path().join("spawner.log");
+    let spawner_out = std::fs::File::create(&spawner_log).expect("create the spawner log");
+    let spawner_err = spawner_out
+        .try_clone()
+        .expect("clone the spawner log handle");
+    let status = daemon_command(home.path(), &socket, &["start"])
+        .stdin(Stdio::null())
+        .stdout(Stdio::from(spawner_out))
+        .stderr(Stdio::from(spawner_err))
+        .status()
         .expect("run detached start");
     assert!(
-        output.status.success(),
+        status.success(),
         "start failed: {}",
-        String::from_utf8_lossy(&output.stderr)
+        std::fs::read_to_string(&spawner_log).unwrap_or_default()
     );
 
     // The spawner has exited; the detached daemon must still become reachable.
