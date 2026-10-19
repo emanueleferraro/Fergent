@@ -18,6 +18,8 @@ export interface BrainExplorerProps {
   activeDocumentId?: string | undefined;
   /** Called when a note should be opened; if omitted, selection stays local. */
   onOpenDocument?: ((documentId: string) => void) | undefined;
+  /** Called when a search query is submitted from the sidebar search box. */
+  onSearch?: ((query: string) => void) | undefined;
 }
 
 /** The live brain explorer. */
@@ -25,6 +27,7 @@ export function BrainExplorer({
   kernel,
   activeDocumentId,
   onOpenDocument,
+  onSearch,
 }: BrainExplorerProps): ReactElement {
   const [localId, setLocalId] = useState<string | undefined>(undefined);
   const [activeTag, setActiveTag] = useState<string | undefined>(undefined);
@@ -63,6 +66,7 @@ export function BrainExplorer({
       onSelectTag={setActiveTag}
       onSelectHeading={onSelectHeading}
       onOpenDocument={openDocument}
+      onSearch={onSearch}
     />
   );
 }

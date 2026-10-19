@@ -1250,6 +1250,37 @@ mark,
 }
 
 /* ============================================================
+   SEARCH PANEL
+   Composes the search results view: header, filters, and the
+   result list above.
+   ============================================================ */
+.search-panel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    height: 100%;
+    padding: var(--s-5);
+    overflow: auto;
+}
+.search-panel__head { display: flex; align-items: baseline; gap: var(--s-3); }
+.search-panel__query {
+    font-family: var(--font-mono);
+    font-size: var(--fs-body-sm);
+    color: var(--text-strong);
+}
+.search-panel__count {
+    margin-left: auto;
+    font-size: var(--fs-label);
+    color: var(--text-ghost);
+    font-variant-numeric: tabular-nums;
+}
+.search-panel__filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--s-3);
+}
+
+/* ============================================================
    BACKLINKS & OUTLINE
    ============================================================ */
 .link-list { display: flex; flex-direction: column; gap: 2px; }

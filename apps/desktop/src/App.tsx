@@ -11,6 +11,7 @@ import { CommandPalette } from './features/palette/CommandPalette';
 import { commands } from './features/palette/commands';
 import { EditorArea } from './features/editor/EditorArea';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
+import { SearchPanel } from './features/search/SearchPanel';
 import { useTheme } from './features/theme/theme';
 import { useKernel, type KernelStatus } from './hooks/useKernel';
 import { t } from './i18n/i18n';
@@ -83,6 +84,7 @@ export function App(): ReactElement {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
+  const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
   const openIdsRef = useRef(openIds);
   openIdsRef.current = openIds;
 
@@ -140,6 +142,7 @@ export function App(): ReactElement {
             kernel={kernel}
             activeDocumentId={activeDocId}
             onOpenDocument={openDocument}
+            onSearch={(query) => setSearchQuery(query.length > 0 ? query : undefined)}
           />
         ) : (
           <>
@@ -159,14 +162,23 @@ export function App(): ReactElement {
 
       <main className={activeId === 'brain' ? 'shell__main shell__main--flush' : 'shell__main'}>
         {activeId === 'brain' ? (
-          <EditorArea
-            kernel={kernel}
-            openIds={openIds}
-            activeId={activeDocId}
-            onSelect={setActiveDocId}
-            onClose={closeDocument}
-            onOpen={openDocument}
-          />
+          searchQuery ? (
+            <SearchPanel
+              kernel={kernel}
+              query={searchQuery}
+              onOpen={openDocument}
+              onClose={() => setSearchQuery(undefined)}
+            />
+          ) : (
+            <EditorArea
+              kernel={kernel}
+              openIds={openIds}
+              activeId={activeDocId}
+              onSelect={setActiveDocId}
+              onClose={closeDocument}
+              onOpen={openDocument}
+            />
+          )
         ) : (
           <>
             <h1 className="t-h1">{t('app.name')}</h1>

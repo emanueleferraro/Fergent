@@ -59,6 +59,7 @@ Tutti i componenti riutilizzabili del sistema:
 - Tree / explorer (`.tree`, `.tree-row`, `.tree-caret`, `.tree-icon`) — files and tags
 - Tag list (`.tag-list`, `.tag`, `.tag-count`)
 - Search results (`.result-list`, `.result-item`, `.result-snippet`, `.mark`, `.result-score`)
+- Search panel (`.search-panel`, `.search-panel__head`, `.search-panel__filters`)
 - Backlinks & outline (`.link-list`, `.link-item`, `.outline-list`, `.outline-item`)
 - Markdown body (`.md`, `.wikilink`, `.callout` note/tip/warning/danger)
 - Editor (`.editor-area`, `.editor-tabs`, `.editor-tab`, `.editor-breadcrumb`, `.editor-split`, `.editor-pane`, `.editor-preview`)
