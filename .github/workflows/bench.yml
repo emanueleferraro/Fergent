@@ -1,0 +1,49 @@
+# Nightly performance and offline verification for Phase 1 (Task 22).
+#
+# The full-size benchmarks are `#[ignore]`d so they never run on pull requests.
+# This workflow runs them on a native Linux runner, which is the reference
+# environment for the spec targets (SubTasks 22.1/22.3): the hosted ext4
+# filesystem is materially faster than a Windows-mounted one for the
+# scan/hash-heavy paths.
+#
+# This is NOT a required status check: a performance regression is reported
+# here rather than blocking a merge.
+
+name: Bench
+
+on:
+  schedule:
+    # 03:15 UTC every day.
+    - cron: '15 3 * * *'
+  # Allow a manual run from the Actions tab.
+  workflow_dispatch:
+
+concurrency:
+  group: bench-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bench:
+    name: Benchmarks (ubuntu)
+    runs-on: ubuntu-latest
+    # The 10k-note full reindex dominates; give it room but still bound it.
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: bench
+
+      # The 1k-note CI-regression benchmarks (not ignored).
+      - name: Benchmarks (1k regression)
+        run: cargo test -p fergents-core --features bench -- --nocapture
+
+      # The full 10k-note nightly benchmarks (ignored by default).
+      - name: Benchmarks (10k nightly)
+        run: cargo test -p fergents-core --features bench -- --ignored --nocapture
