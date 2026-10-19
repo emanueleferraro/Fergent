@@ -8,7 +8,7 @@ LLM API calls, and only when providers are configured.
 
 **Version:** 0.1.0-draft
 **License:** AGPL-3.0-or-later
-**Status:** Phase 0 (Foundations) — in progress
+**Status:** Phase 1 (Brain) — in progress
 
 ---
 
@@ -34,9 +34,42 @@ Delivered in Phase 0:
 - CLI (TUI, Ratatui) `fergents` with `status`, `events tail`, and `brain list`.
 - GitHub Actions CI (`ci.yml`) and an inert `release.yml` stub.
 
-Explicitly deferred to later phases: per-brain index/graph databases, real
-brain features, the LLM router, MCP host/server, agent runtime, Monaco/LSP,
-the WASM plugin host, the workflow engine, sync, and mobile.
+Explicitly deferred to later phases: the LLM router, MCP host/server, agent
+runtime, Monaco/LSP, the WASM plugin host, the workflow engine, sync, and
+mobile.
+
+---
+
+## Phase 1 status
+
+Phase 1 (see `ROADMAP.md` §5) turns the skeleton into a working second brain:
+a markdown vault per brain, indexed for hybrid search, with an entity graph, a
+desktop UI, and a kernel wired to it end to end.
+
+Delivered in Phase 1:
+
+- **Brain model and lifecycle** (`crates/brain`): `brain.toml`, vault layout,
+  and the full lifecycle — create from a template (blank, personal, research,
+  coding, team), open, close, update, archive/unarchive, delete, duplicate,
+  move, `.fergbrain` export/import, attach/detach with roles, and
+  `brain.template.save`.
+- **Index and search** (`crates/index`): per-brain SQLite index (documents,
+  chunks, FTS5, `sqlite-vec` embeddings, tags, links), chunking, daily notes,
+  and templates, and hybrid search (BM25 + vectors + sparse fusion) behind
+  swappable engines (ADR-018).
+- **Entity graph** (`crates/graph`): a CozoDB Datalog graph with a SQLite
+  mirror, regex and (feature-gated) ONNX entity extraction, and
+  `graph.query`/`graph.algo`/`graph.neighbors`/`graph.subgraph`.
+- **Kernel wiring and CLI** (`crates/core`, `crates/api`, `crates/fergents`):
+  the Phase 1 commands dispatched over the JSON-RPC socket and the
+  `fergents brain …` and `fergents search …` CLI commands.
+- **Desktop UI** (`apps/desktop`): brain sidebar and explorer, markdown editor
+  with live preview (CodeMirror 6, KaTeX, Mermaid, callouts, wiki links), a
+  search panel, a React Flow graph view, per-brain settings, and a command
+  palette.
+- **Verification**: performance benchmarks behind the `bench` feature and an
+  offline test (`FERGENTS_OFFLINE=1`); the heavy models are never downloaded in
+  CI (deterministic stubs only).
 
 ---
 
@@ -50,6 +83,10 @@ crates/        Cargo workspace (Rust)
   protocol/      protocol types + generated bindings
   api/           local socket server (JSON-RPC 2.0)
   supervisor/    health, restarts, crash recovery
+  markdown/      markdown flavor, frontmatter, and link/tag extraction
+  brain/         brain model, vault layout, lifecycle, multi-brain ops
+  index/         per-brain index: chunking, embeddings, FTS5, hybrid search
+  graph/         entity graph (CozoDB) with a SQLite mirror
   fergentsd/     kernel daemon binary
   fergents/      CLI (TUI) binary
 packages/      pnpm workspace packages (protocol types, UI)
@@ -86,8 +123,16 @@ persists state under `~/.fergents/`.
 ```sh
 cargo run -p fergents -- status          # connect and print kernel health/state
 cargo run -p fergents -- events tail     # stream events until interrupted
-cargo run -p fergents -- brain list      # list registered brains (empty in Phase 0)
+
+cargo run -p fergents -- brain list              # list the registered brains
+cargo run -p fergents -- brain create "Personal" # create a brain (--template, --path)
+cargo run -p fergents -- brain open <brain-id>   # open a brain by id
+
+cargo run -p fergents -- search "hybrid query"   # hybrid search (--top-k, --mode, --brain)
 ```
+
+The `brain` and `search` commands require a running kernel; start one with
+`fergentsd start` first.
 
 ### Workspace build (TypeScript)
 
@@ -132,8 +177,9 @@ full setup and the quality gates.
 ## Documentation
 
 The entry point is this README. The full documentation set includes
-`ARCHITECTURE.md`, `STACK.md`, `ROADMAP.md`, `DATA_MODEL.md`, `SECURITY.md`,
-and the runtime/data/UX docs, plus the design system in `style/`.
+`ARCHITECTURE.md`, `DECISIONS.md` (the ADR log), `STACK.md`, `ROADMAP.md`,
+`DATA_MODEL.md`, `SECURITY.md`, and the runtime/data/UX docs, plus the design
+system in `style/`.
 
 ---
 
