@@ -198,6 +198,11 @@ button { cursor: pointer; border: none; background: none; padding: 0; }
     font-size: var(--fs-caption);
     color: var(--color-text-3);
 }
+.input-wrap .input-suffix svg {
+    width: 13px; height: 13px;
+    stroke: currentColor; stroke-width: 2; fill: none;
+}
+.input-wrap .input-suffix:hover { color: var(--color-text); }
 
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field-label {
@@ -1061,6 +1066,43 @@ table.tbl td .strong { color: var(--color-text); font-weight: var(--fw-medium); 
 }
 .cmdk-item .kbd span { padding: 1px 5px; border: 1px solid var(--color-border); border-radius: 3px; }
 .cmdk-match { color: var(--color-accent); font-weight: 600; }
+
+/* ============================================================
+   SIDEBAR SECTIONS
+   Composes context-sensitive sidebars (UI.md §5), e.g. the brain
+   explorer: a stack of labelled sections inside the shell frame.
+   ============================================================ */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-5);
+}
+.sidebar-head {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    color: var(--text-strong);
+}
+.sidebar-head__icon {
+    width: 18px;
+    height: 18px;
+    display: grid;
+    place-items: center;
+    color: var(--color-accent);
+}
+.sidebar-head__icon svg {
+    width: 18px; height: 18px;
+    stroke: currentColor; stroke-width: 1.7; fill: none;
+}
+.sidebar-section { display: flex; flex-direction: column; gap: var(--s-2); }
+.sidebar-head__title,
+.sidebar-section__title {
+    font-size: var(--fs-label);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--ls-label);
+    text-transform: uppercase;
+    color: var(--color-text-4);
+}
 
 /* ============================================================
    TREE / EXPLORER
