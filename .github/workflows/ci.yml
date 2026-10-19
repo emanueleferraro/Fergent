@@ -27,6 +27,9 @@ jobs:
   rust:
     name: Rust (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    # A hung job (e.g. the Rust windows-latest hang, issue #4) would otherwise
+    # hold a runner for hours and clog the queue for every later run.
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -54,12 +57,22 @@ jobs:
       - name: Test
         run: cargo test --workspace
 
+      # The Phase 1 offline guarantee (SubTask 22.2): create/open/index/search/
+      # graph/multi-brain must all work with the network disabled.
+      # FERGENTS_OFFLINE is exported here as well as set by the test itself, so
+      # the check is exercised on every OS.
+      - name: Offline test
+        env:
+          FERGENTS_OFFLINE: '1'
+        run: cargo test -p fergents-core --test offline
+
       - name: Build
         run: cargo build --workspace
 
   desktop:
     name: Desktop (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
@@ -112,6 +125,7 @@ jobs:
   node:
     name: Node
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Checkout
         uses: actions/checkout@v4
