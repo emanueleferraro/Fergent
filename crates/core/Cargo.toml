@@ -23,5 +23,11 @@ tracing = { workspace = true }
 thiserror = { workspace = true }
 anyhow = { workspace = true }
 
+[features]
+default = []
+# The performance benchmarks in `tests/bench_perf.rs`. Off by default so the
+# 10k-note benchmarks never run on every PR (they run in the nightly job).
+bench = []
+
 [dev-dependencies]
 tempfile = { workspace = true }

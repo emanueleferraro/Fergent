@@ -157,6 +157,11 @@ pub fn default_extractors() -> CompositeExtractor {
 
 #[cfg(feature = "ner-real")]
 fn ner_from_env() -> Option<NerExtractor> {
+    // Offline mode (`FERGENTS_OFFLINE`): never load the ONNX classifier, so
+    // extraction stays regex-only (graceful degradation, never fails).
+    if fergents_storage::offline() {
+        return None;
+    }
     real::OrtTokenClassifier::from_env().map(|classifier| NerExtractor::new(Box::new(classifier)))
 }
 

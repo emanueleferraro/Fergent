@@ -2,6 +2,7 @@
 //! migrations, and the tamper-evident audit log.
 
 mod audit;
+mod env;
 mod error;
 mod migrations;
 mod sqlite;
@@ -9,6 +10,7 @@ mod storage;
 mod vec;
 
 pub use audit::{append, canonical_bytes, entry_hash, verify_chain, AuditEntry, GENESIS_PREV_HASH};
+pub use env::offline;
 pub use error::StorageError;
 pub use migrations::{load_migrations, load_migrations_from, Migration};
 pub use sqlite::SqliteStorage;
