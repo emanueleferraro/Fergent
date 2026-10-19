@@ -790,6 +790,11 @@ A summary of the most consequential architectural decisions. Full ADRs in
 | ADR-013 | sqlite-vec + BGE-M3 for embeddings | Embedded, multilingual, offline |
 | ADR-014 | No telemetry by default | Privacy-first |
 | ADR-015 | AI as a first-class user, no privileged APIs | Consistency, security, auditability |
+| ADR-016 | CodeMirror 6 for the Phase 1 markdown editor | Lightweight, extensible; Monaco deferred to Phase 3 |
+| ADR-017 | React Flow for Phase 1 graph visualization | Covers pan/zoom/layout; custom WebGL only if it degrades |
+| ADR-018 | Swappable `VectorStore`/`Reranker`/`EntityExtractor` traits | Swappable engines; deterministic stubs keep models out of CI |
+| ADR-019 | Per-brain FTS5 tokenizer: `unicode61 remove_diacritics 2` | Language-neutral, predictable; configurable per brain |
+| ADR-020 | Phase 0 gaps fixed before Phase 1 implementation | Phase 1 builds on the daemon lifecycle and logging |
 
 ---
 
