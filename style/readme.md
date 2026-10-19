@@ -55,6 +55,7 @@ Tutti i componenti riutilizzabili del sistema:
 
 **Phase 1 additions (brain UI):**
 
+- Sidebar sections (`.sidebar`, `.sidebar-head`, `.sidebar-section`, `.sidebar-section__title`) — context-sensitive sidebars
 - Tree / explorer (`.tree`, `.tree-row`, `.tree-caret`, `.tree-icon`) — files and tags
 - Tag list (`.tag-list`, `.tag`, `.tag-count`)
 - Search results (`.result-list`, `.result-item`, `.result-snippet`, `.mark`, `.result-score`)

@@ -50,6 +50,22 @@ export const en = {
   'command.ping': 'Ping the kernel',
   'command.brainList': 'List brains',
   'command.toggleTheme': 'Toggle theme',
+
+  'explorer.brain.title': 'Brain',
+  'explorer.files.label': 'Files',
+  'explorer.files.empty.title': 'No notes yet',
+  'explorer.files.empty.desc': 'Notes in this brain will appear here.',
+  'explorer.search.label': 'Search notes',
+  'explorer.search.placeholder': 'Search notes…',
+  'explorer.search.clear': 'Clear search',
+  'explorer.tags.label': 'Tags',
+  'explorer.tags.empty': 'No tags yet',
+  'explorer.outline.label': 'Outline',
+  'explorer.outline.empty': 'No headings',
+  'explorer.backlinks.label': 'Backlinks',
+  'explorer.backlinks.empty': 'No backlinks',
+  'explorer.mentions.label': 'Unlinked mentions',
+  'explorer.mentions.empty': 'No unlinked mentions',
 } as const;
 
 /** A key of the English message catalog. */

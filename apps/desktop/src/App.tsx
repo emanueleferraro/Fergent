@@ -9,6 +9,7 @@ import { version as uiVersion } from '@fergents/ui';
 
 import { CommandPalette } from './features/palette/CommandPalette';
 import { commands } from './features/palette/commands';
+import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { useTheme } from './features/theme/theme';
 import { useKernel, type KernelStatus } from './hooks/useKernel';
 import { t } from './i18n/i18n';
@@ -115,16 +116,22 @@ export function App(): ReactElement {
       </nav>
 
       <aside className="shell__sidebar">
-        <div className="panel-title">{activeItem ? t(activeItem.titleKey) : ''}</div>
-        <p className="t-caption">{t('sidebar.placeholder')}</p>
-        <div className="empty">
-          <div className="empty-title">{t('sidebar.empty.title')}</div>
-          <div className="empty-desc">
-            {t('sidebar.empty.desc', {
-              section: activeItem ? t(activeItem.titleKey) : '',
-            })}
-          </div>
-        </div>
+        {activeId === 'brain' ? (
+          <BrainExplorer kernel={kernel} />
+        ) : (
+          <>
+            <div className="panel-title">{activeItem ? t(activeItem.titleKey) : ''}</div>
+            <p className="t-caption">{t('sidebar.placeholder')}</p>
+            <div className="empty">
+              <div className="empty-title">{t('sidebar.empty.title')}</div>
+              <div className="empty-desc">
+                {t('sidebar.empty.desc', {
+                  section: activeItem ? t(activeItem.titleKey) : '',
+                })}
+              </div>
+            </div>
+          </>
+        )}
       </aside>
 
       <main className="shell__main">

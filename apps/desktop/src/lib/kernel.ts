@@ -125,6 +125,16 @@ export class MockKernelClient implements KernelClient {
         return { pong: true, ts: 0 };
       case 'brain.list':
         return { brains: [] };
+      case 'doc.list':
+        return { documents: [] };
+      case 'tag.list':
+        return { tags: [] };
+      case 'doc.outline':
+        return { outline: [] };
+      case 'doc.backlinks':
+        return { backlinks: [] };
+      case 'doc.unlinked_mentions':
+        return { mentions: [] };
       default:
         return null;
     }
