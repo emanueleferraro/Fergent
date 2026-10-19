@@ -95,7 +95,15 @@ mod real {
 
     impl CrossEncoderReranker {
         /// Load the BGE reranker, downloading it on first use.
+        ///
+        /// Refuses to download (returning an error) when the kernel runs in
+        /// offline mode (`FERGENTS_OFFLINE`).
         pub fn new() -> Result<Self, IndexError> {
+            if fergents_storage::offline() {
+                return Err(IndexError::Embedding(
+                    "offline mode (FERGENTS_OFFLINE): refusing to download the model".to_string(),
+                ));
+            }
             let options = RerankInitOptions::new(RerankerModel::BGERerankerV2M3);
             let model = TextRerank::try_new(options)
                 .map_err(|err| IndexError::Embedding(err.to_string()))?;
