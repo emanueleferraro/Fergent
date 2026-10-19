@@ -4,11 +4,12 @@
  *
  * Every element is composed from the `style/` design system only.
  */
-import { useCallback, useEffect, useMemo, useState, type ReactElement } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { version as uiVersion } from '@fergents/ui';
 
 import { CommandPalette } from './features/palette/CommandPalette';
 import { commands } from './features/palette/commands';
+import { EditorArea } from './features/editor/EditorArea';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { useTheme } from './features/theme/theme';
 import { useKernel, type KernelStatus } from './hooks/useKernel';
@@ -80,6 +81,24 @@ export function App(): ReactElement {
   const kernelState = useKernel(kernel, SUBSCRIBE_TOPICS);
   const [activeId, setActiveId] = useState<RailId>('chat');
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [openIds, setOpenIds] = useState<string[]>([]);
+  const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
+  const openIdsRef = useRef(openIds);
+  openIdsRef.current = openIds;
+
+  const openDocument = useCallback((documentId: string) => {
+    setOpenIds((prev) => (prev.includes(documentId) ? prev : [...prev, documentId]));
+    setActiveDocId(documentId);
+  }, []);
+
+  const closeDocument = useCallback((documentId: string) => {
+    setOpenIds((prev) => prev.filter((id) => id !== documentId));
+    setActiveDocId((current) =>
+      current === documentId
+        ? openIdsRef.current.filter((id) => id !== documentId).at(-1)
+        : current,
+    );
+  }, []);
 
   const toggleTheme = useCallback(() => {
     toggle();
@@ -117,7 +136,11 @@ export function App(): ReactElement {
 
       <aside className="shell__sidebar">
         {activeId === 'brain' ? (
-          <BrainExplorer kernel={kernel} />
+          <BrainExplorer
+            kernel={kernel}
+            activeDocumentId={activeDocId}
+            onOpenDocument={openDocument}
+          />
         ) : (
           <>
             <div className="panel-title">{activeItem ? t(activeItem.titleKey) : ''}</div>
@@ -134,29 +157,42 @@ export function App(): ReactElement {
         )}
       </aside>
 
-      <main className="shell__main">
-        <h1 className="t-h1">{t('app.name')}</h1>
-        <p className="t-body-sm">{t('main.subtitle')}</p>
-        <div className="panel panel-stack">
-          <div className="panel-title">{t('main.kernel.title')}</div>
-          <div className="panel-row">
-            <span className={`badge ${statusBadge(kernelState.status)}`}>
-              <span className="dot" />
-              {t(statusKey(kernelState.status))}
-            </span>
-            {kernelState.health ? (
-              <span className="t-mono">
-                {t('main.kernel.version', { version: kernelState.health.kernel_version })}
-              </span>
-            ) : null}
-          </div>
-          {kernelState.error ? (
-            <div className="inline-feedback error">{kernelState.error}</div>
-          ) : null}
-          <button className="btn btn-sm" type="button" onClick={() => setPaletteOpen(true)}>
-            {t('main.openPalette')}
-          </button>
-        </div>
+      <main className={activeId === 'brain' ? 'shell__main shell__main--flush' : 'shell__main'}>
+        {activeId === 'brain' ? (
+          <EditorArea
+            kernel={kernel}
+            openIds={openIds}
+            activeId={activeDocId}
+            onSelect={setActiveDocId}
+            onClose={closeDocument}
+            onOpen={openDocument}
+          />
+        ) : (
+          <>
+            <h1 className="t-h1">{t('app.name')}</h1>
+            <p className="t-body-sm">{t('main.subtitle')}</p>
+            <div className="panel panel-stack">
+              <div className="panel-title">{t('main.kernel.title')}</div>
+              <div className="panel-row">
+                <span className={`badge ${statusBadge(kernelState.status)}`}>
+                  <span className="dot" />
+                  {t(statusKey(kernelState.status))}
+                </span>
+                {kernelState.health ? (
+                  <span className="t-mono">
+                    {t('main.kernel.version', { version: kernelState.health.kernel_version })}
+                  </span>
+                ) : null}
+              </div>
+              {kernelState.error ? (
+                <div className="inline-feedback error">{kernelState.error}</div>
+              ) : null}
+              <button className="btn btn-sm" type="button" onClick={() => setPaletteOpen(true)}>
+                {t('main.openPalette')}
+              </button>
+            </div>
+          </>
+        )}
       </main>
 
       <footer className="shell__status">

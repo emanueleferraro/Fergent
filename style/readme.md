@@ -61,6 +61,7 @@ Tutti i componenti riutilizzabili del sistema:
 - Search results (`.result-list`, `.result-item`, `.result-snippet`, `.mark`, `.result-score`)
 - Backlinks & outline (`.link-list`, `.link-item`, `.outline-list`, `.outline-item`)
 - Markdown body (`.md`, `.wikilink`, `.callout` note/tip/warning/danger)
+- Editor (`.editor-area`, `.editor-tabs`, `.editor-tab`, `.editor-breadcrumb`, `.editor-split`, `.editor-pane`, `.editor-preview`)
 - Keyboard (`.kbd`, `.kbd-group`)
 - Settings (`.settings`, `.settings-section`, `.settings-row`, `.settings-control`)
 - Graph view (`.graph-shell`, `.graph-canvas`, `.graph-toolbar`, `.graph-legend`)
