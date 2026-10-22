@@ -1148,11 +1148,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "da7c62ceae207dd37ea5b845da6a0696c799f85e97da1ab5b7910be3c1c80223"
 
 [[package]]
+name = "fergents-agents"
+version = "0.1.0"
+dependencies = [
+ "fergents-events",
+ "fergents-llm",
+ "fergents-storage",
+ "futures",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+ "ulid",
+]
+
+[[package]]
 name = "fergents-api"
 version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "fergents-agents",
  "fergents-brain",
  "fergents-capabilities",
  "fergents-core",
@@ -1231,11 +1250,13 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "chrono",
+ "fergents-agents",
  "fergents-brain",
  "fergents-capabilities",
  "fergents-events",
  "fergents-graph",
  "fergents-index",
+ "fergents-llm",
  "fergents-protocol",
  "fergents-storage",
  "serde",
