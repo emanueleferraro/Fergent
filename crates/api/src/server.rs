@@ -702,6 +702,230 @@ async fn dispatch(
                 .await
                 .map(|settings| to_value(&settings))
         }
+        "spec.start" => {
+            let slug = params
+                .get("slug")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing slug".to_string()))?
+                .to_string();
+            let task = params
+                .get("task")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing task".to_string()))?
+                .to_string();
+            let mode = fergents_agents::AutonomyMode::parse(
+                params
+                    .get("mode")
+                    .and_then(Value::as_str)
+                    .unwrap_or("supervised"),
+            );
+            let session_id = params
+                .get("session_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .workflow()
+                    .start(fergents_agents::StartWorkflow {
+                        slug,
+                        task,
+                        session_id,
+                        mode,
+                    })
+                    .map_err(CoreError::from)
+            })
+            .await
+            .map(|run| to_value(&run))
+        }
+        "spec.get" => {
+            let run_id = run_id_param(&params)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                let run = kernel
+                    .workflow()
+                    .get(&run_id)
+                    .map_err(CoreError::from)?
+                    .ok_or_else(|| {
+                        CoreError::Agent(fergents_agents::AgentError::UnknownRun(run_id.clone()))
+                    })?;
+                let mut artifacts = serde_json::Map::new();
+                for gate in [
+                    fergents_agents::Gate::Spec,
+                    fergents_agents::Gate::Plan,
+                    fergents_agents::Gate::Task,
+                ] {
+                    if let Some(content) = kernel
+                        .workflow()
+                        .artifact(&run_id, gate)
+                        .map_err(CoreError::from)?
+                    {
+                        artifacts.insert(gate.as_str().to_string(), Value::String(content));
+                    }
+                }
+                Ok(serde_json::json!({ "run": run, "artifacts": artifacts }))
+            })
+            .await
+        }
+        "spec.approve" => {
+            let run_id = run_id_param(&params)?;
+            let gate = params
+                .get("gate")
+                .and_then(Value::as_str)
+                .and_then(fergents_agents::Gate::parse);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .workflow()
+                    .approve(&run_id, gate)
+                    .map_err(CoreError::from)
+            })
+            .await
+            .map(|run| to_value(&run))
+        }
+        "run.list" => {
+            let limit = params.get("limit").and_then(Value::as_u64).unwrap_or(50) as usize;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .workflow()
+                    .list(limit)
+                    .map(|runs| serde_json::json!({ "runs": runs }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "run.get" => {
+            let run_id = run_id_param(&params)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .workflow()
+                    .get(&run_id)
+                    .map_err(CoreError::from)?
+                    .ok_or_else(|| {
+                        CoreError::Agent(fergents_agents::AgentError::UnknownRun(run_id.clone()))
+                    })
+            })
+            .await
+            .map(|run| to_value(&run))
+        }
+        "run.approve" => {
+            let run_id = run_id_param(&params)?;
+            let gate = params
+                .get("gate")
+                .and_then(Value::as_str)
+                .and_then(fergents_agents::Gate::parse);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .workflow()
+                    .approve(&run_id, gate)
+                    .map_err(CoreError::from)
+            })
+            .await
+            .map(|run| to_value(&run))
+        }
+        "run.reject" => {
+            let run_id = run_id_param(&params)?;
+            let reason = params
+                .get("reason")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .workflow()
+                    .reject(&run_id, reason.as_deref())
+                    .map_err(CoreError::from)
+            })
+            .await
+            .map(|run| to_value(&run))
+        }
+        "permission.mode.get" => {
+            let session_id = params
+                .get("session_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let mode = kernel.permissions().mode(session_id.as_deref());
+            Ok(serde_json::json!({ "mode": mode.as_str() }))
+        }
+        "permission.mode.set" => {
+            let mode = params
+                .get("mode")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing mode".to_string()))?;
+            let session_id = params
+                .get("session_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            let mode = fergents_permissions::Mode::parse(mode);
+            run_blocking(move || {
+                kernel
+                    .permissions()
+                    .set_mode(session_id.as_deref(), mode)
+                    .map_err(CoreError::from)?;
+                Ok(serde_json::json!({ "mode": mode.as_str() }))
+            })
+            .await
+        }
+        "permission.policy.get" => {
+            let policy = kernel.permissions().policy();
+            Ok(serde_json::json!({
+                "toml": policy.to_toml().unwrap_or_default(),
+                "rules": policy.rules,
+            }))
+        }
+        "permission.policy.set" => {
+            let toml = params
+                .get("toml")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing toml".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .permissions()
+                    .set_policy_toml(&toml)
+                    .map(|policy| serde_json::json!({ "rules": policy.rules }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "permission.check" => {
+            let tool = params
+                .get("tool")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing tool".to_string()))?
+                .to_string();
+            let arguments = params
+                .get("arguments")
+                .cloned()
+                .unwrap_or_else(|| serde_json::json!({}));
+            let mut request = fergents_permissions::PermissionRequest::new(tool, arguments);
+            request.target = params
+                .get("target")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            request.session_id = params
+                .get("session_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            request.agent_id = params
+                .get("agent_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .permissions()
+                    .check(&request)
+                    .map(|resolved| to_value(&resolved))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -756,8 +980,21 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("agent.") => Some("capability.agents"),
         method if method.starts_with("chat.") => Some("capability.chat"),
         method if method.starts_with("memory.") => Some("capability.memory"),
+        "spec.start" | "spec.get" | "spec.approve" | "run.list" | "run.get" | "run.approve"
+        | "run.reject" => Some("capability.spec-workflow"),
+        method if method.starts_with("permission.") => Some("capability.agents"),
         _ => None,
     }
+}
+
+/// Read the `run_id` field from run command params.
+fn run_id_param(params: &Value) -> Result<String, (ErrorCode, String)> {
+    params
+        .get("run_id")
+        .or_else(|| params.get("id"))
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| (ErrorCode::InvalidParams, "missing run_id".to_string()))
 }
 
 /// Read the `scope` field from memory command params.
@@ -795,6 +1032,7 @@ fn map_agent_error(err: fergents_agents::AgentError) -> (ErrorCode, String) {
         | AgentError::UnknownAgent(_)
         | AgentError::UnknownTool(_)
         | AgentError::UnknownSession(_)
+        | AgentError::UnknownRun(_)
         | AgentError::PermissionDenied { .. } => ErrorCode::InvalidParams,
         _ => ErrorCode::InternalError,
     };
@@ -858,6 +1096,10 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
             fergents_index::IndexError::Invalid(_) | fergents_index::IndexError::InvalidQuery(_),
         )
         | CoreError::Graph(fergents_graph::GraphError::Invalid(_)) => {
+            (ErrorCode::InvalidParams, err.to_string())
+        }
+        CoreError::Permission(fergents_permissions::PermissionError::InvalidPolicy(_))
+        | CoreError::Agent(fergents_agents::AgentError::InvalidDefinition(_)) => {
             (ErrorCode::InvalidParams, err.to_string())
         }
         _ => (ErrorCode::InternalError, err.to_string()),

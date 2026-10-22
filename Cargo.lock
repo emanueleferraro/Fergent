@@ -1178,6 +1178,7 @@ dependencies = [
  "fergents-events",
  "fergents-graph",
  "fergents-index",
+ "fergents-permissions",
  "fergents-protocol",
  "fergents-storage",
  "futures",
@@ -1257,6 +1258,7 @@ dependencies = [
  "fergents-graph",
  "fergents-index",
  "fergents-llm",
+ "fergents-permissions",
  "fergents-protocol",
  "fergents-storage",
  "serde",
@@ -1359,6 +1361,22 @@ dependencies = [
  "thiserror 1.0.69",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "fergents-permissions"
+version = "0.1.0"
+dependencies = [
+ "fergents-agents",
+ "fergents-events",
+ "fergents-storage",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "toml",
+ "tracing",
+ "ulid",
 ]
 
 [[package]]

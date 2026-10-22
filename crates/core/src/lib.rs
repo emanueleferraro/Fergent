@@ -12,12 +12,13 @@ use std::sync::{Arc, RwLock};
 use std::time::Instant;
 
 use fergents_agents::{
-    memory_tools, AgentService, AllowAllGate, ContextBuilder, ContextSnapshot, MemoryKind,
-    MemoryScope, MemoryStore, SectionInput, SectionKind, ToolRegistry,
+    memory_tools, AgentService, ContextBuilder, ContextSnapshot, MemoryKind, MemoryScope,
+    MemoryStore, SectionInput, SectionKind, ToolRegistry, WorkflowService,
 };
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_events::{now_ms, EventBus};
 use fergents_llm::MockProvider;
+use fergents_permissions::PermissionService;
 use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
 };
@@ -49,6 +50,9 @@ pub enum CoreError {
     /// An agent runtime failure.
     #[error(transparent)]
     Agent(#[from] fergents_agents::AgentError),
+    /// A permission engine failure.
+    #[error(transparent)]
+    Permission(#[from] fergents_permissions::PermissionError),
 }
 
 /// Kernel configuration.
@@ -97,6 +101,8 @@ pub struct Kernel {
     agents: Arc<AgentService>,
     memory: Arc<MemoryStore>,
     context: Arc<ContextBuilder>,
+    workflow: Arc<WorkflowService>,
+    permissions: Arc<PermissionService>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -131,7 +137,15 @@ impl Kernel {
         let storage_for_context: Arc<dyn Storage> = storage.clone();
         let memory = Arc::new(MemoryStore::new(storage_for_memory));
         let context = Arc::new(ContextBuilder::new(storage_for_context));
+        let storage_for_runs: Arc<dyn Storage> = storage.clone();
+        let workflow = Arc::new(WorkflowService::new(
+            storage_for_runs,
+            bus.clone(),
+            config.data_dir.join("specs"),
+        ));
         let provider: Arc<dyn fergents_llm::Provider> = Arc::new(MockProvider::new("mock"));
+        let storage_for_perms: Arc<dyn Storage> = storage.clone();
+        let permissions = Arc::new(PermissionService::new(storage_for_perms, bus.clone()));
         let tools = Arc::new(ToolRegistry::new());
         for tool in memory_tools(memory.clone()) {
             tools.register(tool);
@@ -141,7 +155,7 @@ impl Kernel {
             storage_for_agents,
             provider,
             tools,
-            Arc::new(AllowAllGate),
+            permissions.gate(None, None),
             bus.clone(),
         ));
         let _ = agents.load();
@@ -153,6 +167,8 @@ impl Kernel {
             agents,
             memory,
             context,
+            workflow,
+            permissions,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -200,6 +216,21 @@ impl Kernel {
     /// The context builder (Context Viewer backend).
     pub fn context(&self) -> &ContextBuilder {
         self.context.as_ref()
+    }
+
+    /// The spec/plan/tasks workflow service.
+    pub fn workflow(&self) -> &WorkflowService {
+        self.workflow.as_ref()
+    }
+
+    /// The permission engine.
+    pub fn permissions(&self) -> &PermissionService {
+        self.permissions.as_ref()
+    }
+
+    /// The shared permission engine, for constructing per-session gates.
+    pub fn permissions_service(&self) -> &Arc<PermissionService> {
+        &self.permissions
     }
 
     /// Assemble, count, persist, and emit a context snapshot for a session.

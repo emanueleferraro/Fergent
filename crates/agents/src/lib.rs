@@ -19,6 +19,7 @@ mod service;
 mod session;
 mod store;
 mod tool;
+mod workflow;
 
 pub use context::{
     ContextBuilder, ContextSection, ContextSettings, ContextSnapshot, SectionInput, SectionKind,
@@ -38,3 +39,4 @@ pub use service::AgentService;
 pub use session::{AgentMessageRecord, AgentSessionRecord, RunState};
 pub use store::AgentStore;
 pub use tool::{Tool, ToolFuture, ToolRegistry};
+pub use workflow::{Approval, AutonomyMode, Gate, StartWorkflow, WorkflowRun, WorkflowService};
