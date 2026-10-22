@@ -11,6 +11,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
 
+use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_events::{now_ms, EventBus};
 use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
@@ -37,6 +38,9 @@ pub enum CoreError {
     /// A graph subsystem failure.
     #[error(transparent)]
     Graph(#[from] fergents_graph::GraphError),
+    /// A capability registry failure.
+    #[error(transparent)]
+    Capability(#[from] CapabilityError),
 }
 
 /// Kernel configuration.
@@ -72,6 +76,7 @@ pub struct Kernel {
     storage: Arc<SqliteStorage>,
     bus: Arc<EventBus>,
     brains: Arc<BrainService>,
+    capabilities: Arc<CapabilityRegistry>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -95,10 +100,14 @@ impl Kernel {
             config.data_dir.join("templates/brains"),
             config.data_dir.join("brains"),
         ));
+        let storage_for_caps: Arc<dyn Storage> = storage.clone();
+        let capabilities = Arc::new(CapabilityRegistry::new(storage_for_caps, bus.clone())?);
+        capabilities.seed(&default_catalogue())?;
         let kernel = Arc::new(Self {
             storage,
             bus,
             brains,
+            capabilities,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -121,6 +130,11 @@ impl Kernel {
     /// The brain subsystem (manager, indexer, and resolved paths).
     pub fn brains(&self) -> &BrainService {
         self.brains.as_ref()
+    }
+
+    /// The capability registry.
+    pub fn capabilities(&self) -> &CapabilityRegistry {
+        self.capabilities.as_ref()
     }
 
     /// The shared brain subsystem handle, for offloading synchronous work.
@@ -389,5 +403,18 @@ mod tests {
         kernel.announce_error("boom").unwrap();
         let events = kernel.bus().replay(&[], None, Some(100)).unwrap();
         assert!(events.iter().any(|e| e.kind == "kernel.error"));
+    }
+
+    #[test]
+    fn capabilities_are_seeded_at_start() {
+        let (cfg, _dir) = config();
+        let kernel = Kernel::start(&cfg).unwrap();
+        let caps = kernel.capabilities();
+        assert!(caps.count() >= 20);
+        assert!(caps.is_enabled("capability.search"));
+        assert!(caps.is_enabled("capability.chat"));
+        assert!(!caps.is_enabled("capability.charts"));
+        assert!(caps.require("capability.search").is_ok());
+        assert!(caps.require("capability.charts").is_err());
     }
 }

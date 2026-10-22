@@ -53,5 +53,6 @@ describe('envelope', () => {
     expect(ErrorCode.SubscriptionLimitReached).toBe(-32003);
     expect(ErrorCode.StorageError).toBe(-32004);
     expect(ErrorCode.ShutdownInProgress).toBe(-32005);
+    expect(ErrorCode.CapabilityDisabled).toBe(-32006);
   });
 });
