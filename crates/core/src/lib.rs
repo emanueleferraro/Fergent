@@ -11,7 +11,10 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
 
-use fergents_agents::{memory_tools, AgentService, AllowAllGate, MemoryStore, ToolRegistry};
+use fergents_agents::{
+    memory_tools, AgentService, AllowAllGate, ContextBuilder, ContextSnapshot, MemoryKind,
+    MemoryScope, MemoryStore, SectionInput, SectionKind, ToolRegistry,
+};
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_events::{now_ms, EventBus};
 use fergents_llm::MockProvider;
@@ -67,6 +70,15 @@ impl KernelConfig {
     }
 }
 
+/// Render memory entries as a bulleted list for a context section.
+fn render_memory(entries: &[fergents_agents::MemoryEntry]) -> String {
+    entries
+        .iter()
+        .map(|entry| format!("- {}", entry.content))
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
 /// A tool registered in the runtime registry.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ToolInfo {
@@ -84,6 +96,7 @@ pub struct Kernel {
     capabilities: Arc<CapabilityRegistry>,
     agents: Arc<AgentService>,
     memory: Arc<MemoryStore>,
+    context: Arc<ContextBuilder>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -115,7 +128,9 @@ impl Kernel {
         // provider so `agent.run` works fully offline.
         let storage_for_agents: Arc<dyn Storage> = storage.clone();
         let storage_for_memory: Arc<dyn Storage> = storage.clone();
+        let storage_for_context: Arc<dyn Storage> = storage.clone();
         let memory = Arc::new(MemoryStore::new(storage_for_memory));
+        let context = Arc::new(ContextBuilder::new(storage_for_context));
         let provider: Arc<dyn fergents_llm::Provider> = Arc::new(MockProvider::new("mock"));
         let tools = Arc::new(ToolRegistry::new());
         for tool in memory_tools(memory.clone()) {
@@ -137,6 +152,7 @@ impl Kernel {
             capabilities,
             agents,
             memory,
+            context,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -179,6 +195,101 @@ impl Kernel {
     /// The agent memory store.
     pub fn memory(&self) -> &MemoryStore {
         self.memory.as_ref()
+    }
+
+    /// The context builder (Context Viewer backend).
+    pub fn context(&self) -> &ContextBuilder {
+        self.context.as_ref()
+    }
+
+    /// Assemble, count, persist, and emit a context snapshot for a session.
+    ///
+    /// The `rag` section is included only when `capability.search` is enabled.
+    pub fn build_context(
+        &self,
+        session_id: &str,
+        agent_id: Option<&str>,
+        input: &str,
+    ) -> Result<ContextSnapshot, CoreError> {
+        let settings = self.context.settings()?;
+        let mut parts = Vec::new();
+
+        let system = agent_id
+            .and_then(|id| self.agents.get(id))
+            .map_or_else(String::new, |definition| definition.system_prompt);
+        parts.push(
+            SectionInput::new(SectionKind::System, system)
+                .with_refs(vec![format!("agent:{}", agent_id.unwrap_or("none"))])
+                .cacheable(),
+        );
+
+        let capabilities = self
+            .capabilities
+            .list()
+            .into_iter()
+            .filter(|capability| capability.enabled)
+            .map(|capability| capability.id)
+            .collect::<Vec<_>>()
+            .join(", ");
+        parts.push(SectionInput::new(SectionKind::Capabilities, capabilities).cacheable());
+        parts.push(SectionInput::new(
+            SectionKind::Constraints,
+            "permission mode: auto",
+        ));
+
+        if let Some(id) = agent_id {
+            let scope = MemoryScope::Agent(id.to_string());
+            let facts = self.memory.list(&scope, Some(MemoryKind::Fact))?;
+            if !facts.is_empty() {
+                parts.push(SectionInput::new(
+                    SectionKind::MemorySemantic,
+                    render_memory(&facts),
+                ));
+            }
+            let episodic = self.memory.list(&scope, Some(MemoryKind::Episodic))?;
+            if !episodic.is_empty() {
+                parts.push(SectionInput::new(
+                    SectionKind::MemoryEpisodic,
+                    render_memory(&episodic),
+                ));
+            }
+        }
+
+        // RAG is capability-gated: the section does not exist when search is off.
+        if self.capabilities.is_enabled("capability.search") {
+            parts.push(SectionInput::new(SectionKind::Rag, String::new()));
+        }
+
+        if let Some(session) = self.agents.session(session_id)? {
+            if let Some(summary) = session.summary {
+                parts.push(SectionInput::new(SectionKind::Summary, summary));
+            }
+        }
+
+        parts.push(SectionInput::new(SectionKind::Input, input.to_string()));
+
+        let turn_seq = self.context.snapshots(session_id)?.len() as u32;
+        let snapshot = self.context.build(session_id, turn_seq, parts, &settings);
+        self.context.persist(&snapshot)?;
+        self.bus.publish(
+            "context.built",
+            "context",
+            serde_json::json!({
+                "session_id": session_id,
+                "turn_seq": turn_seq,
+                "total_tokens": snapshot.total_tokens,
+                "sections": snapshot
+                    .sections
+                    .iter()
+                    .map(|section| serde_json::json!({
+                        "name": section.name,
+                        "tokens": section.tokens,
+                        "enabled": section.enabled,
+                    }))
+                    .collect::<Vec<_>>(),
+            }),
+        )?;
+        Ok(snapshot)
     }
 
     /// The shared brain subsystem handle, for offloading synchronous work.
