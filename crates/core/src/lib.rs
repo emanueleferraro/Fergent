@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
 
-use fergents_agents::{AgentService, AllowAllGate, ToolRegistry};
+use fergents_agents::{memory_tools, AgentService, AllowAllGate, MemoryStore, ToolRegistry};
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_events::{now_ms, EventBus};
 use fergents_llm::MockProvider;
@@ -83,6 +83,7 @@ pub struct Kernel {
     brains: Arc<BrainService>,
     capabilities: Arc<CapabilityRegistry>,
     agents: Arc<AgentService>,
+    memory: Arc<MemoryStore>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -113,12 +114,18 @@ impl Kernel {
         // providers, the kernel runs agents against the deterministic mock
         // provider so `agent.run` works fully offline.
         let storage_for_agents: Arc<dyn Storage> = storage.clone();
+        let storage_for_memory: Arc<dyn Storage> = storage.clone();
+        let memory = Arc::new(MemoryStore::new(storage_for_memory));
         let provider: Arc<dyn fergents_llm::Provider> = Arc::new(MockProvider::new("mock"));
+        let tools = Arc::new(ToolRegistry::new());
+        for tool in memory_tools(memory.clone()) {
+            tools.register(tool);
+        }
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
             provider,
-            Arc::new(ToolRegistry::new()),
+            tools,
             Arc::new(AllowAllGate),
             bus.clone(),
         ));
@@ -129,6 +136,7 @@ impl Kernel {
             brains,
             capabilities,
             agents,
+            memory,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -166,6 +174,11 @@ impl Kernel {
     /// The shared agent service handle, for offloading/awaiting runs.
     pub fn agents_service(&self) -> &Arc<AgentService> {
         &self.agents
+    }
+
+    /// The agent memory store.
+    pub fn memory(&self) -> &MemoryStore {
+        self.memory.as_ref()
     }
 
     /// The shared brain subsystem handle, for offloading synchronous work.
