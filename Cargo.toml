@@ -6,6 +6,7 @@ members = [
     "crates/events",
     "crates/core",
     "crates/capabilities",
+    "crates/llm",
     "crates/api",
     "crates/supervisor",
     "crates/markdown",
@@ -39,6 +40,7 @@ fergents-storage = { path = "crates/storage", version = "0.1.0" }
 fergents-events = { path = "crates/events", version = "0.1.0" }
 fergents-core = { path = "crates/core", version = "0.1.0" }
 fergents-capabilities = { path = "crates/capabilities", version = "0.1.0" }
+fergents-llm = { path = "crates/llm", version = "0.1.0" }
 fergents-api = { path = "crates/api", version = "0.1.0" }
 fergents-supervisor = { path = "crates/supervisor", version = "0.1.0" }
 fergents-markdown = { path = "crates/markdown", version = "0.1.0" }
@@ -66,6 +68,15 @@ sqlite-vec = "0.1"
 
 # Tokenization for chunk sizing (cl100k_base, bundled vocab) — spec Chunking
 tiktoken-rs = "0.11"
+
+# HTTP client for the LLM provider adapters (`LLM.md` §2) — rustls so no system
+# TLS is required across the CI matrix.
+reqwest = { version = "0.12", default-features = false, features = [
+    "json",
+    "stream",
+    "rustls-tls",
+] }
+bytes = "1"
 
 # Local embeddings (BGE-M3) behind the `embed-real` feature — spec Dependencies.
 # Feature-gated so the default build and CI only compile the deterministic stub
