@@ -7,6 +7,7 @@ members = [
     "crates/core",
     "crates/capabilities",
     "crates/llm",
+    "crates/mcp",
     "crates/api",
     "crates/supervisor",
     "crates/markdown",
@@ -41,6 +42,7 @@ fergents-events = { path = "crates/events", version = "0.1.0" }
 fergents-core = { path = "crates/core", version = "0.1.0" }
 fergents-capabilities = { path = "crates/capabilities", version = "0.1.0" }
 fergents-llm = { path = "crates/llm", version = "0.1.0" }
+fergents-mcp = { path = "crates/mcp", version = "0.1.0" }
 fergents-api = { path = "crates/api", version = "0.1.0" }
 fergents-supervisor = { path = "crates/supervisor", version = "0.1.0" }
 fergents-markdown = { path = "crates/markdown", version = "0.1.0" }
