@@ -1128,6 +1128,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "fergents-brain",
+ "fergents-capabilities",
  "fergents-core",
  "fergents-events",
  "fergents-graph",
@@ -1164,6 +1165,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "fergents-capabilities"
+version = "0.1.0"
+dependencies = [
+ "fergents-events",
+ "fergents-storage",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "fergents-cli"
 version = "0.1.0"
 dependencies = [
@@ -1191,6 +1206,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "fergents-brain",
+ "fergents-capabilities",
  "fergents-events",
  "fergents-graph",
  "fergents-index",

@@ -260,6 +260,12 @@ async fn dispatch(
     shutdown_tx: &watch::Sender<bool>,
 ) -> DispatchResult {
     let params = request.params.clone().unwrap_or(Value::Null);
+    if let Some(capability) = required_capability(&request.method) {
+        kernel
+            .capabilities()
+            .require(capability)
+            .map_err(map_capability_error)?;
+    }
     match request.method.as_str() {
         "ping" => Ok(to_value(&PingResult {
             pong: true,
@@ -500,6 +506,41 @@ async fn dispatch(
                 .await
                 .map(|r| to_value(&r))
         }
+        "capability.list" => Ok(serde_json::json!({
+            "capabilities": kernel.capabilities().list(),
+        })),
+        "capability.get" => {
+            let id = capability_id_param(&params)?;
+            kernel
+                .capabilities()
+                .view(id)
+                .map(|view| to_value(&view))
+                .map_err(map_capability_error)
+        }
+        "capability.set" => {
+            let id = capability_id_param(&params)?;
+            let enabled = params
+                .get("enabled")
+                .and_then(Value::as_bool)
+                .ok_or((ErrorCode::InvalidParams, "missing enabled".to_string()))?;
+            let auto_enable_deps = params
+                .get("auto_enable_deps")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            kernel
+                .capabilities()
+                .set_enabled(id, enabled, auto_enable_deps)
+                .map(|view| to_value(&view))
+                .map_err(map_capability_error)
+        }
+        "capability.register" => {
+            let capability: fergents_capabilities::Capability = from_params(&params)?;
+            kernel
+                .capabilities()
+                .register(capability)
+                .map(|view| to_value(&view))
+                .map_err(map_capability_error)
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -544,6 +585,37 @@ fn from_params<T: serde::de::DeserializeOwned>(params: &Value) -> Result<T, (Err
         .map_err(|e| (ErrorCode::InvalidParams, format!("invalid params: {e}")))
 }
 
+/// The capability a command belongs to, if it is gated by one.
+///
+/// A disabled capability's commands are refused before dispatch.
+fn required_capability(method: &str) -> Option<&'static str> {
+    match method {
+        "search.query" => Some("capability.search"),
+        method if method.starts_with("graph.") => Some("capability.graph"),
+        _ => None,
+    }
+}
+
+/// Read the `id` field from capability command params.
+fn capability_id_param(params: &Value) -> Result<&str, (ErrorCode, String)> {
+    params
+        .get("id")
+        .and_then(Value::as_str)
+        .ok_or_else(|| (ErrorCode::InvalidParams, "missing id".to_string()))
+}
+
+/// Map a capability error to the closest wire error code.
+fn map_capability_error(err: fergents_capabilities::CapabilityError) -> (ErrorCode, String) {
+    use fergents_capabilities::CapabilityError;
+    let code = match &err {
+        CapabilityError::Storage(_) => ErrorCode::StorageError,
+        CapabilityError::Disabled(_) => ErrorCode::CapabilityDisabled,
+        CapabilityError::Event(_) | CapabilityError::Serde(_) => ErrorCode::InternalError,
+        _ => ErrorCode::InvalidParams,
+    };
+    (code, format!("{}: {}", err.code(), err))
+}
+
 /// Run a synchronous [`fergents_core`] brain operation on the blocking pool.
 ///
 /// The brain subsystems do blocking I/O (SQLite, the filesystem, graph), so
@@ -568,6 +640,14 @@ where
 fn map_core_error(err: CoreError) -> (ErrorCode, String) {
     match &err {
         CoreError::Storage(_) => (ErrorCode::StorageError, err.to_string()),
+        CoreError::Capability(cap) => {
+            let code = if matches!(cap, fergents_capabilities::CapabilityError::Disabled(_)) {
+                ErrorCode::CapabilityDisabled
+            } else {
+                ErrorCode::InternalError
+            };
+            (code, err.to_string())
+        }
         CoreError::Brain(fergents_brain::BrainError::Invalid(_))
         | CoreError::Index(
             fergents_index::IndexError::Invalid(_) | fergents_index::IndexError::InvalidQuery(_),

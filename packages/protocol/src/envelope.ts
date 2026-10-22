@@ -62,6 +62,7 @@ export const ErrorCode = {
   SubscriptionLimitReached: -32003,
   StorageError: -32004,
   ShutdownInProgress: -32005,
+  CapabilityDisabled: -32006,
 } as const;
 
 /** Union of the numeric protocol error codes. */

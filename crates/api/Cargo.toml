@@ -9,6 +9,7 @@ description = "Fergents local IPC transport and JSON-RPC server."
 
 [dependencies]
 fergents-core = { workspace = true }
+fergents-capabilities = { workspace = true }
 fergents-events = { workspace = true }
 fergents-protocol = { workspace = true }
 fergents-storage = { workspace = true }

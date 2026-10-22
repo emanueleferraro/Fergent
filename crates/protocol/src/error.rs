@@ -18,6 +18,7 @@ pub enum ErrorCode {
     SubscriptionLimitReached,
     StorageError,
     ShutdownInProgress,
+    CapabilityDisabled,
 }
 
 impl ErrorCode {
@@ -34,6 +35,7 @@ impl ErrorCode {
             ErrorCode::SubscriptionLimitReached => -32003,
             ErrorCode::StorageError => -32004,
             ErrorCode::ShutdownInProgress => -32005,
+            ErrorCode::CapabilityDisabled => -32006,
         }
     }
 }
@@ -60,5 +62,6 @@ mod tests {
         assert_eq!(ErrorCode::SubscriptionLimitReached.as_i32(), -32003);
         assert_eq!(ErrorCode::StorageError.as_i32(), -32004);
         assert_eq!(ErrorCode::ShutdownInProgress.as_i32(), -32005);
+        assert_eq!(ErrorCode::CapabilityDisabled.as_i32(), -32006);
     }
 }
