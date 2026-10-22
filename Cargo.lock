@@ -1329,6 +1329,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "fergents-mcp"
+version = "0.1.0"
+dependencies = [
+ "futures",
+ "serde",
+ "serde_json",
+ "thiserror 1.0.69",
+ "tokio",
+ "tracing",
+]
+
+[[package]]
 name = "fergents-protocol"
 version = "0.1.0"
 dependencies = [
