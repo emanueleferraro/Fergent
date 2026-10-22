@@ -1,0 +1,22 @@
+[package]
+name = "fergents-permissions"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents permission policy engine: modes, categories, TOML rules, and audit."
+
+[dependencies]
+fergents-agents = { workspace = true }
+fergents-events = { workspace = true }
+fergents-storage = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+tracing = { workspace = true }
+thiserror = { workspace = true }
+ulid = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

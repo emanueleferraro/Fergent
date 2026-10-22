@@ -39,6 +39,9 @@ pub enum AgentError {
     /// No session is registered with this id.
     #[error("unknown session: {0}")]
     UnknownSession(String),
+    /// No workflow run is registered with this id.
+    #[error("unknown run: {0}")]
+    UnknownRun(String),
     /// A filesystem failure.
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
@@ -60,6 +63,7 @@ impl AgentError {
             AgentError::Tool(_) => "agent_tool_error",
             AgentError::PermissionDenied { .. } => "agent_permission_denied",
             AgentError::UnknownSession(_) => "agent_unknown_session",
+            AgentError::UnknownRun(_) => "run_unknown",
             AgentError::Io(_) => "io_error",
             AgentError::Serde(_) => "serde_error",
         }

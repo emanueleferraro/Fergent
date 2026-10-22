@@ -14,6 +14,7 @@ fergents-protocol = { workspace = true }
 fergents-capabilities = { workspace = true }
 fergents-llm = { workspace = true }
 fergents-agents = { workspace = true }
+fergents-permissions = { workspace = true }
 fergents-brain = { workspace = true }
 fergents-index = { workspace = true }
 fergents-graph = { workspace = true }
