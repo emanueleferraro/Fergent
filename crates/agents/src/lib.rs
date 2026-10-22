@@ -7,6 +7,7 @@
 //! spec/plan/tasks gates (2.7), the full permission engine (2.8), and
 //! reversibility (2.9) build on top of this crate.
 
+mod context;
 mod definition;
 mod error;
 mod files;
@@ -19,6 +20,10 @@ mod session;
 mod store;
 mod tool;
 
+pub use context::{
+    ContextBuilder, ContextSection, ContextSettings, ContextSnapshot, SectionInput, SectionKind,
+    DEFAULT_BUDGET,
+};
 pub use definition::{valid_id, AgentDefinition, Limits, LoopKind, MemoryConfig, SubAgentsConfig};
 pub use error::AgentError;
 pub use files::{agent_dir, brain_path, read_brain, session_path, write_brain, write_session};

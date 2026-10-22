@@ -651,6 +651,57 @@ async fn dispatch(
             .list(&memory_scope_param(&params), memory_kind_param(&params))
             .map(|entries| serde_json::json!({ "entries": entries }))
             .map_err(map_agent_error),
+        "context.inspect" => {
+            let session_id = params
+                .get("session_id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing session_id".to_string()))?
+                .to_string();
+            let agent_id = params
+                .get("agent_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let input = params
+                .get("input")
+                .and_then(Value::as_str)
+                .unwrap_or_default()
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || kernel.build_context(&session_id, agent_id.as_deref(), &input))
+                .await
+                .map(|snapshot| to_value(&snapshot))
+        }
+        "context.set_section" => {
+            let section = params
+                .get("section")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing section".to_string()))?
+                .to_string();
+            let enabled = params
+                .get("enabled")
+                .and_then(Value::as_bool)
+                .ok_or((ErrorCode::InvalidParams, "missing enabled".to_string()))?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .context()
+                    .set_section(&section, enabled)
+                    .map_err(CoreError::from)
+            })
+            .await
+            .map(|settings| to_value(&settings))
+        }
+        "context.set_budget" => {
+            let budget = params
+                .get("budget")
+                .and_then(Value::as_u64)
+                .ok_or((ErrorCode::InvalidParams, "missing budget".to_string()))?
+                as u32;
+            let kernel = kernel.clone();
+            run_blocking(move || kernel.context().set_budget(budget).map_err(CoreError::from))
+                .await
+                .map(|settings| to_value(&settings))
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
