@@ -75,18 +75,33 @@ impl AgentStore {
         role: &str,
         content: &str,
     ) -> Result<(), AgentError> {
+        let seq = self.next_seq(session_id)?;
         self.storage.execute(
-            "INSERT INTO agent_messages (id, session_id, role, content, created_at) \
-             VALUES (?1, ?2, ?3, ?4, ?5)",
+            "INSERT INTO agent_messages (id, session_id, seq, role, content, created_at) \
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6)",
             &[
                 Value::String(ulid::Ulid::new().to_string()),
                 Value::String(session_id.to_string()),
+                Value::from(seq),
                 Value::String(role.to_string()),
                 Value::String(content.to_string()),
                 Value::from(now_ms()),
             ],
         )?;
         Ok(())
+    }
+
+    /// The next free sequence number within a session.
+    fn next_seq(&self, session_id: &str) -> Result<i64, AgentError> {
+        let rows = self.storage.query(
+            "SELECT COALESCE(MAX(seq), 0) + 1 AS next FROM agent_messages WHERE session_id = ?1",
+            &[Value::String(session_id.to_string())],
+        )?;
+        Ok(rows
+            .first()
+            .and_then(|row| row.get("next"))
+            .and_then(Value::as_i64)
+            .unwrap_or(1))
     }
 
     /// Fetch a session by id.

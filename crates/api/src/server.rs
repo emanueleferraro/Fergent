@@ -926,6 +926,340 @@ async fn dispatch(
             })
             .await
         }
+        "backup.snapshot" => {
+            let path = params
+                .get("path")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing path".to_string()))?
+                .to_string();
+            let run_id = params
+                .get("run_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let session_id = params
+                .get("session_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let agent_id = params
+                .get("agent_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                let mut context = fergents_reversibility::BackupContext::new();
+                context.run_id = run_id;
+                context.session_id = session_id;
+                context.agent_id = agent_id;
+                kernel
+                    .reversibility()
+                    .snapshot(&path, &context)
+                    .map(|backup| to_value(&backup))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "backup.list" => {
+            let limit = params.get("limit").and_then(Value::as_u64).unwrap_or(50) as usize;
+            let run_id = params
+                .get("run_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || match run_id {
+                Some(run_id) => kernel
+                    .reversibility()
+                    .backups_for_run(&run_id)
+                    .map(|backups| serde_json::json!({ "backups": backups }))
+                    .map_err(CoreError::from),
+                None => kernel
+                    .reversibility()
+                    .list(limit)
+                    .map(|backups| serde_json::json!({ "backups": backups }))
+                    .map_err(CoreError::from),
+            })
+            .await
+        }
+        "backup.restore" => {
+            let backup_id = params
+                .get("backup_id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing backup_id".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .reversibility()
+                    .restore(&backup_id)
+                    .map(|path| serde_json::json!({ "restored": path }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "backup.restore_run" => {
+            let run_id = run_id_param(&params)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .reversibility()
+                    .restore_run(&run_id)
+                    .map(|paths| serde_json::json!({ "restored": paths }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.session.create" => {
+            let agent_id = params
+                .get("agent_id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing agent_id".to_string()))?
+                .to_string();
+            let title = params
+                .get("title")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let model = params
+                .get("model")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .create_session(&agent_id, title.as_deref(), model.as_deref())
+                    .map(|session| to_value(&session))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.session.list" => {
+            let limit = params.get("limit").and_then(Value::as_u64).unwrap_or(50) as usize;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .list(limit)
+                    .map(|sessions| serde_json::json!({ "sessions": sessions }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.session.get" => {
+            let session_id = session_id_param(&params)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .get(&session_id)
+                    .map_err(CoreError::from)?
+                    .ok_or_else(|| {
+                        CoreError::Chat(fergents_chat::ChatError::UnknownSession(
+                            session_id.clone(),
+                        ))
+                    })
+            })
+            .await
+            .map(|session| to_value(&session))
+        }
+        "chat.session.rename" => {
+            let session_id = session_id_param(&params)?;
+            let title = params
+                .get("title")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing title".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .rename(&session_id, &title)
+                    .map(|session| to_value(&session))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.session.delete" => {
+            let session_id = session_id_param(&params)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .delete(&session_id)
+                    .map(|_| serde_json::json!({ "deleted": session_id }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.session.search" => {
+            let query = params
+                .get("query")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing query".to_string()))?
+                .to_string();
+            let limit = params.get("limit").and_then(Value::as_u64).unwrap_or(20) as usize;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .search(&query, limit)
+                    .map(|hits| serde_json::json!({ "hits": hits }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.message.send" => {
+            let session_id = session_id_param(&params)?;
+            let text = params
+                .get("text")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing text".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .send(&session_id, &text)
+                    .map(|message| to_value(&message))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.message.list" => {
+            let session_id = session_id_param(&params)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .messages(&session_id)
+                    .map(|messages| serde_json::json!({ "messages": messages }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.message.regenerate" => {
+            let session_id = session_id_param(&params)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .regenerate(&session_id)
+                    .map(|message| serde_json::json!({ "prompt": message }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.message.fork" => {
+            let session_id = session_id_param(&params)?;
+            let title = params
+                .get("title")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .fork(&session_id, title.as_deref())
+                    .map(|session| to_value(&session))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.continue" => {
+            let session_id = session_id_param(&params)?;
+            let requested = params.get("requested").and_then(Value::as_u64).unwrap_or(1) as u32;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .auto_continue(&session_id, requested)
+                    .map(|turns| serde_json::json!({ "turns": turns }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "chat.attach" => {
+            let session_id = session_id_param(&params)?;
+            let name = params
+                .get("name")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing name".to_string()))?
+                .to_string();
+            let media_type = params
+                .get("media_type")
+                .and_then(Value::as_str)
+                .unwrap_or("application/octet-stream")
+                .to_string();
+            let size = params.get("size").and_then(Value::as_u64).unwrap_or(0);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .attach(
+                        &session_id,
+                        fergents_chat::Attachment::new(name, media_type, size),
+                    )
+                    .map(|routing| to_value(&routing))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "prompt.list" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .list_prompts()
+                    .map(|prompts| serde_json::json!({ "prompts": prompts }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "prompt.create" => {
+            let title = params
+                .get("title")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing title".to_string()))?
+                .to_string();
+            let body = params
+                .get("body")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing body".to_string()))?
+                .to_string();
+            let tags: Vec<String> = params
+                .get("tags")
+                .and_then(Value::as_array)
+                .map(|tags| {
+                    tags.iter()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect()
+                })
+                .unwrap_or_default();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .create_prompt(&title, &body, &tags)
+                    .map(|prompt| to_value(&prompt))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "prompt.delete" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .delete_prompt(&id)
+                    .map(|deleted| serde_json::json!({ "deleted": deleted }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -976,6 +1310,7 @@ fn from_params<T: serde::de::DeserializeOwned>(params: &Value) -> Result<T, (Err
 fn required_capability(method: &str) -> Option<&'static str> {
     match method {
         "search.query" => Some("capability.search"),
+        "chat.session.search" => Some("capability.chat-search"),
         method if method.starts_with("graph.") => Some("capability.graph"),
         method if method.starts_with("agent.") => Some("capability.agents"),
         method if method.starts_with("chat.") => Some("capability.chat"),
@@ -983,6 +1318,8 @@ fn required_capability(method: &str) -> Option<&'static str> {
         "spec.start" | "spec.get" | "spec.approve" | "run.list" | "run.get" | "run.approve"
         | "run.reject" => Some("capability.spec-workflow"),
         method if method.starts_with("permission.") => Some("capability.agents"),
+        method if method.starts_with("backup.") => Some("capability.agents"),
+        method if method.starts_with("prompt.") => Some("capability.chat"),
         _ => None,
     }
 }
@@ -995,6 +1332,16 @@ fn run_id_param(params: &Value) -> Result<String, (ErrorCode, String)> {
         .and_then(Value::as_str)
         .map(str::to_string)
         .ok_or_else(|| (ErrorCode::InvalidParams, "missing run_id".to_string()))
+}
+
+/// Read the `session_id` field from chat command params.
+fn session_id_param(params: &Value) -> Result<String, (ErrorCode, String)> {
+    params
+        .get("session_id")
+        .or_else(|| params.get("id"))
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| (ErrorCode::InvalidParams, "missing session_id".to_string()))
 }
 
 /// Read the `scope` field from memory command params.
@@ -1099,9 +1446,11 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
             (ErrorCode::InvalidParams, err.to_string())
         }
         CoreError::Permission(fergents_permissions::PermissionError::InvalidPolicy(_))
-        | CoreError::Agent(fergents_agents::AgentError::InvalidDefinition(_)) => {
-            (ErrorCode::InvalidParams, err.to_string())
-        }
+        | CoreError::Agent(fergents_agents::AgentError::InvalidDefinition(_))
+        | CoreError::Reversibility(fergents_reversibility::ReversibilityError::UnknownBackup(_))
+        | CoreError::Chat(
+            fergents_chat::ChatError::UnknownSession(_) | fergents_chat::ChatError::Invalid(_),
+        ) => (ErrorCode::InvalidParams, err.to_string()),
         _ => (ErrorCode::InternalError, err.to_string()),
     }
 }

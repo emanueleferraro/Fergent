@@ -1174,12 +1174,14 @@ dependencies = [
  "fergents-agents",
  "fergents-brain",
  "fergents-capabilities",
+ "fergents-chat",
  "fergents-core",
  "fergents-events",
  "fergents-graph",
  "fergents-index",
  "fergents-permissions",
  "fergents-protocol",
+ "fergents-reversibility",
  "fergents-storage",
  "futures",
  "serde",
@@ -1225,6 +1227,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "fergents-chat"
+version = "0.1.0"
+dependencies = [
+ "fergents-events",
+ "fergents-storage",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tracing",
+ "ulid",
+]
+
+[[package]]
 name = "fergents-cli"
 version = "0.1.0"
 dependencies = [
@@ -1254,12 +1270,14 @@ dependencies = [
  "fergents-agents",
  "fergents-brain",
  "fergents-capabilities",
+ "fergents-chat",
  "fergents-events",
  "fergents-graph",
  "fergents-index",
  "fergents-llm",
  "fergents-permissions",
  "fergents-protocol",
+ "fergents-reversibility",
  "fergents-storage",
  "serde",
  "serde_json",
@@ -1390,6 +1408,19 @@ dependencies = [
  "tempfile",
  "thiserror 1.0.69",
  "typify",
+]
+
+[[package]]
+name = "fergents-reversibility"
+version = "0.1.0"
+dependencies = [
+ "fergents-events",
+ "fergents-storage",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "ulid",
 ]
 
 [[package]]

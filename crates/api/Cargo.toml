@@ -12,6 +12,8 @@ fergents-core = { workspace = true }
 fergents-capabilities = { workspace = true }
 fergents-agents = { workspace = true }
 fergents-permissions = { workspace = true }
+fergents-reversibility = { workspace = true }
+fergents-chat = { workspace = true }
 fergents-events = { workspace = true }
 fergents-protocol = { workspace = true }
 fergents-storage = { workspace = true }

@@ -1,0 +1,20 @@
+[package]
+name = "fergents-chat"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents chat backend: sessions, messages, FTS search, forks, and prompts."
+
+[dependencies]
+fergents-events = { workspace = true }
+fergents-storage = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+ulid = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

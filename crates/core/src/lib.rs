@@ -16,12 +16,14 @@ use fergents_agents::{
     MemoryStore, SectionInput, SectionKind, ToolRegistry, WorkflowService,
 };
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
+use fergents_chat::ChatService;
 use fergents_events::{now_ms, EventBus};
 use fergents_llm::MockProvider;
 use fergents_permissions::PermissionService;
 use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
 };
+use fergents_reversibility::ReversibilityService;
 use fergents_storage::{SqliteStorage, Storage, StorageError, Value};
 
 pub use brains::{BrainService, BusSink};
@@ -53,6 +55,12 @@ pub enum CoreError {
     /// A permission engine failure.
     #[error(transparent)]
     Permission(#[from] fergents_permissions::PermissionError),
+    /// A reversibility failure.
+    #[error(transparent)]
+    Reversibility(#[from] fergents_reversibility::ReversibilityError),
+    /// A chat failure.
+    #[error(transparent)]
+    Chat(#[from] fergents_chat::ChatError),
 }
 
 /// Kernel configuration.
@@ -103,6 +111,8 @@ pub struct Kernel {
     context: Arc<ContextBuilder>,
     workflow: Arc<WorkflowService>,
     permissions: Arc<PermissionService>,
+    reversibility: Arc<ReversibilityService>,
+    chat: Arc<ChatService>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -146,10 +156,18 @@ impl Kernel {
         let provider: Arc<dyn fergents_llm::Provider> = Arc::new(MockProvider::new("mock"));
         let storage_for_perms: Arc<dyn Storage> = storage.clone();
         let permissions = Arc::new(PermissionService::new(storage_for_perms, bus.clone()));
+        let storage_for_backups: Arc<dyn Storage> = storage.clone();
+        let reversibility = Arc::new(ReversibilityService::new(
+            storage_for_backups,
+            bus.clone(),
+            config.data_dir.join("backups"),
+        ));
         let tools = Arc::new(ToolRegistry::new());
         for tool in memory_tools(memory.clone()) {
             tools.register(tool);
         }
+        let storage_for_chat: Arc<dyn Storage> = storage.clone();
+        let chat = Arc::new(ChatService::new(storage_for_chat, bus.clone()));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -169,6 +187,8 @@ impl Kernel {
             context,
             workflow,
             permissions,
+            reversibility,
+            chat,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -231,6 +251,16 @@ impl Kernel {
     /// The shared permission engine, for constructing per-session gates.
     pub fn permissions_service(&self) -> &Arc<PermissionService> {
         &self.permissions
+    }
+
+    /// The reversibility (backup/restore) service.
+    pub fn reversibility(&self) -> &ReversibilityService {
+        self.reversibility.as_ref()
+    }
+
+    /// The chat backend.
+    pub fn chat(&self) -> &ChatService {
+        self.chat.as_ref()
     }
 
     /// Assemble, count, persist, and emit a context snapshot for a session.
