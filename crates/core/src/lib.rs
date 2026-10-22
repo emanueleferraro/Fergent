@@ -11,8 +11,10 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 use std::time::Instant;
 
+use fergents_agents::{AgentService, AllowAllGate, ToolRegistry};
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_events::{now_ms, EventBus};
+use fergents_llm::MockProvider;
 use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
 };
@@ -41,6 +43,9 @@ pub enum CoreError {
     /// A capability registry failure.
     #[error(transparent)]
     Capability(#[from] CapabilityError),
+    /// An agent runtime failure.
+    #[error(transparent)]
+    Agent(#[from] fergents_agents::AgentError),
 }
 
 /// Kernel configuration.
@@ -77,6 +82,7 @@ pub struct Kernel {
     bus: Arc<EventBus>,
     brains: Arc<BrainService>,
     capabilities: Arc<CapabilityRegistry>,
+    agents: Arc<AgentService>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -103,11 +109,26 @@ impl Kernel {
         let storage_for_caps: Arc<dyn Storage> = storage.clone();
         let capabilities = Arc::new(CapabilityRegistry::new(storage_for_caps, bus.clone())?);
         capabilities.seed(&default_catalogue())?;
+        // The agent runtime. Until the provider manager (task 2.17) wires real
+        // providers, the kernel runs agents against the deterministic mock
+        // provider so `agent.run` works fully offline.
+        let storage_for_agents: Arc<dyn Storage> = storage.clone();
+        let provider: Arc<dyn fergents_llm::Provider> = Arc::new(MockProvider::new("mock"));
+        let agents = Arc::new(AgentService::new(
+            config.data_dir.join("agents"),
+            storage_for_agents,
+            provider,
+            Arc::new(ToolRegistry::new()),
+            Arc::new(AllowAllGate),
+            bus.clone(),
+        ));
+        let _ = agents.load();
         let kernel = Arc::new(Self {
             storage,
             bus,
             brains,
             capabilities,
+            agents,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -135,6 +156,16 @@ impl Kernel {
     /// The capability registry.
     pub fn capabilities(&self) -> &CapabilityRegistry {
         self.capabilities.as_ref()
+    }
+
+    /// The agent runtime service.
+    pub fn agents(&self) -> &AgentService {
+        self.agents.as_ref()
+    }
+
+    /// The shared agent service handle, for offloading/awaiting runs.
+    pub fn agents_service(&self) -> &Arc<AgentService> {
+        &self.agents
     }
 
     /// The shared brain subsystem handle, for offloading synchronous work.

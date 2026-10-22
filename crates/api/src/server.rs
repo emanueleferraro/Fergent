@@ -541,6 +541,68 @@ async fn dispatch(
                 .map(|view| to_value(&view))
                 .map_err(map_capability_error)
         }
+        "agent.list" => Ok(serde_json::json!({ "agents": kernel.agents().list() })),
+        "agent.get" => {
+            let id = agent_id_param(&params)?;
+            kernel
+                .agents()
+                .get(id)
+                .map(|definition| to_value(&definition))
+                .ok_or_else(|| (ErrorCode::InvalidParams, format!("unknown agent: {id}")))
+        }
+        "agent.create" => {
+            let markdown = params
+                .get("definition")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing definition".to_string()))?;
+            kernel
+                .agents()
+                .create(markdown)
+                .map(|definition| to_value(&definition))
+                .map_err(map_agent_error)
+        }
+        "agent.delete" => {
+            let id = agent_id_param(&params)?;
+            kernel
+                .agents()
+                .delete(id)
+                .map(|_| serde_json::json!({ "deleted": id }))
+                .map_err(map_agent_error)
+        }
+        "agent.run" => {
+            let id = agent_id_param(&params)?.to_string();
+            let task = params
+                .get("task")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing task".to_string()))?
+                .to_string();
+            let service = kernel.agents_service().clone();
+            let observer = fergents_agents::NoopObserver;
+            let outcome = service
+                .run(&id, &task, &observer, None)
+                .await
+                .map_err(map_agent_error)?;
+            Ok(to_value(&outcome))
+        }
+        "agent.session.list" => {
+            let limit = params.get("limit").and_then(Value::as_u64).unwrap_or(50) as usize;
+            kernel
+                .agents()
+                .sessions(limit)
+                .map(|sessions| serde_json::json!({ "sessions": sessions }))
+                .map_err(map_agent_error)
+        }
+        "agent.session.messages" => {
+            let session_id = params
+                .get("session_id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing session_id".to_string()))?;
+            kernel
+                .agents()
+                .session_messages(session_id)
+                .map(|messages| serde_json::json!({ "messages": messages }))
+                .map_err(map_agent_error)
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -592,8 +654,34 @@ fn required_capability(method: &str) -> Option<&'static str> {
     match method {
         "search.query" => Some("capability.search"),
         method if method.starts_with("graph.") => Some("capability.graph"),
+        method if method.starts_with("agent.") => Some("capability.agents"),
+        method if method.starts_with("chat.") => Some("capability.chat"),
         _ => None,
     }
+}
+
+/// Read the `id` field from agent command params.
+fn agent_id_param(params: &Value) -> Result<&str, (ErrorCode, String)> {
+    params
+        .get("agent_id")
+        .or_else(|| params.get("id"))
+        .and_then(Value::as_str)
+        .ok_or_else(|| (ErrorCode::InvalidParams, "missing agent_id".to_string()))
+}
+
+/// Map an agent error to the closest wire error code.
+fn map_agent_error(err: fergents_agents::AgentError) -> (ErrorCode, String) {
+    use fergents_agents::AgentError;
+    let code = match &err {
+        AgentError::Storage(_) => ErrorCode::StorageError,
+        AgentError::InvalidDefinition(_)
+        | AgentError::UnknownAgent(_)
+        | AgentError::UnknownTool(_)
+        | AgentError::UnknownSession(_)
+        | AgentError::PermissionDenied { .. } => ErrorCode::InvalidParams,
+        _ => ErrorCode::InternalError,
+    };
+    (code, format!("{}: {}", err.code(), err))
 }
 
 /// Read the `id` field from capability command params.
