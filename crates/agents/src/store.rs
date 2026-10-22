@@ -55,6 +55,19 @@ impl AgentStore {
         Ok(())
     }
 
+    /// Update a session's rolling summary.
+    pub fn set_summary(&self, id: &str, summary: &str) -> Result<(), AgentError> {
+        self.storage.execute(
+            "UPDATE agent_sessions SET summary = ?1, updated_at = ?2 WHERE id = ?3",
+            &[
+                Value::String(summary.to_string()),
+                Value::from(now_ms()),
+                Value::String(id.to_string()),
+            ],
+        )?;
+        Ok(())
+    }
+
     /// Append a message to a session.
     pub fn append_message(
         &self,

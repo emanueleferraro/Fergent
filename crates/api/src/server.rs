@@ -603,6 +603,54 @@ async fn dispatch(
                 .map(|messages| serde_json::json!({ "messages": messages }))
                 .map_err(map_agent_error)
         }
+        "memory.remember" => {
+            let content = params
+                .get("content")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing content".to_string()))?;
+            let importance = params
+                .get("importance")
+                .and_then(Value::as_f64)
+                .unwrap_or(0.5) as f32;
+            kernel
+                .memory()
+                .remember(
+                    &memory_scope_param(&params),
+                    memory_kind_param(&params).unwrap_or(fergents_agents::MemoryKind::Fact),
+                    content,
+                    importance,
+                )
+                .map(|entry| to_value(&entry))
+                .map_err(map_agent_error)
+        }
+        "memory.recall" => {
+            let query = params
+                .get("query")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing query".to_string()))?;
+            let k = params.get("k").and_then(Value::as_u64).unwrap_or(8) as usize;
+            kernel
+                .memory()
+                .recall(&memory_scope_param(&params), query, k)
+                .map(|entries| serde_json::json!({ "entries": entries }))
+                .map_err(map_agent_error)
+        }
+        "memory.forget" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?;
+            kernel
+                .memory()
+                .forget(id)
+                .map(|removed| serde_json::json!({ "removed": removed }))
+                .map_err(map_agent_error)
+        }
+        "memory.list" => kernel
+            .memory()
+            .list(&memory_scope_param(&params), memory_kind_param(&params))
+            .map(|entries| serde_json::json!({ "entries": entries }))
+            .map_err(map_agent_error),
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -656,8 +704,26 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("graph.") => Some("capability.graph"),
         method if method.starts_with("agent.") => Some("capability.agents"),
         method if method.starts_with("chat.") => Some("capability.chat"),
+        method if method.starts_with("memory.") => Some("capability.memory"),
         _ => None,
     }
+}
+
+/// Read the `scope` field from memory command params.
+fn memory_scope_param(params: &Value) -> fergents_agents::MemoryScope {
+    params
+        .get("scope")
+        .and_then(Value::as_str)
+        .map(fergents_agents::MemoryScope::parse)
+        .unwrap_or(fergents_agents::MemoryScope::Global)
+}
+
+/// Read the `kind` field from memory command params.
+fn memory_kind_param(params: &Value) -> Option<fergents_agents::MemoryKind> {
+    params
+        .get("kind")
+        .and_then(Value::as_str)
+        .map(fergents_agents::MemoryKind::parse)
 }
 
 /// Read the `id` field from agent command params.

@@ -9,6 +9,9 @@
 
 mod definition;
 mod error;
+mod files;
+mod memory;
+mod memory_tools;
 mod permissions;
 mod runtime;
 mod service;
@@ -18,6 +21,9 @@ mod tool;
 
 pub use definition::{valid_id, AgentDefinition, Limits, LoopKind, MemoryConfig, SubAgentsConfig};
 pub use error::AgentError;
+pub use files::{agent_dir, brain_path, read_brain, session_path, write_brain, write_session};
+pub use memory::{MemoryEntry, MemoryKind, MemoryScope, MemoryStore};
+pub use memory_tools::{memory_tools, ForgetTool, ListTool, RecallTool, RememberTool};
 pub use permissions::{AllowAllGate, DenyListGate, PermissionDecision, PermissionGate};
 pub use runtime::{
     AgentRuntime, NoopObserver, RecordingObserver, RunObserver, RunOutcome, StopReason,

@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 
 use fergents_events::EventBus;
-use fergents_llm::Provider;
+use fergents_llm::{ChatRequest, Provider, TokenCounter};
 use serde_json::json;
 
 use crate::definition::AgentDefinition;
@@ -207,6 +207,48 @@ impl AgentService {
     /// The messages of a session.
     pub fn session_messages(&self, id: &str) -> Result<Vec<AgentMessageRecord>, AgentError> {
         self.store.messages(id)
+    }
+
+    /// Compact a session when its transcript exceeds `threshold_tokens`.
+    ///
+    /// Generates a rolling summary via the provider, writes it to
+    /// `agent_sessions.summary` and `agents/<id>/session.md`, and returns the
+    /// summary (or `None` when nothing was compacted).
+    pub async fn compact_session(
+        &self,
+        agent_id: &str,
+        session_id: &str,
+        threshold_tokens: u64,
+    ) -> Result<Option<String>, AgentError> {
+        let messages = self.store.messages(session_id)?;
+        if messages.is_empty() {
+            return Ok(None);
+        }
+        let transcript = messages
+            .iter()
+            .map(|message| format!("{}: {}", message.role, message.content))
+            .collect::<Vec<_>>()
+            .join("\n");
+        let counter = TokenCounter::new();
+        if counter.count(&transcript) as u64 <= threshold_tokens {
+            return Ok(None);
+        }
+        let model = self
+            .get(agent_id)
+            .map_or_else(|| "mock-1".to_string(), |definition| definition.model);
+        let request = ChatRequest::user(
+            model,
+            format!("Summarize the conversation so far in a few sentences.\n\n{transcript}"),
+        );
+        let response = self.runtime.provider().chat(request).await?;
+        let summary = response.text();
+        self.store.set_summary(session_id, &summary)?;
+        crate::files::write_session(
+            &self.dir,
+            agent_id,
+            &format!("# Session summary\n\n{summary}\n"),
+        )?;
+        Ok(Some(summary))
     }
 
     /// Fetch a persisted session.
