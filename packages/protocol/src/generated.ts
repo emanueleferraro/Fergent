@@ -2697,3 +2697,149 @@ export interface ChatMessageCreatedPayload {
   role: string;
   seq: number;
 }
+
+/**
+ * Whether a project may run code (spec decision D3).
+ */
+export type TrustState = 'untrusted' | 'trusted';
+
+/**
+ * An opened code workspace (spec Appendix B).
+ */
+export interface Project {
+  id: string;
+  path: string;
+  name: string;
+  vcs: string | null;
+  brain_id: string | null;
+  trust: TrustState;
+  /**
+   * Free-form project settings.
+   */
+  settings: {
+    [k: string]: unknown;
+  };
+  last_opened_at: number;
+  created_at: number;
+  updated_at: number;
+}
+
+/**
+ * Params of project.open.
+ */
+export interface ProjectOpenParams {
+  path: string;
+}
+
+/**
+ * Result of project.open.
+ */
+export interface ProjectOpenResult {
+  project: Project;
+}
+
+/**
+ * Result of project.list.
+ */
+export interface ProjectListResult {
+  projects: Project[];
+}
+
+/**
+ * Params carrying a project id.
+ */
+export interface ProjectIdParams {
+  project_id: string;
+}
+
+/**
+ * Result of project.get.
+ */
+export interface ProjectGetResult {
+  project: Project | null;
+}
+
+/**
+ * Result of project.close.
+ */
+export interface ProjectCloseResult {
+  closed: boolean;
+}
+
+/**
+ * Params of project.trust.
+ */
+export interface ProjectTrustParams {
+  project_id: string;
+  trusted: boolean;
+}
+
+/**
+ * Result of project.trust.
+ */
+export interface ProjectTrustResult {
+  project: Project;
+}
+
+/**
+ * Params of project.update.
+ */
+export interface ProjectUpdateParams {
+  project_id: string;
+  name?: string | null;
+  brain_id?: string | null;
+  /**
+   * Replacement settings object.
+   */
+  settings?: {
+    [k: string]: unknown;
+  };
+}
+
+/**
+ * Result of project.update.
+ */
+export interface ProjectUpdateResult {
+  project: Project;
+}
+
+/**
+ * Params of project.files.
+ */
+export interface ProjectFilesParams {
+  project_id: string;
+  query?: string;
+  limit?: number | null;
+}
+
+/**
+ * Result of project.files.
+ */
+export interface ProjectFilesResult {
+  files: string[];
+}
+
+/**
+ * One text-search hit.
+ */
+export interface ProjectSearchHit {
+  path: string;
+  line: number;
+  text: string;
+}
+
+/**
+ * Params of project.search.
+ */
+export interface ProjectSearchParams {
+  project_id: string;
+  query: string;
+  limit?: number | null;
+}
+
+/**
+ * Result of project.search.
+ */
+export interface ProjectSearchResult {
+  hits: ProjectSearchHit[];
+}

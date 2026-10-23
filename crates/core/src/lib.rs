@@ -28,6 +28,7 @@ use fergents_agents::{
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_chat::{ChatMessage, ChatService};
 use fergents_events::{now_ms, EventBus};
+use fergents_ide::ProjectService;
 use fergents_llm::{ChatRequest, MockProvider};
 use fergents_permissions::PermissionService;
 use fergents_protocol::{
@@ -81,6 +82,9 @@ pub enum CoreError {
     /// An MCP registry failure.
     #[error(transparent)]
     Mcp(#[from] McpServiceError),
+    /// A project layer failure.
+    #[error(transparent)]
+    Project(#[from] fergents_ide::ProjectError),
 }
 
 /// Kernel configuration.
@@ -149,6 +153,7 @@ pub struct Kernel {
     secrets: Arc<SecretVault>,
     provider_service: Arc<ProviderService>,
     mcp_service: Arc<McpService>,
+    projects: Arc<ProjectService>,
     subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
@@ -220,6 +225,8 @@ impl Kernel {
             Arc::new(ProviderService::new(storage_for_providers, secrets.clone()));
         let storage_for_mcp: Arc<dyn Storage> = storage.clone();
         let mcp_service = Arc::new(McpService::new(storage_for_mcp));
+        let storage_for_projects: Arc<dyn Storage> = storage.clone();
+        let projects = Arc::new(ProjectService::new(storage_for_projects, bus.clone()));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -245,6 +252,7 @@ impl Kernel {
             secrets,
             provider_service,
             mcp_service,
+            projects,
             subagents,
             started: Instant::now(),
             started_ms: now_ms(),
@@ -333,6 +341,11 @@ impl Kernel {
     /// The MCP server registry and live host.
     pub fn mcp(&self) -> &McpService {
         self.mcp_service.as_ref()
+    }
+
+    /// The project layer (open, trust, file index, search).
+    pub fn projects(&self) -> &ProjectService {
+        self.projects.as_ref()
     }
 
     /// The sub-agent manager (async children, collect, cancel, handoff).

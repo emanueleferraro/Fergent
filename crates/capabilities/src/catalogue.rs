@@ -47,6 +47,14 @@ pub fn default_catalogue() -> Vec<Capability> {
             true,
         ),
         capability(
+            "capability.ide",
+            "IDE",
+            "Projects, the file index, and the code workspace.",
+            &[],
+            true,
+            true,
+        ),
+        capability(
             "capability.llm",
             "LLM Router",
             "Providers, routing, budgets, and caches.",
