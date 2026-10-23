@@ -1,10 +1,11 @@
 /**
  * The chat panel (UI.md §7): session header, transcript, and composer.
  */
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
+import { ContextViewer } from '../context/ContextViewer';
 
 import { Composer } from './Composer';
 import { MessageList } from './MessageList';
@@ -19,6 +20,8 @@ export interface ChatPanelProps {
 
 /** The main chat surface. */
 export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
+  const [showContext, setShowContext] = useState(false);
+
   if (chat.loading) {
     return <div className="chat-panel chat-panel--note">{t('chat.loading')}</div>;
   }
@@ -72,12 +75,22 @@ export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
               })}
             </span>
             <span className="badge">{formatCost(active.cost_usd)}</span>
+            <button
+              type="button"
+              className="btn btn-sm"
+              aria-expanded={showContext}
+              onClick={() => setShowContext((open) => !open)}
+            >
+              {t('context.title')}
+            </button>
           </div>
         ) : null}
       </header>
 
       {chat.actionError ? <div className="inline-feedback error">{chat.actionError}</div> : null}
       {chat.notice ? <div className="inline-feedback info">{chat.notice}</div> : null}
+
+      {showContext && active ? <ContextViewer kernel={kernel} sessionId={chat.activeId} /> : null}
 
       <MessageList chat={chat} />
 

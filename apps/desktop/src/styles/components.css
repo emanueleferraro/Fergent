@@ -1,4 +1,4 @@
-/* ============================================================
+﻿/* ============================================================
    TRAE Components
    CSS riutilizzabile per tutti i componenti del sistema.
    Richiede: tokens.css + typography.css
@@ -1954,6 +1954,75 @@ mark,
     cursor: pointer;
 }
 .composer__option:hover { background: var(--color-bg); color: var(--text-strong); }
+
+/* ============================================================
+   CONTEXT VIEWER
+   ============================================================ */
+.ctx-viewer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    background: var(--color-bg-elev);
+}
+.ctx-viewer--note {
+    padding: var(--s-3);
+    font-size: var(--fs-body-sm);
+    color: var(--text-muted);
+}
+.ctx-viewer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+}
+.ctx-bar {
+    position: relative;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--color-bg);
+    overflow: hidden;
+}
+.ctx-bar__fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--color-accent);
+    transition: width var(--t);
+}
+.ctx-bar__fill--over { background: var(--color-danger); }
+.ctx-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.ctx-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding: 4px 6px;
+    border-radius: var(--r-sm);
+}
+.ctx-row:hover { background: var(--color-hover); }
+.ctx-row--off { opacity: 0.55; }
+.ctx-row__label {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    font-size: var(--fs-body-sm);
+    color: var(--text-default);
+    cursor: pointer;
+}
+.ctx-row__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+}
 
 /* ============================================================
    REDUCED MOTION

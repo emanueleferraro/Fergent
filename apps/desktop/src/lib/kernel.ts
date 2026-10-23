@@ -69,6 +69,28 @@ export class TauriKernelClient implements KernelClient {
   }
 }
 
+/** The input budget the mock context reports against. */
+const MOCK_CONTEXT_BUDGET = 8000;
+
+/** The mock context sections, in assembly order. */
+const MOCK_CONTEXT_SECTIONS: {
+  name: string;
+  tokens: number;
+  cacheable: boolean;
+  refs: string[];
+}[] = [
+  { name: 'system', tokens: 420, cacheable: true, refs: [] },
+  { name: 'capabilities', tokens: 180, cacheable: true, refs: [] },
+  { name: 'constraints', tokens: 120, cacheable: true, refs: [] },
+  { name: 'memory.episodic', tokens: 260, cacheable: false, refs: ['memory:episodic'] },
+  { name: 'memory.semantic', tokens: 140, cacheable: false, refs: ['memory:semantic'] },
+  { name: 'rag', tokens: 900, cacheable: false, refs: ['note:mcp.md#security', 'note:agents.md'] },
+  { name: 'history', tokens: 1200, cacheable: false, refs: ['session:history'] },
+  { name: 'summary', tokens: 220, cacheable: true, refs: [] },
+  { name: 'input', tokens: 60, cacheable: false, refs: [] },
+  { name: 'attachments', tokens: 0, cacheable: false, refs: [] },
+];
+
 /** Options for `MockKernelClient`. */
 export interface MockKernelClientOptions {
   health?: HealthSnapshot;
@@ -83,6 +105,7 @@ export class MockKernelClient implements KernelClient {
   private readonly healthSnapshot: HealthSnapshot;
   private readonly mockSessions: ChatSession[] = [];
   private readonly mockMessages = new Map<string, ChatMessage[]>();
+  private readonly mockDisabledSections = new Set<string>(['summary', 'attachments']);
   private mockSeq = 0;
 
   constructor(options: MockKernelClientOptions = {}) {
@@ -195,9 +218,43 @@ export class MockKernelClient implements KernelClient {
           routed: 'metadata_only',
           note: null,
         };
+      case 'context.inspect':
+        return this.mockContext(sessionId);
+      case 'context.set_section': {
+        const section = String(payload.section ?? '');
+        if (payload.enabled === true) {
+          this.mockDisabledSections.delete(section);
+        } else {
+          this.mockDisabledSections.add(section);
+        }
+        return { enabled: {}, budget: MOCK_CONTEXT_BUDGET };
+      }
       default:
         return null;
     }
+  }
+
+  private mockContext(sessionId: string): unknown {
+    const sections = MOCK_CONTEXT_SECTIONS.map((section) => {
+      const enabled = !this.mockDisabledSections.has(section.name);
+      return {
+        name: section.name,
+        enabled,
+        cacheable: section.cacheable,
+        tokens: enabled ? section.tokens : 0,
+        source_refs: section.refs,
+        content: '',
+      };
+    });
+    const total = sections.reduce((sum, section) => sum + section.tokens, 0);
+    return {
+      id: `mock-snapshot-${this.mockSeq}`,
+      session_id: sessionId,
+      turn_seq: 0,
+      sections,
+      total_tokens: total,
+      budget: MOCK_CONTEXT_BUDGET,
+    };
   }
 
   private createMockSession(payload: Record<string, unknown>): ChatSession {
