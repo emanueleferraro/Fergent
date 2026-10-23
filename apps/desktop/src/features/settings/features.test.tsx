@@ -82,7 +82,9 @@ describe('FeaturesSettings', () => {
       screen.getByText(t('settings.features.meta', { source: 'kernel', version: '0.1.0' })),
     ).toBeTruthy();
     expect(
-      screen.getByText(t('settings.features.meta', { source: 'plugin:providers', version: '0.1.0' })),
+      screen.getByText(
+        t('settings.features.meta', { source: 'plugin:providers', version: '0.1.0' }),
+      ),
     ).toBeTruthy();
     expect(
       screen.getByText(t('settings.features.dependencies', { deps: 'capability.llm' })),
@@ -133,9 +135,7 @@ describe('FeaturesSettings', () => {
     ).toBeTruthy();
     expect(switchFor('Chat').checked).toBe(false);
 
-    fireEvent.click(
-      screen.getByRole('button', { name: t('settings.features.enableDeps') }),
-    );
+    fireEvent.click(screen.getByRole('button', { name: t('settings.features.enableDeps') }));
 
     await waitFor(() => expect(attempts).toBe(2));
     expect(calls[calls.length - 1]?.params).toEqual({

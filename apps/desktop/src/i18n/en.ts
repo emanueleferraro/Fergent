@@ -146,7 +146,8 @@ export const en = {
   'settings.tabs.brain': 'Brain',
   'settings.tabs.features': 'Features',
   'settings.features.title': 'Features',
-  'settings.features.subtitle': 'Capabilities registered with the kernel. Toggle the ones you need.',
+  'settings.features.subtitle':
+    'Capabilities registered with the kernel. Toggle the ones you need.',
   'settings.features.loading': 'Loading capabilities…',
   'settings.features.empty.title': 'No capabilities',
   'settings.features.empty.desc': 'The kernel has not registered any capability.',

@@ -20,7 +20,8 @@ export interface FeaturesSettingsProps {
 
 /** The capability (feature toggle) page. */
 export function FeaturesSettings({ kernel }: FeaturesSettingsProps): ReactElement {
-  const { loading, error, capabilities, pending, toggleError, setEnabled } = useCapabilities(kernel);
+  const { loading, error, capabilities, pending, toggleError, setEnabled } =
+    useCapabilities(kernel);
 
   if (loading) {
     return (
