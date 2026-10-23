@@ -1425,3 +1425,891 @@ export interface EventsDroppedNotice {
   dropped: number;
   last_seen_id: string | null;
 }
+
+/**
+ * A capability as reported by capability.list / capability.get (spec Appendix D).
+ */
+export interface CapabilityView {
+  /**
+   * Namespaced id, e.g. capability.charts.
+   */
+  id: string;
+  name: string;
+  version: string;
+  /**
+   * kernel or plugin:<id>.
+   */
+  source: string;
+  description: string | null;
+  dependencies: string[];
+  resources: string[];
+  enabled: boolean;
+  default_enabled: boolean;
+  hot_toggle: boolean;
+  restart_required: boolean;
+  /**
+   * Optional configuration.
+   */
+  config: {
+    [k: string]: unknown;
+  };
+}
+
+/**
+ * Result of capability.list.
+ */
+export interface CapabilityListResult {
+  capabilities: CapabilityView[];
+}
+
+/**
+ * Params of capability.get.
+ */
+export interface CapabilityGetParams {
+  id: string;
+}
+
+/**
+ * Params of capability.set.
+ */
+export interface CapabilitySetParams {
+  id: string;
+  enabled: boolean;
+  /**
+   * Enable disabled dependencies instead of failing.
+   */
+  auto_enable_deps?: boolean;
+}
+
+/**
+ * Payload of the capability.registered event.
+ */
+export interface CapabilityRegisteredPayload {
+  id: string;
+}
+
+/**
+ * Payload of capability.enabled / capability.disabled / capability.changed.
+ */
+export interface CapabilityChangedPayload {
+  id: string;
+  enabled: boolean;
+  restart_required?: boolean | null;
+}
+
+/**
+ * The loop pattern an agent uses (AGENTS.md §5.3).
+ */
+export type AgentLoopKind =
+  'react' | 'plan_execute' | 'reflexion' | 'tot' | 'debate' | 'map_reduce';
+
+/**
+ * Per-run budgets (AGENTS.md §13).
+ */
+export interface AgentLimits {
+  max_tokens_per_run?: number;
+  max_cost_usd_per_run?: number;
+  max_wall_time_s?: number;
+  max_tool_calls_per_run?: number;
+  max_sub_agents?: number;
+  max_iterations?: number;
+}
+
+/**
+ * Memory settings of an agent definition (AGENTS.md §8).
+ */
+export interface AgentMemoryConfig {
+  episodic?: boolean;
+  semantic?: boolean;
+  working_window?: number | null;
+  summarize_at?: number | null;
+  rag_top_k?: number | null;
+}
+
+/**
+ * Sub-agent settings of an agent definition (AGENTS.md §9).
+ */
+export interface AgentSubAgentsConfig {
+  allow?: boolean;
+  max_depth?: number | null;
+  default_tools?: string[];
+}
+
+/**
+ * A parsed agents/<id>.md definition (AGENTS.md §4). The Markdown body is the system prompt and is not part of this payload.
+ */
+export interface AgentDefinition {
+  id: string;
+  name: string;
+  description?: string;
+  version?: string;
+  model: string;
+  model_fallback?: string[];
+  temperature?: number | null;
+  max_tokens?: number | null;
+  reasoning?: boolean;
+  loop?: AgentLoopKind;
+  tools?: string[];
+  skills?: string[];
+  mcp?: string[];
+  limits?: AgentLimits;
+  memory?: AgentMemoryConfig;
+  sub_agents?: AgentSubAgentsConfig;
+  tags?: string[];
+  icon?: string | null;
+  color?: string | null;
+}
+
+/**
+ * Result of agent.list.
+ */
+export interface AgentListResult {
+  agents: AgentDefinition[];
+}
+
+/**
+ * Params of agent.create: the full Markdown definition.
+ */
+export interface AgentCreateParams {
+  /**
+   * YAML frontmatter followed by the Markdown system prompt.
+   */
+  definition: string;
+}
+
+/**
+ * Params carrying an agent id.
+ */
+export interface AgentIdParams {
+  id: string;
+}
+
+/**
+ * Result of agent.delete.
+ */
+export interface AgentDeletedResult {
+  deleted: string;
+}
+
+/**
+ * Params of agent.run.
+ */
+export interface AgentRunParams {
+  id: string;
+  task: string;
+  session_id?: string | null;
+}
+
+/**
+ * Result of agent.run: the run outcome (AGENTS.md §5.2).
+ */
+export interface AgentRunResult {
+  session_id: string;
+  agent_id: string;
+  final_text: string;
+  messages: {
+    [k: string]: unknown;
+  }[];
+  tool_calls: {
+    [k: string]: unknown;
+  }[];
+  /**
+   * Accumulated token usage.
+   */
+  usage: {
+    [k: string]: unknown;
+  };
+  iterations: number;
+  /**
+   * Why the run stopped.
+   */
+  stop: string;
+}
+
+/**
+ * Session lifecycle state (AGENTS.md §14.1).
+ */
+export type AgentRunState =
+  'created' | 'running' | 'paused' | 'waiting_permission' | 'done' | 'error' | 'cancelled';
+
+/**
+ * A persisted agent session.
+ */
+export interface AgentSessionRecord {
+  id: string;
+  agent_id: string;
+  title: string | null;
+  state: AgentRunState;
+  created_at: number;
+  updated_at: number;
+  summary: string | null;
+}
+
+/**
+ * Result of agent.session.list.
+ */
+export interface AgentSessionListResult {
+  sessions: AgentSessionRecord[];
+}
+
+/**
+ * A persisted agent message.
+ */
+export interface AgentMessageRecord {
+  id: string;
+  session_id: string;
+  role: string;
+  content: string;
+  created_at: number;
+}
+
+/**
+ * Result of agent.session.messages.
+ */
+export interface AgentSessionMessagesResult {
+  messages: AgentMessageRecord[];
+}
+
+/**
+ * The memory tier (AGENTS.md §8.1).
+ */
+export type MemoryKind = 'episodic' | 'fact';
+
+/**
+ * A persisted agent_memory entry.
+ */
+export interface MemoryEntry {
+  id: string;
+  /**
+   * global, agent:<id>, project:<id>, or brain:<id>.
+   */
+  scope: string;
+  kind: MemoryKind;
+  content: string;
+  importance: number;
+  created_at: number;
+  updated_at: number;
+  last_used_at: number | null;
+}
+
+/**
+ * Result of memory.recall / memory.list.
+ */
+export interface MemoryEntriesResult {
+  entries: MemoryEntry[];
+}
+
+/**
+ * Params of memory.remember.
+ */
+export interface MemoryRememberParams {
+  content: string;
+  scope?: string;
+  kind?: MemoryKind;
+  importance?: number;
+}
+
+/**
+ * Params of memory.recall.
+ */
+export interface MemoryRecallParams {
+  query: string;
+  scope?: string;
+  k?: number;
+}
+
+/**
+ * Result of memory.forget.
+ */
+export interface MemoryForgetResult {
+  removed: boolean;
+}
+
+/**
+ * Payload of the memory.written event.
+ */
+export interface MemoryWrittenPayload {
+  id: string;
+  scope: string;
+  kind: MemoryKind;
+}
+
+/**
+ * One assembled context section (spec §2, Context Viewer).
+ */
+export interface ContextSection {
+  /**
+   * system, capabilities, rag, ...
+   */
+  name: string;
+  enabled: boolean;
+  cacheable: boolean;
+  tokens: number;
+  source_refs: string[];
+  content: string;
+}
+
+/**
+ * A persisted context_snapshots row.
+ */
+export interface ContextSnapshot {
+  id: string;
+  session_id: string;
+  turn_seq: number;
+  sections: ContextSection[];
+  total_tokens: number;
+  budget: number;
+}
+
+/**
+ * Per-session context toggles and budget.
+ */
+export interface ContextSettings {
+  enabled: {
+    [k: string]: boolean;
+  };
+  budget: number;
+}
+
+/**
+ * Params of context.inspect.
+ */
+export interface ContextInspectParams {
+  session_id: string;
+  agent_id?: string | null;
+  input?: string | null;
+}
+
+/**
+ * Params of context.set_section.
+ */
+export interface ContextSetSectionParams {
+  section: string;
+  enabled: boolean;
+}
+
+/**
+ * Params of context.set_budget.
+ */
+export interface ContextSetBudgetParams {
+  budget: number;
+}
+
+/**
+ * Payload of the context.built event.
+ */
+export interface ContextBuiltPayload {
+  session_id: string;
+  turn_seq: number;
+  total_tokens: number;
+  sections: {
+    name: string;
+    enabled: boolean;
+    tokens: number;
+  }[];
+}
+
+/**
+ * How far a spec workflow runs before pausing (decision D7).
+ */
+export type AutonomyMode = 'supervised' | 'batch' | 'auto';
+
+/**
+ * A spec-workflow approval gate.
+ */
+export type RunGate = 'spec' | 'plan' | 'task' | 'diff';
+
+/**
+ * A spec-workflow run (runs table).
+ */
+export interface WorkflowRun {
+  id: string;
+  session_id: string | null;
+  slug: string;
+  mode: AutonomyMode;
+  /**
+   * running, awaiting_spec_approval, awaiting_plan_approval, ...
+   */
+  state: string;
+  pending_gate: RunGate | null;
+  /**
+   * Written artifact paths keyed by gate label.
+   */
+  artifacts: {
+    [k: string]: string;
+  };
+  created_at: number;
+  updated_at: number;
+}
+
+/**
+ * Params of spec.start.
+ */
+export interface SpecStartParams {
+  slug: string;
+  task: string;
+  mode?: AutonomyMode;
+  session_id?: string | null;
+}
+
+/**
+ * Result of spec.get.
+ */
+export interface SpecGetResult {
+  run: WorkflowRun;
+  /**
+   * Artifact Markdown keyed by gate label.
+   */
+  artifacts: {
+    [k: string]: string;
+  };
+}
+
+/**
+ * Params carrying a run id.
+ */
+export interface RunIdParams {
+  run_id: string;
+}
+
+/**
+ * Params of run.approve / spec.approve.
+ */
+export interface RunApproveParams {
+  run_id: string;
+  gate?: RunGate;
+}
+
+/**
+ * Params of run.reject.
+ */
+export interface RunRejectParams {
+  run_id: string;
+  reason?: string | null;
+}
+
+/**
+ * Result of run.list.
+ */
+export interface RunListResult {
+  runs: WorkflowRun[];
+}
+
+/**
+ * An approvals row.
+ */
+export interface Approval {
+  id: string;
+  gate: RunGate;
+  /**
+   * pending, approved, rejected, or edited.
+   */
+  status: string;
+  created_at: number;
+}
+
+/**
+ * Payload of run.approval_requested / run.approved / run.rejected.
+ */
+export interface RunApprovalPayload {
+  run_id: string;
+  gate: RunGate;
+  status: string;
+}
+
+/**
+ * The session permission mode (SECURITY.md §4).
+ */
+export type PermissionMode = 'manual' | 'auto' | 'full';
+
+/**
+ * A permission category.
+ */
+export type PermissionCategory =
+  | 'fs.read'
+  | 'fs.write'
+  | 'shell.exec'
+  | 'net.http'
+  | 'net.p2p'
+  | 'llm.call'
+  | 'mcp.connect'
+  | 'plugin.install'
+  | 'agent.spawn'
+  | 'workflow.edit'
+  | 'brain.write'
+  | 'system.config';
+
+/**
+ * allow, prompt, or deny.
+ */
+export type PermissionDecision = 'allow' | 'prompt' | 'deny';
+
+/**
+ * A tool call awaiting a permission decision.
+ */
+export interface PermissionRequest {
+  tool: string;
+  arguments: unknown;
+  target?: string | null;
+  session_id?: string | null;
+  agent_id?: string | null;
+}
+
+/**
+ * The payload the UI renders in a permission card (UI.md §12).
+ */
+export interface PermissionCard {
+  action: string;
+  target: string | null;
+  reason: string;
+  category: string;
+  choices: string[];
+}
+
+/**
+ * The outcome of a permission check.
+ */
+export interface PermissionResolved {
+  decision: PermissionDecision;
+  category: PermissionCategory;
+  reason: string;
+  card: PermissionCard | null;
+}
+
+/**
+ * Params of permission.check.
+ */
+export interface PermissionCheckParams {
+  tool: string;
+  arguments?: unknown;
+  target?: string | null;
+  session_id?: string | null;
+  agent_id?: string | null;
+}
+
+/**
+ * Params of permission.mode.get / permission.mode.set.
+ */
+export interface PermissionModeParams {
+  session_id?: string | null;
+  mode?: PermissionMode;
+}
+
+/**
+ * Result of permission.mode.get / permission.mode.set.
+ */
+export interface PermissionModeResult {
+  mode: PermissionMode;
+}
+
+/**
+ * One ordered permission policy rule (first match wins).
+ */
+export interface PermissionPolicyRule {
+  category?: string | null;
+  tool?: string | null;
+  action?: PermissionDecision;
+  scope?: string[] | null;
+  note?: string | null;
+}
+
+/**
+ * Result of permission.policy.get / permission.policy.set.
+ */
+export interface PermissionPolicyResult {
+  toml?: string | null;
+  rules: PermissionPolicyRule[];
+}
+
+/**
+ * A reversibility snapshot.
+ */
+export interface Backup {
+  id: string;
+  path: string;
+  backup_path: string;
+  existed: boolean;
+  created_at: number;
+  run_id: string | null;
+  session_id: string | null;
+}
+
+/**
+ * Params of backup.snapshot.
+ */
+export interface BackupSnapshotParams {
+  path: string;
+  run_id?: string | null;
+  session_id?: string | null;
+  agent_id?: string | null;
+}
+
+/**
+ * Params of backup.list.
+ */
+export interface BackupListParams {
+  run_id?: string | null;
+  limit?: number;
+}
+
+/**
+ * Result of backup.list.
+ */
+export interface BackupListResult {
+  backups: Backup[];
+}
+
+/**
+ * Params of backup.restore.
+ */
+export interface BackupRestoreParams {
+  backup_id: string;
+}
+
+/**
+ * Result of backup.restore.
+ */
+export interface BackupRestoreResult {
+  restored: string;
+}
+
+/**
+ * Result of backup.restore_run.
+ */
+export interface BackupRestoreRunResult {
+  restored: string[];
+}
+
+/**
+ * A chat session (agent_sessions row).
+ */
+export interface ChatSession {
+  id: string;
+  agent_id: string;
+  title: string | null;
+  model: string | null;
+  state: string;
+  parent_session_id: string | null;
+  permission_mode: PermissionMode;
+  summary: string | null;
+  tokens_in: number;
+  tokens_out: number;
+  cost_usd: number;
+  created_at: number;
+  updated_at: number;
+}
+
+/**
+ * A chat message (agent_messages row).
+ */
+export interface ChatMessage {
+  id: string;
+  session_id: string;
+  seq: number;
+  /**
+   * user, assistant, tool, or system.
+   */
+  role: string;
+  content: string;
+  /**
+   * Tool calls, when this is an assistant tool-call turn.
+   */
+  tool_calls: {
+    [k: string]: unknown;
+  };
+  tokens: number;
+  created_at: number;
+}
+
+/**
+ * One full-text search hit.
+ */
+export interface ChatSearchHit {
+  session_id: string;
+  message_id: string;
+  role: string;
+  snippet: string;
+}
+
+/**
+ * Params of chat.session.create.
+ */
+export interface ChatSessionCreateParams {
+  agent_id: string;
+  title?: string | null;
+  model?: string | null;
+}
+
+/**
+ * Result of chat.session.list.
+ */
+export interface ChatSessionListResult {
+  sessions: ChatSession[];
+}
+
+/**
+ * Params carrying a chat session id.
+ */
+export interface ChatSessionIdParams {
+  session_id: string;
+}
+
+/**
+ * Params of chat.session.rename.
+ */
+export interface ChatSessionRenameParams {
+  session_id: string;
+  title: string;
+}
+
+/**
+ * Result of chat.session.delete.
+ */
+export interface ChatDeletedResult {
+  deleted: string;
+}
+
+/**
+ * Params of chat.session.search.
+ */
+export interface ChatSessionSearchParams {
+  query: string;
+  limit?: number;
+}
+
+/**
+ * Result of chat.session.search.
+ */
+export interface ChatSessionSearchResult {
+  hits: ChatSearchHit[];
+}
+
+/**
+ * Params of chat.message.send.
+ */
+export interface ChatMessageSendParams {
+  session_id: string;
+  text: string;
+}
+
+/**
+ * Result of chat.message.list.
+ */
+export interface ChatMessageListResult {
+  messages: ChatMessage[];
+}
+
+/**
+ * Result of chat.message.regenerate: the prompt to re-answer.
+ */
+export interface ChatRegenerateResult {
+  prompt: ChatMessage;
+}
+
+/**
+ * Params of chat.message.fork.
+ */
+export interface ChatForkParams {
+  session_id: string;
+  title?: string | null;
+}
+
+/**
+ * Params of chat.continue.
+ */
+export interface ChatContinueParams {
+  session_id: string;
+  /**
+   * Capped by the kernel (default 3).
+   */
+  requested?: number;
+}
+
+/**
+ * Result of chat.continue.
+ */
+export interface ChatContinueResult {
+  turns: number;
+}
+
+/**
+ * How an attachment is handled.
+ */
+export type AttachmentKind = 'text' | 'image' | 'pdf' | 'other';
+
+/**
+ * An attachment reference.
+ */
+export interface Attachment {
+  name: string;
+  media_type: string;
+  size: number;
+  kind: AttachmentKind;
+}
+
+/**
+ * How an attachment was routed into the conversation.
+ */
+export interface AttachmentRouting {
+  attachment: Attachment;
+  /**
+   * inline, vision, or metadata_only.
+   */
+  routed: string;
+  note: string | null;
+}
+
+/**
+ * Params of chat.attach.
+ */
+export interface ChatAttachParams {
+  session_id: string;
+  name: string;
+  media_type?: string;
+  size?: number;
+}
+
+/**
+ * A saved prompt (chat_prompts row).
+ */
+export interface PromptTemplate {
+  id: string;
+  title: string;
+  body: string;
+  tags: string[];
+  created_at: number;
+}
+
+/**
+ * Result of prompt.list.
+ */
+export interface PromptListResult {
+  prompts: PromptTemplate[];
+}
+
+/**
+ * Params of prompt.create.
+ */
+export interface PromptCreateParams {
+  title: string;
+  body: string;
+  tags?: string[];
+}
+
+/**
+ * Payload of the chat.session.created event.
+ */
+export interface ChatSessionCreatedPayload {
+  session_id: string;
+  agent_id: string;
+}
+
+/**
+ * Payload of the chat.message.created event.
+ */
+export interface ChatMessageCreatedPayload {
+  session_id: string;
+  message_id: string;
+  role: string;
+  seq: number;
+}
