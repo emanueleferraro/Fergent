@@ -1,6 +1,6 @@
 /**
- * The Settings section shell (Task 2.12): tabs for the per-brain settings and
- * the kernel feature toggles.
+ * The Settings section shell (Tasks 2.12, 2.17): per-brain settings, feature
+ * toggles, and the provider / secret / MCP managers.
  */
 import { useState, type ReactElement } from 'react';
 
@@ -9,8 +9,19 @@ import type { KernelClient } from '../../lib/kernel';
 
 import { BrainSettings } from './BrainSettings';
 import { FeaturesSettings } from './FeaturesSettings';
+import { McpSettings } from './McpSettings';
+import { ProvidersSettings } from './ProvidersSettings';
+import { SecretsSettings } from './SecretsSettings';
 
-type SettingsTab = 'brain' | 'features';
+type SettingsTab = 'brain' | 'features' | 'providers' | 'secrets' | 'mcp';
+
+const TABS: { id: SettingsTab; label: Parameters<typeof t>[0] }[] = [
+  { id: 'brain', label: 'settings.tabs.brain' },
+  { id: 'features', label: 'settings.tabs.features' },
+  { id: 'providers', label: 'settings.tabs.providers' },
+  { id: 'secrets', label: 'settings.tabs.secrets' },
+  { id: 'mcp', label: 'settings.tabs.mcp' },
+];
 
 /** Props for `SettingsView`. */
 export interface SettingsViewProps {
@@ -24,26 +35,24 @@ export function SettingsView({ kernel }: SettingsViewProps): ReactElement {
   return (
     <div className="settings-view">
       <div className="tabs" role="tablist" aria-label={t('settings.tabs.label')}>
-        <button
-          type="button"
-          role="tab"
-          className={tab === 'brain' ? 'tab active' : 'tab'}
-          aria-selected={tab === 'brain'}
-          onClick={() => setTab('brain')}
-        >
-          {t('settings.tabs.brain')}
-        </button>
-        <button
-          type="button"
-          role="tab"
-          className={tab === 'features' ? 'tab active' : 'tab'}
-          aria-selected={tab === 'features'}
-          onClick={() => setTab('features')}
-        >
-          {t('settings.tabs.features')}
-        </button>
+        {TABS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            role="tab"
+            className={tab === item.id ? 'tab active' : 'tab'}
+            aria-selected={tab === item.id}
+            onClick={() => setTab(item.id)}
+          >
+            {t(item.label)}
+          </button>
+        ))}
       </div>
-      {tab === 'brain' ? <BrainSettings kernel={kernel} /> : <FeaturesSettings kernel={kernel} />}
+      {tab === 'brain' ? <BrainSettings kernel={kernel} /> : null}
+      {tab === 'features' ? <FeaturesSettings kernel={kernel} /> : null}
+      {tab === 'providers' ? <ProvidersSettings kernel={kernel} /> : null}
+      {tab === 'secrets' ? <SecretsSettings kernel={kernel} /> : null}
+      {tab === 'mcp' ? <McpSettings kernel={kernel} /> : null}
     </div>
   );
 }
