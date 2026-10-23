@@ -27,6 +27,1491 @@ pub mod error {
         }
     }
 }
+#[doc = "Params of agent.create: the full Markdown definition."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentCreateParams\","]
+#[doc = "  \"description\": \"Params of agent.create: the full Markdown definition.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"definition\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"definition\": {"]
+#[doc = "      \"description\": \"YAML frontmatter followed by the Markdown system prompt.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentCreateParams {
+    #[doc = "YAML frontmatter followed by the Markdown system prompt."]
+    pub definition: String,
+}
+impl From<&AgentCreateParams> for AgentCreateParams {
+    fn from(value: &AgentCreateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A parsed agents/<id>.md definition (AGENTS.md §4). The Markdown body is the system prompt and is not part of this payload."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentDefinition\","]
+#[doc = "  \"description\": \"A parsed agents/<id>.md definition (AGENTS.md §4). The Markdown body is the system prompt and is not part of this payload.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"model\","]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"color\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"description\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"icon\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"limits\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AgentLimits\""]
+#[doc = "    },"]
+#[doc = "    \"loop\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AgentLoopKind\""]
+#[doc = "    },"]
+#[doc = "    \"max_tokens\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"mcp\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"memory\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AgentMemoryConfig\""]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"model_fallback\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"reasoning\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"skills\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"sub_agents\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AgentSubAgentsConfig\""]
+#[doc = "    },"]
+#[doc = "    \"tags\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"temperature\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"tools\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"version\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentDefinition {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub color: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub icon: Option<String>,
+    pub id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub limits: Option<AgentLimits>,
+    #[serde(rename = "loop", default, skip_serializing_if = "Option::is_none")]
+    pub loop_: Option<AgentLoopKind>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_tokens: Option<i64>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub mcp: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub memory: Option<AgentMemoryConfig>,
+    pub model: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub model_fallback: Vec<String>,
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reasoning: Option<bool>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub skills: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub sub_agents: Option<AgentSubAgentsConfig>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tags: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub temperature: Option<f64>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tools: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub version: Option<String>,
+}
+impl From<&AgentDefinition> for AgentDefinition {
+    fn from(value: &AgentDefinition) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.delete."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentDeletedResult\","]
+#[doc = "  \"description\": \"Result of agent.delete.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"deleted\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"deleted\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentDeletedResult {
+    pub deleted: String,
+}
+impl From<&AgentDeletedResult> for AgentDeletedResult {
+    fn from(value: &AgentDeletedResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params carrying an agent id."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentIdParams\","]
+#[doc = "  \"description\": \"Params carrying an agent id.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentIdParams {
+    pub id: String,
+}
+impl From<&AgentIdParams> for AgentIdParams {
+    fn from(value: &AgentIdParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Per-run budgets (AGENTS.md §13)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentLimits\","]
+#[doc = "  \"description\": \"Per-run budgets (AGENTS.md §13).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"max_cost_usd_per_run\": {"]
+#[doc = "      \"type\": \"number\""]
+#[doc = "    },"]
+#[doc = "    \"max_iterations\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"max_sub_agents\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"max_tokens_per_run\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"max_tool_calls_per_run\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"max_wall_time_s\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentLimits {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_cost_usd_per_run: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_iterations: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_sub_agents: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_tokens_per_run: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_tool_calls_per_run: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_wall_time_s: Option<i64>,
+}
+impl From<&AgentLimits> for AgentLimits {
+    fn from(value: &AgentLimits) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentListResult\","]
+#[doc = "  \"description\": \"Result of agent.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agents\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agents\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/AgentDefinition\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentListResult {
+    pub agents: Vec<AgentDefinition>,
+}
+impl From<&AgentListResult> for AgentListResult {
+    fn from(value: &AgentListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The loop pattern an agent uses (AGENTS.md §5.3)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentLoopKind\","]
+#[doc = "  \"description\": \"The loop pattern an agent uses (AGENTS.md §5.3).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"react\","]
+#[doc = "    \"plan_execute\","]
+#[doc = "    \"reflexion\","]
+#[doc = "    \"tot\","]
+#[doc = "    \"debate\","]
+#[doc = "    \"map_reduce\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum AgentLoopKind {
+    #[serde(rename = "react")]
+    React,
+    #[serde(rename = "plan_execute")]
+    PlanExecute,
+    #[serde(rename = "reflexion")]
+    Reflexion,
+    #[serde(rename = "tot")]
+    Tot,
+    #[serde(rename = "debate")]
+    Debate,
+    #[serde(rename = "map_reduce")]
+    MapReduce,
+}
+impl From<&AgentLoopKind> for AgentLoopKind {
+    fn from(value: &AgentLoopKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for AgentLoopKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::React => write!(f, "react"),
+            Self::PlanExecute => write!(f, "plan_execute"),
+            Self::Reflexion => write!(f, "reflexion"),
+            Self::Tot => write!(f, "tot"),
+            Self::Debate => write!(f, "debate"),
+            Self::MapReduce => write!(f, "map_reduce"),
+        }
+    }
+}
+impl std::str::FromStr for AgentLoopKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "react" => Ok(Self::React),
+            "plan_execute" => Ok(Self::PlanExecute),
+            "reflexion" => Ok(Self::Reflexion),
+            "tot" => Ok(Self::Tot),
+            "debate" => Ok(Self::Debate),
+            "map_reduce" => Ok(Self::MapReduce),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for AgentLoopKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for AgentLoopKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for AgentLoopKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Memory settings of an agent definition (AGENTS.md §8)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentMemoryConfig\","]
+#[doc = "  \"description\": \"Memory settings of an agent definition (AGENTS.md §8).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"episodic\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"rag_top_k\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"semantic\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"summarize_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"number\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"working_window\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentMemoryConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub episodic: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rag_top_k: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub semantic: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub summarize_at: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub working_window: Option<i64>,
+}
+impl From<&AgentMemoryConfig> for AgentMemoryConfig {
+    fn from(value: &AgentMemoryConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A persisted agent message."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentMessageRecord\","]
+#[doc = "  \"description\": \"A persisted agent message.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"role\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"role\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentMessageRecord {
+    pub content: String,
+    pub created_at: i64,
+    pub id: String,
+    pub role: String,
+    pub session_id: String,
+}
+impl From<&AgentMessageRecord> for AgentMessageRecord {
+    fn from(value: &AgentMessageRecord) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of agent.run."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentRunParams\","]
+#[doc = "  \"description\": \"Params of agent.run.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"task\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"task\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentRunParams {
+    pub id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+    pub task: String,
+}
+impl From<&AgentRunParams> for AgentRunParams {
+    fn from(value: &AgentRunParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.run: the run outcome (AGENTS.md §5.2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentRunResult\","]
+#[doc = "  \"description\": \"Result of agent.run: the run outcome (AGENTS.md §5.2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent_id\","]
+#[doc = "    \"final_text\","]
+#[doc = "    \"iterations\","]
+#[doc = "    \"messages\","]
+#[doc = "    \"session_id\","]
+#[doc = "    \"stop\","]
+#[doc = "    \"tool_calls\","]
+#[doc = "    \"usage\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"final_text\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"iterations\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"messages\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"description\": \"A normalized LLM message.\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"stop\": {"]
+#[doc = "      \"description\": \"Why the run stopped.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"tool_calls\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"description\": \"A tool invocation.\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"usage\": {"]
+#[doc = "      \"description\": \"Accumulated token usage.\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentRunResult {
+    pub agent_id: String,
+    pub final_text: String,
+    pub iterations: i64,
+    pub messages: Vec<::serde_json::Value>,
+    pub session_id: String,
+    #[doc = "Why the run stopped."]
+    pub stop: String,
+    pub tool_calls: Vec<::serde_json::Value>,
+    #[doc = "Accumulated token usage."]
+    pub usage: ::serde_json::Value,
+}
+impl From<&AgentRunResult> for AgentRunResult {
+    fn from(value: &AgentRunResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Session lifecycle state (AGENTS.md §14.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentRunState\","]
+#[doc = "  \"description\": \"Session lifecycle state (AGENTS.md §14.1).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"created\","]
+#[doc = "    \"running\","]
+#[doc = "    \"paused\","]
+#[doc = "    \"waiting_permission\","]
+#[doc = "    \"done\","]
+#[doc = "    \"error\","]
+#[doc = "    \"cancelled\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum AgentRunState {
+    #[serde(rename = "created")]
+    Created,
+    #[serde(rename = "running")]
+    Running,
+    #[serde(rename = "paused")]
+    Paused,
+    #[serde(rename = "waiting_permission")]
+    WaitingPermission,
+    #[serde(rename = "done")]
+    Done,
+    #[serde(rename = "error")]
+    Error,
+    #[serde(rename = "cancelled")]
+    Cancelled,
+}
+impl From<&AgentRunState> for AgentRunState {
+    fn from(value: &AgentRunState) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for AgentRunState {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Created => write!(f, "created"),
+            Self::Running => write!(f, "running"),
+            Self::Paused => write!(f, "paused"),
+            Self::WaitingPermission => write!(f, "waiting_permission"),
+            Self::Done => write!(f, "done"),
+            Self::Error => write!(f, "error"),
+            Self::Cancelled => write!(f, "cancelled"),
+        }
+    }
+}
+impl std::str::FromStr for AgentRunState {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "created" => Ok(Self::Created),
+            "running" => Ok(Self::Running),
+            "paused" => Ok(Self::Paused),
+            "waiting_permission" => Ok(Self::WaitingPermission),
+            "done" => Ok(Self::Done),
+            "error" => Ok(Self::Error),
+            "cancelled" => Ok(Self::Cancelled),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for AgentRunState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for AgentRunState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for AgentRunState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Result of agent.session.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentSessionListResult\","]
+#[doc = "  \"description\": \"Result of agent.session.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"sessions\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"sessions\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/AgentSessionRecord\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentSessionListResult {
+    pub sessions: Vec<AgentSessionRecord>,
+}
+impl From<&AgentSessionListResult> for AgentSessionListResult {
+    fn from(value: &AgentSessionListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.session.messages."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentSessionMessagesResult\","]
+#[doc = "  \"description\": \"Result of agent.session.messages.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"messages\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"messages\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/AgentMessageRecord\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentSessionMessagesResult {
+    pub messages: Vec<AgentMessageRecord>,
+}
+impl From<&AgentSessionMessagesResult> for AgentSessionMessagesResult {
+    fn from(value: &AgentSessionMessagesResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A persisted agent session."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentSessionRecord\","]
+#[doc = "  \"description\": \"A persisted agent session.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent_id\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"state\","]
+#[doc = "    \"summary\","]
+#[doc = "    \"title\","]
+#[doc = "    \"updated_at\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AgentRunState\""]
+#[doc = "    },"]
+#[doc = "    \"summary\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"updated_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentSessionRecord {
+    pub agent_id: String,
+    pub created_at: i64,
+    pub id: String,
+    pub state: AgentRunState,
+    pub summary: Option<String>,
+    pub title: Option<String>,
+    pub updated_at: i64,
+}
+impl From<&AgentSessionRecord> for AgentSessionRecord {
+    fn from(value: &AgentSessionRecord) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Sub-agent settings of an agent definition (AGENTS.md §9)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentSubAgentsConfig\","]
+#[doc = "  \"description\": \"Sub-agent settings of an agent definition (AGENTS.md §9).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"allow\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"default_tools\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"max_depth\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentSubAgentsConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub allow: Option<bool>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub default_tools: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_depth: Option<i64>,
+}
+impl From<&AgentSubAgentsConfig> for AgentSubAgentsConfig {
+    fn from(value: &AgentSubAgentsConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "An approvals row."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Approval\","]
+#[doc = "  \"description\": \"An approvals row.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"created_at\","]
+#[doc = "    \"gate\","]
+#[doc = "    \"id\","]
+#[doc = "    \"status\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"gate\": {"]
+#[doc = "      \"$ref\": \"#/$defs/RunGate\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"status\": {"]
+#[doc = "      \"description\": \"pending, approved, rejected, or edited.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Approval {
+    pub created_at: i64,
+    pub gate: RunGate,
+    pub id: String,
+    #[doc = "pending, approved, rejected, or edited."]
+    pub status: String,
+}
+impl From<&Approval> for Approval {
+    fn from(value: &Approval) -> Self {
+        value.clone()
+    }
+}
+#[doc = "An attachment reference."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Attachment\","]
+#[doc = "  \"description\": \"An attachment reference.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"kind\","]
+#[doc = "    \"media_type\","]
+#[doc = "    \"name\","]
+#[doc = "    \"size\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AttachmentKind\""]
+#[doc = "    },"]
+#[doc = "    \"media_type\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"size\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Attachment {
+    pub kind: AttachmentKind,
+    pub media_type: String,
+    pub name: String,
+    pub size: i64,
+}
+impl From<&Attachment> for Attachment {
+    fn from(value: &Attachment) -> Self {
+        value.clone()
+    }
+}
+#[doc = "How an attachment is handled."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AttachmentKind\","]
+#[doc = "  \"description\": \"How an attachment is handled.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"text\","]
+#[doc = "    \"image\","]
+#[doc = "    \"pdf\","]
+#[doc = "    \"other\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum AttachmentKind {
+    #[serde(rename = "text")]
+    Text,
+    #[serde(rename = "image")]
+    Image,
+    #[serde(rename = "pdf")]
+    Pdf,
+    #[serde(rename = "other")]
+    Other,
+}
+impl From<&AttachmentKind> for AttachmentKind {
+    fn from(value: &AttachmentKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for AttachmentKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Text => write!(f, "text"),
+            Self::Image => write!(f, "image"),
+            Self::Pdf => write!(f, "pdf"),
+            Self::Other => write!(f, "other"),
+        }
+    }
+}
+impl std::str::FromStr for AttachmentKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "text" => Ok(Self::Text),
+            "image" => Ok(Self::Image),
+            "pdf" => Ok(Self::Pdf),
+            "other" => Ok(Self::Other),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for AttachmentKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for AttachmentKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for AttachmentKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "How an attachment was routed into the conversation."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AttachmentRouting\","]
+#[doc = "  \"description\": \"How an attachment was routed into the conversation.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"attachment\","]
+#[doc = "    \"note\","]
+#[doc = "    \"routed\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"attachment\": {"]
+#[doc = "      \"$ref\": \"#/$defs/Attachment\""]
+#[doc = "    },"]
+#[doc = "    \"note\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"routed\": {"]
+#[doc = "      \"description\": \"inline, vision, or metadata_only.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AttachmentRouting {
+    pub attachment: Attachment,
+    pub note: Option<String>,
+    #[doc = "inline, vision, or metadata_only."]
+    pub routed: String,
+}
+impl From<&AttachmentRouting> for AttachmentRouting {
+    fn from(value: &AttachmentRouting) -> Self {
+        value.clone()
+    }
+}
+#[doc = "How far a spec workflow runs before pausing (decision D7)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AutonomyMode\","]
+#[doc = "  \"description\": \"How far a spec workflow runs before pausing (decision D7).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"supervised\","]
+#[doc = "    \"batch\","]
+#[doc = "    \"auto\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum AutonomyMode {
+    #[serde(rename = "supervised")]
+    Supervised,
+    #[serde(rename = "batch")]
+    Batch,
+    #[serde(rename = "auto")]
+    Auto,
+}
+impl From<&AutonomyMode> for AutonomyMode {
+    fn from(value: &AutonomyMode) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for AutonomyMode {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Supervised => write!(f, "supervised"),
+            Self::Batch => write!(f, "batch"),
+            Self::Auto => write!(f, "auto"),
+        }
+    }
+}
+impl std::str::FromStr for AutonomyMode {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "supervised" => Ok(Self::Supervised),
+            "batch" => Ok(Self::Batch),
+            "auto" => Ok(Self::Auto),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for AutonomyMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for AutonomyMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for AutonomyMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "A reversibility snapshot."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"Backup\","]
+#[doc = "  \"description\": \"A reversibility snapshot.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"backup_path\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"existed\","]
+#[doc = "    \"id\","]
+#[doc = "    \"path\","]
+#[doc = "    \"run_id\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"backup_path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"existed\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct Backup {
+    pub backup_path: String,
+    pub created_at: i64,
+    pub existed: bool,
+    pub id: String,
+    pub path: String,
+    pub run_id: Option<String>,
+    pub session_id: Option<String>,
+}
+impl From<&Backup> for Backup {
+    fn from(value: &Backup) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of backup.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BackupListParams\","]
+#[doc = "  \"description\": \"Params of backup.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"limit\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct BackupListParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub run_id: Option<String>,
+}
+impl From<&BackupListParams> for BackupListParams {
+    fn from(value: &BackupListParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of backup.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BackupListResult\","]
+#[doc = "  \"description\": \"Result of backup.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"backups\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"backups\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/Backup\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct BackupListResult {
+    pub backups: Vec<Backup>,
+}
+impl From<&BackupListResult> for BackupListResult {
+    fn from(value: &BackupListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of backup.restore."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BackupRestoreParams\","]
+#[doc = "  \"description\": \"Params of backup.restore.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"backup_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"backup_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct BackupRestoreParams {
+    pub backup_id: String,
+}
+impl From<&BackupRestoreParams> for BackupRestoreParams {
+    fn from(value: &BackupRestoreParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of backup.restore."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BackupRestoreResult\","]
+#[doc = "  \"description\": \"Result of backup.restore.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"restored\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"restored\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct BackupRestoreResult {
+    pub restored: String,
+}
+impl From<&BackupRestoreResult> for BackupRestoreResult {
+    fn from(value: &BackupRestoreResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of backup.restore_run."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BackupRestoreRunResult\","]
+#[doc = "  \"description\": \"Result of backup.restore_run.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"restored\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"restored\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct BackupRestoreRunResult {
+    pub restored: Vec<String>,
+}
+impl From<&BackupRestoreRunResult> for BackupRestoreRunResult {
+    fn from(value: &BackupRestoreRunResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of backup.snapshot."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"BackupSnapshotParams\","]
+#[doc = "  \"description\": \"Params of backup.snapshot.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct BackupSnapshotParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub agent_id: Option<String>,
+    pub path: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub run_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+}
+impl From<&BackupSnapshotParams> for BackupSnapshotParams {
+    fn from(value: &BackupSnapshotParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Params of brain.archive (BRAIN.md §9.5)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -1884,6 +3369,1412 @@ pub struct BrainUpdatedPayload {
 }
 impl From<&BrainUpdatedPayload> for BrainUpdatedPayload {
     fn from(value: &BrainUpdatedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of capability.enabled / capability.disabled / capability.changed."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"CapabilityChangedPayload\","]
+#[doc = "  \"description\": \"Payload of capability.enabled / capability.disabled / capability.changed.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"enabled\","]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"restart_required\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct CapabilityChangedPayload {
+    pub enabled: bool,
+    pub id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub restart_required: Option<bool>,
+}
+impl From<&CapabilityChangedPayload> for CapabilityChangedPayload {
+    fn from(value: &CapabilityChangedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of capability.get."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"CapabilityGetParams\","]
+#[doc = "  \"description\": \"Params of capability.get.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct CapabilityGetParams {
+    pub id: String,
+}
+impl From<&CapabilityGetParams> for CapabilityGetParams {
+    fn from(value: &CapabilityGetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of capability.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"CapabilityListResult\","]
+#[doc = "  \"description\": \"Result of capability.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"capabilities\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"capabilities\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/CapabilityView\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct CapabilityListResult {
+    pub capabilities: Vec<CapabilityView>,
+}
+impl From<&CapabilityListResult> for CapabilityListResult {
+    fn from(value: &CapabilityListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the capability.registered event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"CapabilityRegisteredPayload\","]
+#[doc = "  \"description\": \"Payload of the capability.registered event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct CapabilityRegisteredPayload {
+    pub id: String,
+}
+impl From<&CapabilityRegisteredPayload> for CapabilityRegisteredPayload {
+    fn from(value: &CapabilityRegisteredPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of capability.set."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"CapabilitySetParams\","]
+#[doc = "  \"description\": \"Params of capability.set.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"enabled\","]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"auto_enable_deps\": {"]
+#[doc = "      \"description\": \"Enable disabled dependencies instead of failing.\","]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct CapabilitySetParams {
+    #[doc = "Enable disabled dependencies instead of failing."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub auto_enable_deps: Option<bool>,
+    pub enabled: bool,
+    pub id: String,
+}
+impl From<&CapabilitySetParams> for CapabilitySetParams {
+    fn from(value: &CapabilitySetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A capability as reported by capability.list / capability.get (spec Appendix D)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"CapabilityView\","]
+#[doc = "  \"description\": \"A capability as reported by capability.list / capability.get (spec Appendix D).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"config\","]
+#[doc = "    \"default_enabled\","]
+#[doc = "    \"dependencies\","]
+#[doc = "    \"description\","]
+#[doc = "    \"enabled\","]
+#[doc = "    \"hot_toggle\","]
+#[doc = "    \"id\","]
+#[doc = "    \"name\","]
+#[doc = "    \"resources\","]
+#[doc = "    \"restart_required\","]
+#[doc = "    \"source\","]
+#[doc = "    \"version\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"config\": {"]
+#[doc = "      \"description\": \"Optional configuration.\""]
+#[doc = "    },"]
+#[doc = "    \"default_enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"dependencies\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"description\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"hot_toggle\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"description\": \"Namespaced id, e.g. capability.charts.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"resources\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"restart_required\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"source\": {"]
+#[doc = "      \"description\": \"kernel or plugin:<id>.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"version\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct CapabilityView {
+    #[doc = "Optional configuration."]
+    pub config: ::serde_json::Value,
+    pub default_enabled: bool,
+    pub dependencies: Vec<String>,
+    pub description: Option<String>,
+    pub enabled: bool,
+    pub hot_toggle: bool,
+    #[doc = "Namespaced id, e.g. capability.charts."]
+    pub id: String,
+    pub name: String,
+    pub resources: Vec<String>,
+    pub restart_required: bool,
+    #[doc = "kernel or plugin:<id>."]
+    pub source: String,
+    pub version: String,
+}
+impl From<&CapabilityView> for CapabilityView {
+    fn from(value: &CapabilityView) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of chat.attach."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatAttachParams\","]
+#[doc = "  \"description\": \"Params of chat.attach.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"media_type\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"size\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatAttachParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub media_type: Option<String>,
+    pub name: String,
+    pub session_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub size: Option<i64>,
+}
+impl From<&ChatAttachParams> for ChatAttachParams {
+    fn from(value: &ChatAttachParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of chat.continue."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatContinueParams\","]
+#[doc = "  \"description\": \"Params of chat.continue.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"requested\": {"]
+#[doc = "      \"description\": \"Capped by the kernel (default 3).\","]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatContinueParams {
+    #[doc = "Capped by the kernel (default 3)."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub requested: Option<i64>,
+    pub session_id: String,
+}
+impl From<&ChatContinueParams> for ChatContinueParams {
+    fn from(value: &ChatContinueParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of chat.continue."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatContinueResult\","]
+#[doc = "  \"description\": \"Result of chat.continue.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"turns\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"turns\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatContinueResult {
+    pub turns: i64,
+}
+impl From<&ChatContinueResult> for ChatContinueResult {
+    fn from(value: &ChatContinueResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of chat.session.delete."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatDeletedResult\","]
+#[doc = "  \"description\": \"Result of chat.session.delete.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"deleted\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"deleted\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatDeletedResult {
+    pub deleted: String,
+}
+impl From<&ChatDeletedResult> for ChatDeletedResult {
+    fn from(value: &ChatDeletedResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of chat.message.fork."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatForkParams\","]
+#[doc = "  \"description\": \"Params of chat.message.fork.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatForkParams {
+    pub session_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+}
+impl From<&ChatForkParams> for ChatForkParams {
+    fn from(value: &ChatForkParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A chat message (agent_messages row)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatMessage\","]
+#[doc = "  \"description\": \"A chat message (agent_messages row).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"role\","]
+#[doc = "    \"seq\","]
+#[doc = "    \"session_id\","]
+#[doc = "    \"tokens\","]
+#[doc = "    \"tool_calls\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"role\": {"]
+#[doc = "      \"description\": \"user, assistant, tool, or system.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"seq\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"tokens\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"tool_calls\": {"]
+#[doc = "      \"description\": \"Tool calls, when this is an assistant tool-call turn.\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatMessage {
+    pub content: String,
+    pub created_at: i64,
+    pub id: String,
+    #[doc = "user, assistant, tool, or system."]
+    pub role: String,
+    pub seq: i64,
+    pub session_id: String,
+    pub tokens: i64,
+    #[doc = "Tool calls, when this is an assistant tool-call turn."]
+    pub tool_calls: ::serde_json::Value,
+}
+impl From<&ChatMessage> for ChatMessage {
+    fn from(value: &ChatMessage) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the chat.message.created event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatMessageCreatedPayload\","]
+#[doc = "  \"description\": \"Payload of the chat.message.created event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"message_id\","]
+#[doc = "    \"role\","]
+#[doc = "    \"seq\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"message_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"role\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"seq\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatMessageCreatedPayload {
+    pub message_id: String,
+    pub role: String,
+    pub seq: i64,
+    pub session_id: String,
+}
+impl From<&ChatMessageCreatedPayload> for ChatMessageCreatedPayload {
+    fn from(value: &ChatMessageCreatedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of chat.message.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatMessageListResult\","]
+#[doc = "  \"description\": \"Result of chat.message.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"messages\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"messages\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ChatMessage\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatMessageListResult {
+    pub messages: Vec<ChatMessage>,
+}
+impl From<&ChatMessageListResult> for ChatMessageListResult {
+    fn from(value: &ChatMessageListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of chat.message.send."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatMessageSendParams\","]
+#[doc = "  \"description\": \"Params of chat.message.send.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\","]
+#[doc = "    \"text\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"text\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatMessageSendParams {
+    pub session_id: String,
+    pub text: String,
+}
+impl From<&ChatMessageSendParams> for ChatMessageSendParams {
+    fn from(value: &ChatMessageSendParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of chat.message.regenerate: the prompt to re-answer."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatRegenerateResult\","]
+#[doc = "  \"description\": \"Result of chat.message.regenerate: the prompt to re-answer.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"prompt\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"prompt\": {"]
+#[doc = "      \"$ref\": \"#/$defs/ChatMessage\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatRegenerateResult {
+    pub prompt: ChatMessage,
+}
+impl From<&ChatRegenerateResult> for ChatRegenerateResult {
+    fn from(value: &ChatRegenerateResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One full-text search hit."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSearchHit\","]
+#[doc = "  \"description\": \"One full-text search hit.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"message_id\","]
+#[doc = "    \"role\","]
+#[doc = "    \"session_id\","]
+#[doc = "    \"snippet\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"message_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"role\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"snippet\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSearchHit {
+    pub message_id: String,
+    pub role: String,
+    pub session_id: String,
+    pub snippet: String,
+}
+impl From<&ChatSearchHit> for ChatSearchHit {
+    fn from(value: &ChatSearchHit) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A chat session (agent_sessions row)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSession\","]
+#[doc = "  \"description\": \"A chat session (agent_sessions row).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent_id\","]
+#[doc = "    \"cost_usd\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"model\","]
+#[doc = "    \"parent_session_id\","]
+#[doc = "    \"permission_mode\","]
+#[doc = "    \"state\","]
+#[doc = "    \"summary\","]
+#[doc = "    \"title\","]
+#[doc = "    \"tokens_in\","]
+#[doc = "    \"tokens_out\","]
+#[doc = "    \"updated_at\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"cost_usd\": {"]
+#[doc = "      \"type\": \"number\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"parent_session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"permission_mode\": {"]
+#[doc = "      \"$ref\": \"#/$defs/PermissionMode\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"summary\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"tokens_in\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"tokens_out\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"updated_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSession {
+    pub agent_id: String,
+    pub cost_usd: f64,
+    pub created_at: i64,
+    pub id: String,
+    pub model: Option<String>,
+    pub parent_session_id: Option<String>,
+    pub permission_mode: PermissionMode,
+    pub state: String,
+    pub summary: Option<String>,
+    pub title: Option<String>,
+    pub tokens_in: i64,
+    pub tokens_out: i64,
+    pub updated_at: i64,
+}
+impl From<&ChatSession> for ChatSession {
+    fn from(value: &ChatSession) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of chat.session.create."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionCreateParams\","]
+#[doc = "  \"description\": \"Params of chat.session.create.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionCreateParams {
+    pub agent_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+}
+impl From<&ChatSessionCreateParams> for ChatSessionCreateParams {
+    fn from(value: &ChatSessionCreateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the chat.session.created event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionCreatedPayload\","]
+#[doc = "  \"description\": \"Payload of the chat.session.created event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent_id\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionCreatedPayload {
+    pub agent_id: String,
+    pub session_id: String,
+}
+impl From<&ChatSessionCreatedPayload> for ChatSessionCreatedPayload {
+    fn from(value: &ChatSessionCreatedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params carrying a chat session id."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionIdParams\","]
+#[doc = "  \"description\": \"Params carrying a chat session id.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionIdParams {
+    pub session_id: String,
+}
+impl From<&ChatSessionIdParams> for ChatSessionIdParams {
+    fn from(value: &ChatSessionIdParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of chat.session.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionListResult\","]
+#[doc = "  \"description\": \"Result of chat.session.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"sessions\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"sessions\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ChatSession\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionListResult {
+    pub sessions: Vec<ChatSession>,
+}
+impl From<&ChatSessionListResult> for ChatSessionListResult {
+    fn from(value: &ChatSessionListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of chat.session.rename."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionRenameParams\","]
+#[doc = "  \"description\": \"Params of chat.session.rename.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\","]
+#[doc = "    \"title\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionRenameParams {
+    pub session_id: String,
+    pub title: String,
+}
+impl From<&ChatSessionRenameParams> for ChatSessionRenameParams {
+    fn from(value: &ChatSessionRenameParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of chat.session.search."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionSearchParams\","]
+#[doc = "  \"description\": \"Params of chat.session.search.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"query\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"limit\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"query\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionSearchParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<i64>,
+    pub query: String,
+}
+impl From<&ChatSessionSearchParams> for ChatSessionSearchParams {
+    fn from(value: &ChatSessionSearchParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of chat.session.search."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionSearchResult\","]
+#[doc = "  \"description\": \"Result of chat.session.search.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"hits\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"hits\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ChatSearchHit\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionSearchResult {
+    pub hits: Vec<ChatSearchHit>,
+}
+impl From<&ChatSessionSearchResult> for ChatSessionSearchResult {
+    fn from(value: &ChatSessionSearchResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the context.built event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ContextBuiltPayload\","]
+#[doc = "  \"description\": \"Payload of the context.built event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"sections\","]
+#[doc = "    \"session_id\","]
+#[doc = "    \"total_tokens\","]
+#[doc = "    \"turn_seq\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"sections\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"object\","]
+#[doc = "        \"required\": ["]
+#[doc = "          \"enabled\","]
+#[doc = "          \"name\","]
+#[doc = "          \"tokens\""]
+#[doc = "        ],"]
+#[doc = "        \"properties\": {"]
+#[doc = "          \"enabled\": {"]
+#[doc = "            \"type\": \"boolean\""]
+#[doc = "          },"]
+#[doc = "          \"name\": {"]
+#[doc = "            \"type\": \"string\""]
+#[doc = "          },"]
+#[doc = "          \"tokens\": {"]
+#[doc = "            \"type\": \"integer\""]
+#[doc = "          }"]
+#[doc = "        }"]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"total_tokens\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"turn_seq\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextBuiltPayload {
+    pub sections: Vec<ContextBuiltPayloadSectionsItem>,
+    pub session_id: String,
+    pub total_tokens: i64,
+    pub turn_seq: i64,
+}
+impl From<&ContextBuiltPayload> for ContextBuiltPayload {
+    fn from(value: &ContextBuiltPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "ContextBuiltPayloadSectionsItem"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"enabled\","]
+#[doc = "    \"name\","]
+#[doc = "    \"tokens\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"tokens\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextBuiltPayloadSectionsItem {
+    pub enabled: bool,
+    pub name: String,
+    pub tokens: i64,
+}
+impl From<&ContextBuiltPayloadSectionsItem> for ContextBuiltPayloadSectionsItem {
+    fn from(value: &ContextBuiltPayloadSectionsItem) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of context.inspect."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ContextInspectParams\","]
+#[doc = "  \"description\": \"Params of context.inspect.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"input\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextInspectParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub agent_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub input: Option<String>,
+    pub session_id: String,
+}
+impl From<&ContextInspectParams> for ContextInspectParams {
+    fn from(value: &ContextInspectParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One assembled context section (spec §2, Context Viewer)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ContextSection\","]
+#[doc = "  \"description\": \"One assembled context section (spec §2, Context Viewer).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"cacheable\","]
+#[doc = "    \"content\","]
+#[doc = "    \"enabled\","]
+#[doc = "    \"name\","]
+#[doc = "    \"source_refs\","]
+#[doc = "    \"tokens\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"cacheable\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"description\": \"system, capabilities, rag, ...\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"source_refs\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"tokens\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextSection {
+    pub cacheable: bool,
+    pub content: String,
+    pub enabled: bool,
+    #[doc = "system, capabilities, rag, ..."]
+    pub name: String,
+    pub source_refs: Vec<String>,
+    pub tokens: i64,
+}
+impl From<&ContextSection> for ContextSection {
+    fn from(value: &ContextSection) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of context.set_budget."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ContextSetBudgetParams\","]
+#[doc = "  \"description\": \"Params of context.set_budget.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"budget\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"budget\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextSetBudgetParams {
+    pub budget: i64,
+}
+impl From<&ContextSetBudgetParams> for ContextSetBudgetParams {
+    fn from(value: &ContextSetBudgetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of context.set_section."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ContextSetSectionParams\","]
+#[doc = "  \"description\": \"Params of context.set_section.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"enabled\","]
+#[doc = "    \"section\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"section\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextSetSectionParams {
+    pub enabled: bool,
+    pub section: String,
+}
+impl From<&ContextSetSectionParams> for ContextSetSectionParams {
+    fn from(value: &ContextSetSectionParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Per-session context toggles and budget."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ContextSettings\","]
+#[doc = "  \"description\": \"Per-session context toggles and budget.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"budget\","]
+#[doc = "    \"enabled\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"budget\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"object\","]
+#[doc = "      \"additionalProperties\": {"]
+#[doc = "        \"type\": \"boolean\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextSettings {
+    pub budget: i64,
+    pub enabled: ::std::collections::HashMap<String, bool>,
+}
+impl From<&ContextSettings> for ContextSettings {
+    fn from(value: &ContextSettings) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A persisted context_snapshots row."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ContextSnapshot\","]
+#[doc = "  \"description\": \"A persisted context_snapshots row.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"budget\","]
+#[doc = "    \"id\","]
+#[doc = "    \"sections\","]
+#[doc = "    \"session_id\","]
+#[doc = "    \"total_tokens\","]
+#[doc = "    \"turn_seq\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"budget\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"sections\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ContextSection\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"total_tokens\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"turn_seq\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ContextSnapshot {
+    pub budget: i64,
+    pub id: String,
+    pub sections: Vec<ContextSection>,
+    pub session_id: String,
+    pub total_tokens: i64,
+    pub turn_seq: i64,
+}
+impl From<&ContextSnapshot> for ContextSnapshot {
+    fn from(value: &ContextSnapshot) -> Self {
         value.clone()
     }
 }
@@ -5015,6 +7906,336 @@ impl From<&MarkdownConfig> for MarkdownConfig {
         value.clone()
     }
 }
+#[doc = "Result of memory.recall / memory.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MemoryEntriesResult\","]
+#[doc = "  \"description\": \"Result of memory.recall / memory.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"entries\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"entries\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/MemoryEntry\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct MemoryEntriesResult {
+    pub entries: Vec<MemoryEntry>,
+}
+impl From<&MemoryEntriesResult> for MemoryEntriesResult {
+    fn from(value: &MemoryEntriesResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A persisted agent_memory entry."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MemoryEntry\","]
+#[doc = "  \"description\": \"A persisted agent_memory entry.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"importance\","]
+#[doc = "    \"kind\","]
+#[doc = "    \"last_used_at\","]
+#[doc = "    \"scope\","]
+#[doc = "    \"updated_at\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"importance\": {"]
+#[doc = "      \"type\": \"number\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"$ref\": \"#/$defs/MemoryKind\""]
+#[doc = "    },"]
+#[doc = "    \"last_used_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"scope\": {"]
+#[doc = "      \"description\": \"global, agent:<id>, project:<id>, or brain:<id>.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"updated_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct MemoryEntry {
+    pub content: String,
+    pub created_at: i64,
+    pub id: String,
+    pub importance: f64,
+    pub kind: MemoryKind,
+    pub last_used_at: Option<i64>,
+    #[doc = "global, agent:<id>, project:<id>, or brain:<id>."]
+    pub scope: String,
+    pub updated_at: i64,
+}
+impl From<&MemoryEntry> for MemoryEntry {
+    fn from(value: &MemoryEntry) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of memory.forget."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MemoryForgetResult\","]
+#[doc = "  \"description\": \"Result of memory.forget.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"removed\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"removed\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct MemoryForgetResult {
+    pub removed: bool,
+}
+impl From<&MemoryForgetResult> for MemoryForgetResult {
+    fn from(value: &MemoryForgetResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The memory tier (AGENTS.md §8.1)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MemoryKind\","]
+#[doc = "  \"description\": \"The memory tier (AGENTS.md §8.1).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"episodic\","]
+#[doc = "    \"fact\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum MemoryKind {
+    #[serde(rename = "episodic")]
+    Episodic,
+    #[serde(rename = "fact")]
+    Fact,
+}
+impl From<&MemoryKind> for MemoryKind {
+    fn from(value: &MemoryKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for MemoryKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Episodic => write!(f, "episodic"),
+            Self::Fact => write!(f, "fact"),
+        }
+    }
+}
+impl std::str::FromStr for MemoryKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "episodic" => Ok(Self::Episodic),
+            "fact" => Ok(Self::Fact),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for MemoryKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for MemoryKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for MemoryKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params of memory.recall."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MemoryRecallParams\","]
+#[doc = "  \"description\": \"Params of memory.recall.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"query\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"k\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"query\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"scope\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct MemoryRecallParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub k: Option<i64>,
+    pub query: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scope: Option<String>,
+}
+impl From<&MemoryRecallParams> for MemoryRecallParams {
+    fn from(value: &MemoryRecallParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of memory.remember."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MemoryRememberParams\","]
+#[doc = "  \"description\": \"Params of memory.remember.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"importance\": {"]
+#[doc = "      \"type\": \"number\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"$ref\": \"#/$defs/MemoryKind\""]
+#[doc = "    },"]
+#[doc = "    \"scope\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct MemoryRememberParams {
+    pub content: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub importance: Option<f64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub kind: Option<MemoryKind>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scope: Option<String>,
+}
+impl From<&MemoryRememberParams> for MemoryRememberParams {
+    fn from(value: &MemoryRememberParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of the memory.written event."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"MemoryWrittenPayload\","]
+#[doc = "  \"description\": \"Payload of the memory.written event.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"kind\","]
+#[doc = "    \"scope\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"$ref\": \"#/$defs/MemoryKind\""]
+#[doc = "    },"]
+#[doc = "    \"scope\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct MemoryWrittenPayload {
+    pub id: String,
+    pub kind: MemoryKind,
+    pub scope: String,
+}
+impl From<&MemoryWrittenPayload> for MemoryWrittenPayload {
+    fn from(value: &MemoryWrittenPayload) -> Self {
+        value.clone()
+    }
+}
 #[doc = "An entity mention (GRAPH.md §5.1, CozoDB `mention`)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -5240,6 +8461,675 @@ impl From<&OutlineEntry> for OutlineEntry {
         value.clone()
     }
 }
+#[doc = "The payload the UI renders in a permission card (UI.md §12)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionCard\","]
+#[doc = "  \"description\": \"The payload the UI renders in a permission card (UI.md §12).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"action\","]
+#[doc = "    \"category\","]
+#[doc = "    \"choices\","]
+#[doc = "    \"reason\","]
+#[doc = "    \"target\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"action\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"category\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"choices\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"reason\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"target\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionCard {
+    pub action: String,
+    pub category: String,
+    pub choices: Vec<String>,
+    pub reason: String,
+    pub target: Option<String>,
+}
+impl From<&PermissionCard> for PermissionCard {
+    fn from(value: &PermissionCard) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A permission category."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionCategory\","]
+#[doc = "  \"description\": \"A permission category.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"fs.read\","]
+#[doc = "    \"fs.write\","]
+#[doc = "    \"shell.exec\","]
+#[doc = "    \"net.http\","]
+#[doc = "    \"net.p2p\","]
+#[doc = "    \"llm.call\","]
+#[doc = "    \"mcp.connect\","]
+#[doc = "    \"plugin.install\","]
+#[doc = "    \"agent.spawn\","]
+#[doc = "    \"workflow.edit\","]
+#[doc = "    \"brain.write\","]
+#[doc = "    \"system.config\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum PermissionCategory {
+    #[serde(rename = "fs.read")]
+    FsRead,
+    #[serde(rename = "fs.write")]
+    FsWrite,
+    #[serde(rename = "shell.exec")]
+    ShellExec,
+    #[serde(rename = "net.http")]
+    NetHttp,
+    #[serde(rename = "net.p2p")]
+    NetP2p,
+    #[serde(rename = "llm.call")]
+    LlmCall,
+    #[serde(rename = "mcp.connect")]
+    McpConnect,
+    #[serde(rename = "plugin.install")]
+    PluginInstall,
+    #[serde(rename = "agent.spawn")]
+    AgentSpawn,
+    #[serde(rename = "workflow.edit")]
+    WorkflowEdit,
+    #[serde(rename = "brain.write")]
+    BrainWrite,
+    #[serde(rename = "system.config")]
+    SystemConfig,
+}
+impl From<&PermissionCategory> for PermissionCategory {
+    fn from(value: &PermissionCategory) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for PermissionCategory {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::FsRead => write!(f, "fs.read"),
+            Self::FsWrite => write!(f, "fs.write"),
+            Self::ShellExec => write!(f, "shell.exec"),
+            Self::NetHttp => write!(f, "net.http"),
+            Self::NetP2p => write!(f, "net.p2p"),
+            Self::LlmCall => write!(f, "llm.call"),
+            Self::McpConnect => write!(f, "mcp.connect"),
+            Self::PluginInstall => write!(f, "plugin.install"),
+            Self::AgentSpawn => write!(f, "agent.spawn"),
+            Self::WorkflowEdit => write!(f, "workflow.edit"),
+            Self::BrainWrite => write!(f, "brain.write"),
+            Self::SystemConfig => write!(f, "system.config"),
+        }
+    }
+}
+impl std::str::FromStr for PermissionCategory {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "fs.read" => Ok(Self::FsRead),
+            "fs.write" => Ok(Self::FsWrite),
+            "shell.exec" => Ok(Self::ShellExec),
+            "net.http" => Ok(Self::NetHttp),
+            "net.p2p" => Ok(Self::NetP2p),
+            "llm.call" => Ok(Self::LlmCall),
+            "mcp.connect" => Ok(Self::McpConnect),
+            "plugin.install" => Ok(Self::PluginInstall),
+            "agent.spawn" => Ok(Self::AgentSpawn),
+            "workflow.edit" => Ok(Self::WorkflowEdit),
+            "brain.write" => Ok(Self::BrainWrite),
+            "system.config" => Ok(Self::SystemConfig),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for PermissionCategory {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for PermissionCategory {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for PermissionCategory {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params of permission.check."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionCheckParams\","]
+#[doc = "  \"description\": \"Params of permission.check.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"tool\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"arguments\": {},"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"target\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"tool\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionCheckParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub agent_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub arguments: Option<::serde_json::Value>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
+    pub tool: String,
+}
+impl From<&PermissionCheckParams> for PermissionCheckParams {
+    fn from(value: &PermissionCheckParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "allow, prompt, or deny."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionDecision\","]
+#[doc = "  \"description\": \"allow, prompt, or deny.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"allow\","]
+#[doc = "    \"prompt\","]
+#[doc = "    \"deny\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum PermissionDecision {
+    #[serde(rename = "allow")]
+    Allow,
+    #[serde(rename = "prompt")]
+    Prompt,
+    #[serde(rename = "deny")]
+    Deny,
+}
+impl From<&PermissionDecision> for PermissionDecision {
+    fn from(value: &PermissionDecision) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for PermissionDecision {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Allow => write!(f, "allow"),
+            Self::Prompt => write!(f, "prompt"),
+            Self::Deny => write!(f, "deny"),
+        }
+    }
+}
+impl std::str::FromStr for PermissionDecision {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "allow" => Ok(Self::Allow),
+            "prompt" => Ok(Self::Prompt),
+            "deny" => Ok(Self::Deny),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for PermissionDecision {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for PermissionDecision {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for PermissionDecision {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "The session permission mode (SECURITY.md §4)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionMode\","]
+#[doc = "  \"description\": \"The session permission mode (SECURITY.md §4).\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"manual\","]
+#[doc = "    \"auto\","]
+#[doc = "    \"full\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum PermissionMode {
+    #[serde(rename = "manual")]
+    Manual,
+    #[serde(rename = "auto")]
+    Auto,
+    #[serde(rename = "full")]
+    Full,
+}
+impl From<&PermissionMode> for PermissionMode {
+    fn from(value: &PermissionMode) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for PermissionMode {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Manual => write!(f, "manual"),
+            Self::Auto => write!(f, "auto"),
+            Self::Full => write!(f, "full"),
+        }
+    }
+}
+impl std::str::FromStr for PermissionMode {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "manual" => Ok(Self::Manual),
+            "auto" => Ok(Self::Auto),
+            "full" => Ok(Self::Full),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for PermissionMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for PermissionMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for PermissionMode {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params of permission.mode.get / permission.mode.set."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionModeParams\","]
+#[doc = "  \"description\": \"Params of permission.mode.get / permission.mode.set.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"mode\": {"]
+#[doc = "      \"$ref\": \"#/$defs/PermissionMode\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionModeParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mode: Option<PermissionMode>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+}
+impl From<&PermissionModeParams> for PermissionModeParams {
+    fn from(value: &PermissionModeParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of permission.mode.get / permission.mode.set."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionModeResult\","]
+#[doc = "  \"description\": \"Result of permission.mode.get / permission.mode.set.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"mode\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"mode\": {"]
+#[doc = "      \"$ref\": \"#/$defs/PermissionMode\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionModeResult {
+    pub mode: PermissionMode,
+}
+impl From<&PermissionModeResult> for PermissionModeResult {
+    fn from(value: &PermissionModeResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of permission.policy.get / permission.policy.set."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionPolicyResult\","]
+#[doc = "  \"description\": \"Result of permission.policy.get / permission.policy.set.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"rules\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"rules\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/PermissionPolicyRule\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"toml\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionPolicyResult {
+    pub rules: Vec<PermissionPolicyRule>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub toml: Option<String>,
+}
+impl From<&PermissionPolicyResult> for PermissionPolicyResult {
+    fn from(value: &PermissionPolicyResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One ordered permission policy rule (first match wins)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionPolicyRule\","]
+#[doc = "  \"description\": \"One ordered permission policy rule (first match wins).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"action\": {"]
+#[doc = "      \"$ref\": \"#/$defs/PermissionDecision\""]
+#[doc = "    },"]
+#[doc = "    \"category\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"note\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"scope\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"tool\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionPolicyRule {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub action: Option<PermissionDecision>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub category: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub note: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub scope: Option<Vec<String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tool: Option<String>,
+}
+impl From<&PermissionPolicyRule> for PermissionPolicyRule {
+    fn from(value: &PermissionPolicyRule) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A tool call awaiting a permission decision."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionRequest\","]
+#[doc = "  \"description\": \"A tool call awaiting a permission decision.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"arguments\","]
+#[doc = "    \"tool\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"arguments\": {},"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"target\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"tool\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionRequest {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub agent_id: Option<String>,
+    pub arguments: ::serde_json::Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target: Option<String>,
+    pub tool: String,
+}
+impl From<&PermissionRequest> for PermissionRequest {
+    fn from(value: &PermissionRequest) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The outcome of a permission check."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PermissionResolved\","]
+#[doc = "  \"description\": \"The outcome of a permission check.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"card\","]
+#[doc = "    \"category\","]
+#[doc = "    \"decision\","]
+#[doc = "    \"reason\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"card\": {"]
+#[doc = "      \"anyOf\": ["]
+#[doc = "        {"]
+#[doc = "          \"$ref\": \"#/$defs/PermissionCard\""]
+#[doc = "        },"]
+#[doc = "        {"]
+#[doc = "          \"type\": \"null\""]
+#[doc = "        }"]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"category\": {"]
+#[doc = "      \"$ref\": \"#/$defs/PermissionCategory\""]
+#[doc = "    },"]
+#[doc = "    \"decision\": {"]
+#[doc = "      \"$ref\": \"#/$defs/PermissionDecision\""]
+#[doc = "    },"]
+#[doc = "    \"reason\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PermissionResolved {
+    pub card: Option<PermissionCard>,
+    pub category: PermissionCategory,
+    pub decision: PermissionDecision,
+    pub reason: String,
+}
+impl From<&PermissionResolved> for PermissionResolved {
+    fn from(value: &PermissionResolved) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Liveness probe reply; carries no diagnostics."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -5274,6 +9164,133 @@ pub struct PingResult {
 }
 impl From<&PingResult> for PingResult {
     fn from(value: &PingResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of prompt.create."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PromptCreateParams\","]
+#[doc = "  \"description\": \"Params of prompt.create.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"body\","]
+#[doc = "    \"title\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"body\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"tags\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PromptCreateParams {
+    pub body: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub tags: Vec<String>,
+    pub title: String,
+}
+impl From<&PromptCreateParams> for PromptCreateParams {
+    fn from(value: &PromptCreateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of prompt.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PromptListResult\","]
+#[doc = "  \"description\": \"Result of prompt.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"prompts\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"prompts\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/PromptTemplate\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PromptListResult {
+    pub prompts: Vec<PromptTemplate>,
+}
+impl From<&PromptListResult> for PromptListResult {
+    fn from(value: &PromptListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A saved prompt (chat_prompts row)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"PromptTemplate\","]
+#[doc = "  \"description\": \"A saved prompt (chat_prompts row).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"body\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"tags\","]
+#[doc = "    \"title\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"body\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"tags\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct PromptTemplate {
+    pub body: String,
+    pub created_at: i64,
+    pub id: String,
+    pub tags: Vec<String>,
+    pub title: String,
+}
+impl From<&PromptTemplate> for PromptTemplate {
+    fn from(value: &PromptTemplate) -> Self {
         value.clone()
     }
 }
@@ -5410,6 +9427,262 @@ pub struct ReplayParams {
 }
 impl From<&ReplayParams> for ReplayParams {
     fn from(value: &ReplayParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Payload of run.approval_requested / run.approved / run.rejected."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"RunApprovalPayload\","]
+#[doc = "  \"description\": \"Payload of run.approval_requested / run.approved / run.rejected.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"gate\","]
+#[doc = "    \"run_id\","]
+#[doc = "    \"status\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"gate\": {"]
+#[doc = "      \"$ref\": \"#/$defs/RunGate\""]
+#[doc = "    },"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"status\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct RunApprovalPayload {
+    pub gate: RunGate,
+    pub run_id: String,
+    pub status: String,
+}
+impl From<&RunApprovalPayload> for RunApprovalPayload {
+    fn from(value: &RunApprovalPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of run.approve / spec.approve."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"RunApproveParams\","]
+#[doc = "  \"description\": \"Params of run.approve / spec.approve.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"run_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"gate\": {"]
+#[doc = "      \"$ref\": \"#/$defs/RunGate\""]
+#[doc = "    },"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct RunApproveParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub gate: Option<RunGate>,
+    pub run_id: String,
+}
+impl From<&RunApproveParams> for RunApproveParams {
+    fn from(value: &RunApproveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A spec-workflow approval gate."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"RunGate\","]
+#[doc = "  \"description\": \"A spec-workflow approval gate.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"spec\","]
+#[doc = "    \"plan\","]
+#[doc = "    \"task\","]
+#[doc = "    \"diff\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum RunGate {
+    #[serde(rename = "spec")]
+    Spec,
+    #[serde(rename = "plan")]
+    Plan,
+    #[serde(rename = "task")]
+    Task,
+    #[serde(rename = "diff")]
+    Diff,
+}
+impl From<&RunGate> for RunGate {
+    fn from(value: &RunGate) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for RunGate {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Spec => write!(f, "spec"),
+            Self::Plan => write!(f, "plan"),
+            Self::Task => write!(f, "task"),
+            Self::Diff => write!(f, "diff"),
+        }
+    }
+}
+impl std::str::FromStr for RunGate {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "spec" => Ok(Self::Spec),
+            "plan" => Ok(Self::Plan),
+            "task" => Ok(Self::Task),
+            "diff" => Ok(Self::Diff),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for RunGate {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for RunGate {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for RunGate {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params carrying a run id."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"RunIdParams\","]
+#[doc = "  \"description\": \"Params carrying a run id.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"run_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct RunIdParams {
+    pub run_id: String,
+}
+impl From<&RunIdParams> for RunIdParams {
+    fn from(value: &RunIdParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of run.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"RunListResult\","]
+#[doc = "  \"description\": \"Result of run.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"runs\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"runs\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/WorkflowRun\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct RunListResult {
+    pub runs: Vec<WorkflowRun>,
+}
+impl From<&RunListResult> for RunListResult {
+    fn from(value: &RunListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of run.reject."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"RunRejectParams\","]
+#[doc = "  \"description\": \"Params of run.reject.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"run_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"reason\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct RunRejectParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub reason: Option<String>,
+    pub run_id: String,
+}
+impl From<&RunRejectParams> for RunRejectParams {
+    fn from(value: &RunRejectParams) -> Self {
         value.clone()
     }
 }
@@ -6223,6 +10496,92 @@ pub struct SearchScores {
 }
 impl From<&SearchScores> for SearchScores {
     fn from(value: &SearchScores) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of spec.get."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SpecGetResult\","]
+#[doc = "  \"description\": \"Result of spec.get.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"artifacts\","]
+#[doc = "    \"run\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"artifacts\": {"]
+#[doc = "      \"description\": \"Artifact Markdown keyed by gate label.\","]
+#[doc = "      \"type\": \"object\","]
+#[doc = "      \"additionalProperties\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"run\": {"]
+#[doc = "      \"$ref\": \"#/$defs/WorkflowRun\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SpecGetResult {
+    #[doc = "Artifact Markdown keyed by gate label."]
+    pub artifacts: ::std::collections::HashMap<String, String>,
+    pub run: WorkflowRun,
+}
+impl From<&SpecGetResult> for SpecGetResult {
+    fn from(value: &SpecGetResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of spec.start."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SpecStartParams\","]
+#[doc = "  \"description\": \"Params of spec.start.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"slug\","]
+#[doc = "    \"task\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"mode\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AutonomyMode\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"slug\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"task\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SpecStartParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub mode: Option<AutonomyMode>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+    pub slug: String,
+    pub task: String,
+}
+impl From<&SpecStartParams> for SpecStartParams {
+    fn from(value: &SpecStartParams) -> Self {
         value.clone()
     }
 }
@@ -7144,6 +11503,94 @@ pub struct WelcomeResult {
 }
 impl From<&WelcomeResult> for WelcomeResult {
     fn from(value: &WelcomeResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A spec-workflow run (runs table)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"WorkflowRun\","]
+#[doc = "  \"description\": \"A spec-workflow run (runs table).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"artifacts\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"mode\","]
+#[doc = "    \"pending_gate\","]
+#[doc = "    \"session_id\","]
+#[doc = "    \"slug\","]
+#[doc = "    \"state\","]
+#[doc = "    \"updated_at\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"artifacts\": {"]
+#[doc = "      \"description\": \"Written artifact paths keyed by gate label.\","]
+#[doc = "      \"type\": \"object\","]
+#[doc = "      \"additionalProperties\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"mode\": {"]
+#[doc = "      \"$ref\": \"#/$defs/AutonomyMode\""]
+#[doc = "    },"]
+#[doc = "    \"pending_gate\": {"]
+#[doc = "      \"anyOf\": ["]
+#[doc = "        {"]
+#[doc = "          \"$ref\": \"#/$defs/RunGate\""]
+#[doc = "        },"]
+#[doc = "        {"]
+#[doc = "          \"type\": \"null\""]
+#[doc = "        }"]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"slug\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"description\": \"running, awaiting_spec_approval, awaiting_plan_approval, ...\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"updated_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct WorkflowRun {
+    #[doc = "Written artifact paths keyed by gate label."]
+    pub artifacts: ::std::collections::HashMap<String, String>,
+    pub created_at: i64,
+    pub id: String,
+    pub mode: AutonomyMode,
+    pub pending_gate: Option<RunGate>,
+    pub session_id: Option<String>,
+    pub slug: String,
+    #[doc = "running, awaiting_spec_approval, awaiting_plan_approval, ..."]
+    pub state: String,
+    pub updated_at: i64,
+}
+impl From<&WorkflowRun> for WorkflowRun {
+    fn from(value: &WorkflowRun) -> Self {
         value.clone()
     }
 }

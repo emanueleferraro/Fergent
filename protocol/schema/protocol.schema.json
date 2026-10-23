@@ -1504,6 +1504,1026 @@
         "dropped": { "type": "integer" },
         "last_seen_id": { "type": ["string", "null"] }
       }
+    },
+    "CapabilityView": {
+      "title": "CapabilityView",
+      "description": "A capability as reported by capability.list / capability.get (spec Appendix D).",
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "version",
+        "source",
+        "description",
+        "dependencies",
+        "resources",
+        "enabled",
+        "default_enabled",
+        "hot_toggle",
+        "restart_required",
+        "config"
+      ],
+      "properties": {
+        "id": { "type": "string", "description": "Namespaced id, e.g. capability.charts." },
+        "name": { "type": "string" },
+        "version": { "type": "string" },
+        "source": { "type": "string", "description": "kernel or plugin:<id>." },
+        "description": { "type": ["string", "null"] },
+        "dependencies": { "type": "array", "items": { "type": "string" } },
+        "resources": { "type": "array", "items": { "type": "string" } },
+        "enabled": { "type": "boolean" },
+        "default_enabled": { "type": "boolean" },
+        "hot_toggle": { "type": "boolean" },
+        "restart_required": { "type": "boolean" },
+        "config": { "description": "Optional configuration." }
+      }
+    },
+    "CapabilityListResult": {
+      "title": "CapabilityListResult",
+      "description": "Result of capability.list.",
+      "type": "object",
+      "required": ["capabilities"],
+      "properties": {
+        "capabilities": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CapabilityView" }
+        }
+      }
+    },
+    "CapabilityGetParams": {
+      "title": "CapabilityGetParams",
+      "description": "Params of capability.get.",
+      "type": "object",
+      "required": ["id"],
+      "properties": { "id": { "type": "string" } }
+    },
+    "CapabilitySetParams": {
+      "title": "CapabilitySetParams",
+      "description": "Params of capability.set.",
+      "type": "object",
+      "required": ["id", "enabled"],
+      "properties": {
+        "id": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "auto_enable_deps": {
+          "type": "boolean",
+          "description": "Enable disabled dependencies instead of failing."
+        }
+      }
+    },
+    "CapabilityRegisteredPayload": {
+      "title": "CapabilityRegisteredPayload",
+      "description": "Payload of the capability.registered event.",
+      "type": "object",
+      "required": ["id"],
+      "properties": { "id": { "type": "string" } }
+    },
+    "CapabilityChangedPayload": {
+      "title": "CapabilityChangedPayload",
+      "description": "Payload of capability.enabled / capability.disabled / capability.changed.",
+      "type": "object",
+      "required": ["id", "enabled"],
+      "properties": {
+        "id": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "restart_required": { "type": ["boolean", "null"] }
+      }
+    },
+    "AgentLoopKind": {
+      "title": "AgentLoopKind",
+      "description": "The loop pattern an agent uses (AGENTS.md §5.3).",
+      "type": "string",
+      "enum": ["react", "plan_execute", "reflexion", "tot", "debate", "map_reduce"]
+    },
+    "AgentLimits": {
+      "title": "AgentLimits",
+      "description": "Per-run budgets (AGENTS.md §13).",
+      "type": "object",
+      "properties": {
+        "max_tokens_per_run": { "type": "integer" },
+        "max_cost_usd_per_run": { "type": "number" },
+        "max_wall_time_s": { "type": "integer" },
+        "max_tool_calls_per_run": { "type": "integer" },
+        "max_sub_agents": { "type": "integer" },
+        "max_iterations": { "type": "integer" }
+      }
+    },
+    "AgentMemoryConfig": {
+      "title": "AgentMemoryConfig",
+      "description": "Memory settings of an agent definition (AGENTS.md §8).",
+      "type": "object",
+      "properties": {
+        "episodic": { "type": "boolean" },
+        "semantic": { "type": "boolean" },
+        "working_window": { "type": ["integer", "null"] },
+        "summarize_at": { "type": ["number", "null"] },
+        "rag_top_k": { "type": ["integer", "null"] }
+      }
+    },
+    "AgentSubAgentsConfig": {
+      "title": "AgentSubAgentsConfig",
+      "description": "Sub-agent settings of an agent definition (AGENTS.md §9).",
+      "type": "object",
+      "properties": {
+        "allow": { "type": "boolean" },
+        "max_depth": { "type": ["integer", "null"] },
+        "default_tools": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "AgentDefinition": {
+      "title": "AgentDefinition",
+      "description": "A parsed agents/<id>.md definition (AGENTS.md §4). The Markdown body is the system prompt and is not part of this payload.",
+      "type": "object",
+      "required": ["id", "name", "model"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "version": { "type": "string" },
+        "model": { "type": "string" },
+        "model_fallback": { "type": "array", "items": { "type": "string" } },
+        "temperature": { "type": ["number", "null"] },
+        "max_tokens": { "type": ["integer", "null"] },
+        "reasoning": { "type": "boolean" },
+        "loop": { "$ref": "#/$defs/AgentLoopKind" },
+        "tools": { "type": "array", "items": { "type": "string" } },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "mcp": { "type": "array", "items": { "type": "string" } },
+        "limits": { "$ref": "#/$defs/AgentLimits" },
+        "memory": { "$ref": "#/$defs/AgentMemoryConfig" },
+        "sub_agents": { "$ref": "#/$defs/AgentSubAgentsConfig" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "icon": { "type": ["string", "null"] },
+        "color": { "type": ["string", "null"] }
+      }
+    },
+    "AgentListResult": {
+      "title": "AgentListResult",
+      "description": "Result of agent.list.",
+      "type": "object",
+      "required": ["agents"],
+      "properties": {
+        "agents": { "type": "array", "items": { "$ref": "#/$defs/AgentDefinition" } }
+      }
+    },
+    "AgentCreateParams": {
+      "title": "AgentCreateParams",
+      "description": "Params of agent.create: the full Markdown definition.",
+      "type": "object",
+      "required": ["definition"],
+      "properties": {
+        "definition": {
+          "type": "string",
+          "description": "YAML frontmatter followed by the Markdown system prompt."
+        }
+      }
+    },
+    "AgentIdParams": {
+      "title": "AgentIdParams",
+      "description": "Params carrying an agent id.",
+      "type": "object",
+      "required": ["id"],
+      "properties": { "id": { "type": "string" } }
+    },
+    "AgentDeletedResult": {
+      "title": "AgentDeletedResult",
+      "description": "Result of agent.delete.",
+      "type": "object",
+      "required": ["deleted"],
+      "properties": { "deleted": { "type": "string" } }
+    },
+    "AgentRunParams": {
+      "title": "AgentRunParams",
+      "description": "Params of agent.run.",
+      "type": "object",
+      "required": ["id", "task"],
+      "properties": {
+        "id": { "type": "string" },
+        "task": { "type": "string" },
+        "session_id": { "type": ["string", "null"] }
+      }
+    },
+    "AgentRunResult": {
+      "title": "AgentRunResult",
+      "description": "Result of agent.run: the run outcome (AGENTS.md §5.2).",
+      "type": "object",
+      "required": ["session_id", "agent_id", "final_text", "messages", "tool_calls", "usage", "iterations", "stop"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "final_text": { "type": "string" },
+        "messages": { "type": "array", "items": { "description": "A normalized LLM message." } },
+        "tool_calls": { "type": "array", "items": { "description": "A tool invocation." } },
+        "usage": { "description": "Accumulated token usage." },
+        "iterations": { "type": "integer" },
+        "stop": { "type": "string", "description": "Why the run stopped." }
+      }
+    },
+    "AgentRunState": {
+      "title": "AgentRunState",
+      "description": "Session lifecycle state (AGENTS.md §14.1).",
+      "type": "string",
+      "enum": [
+        "created",
+        "running",
+        "paused",
+        "waiting_permission",
+        "done",
+        "error",
+        "cancelled"
+      ]
+    },
+    "AgentSessionRecord": {
+      "title": "AgentSessionRecord",
+      "description": "A persisted agent session.",
+      "type": "object",
+      "required": ["id", "agent_id", "title", "state", "created_at", "updated_at", "summary"],
+      "properties": {
+        "id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "state": { "$ref": "#/$defs/AgentRunState" },
+        "created_at": { "type": "integer", "format": "int64" },
+        "updated_at": { "type": "integer", "format": "int64" },
+        "summary": { "type": ["string", "null"] }
+      }
+    },
+    "AgentSessionListResult": {
+      "title": "AgentSessionListResult",
+      "description": "Result of agent.session.list.",
+      "type": "object",
+      "required": ["sessions"],
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AgentSessionRecord" }
+        }
+      }
+    },
+    "AgentMessageRecord": {
+      "title": "AgentMessageRecord",
+      "description": "A persisted agent message.",
+      "type": "object",
+      "required": ["id", "session_id", "role", "content", "created_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "session_id": { "type": "string" },
+        "role": { "type": "string" },
+        "content": { "type": "string" },
+        "created_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "AgentSessionMessagesResult": {
+      "title": "AgentSessionMessagesResult",
+      "description": "Result of agent.session.messages.",
+      "type": "object",
+      "required": ["messages"],
+      "properties": {
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/AgentMessageRecord" }
+        }
+      }
+    },
+    "MemoryKind": {
+      "title": "MemoryKind",
+      "description": "The memory tier (AGENTS.md §8.1).",
+      "type": "string",
+      "enum": ["episodic", "fact"]
+    },
+    "MemoryEntry": {
+      "title": "MemoryEntry",
+      "description": "A persisted agent_memory entry.",
+      "type": "object",
+      "required": ["id", "scope", "kind", "content", "importance", "created_at", "updated_at", "last_used_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "scope": {
+          "type": "string",
+          "description": "global, agent:<id>, project:<id>, or brain:<id>."
+        },
+        "kind": { "$ref": "#/$defs/MemoryKind" },
+        "content": { "type": "string" },
+        "importance": { "type": "number" },
+        "created_at": { "type": "integer", "format": "int64" },
+        "updated_at": { "type": "integer", "format": "int64" },
+        "last_used_at": { "type": ["integer", "null"], "format": "int64" }
+      }
+    },
+    "MemoryEntriesResult": {
+      "title": "MemoryEntriesResult",
+      "description": "Result of memory.recall / memory.list.",
+      "type": "object",
+      "required": ["entries"],
+      "properties": {
+        "entries": { "type": "array", "items": { "$ref": "#/$defs/MemoryEntry" } }
+      }
+    },
+    "MemoryRememberParams": {
+      "title": "MemoryRememberParams",
+      "description": "Params of memory.remember.",
+      "type": "object",
+      "required": ["content"],
+      "properties": {
+        "content": { "type": "string" },
+        "scope": { "type": "string" },
+        "kind": { "$ref": "#/$defs/MemoryKind" },
+        "importance": { "type": "number" }
+      }
+    },
+    "MemoryRecallParams": {
+      "title": "MemoryRecallParams",
+      "description": "Params of memory.recall.",
+      "type": "object",
+      "required": ["query"],
+      "properties": {
+        "query": { "type": "string" },
+        "scope": { "type": "string" },
+        "k": { "type": "integer" }
+      }
+    },
+    "MemoryForgetResult": {
+      "title": "MemoryForgetResult",
+      "description": "Result of memory.forget.",
+      "type": "object",
+      "required": ["removed"],
+      "properties": { "removed": { "type": "boolean" } }
+    },
+    "MemoryWrittenPayload": {
+      "title": "MemoryWrittenPayload",
+      "description": "Payload of the memory.written event.",
+      "type": "object",
+      "required": ["id", "scope", "kind"],
+      "properties": {
+        "id": { "type": "string" },
+        "scope": { "type": "string" },
+        "kind": { "$ref": "#/$defs/MemoryKind" }
+      }
+    },
+    "ContextSection": {
+      "title": "ContextSection",
+      "description": "One assembled context section (spec §2, Context Viewer).",
+      "type": "object",
+      "required": ["name", "enabled", "cacheable", "tokens", "source_refs", "content"],
+      "properties": {
+        "name": { "type": "string", "description": "system, capabilities, rag, ..." },
+        "enabled": { "type": "boolean" },
+        "cacheable": { "type": "boolean" },
+        "tokens": { "type": "integer" },
+        "source_refs": { "type": "array", "items": { "type": "string" } },
+        "content": { "type": "string" }
+      }
+    },
+    "ContextSnapshot": {
+      "title": "ContextSnapshot",
+      "description": "A persisted context_snapshots row.",
+      "type": "object",
+      "required": ["id", "session_id", "turn_seq", "sections", "total_tokens", "budget"],
+      "properties": {
+        "id": { "type": "string" },
+        "session_id": { "type": "string" },
+        "turn_seq": { "type": "integer" },
+        "sections": { "type": "array", "items": { "$ref": "#/$defs/ContextSection" } },
+        "total_tokens": { "type": "integer" },
+        "budget": { "type": "integer" }
+      }
+    },
+    "ContextSettings": {
+      "title": "ContextSettings",
+      "description": "Per-session context toggles and budget.",
+      "type": "object",
+      "required": ["enabled", "budget"],
+      "properties": {
+        "enabled": {
+          "type": "object",
+          "additionalProperties": { "type": "boolean" }
+        },
+        "budget": { "type": "integer" }
+      }
+    },
+    "ContextInspectParams": {
+      "title": "ContextInspectParams",
+      "description": "Params of context.inspect.",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "agent_id": { "type": ["string", "null"] },
+        "input": { "type": ["string", "null"] }
+      }
+    },
+    "ContextSetSectionParams": {
+      "title": "ContextSetSectionParams",
+      "description": "Params of context.set_section.",
+      "type": "object",
+      "required": ["section", "enabled"],
+      "properties": {
+        "section": { "type": "string" },
+        "enabled": { "type": "boolean" }
+      }
+    },
+    "ContextSetBudgetParams": {
+      "title": "ContextSetBudgetParams",
+      "description": "Params of context.set_budget.",
+      "type": "object",
+      "required": ["budget"],
+      "properties": { "budget": { "type": "integer" } }
+    },
+    "ContextBuiltPayload": {
+      "title": "ContextBuiltPayload",
+      "description": "Payload of the context.built event.",
+      "type": "object",
+      "required": ["session_id", "turn_seq", "total_tokens", "sections"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "turn_seq": { "type": "integer" },
+        "total_tokens": { "type": "integer" },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "enabled", "tokens"],
+            "properties": {
+              "name": { "type": "string" },
+              "enabled": { "type": "boolean" },
+              "tokens": { "type": "integer" }
+            }
+          }
+        }
+      }
+    },
+    "AutonomyMode": {
+      "title": "AutonomyMode",
+      "description": "How far a spec workflow runs before pausing (decision D7).",
+      "type": "string",
+      "enum": ["supervised", "batch", "auto"]
+    },
+    "RunGate": {
+      "title": "RunGate",
+      "description": "A spec-workflow approval gate.",
+      "type": "string",
+      "enum": ["spec", "plan", "task", "diff"]
+    },
+    "WorkflowRun": {
+      "title": "WorkflowRun",
+      "description": "A spec-workflow run (runs table).",
+      "type": "object",
+      "required": ["id", "session_id", "slug", "mode", "state", "pending_gate", "artifacts", "created_at", "updated_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "session_id": { "type": ["string", "null"] },
+        "slug": { "type": "string" },
+        "mode": { "$ref": "#/$defs/AutonomyMode" },
+        "state": {
+          "type": "string",
+          "description": "running, awaiting_spec_approval, awaiting_plan_approval, ..."
+        },
+        "pending_gate": { "anyOf": [{ "$ref": "#/$defs/RunGate" }, { "type": "null" }] },
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Written artifact paths keyed by gate label."
+        },
+        "created_at": { "type": "integer", "format": "int64" },
+        "updated_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "SpecStartParams": {
+      "title": "SpecStartParams",
+      "description": "Params of spec.start.",
+      "type": "object",
+      "required": ["slug", "task"],
+      "properties": {
+        "slug": { "type": "string" },
+        "task": { "type": "string" },
+        "mode": { "$ref": "#/$defs/AutonomyMode" },
+        "session_id": { "type": ["string", "null"] }
+      }
+    },
+    "SpecGetResult": {
+      "title": "SpecGetResult",
+      "description": "Result of spec.get.",
+      "type": "object",
+      "required": ["run", "artifacts"],
+      "properties": {
+        "run": { "$ref": "#/$defs/WorkflowRun" },
+        "artifacts": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Artifact Markdown keyed by gate label."
+        }
+      }
+    },
+    "RunIdParams": {
+      "title": "RunIdParams",
+      "description": "Params carrying a run id.",
+      "type": "object",
+      "required": ["run_id"],
+      "properties": { "run_id": { "type": "string" } }
+    },
+    "RunApproveParams": {
+      "title": "RunApproveParams",
+      "description": "Params of run.approve / spec.approve.",
+      "type": "object",
+      "required": ["run_id"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "gate": { "$ref": "#/$defs/RunGate" }
+      }
+    },
+    "RunRejectParams": {
+      "title": "RunRejectParams",
+      "description": "Params of run.reject.",
+      "type": "object",
+      "required": ["run_id"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "reason": { "type": ["string", "null"] }
+      }
+    },
+    "RunListResult": {
+      "title": "RunListResult",
+      "description": "Result of run.list.",
+      "type": "object",
+      "required": ["runs"],
+      "properties": {
+        "runs": { "type": "array", "items": { "$ref": "#/$defs/WorkflowRun" } }
+      }
+    },
+    "Approval": {
+      "title": "Approval",
+      "description": "An approvals row.",
+      "type": "object",
+      "required": ["id", "gate", "status", "created_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "gate": { "$ref": "#/$defs/RunGate" },
+        "status": { "type": "string", "description": "pending, approved, rejected, or edited." },
+        "created_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "RunApprovalPayload": {
+      "title": "RunApprovalPayload",
+      "description": "Payload of run.approval_requested / run.approved / run.rejected.",
+      "type": "object",
+      "required": ["run_id", "gate", "status"],
+      "properties": {
+        "run_id": { "type": "string" },
+        "gate": { "$ref": "#/$defs/RunGate" },
+        "status": { "type": "string" }
+      }
+    },
+    "PermissionMode": {
+      "title": "PermissionMode",
+      "description": "The session permission mode (SECURITY.md §4).",
+      "type": "string",
+      "enum": ["manual", "auto", "full"]
+    },
+    "PermissionCategory": {
+      "title": "PermissionCategory",
+      "description": "A permission category.",
+      "type": "string",
+      "enum": [
+        "fs.read",
+        "fs.write",
+        "shell.exec",
+        "net.http",
+        "net.p2p",
+        "llm.call",
+        "mcp.connect",
+        "plugin.install",
+        "agent.spawn",
+        "workflow.edit",
+        "brain.write",
+        "system.config"
+      ]
+    },
+    "PermissionDecision": {
+      "title": "PermissionDecision",
+      "description": "allow, prompt, or deny.",
+      "type": "string",
+      "enum": ["allow", "prompt", "deny"]
+    },
+    "PermissionRequest": {
+      "title": "PermissionRequest",
+      "description": "A tool call awaiting a permission decision.",
+      "type": "object",
+      "required": ["tool", "arguments"],
+      "properties": {
+        "tool": { "type": "string" },
+        "arguments": {},
+        "target": { "type": ["string", "null"] },
+        "session_id": { "type": ["string", "null"] },
+        "agent_id": { "type": ["string", "null"] }
+      }
+    },
+    "PermissionCard": {
+      "title": "PermissionCard",
+      "description": "The payload the UI renders in a permission card (UI.md §12).",
+      "type": "object",
+      "required": ["action", "target", "reason", "category", "choices"],
+      "properties": {
+        "action": { "type": "string" },
+        "target": { "type": ["string", "null"] },
+        "reason": { "type": "string" },
+        "category": { "type": "string" },
+        "choices": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "PermissionResolved": {
+      "title": "PermissionResolved",
+      "description": "The outcome of a permission check.",
+      "type": "object",
+      "required": ["decision", "category", "reason", "card"],
+      "properties": {
+        "decision": { "$ref": "#/$defs/PermissionDecision" },
+        "category": { "$ref": "#/$defs/PermissionCategory" },
+        "reason": { "type": "string" },
+        "card": { "anyOf": [{ "$ref": "#/$defs/PermissionCard" }, { "type": "null" }] }
+      }
+    },
+    "PermissionCheckParams": {
+      "title": "PermissionCheckParams",
+      "description": "Params of permission.check.",
+      "type": "object",
+      "required": ["tool"],
+      "properties": {
+        "tool": { "type": "string" },
+        "arguments": {},
+        "target": { "type": ["string", "null"] },
+        "session_id": { "type": ["string", "null"] },
+        "agent_id": { "type": ["string", "null"] }
+      }
+    },
+    "PermissionModeParams": {
+      "title": "PermissionModeParams",
+      "description": "Params of permission.mode.get / permission.mode.set.",
+      "type": "object",
+      "properties": {
+        "session_id": { "type": ["string", "null"] },
+        "mode": { "$ref": "#/$defs/PermissionMode" }
+      }
+    },
+    "PermissionModeResult": {
+      "title": "PermissionModeResult",
+      "description": "Result of permission.mode.get / permission.mode.set.",
+      "type": "object",
+      "required": ["mode"],
+      "properties": { "mode": { "$ref": "#/$defs/PermissionMode" } }
+    },
+    "PermissionPolicyRule": {
+      "title": "PermissionPolicyRule",
+      "description": "One ordered permission policy rule (first match wins).",
+      "type": "object",
+      "properties": {
+        "category": { "type": ["string", "null"] },
+        "tool": { "type": ["string", "null"] },
+        "action": { "$ref": "#/$defs/PermissionDecision" },
+        "scope": { "type": ["array", "null"], "items": { "type": "string" } },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "PermissionPolicyResult": {
+      "title": "PermissionPolicyResult",
+      "description": "Result of permission.policy.get / permission.policy.set.",
+      "type": "object",
+      "required": ["rules"],
+      "properties": {
+        "toml": { "type": ["string", "null"] },
+        "rules": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/PermissionPolicyRule" }
+        }
+      }
+    },
+    "Backup": {
+      "title": "Backup",
+      "description": "A reversibility snapshot.",
+      "type": "object",
+      "required": ["id", "path", "backup_path", "existed", "created_at", "run_id", "session_id"],
+      "properties": {
+        "id": { "type": "string" },
+        "path": { "type": "string" },
+        "backup_path": { "type": "string" },
+        "existed": { "type": "boolean" },
+        "created_at": { "type": "integer", "format": "int64" },
+        "run_id": { "type": ["string", "null"] },
+        "session_id": { "type": ["string", "null"] }
+      }
+    },
+    "BackupSnapshotParams": {
+      "title": "BackupSnapshotParams",
+      "description": "Params of backup.snapshot.",
+      "type": "object",
+      "required": ["path"],
+      "properties": {
+        "path": { "type": "string" },
+        "run_id": { "type": ["string", "null"] },
+        "session_id": { "type": ["string", "null"] },
+        "agent_id": { "type": ["string", "null"] }
+      }
+    },
+    "BackupListParams": {
+      "title": "BackupListParams",
+      "description": "Params of backup.list.",
+      "type": "object",
+      "properties": {
+        "run_id": { "type": ["string", "null"] },
+        "limit": { "type": "integer" }
+      }
+    },
+    "BackupListResult": {
+      "title": "BackupListResult",
+      "description": "Result of backup.list.",
+      "type": "object",
+      "required": ["backups"],
+      "properties": {
+        "backups": { "type": "array", "items": { "$ref": "#/$defs/Backup" } }
+      }
+    },
+    "BackupRestoreParams": {
+      "title": "BackupRestoreParams",
+      "description": "Params of backup.restore.",
+      "type": "object",
+      "required": ["backup_id"],
+      "properties": { "backup_id": { "type": "string" } }
+    },
+    "BackupRestoreResult": {
+      "title": "BackupRestoreResult",
+      "description": "Result of backup.restore.",
+      "type": "object",
+      "required": ["restored"],
+      "properties": { "restored": { "type": "string" } }
+    },
+    "BackupRestoreRunResult": {
+      "title": "BackupRestoreRunResult",
+      "description": "Result of backup.restore_run.",
+      "type": "object",
+      "required": ["restored"],
+      "properties": {
+        "restored": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ChatSession": {
+      "title": "ChatSession",
+      "description": "A chat session (agent_sessions row).",
+      "type": "object",
+      "required": ["id", "agent_id", "title", "model", "state", "parent_session_id", "permission_mode", "summary", "tokens_in", "tokens_out", "cost_usd", "created_at", "updated_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] },
+        "state": { "type": "string" },
+        "parent_session_id": { "type": ["string", "null"] },
+        "permission_mode": { "$ref": "#/$defs/PermissionMode" },
+        "summary": { "type": ["string", "null"] },
+        "tokens_in": { "type": "integer", "format": "int64" },
+        "tokens_out": { "type": "integer", "format": "int64" },
+        "cost_usd": { "type": "number" },
+        "created_at": { "type": "integer", "format": "int64" },
+        "updated_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "ChatMessage": {
+      "title": "ChatMessage",
+      "description": "A chat message (agent_messages row).",
+      "type": "object",
+      "required": ["id", "session_id", "seq", "role", "content", "tool_calls", "tokens", "created_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "session_id": { "type": "string" },
+        "seq": { "type": "integer", "format": "int64" },
+        "role": { "type": "string", "description": "user, assistant, tool, or system." },
+        "content": { "type": "string" },
+        "tool_calls": { "description": "Tool calls, when this is an assistant tool-call turn." },
+        "tokens": { "type": "integer", "format": "int64" },
+        "created_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "ChatSearchHit": {
+      "title": "ChatSearchHit",
+      "description": "One full-text search hit.",
+      "type": "object",
+      "required": ["session_id", "message_id", "role", "snippet"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "message_id": { "type": "string" },
+        "role": { "type": "string" },
+        "snippet": { "type": "string" }
+      }
+    },
+    "ChatSessionCreateParams": {
+      "title": "ChatSessionCreateParams",
+      "description": "Params of chat.session.create.",
+      "type": "object",
+      "required": ["agent_id"],
+      "properties": {
+        "agent_id": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] }
+      }
+    },
+    "ChatSessionListResult": {
+      "title": "ChatSessionListResult",
+      "description": "Result of chat.session.list.",
+      "type": "object",
+      "required": ["sessions"],
+      "properties": {
+        "sessions": { "type": "array", "items": { "$ref": "#/$defs/ChatSession" } }
+      }
+    },
+    "ChatSessionIdParams": {
+      "title": "ChatSessionIdParams",
+      "description": "Params carrying a chat session id.",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": { "session_id": { "type": "string" } }
+    },
+    "ChatSessionRenameParams": {
+      "title": "ChatSessionRenameParams",
+      "description": "Params of chat.session.rename.",
+      "type": "object",
+      "required": ["session_id", "title"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "title": { "type": "string" }
+      }
+    },
+    "ChatDeletedResult": {
+      "title": "ChatDeletedResult",
+      "description": "Result of chat.session.delete.",
+      "type": "object",
+      "required": ["deleted"],
+      "properties": { "deleted": { "type": "string" } }
+    },
+    "ChatSessionSearchParams": {
+      "title": "ChatSessionSearchParams",
+      "description": "Params of chat.session.search.",
+      "type": "object",
+      "required": ["query"],
+      "properties": {
+        "query": { "type": "string" },
+        "limit": { "type": "integer" }
+      }
+    },
+    "ChatSessionSearchResult": {
+      "title": "ChatSessionSearchResult",
+      "description": "Result of chat.session.search.",
+      "type": "object",
+      "required": ["hits"],
+      "properties": {
+        "hits": { "type": "array", "items": { "$ref": "#/$defs/ChatSearchHit" } }
+      }
+    },
+    "ChatMessageSendParams": {
+      "title": "ChatMessageSendParams",
+      "description": "Params of chat.message.send.",
+      "type": "object",
+      "required": ["session_id", "text"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "text": { "type": "string" }
+      }
+    },
+    "ChatMessageListResult": {
+      "title": "ChatMessageListResult",
+      "description": "Result of chat.message.list.",
+      "type": "object",
+      "required": ["messages"],
+      "properties": {
+        "messages": { "type": "array", "items": { "$ref": "#/$defs/ChatMessage" } }
+      }
+    },
+    "ChatRegenerateResult": {
+      "title": "ChatRegenerateResult",
+      "description": "Result of chat.message.regenerate: the prompt to re-answer.",
+      "type": "object",
+      "required": ["prompt"],
+      "properties": { "prompt": { "$ref": "#/$defs/ChatMessage" } }
+    },
+    "ChatForkParams": {
+      "title": "ChatForkParams",
+      "description": "Params of chat.message.fork.",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "title": { "type": ["string", "null"] }
+      }
+    },
+    "ChatContinueParams": {
+      "title": "ChatContinueParams",
+      "description": "Params of chat.continue.",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "requested": { "type": "integer", "description": "Capped by the kernel (default 3)." }
+      }
+    },
+    "ChatContinueResult": {
+      "title": "ChatContinueResult",
+      "description": "Result of chat.continue.",
+      "type": "object",
+      "required": ["turns"],
+      "properties": { "turns": { "type": "integer" } }
+    },
+    "AttachmentKind": {
+      "title": "AttachmentKind",
+      "description": "How an attachment is handled.",
+      "type": "string",
+      "enum": ["text", "image", "pdf", "other"]
+    },
+    "Attachment": {
+      "title": "Attachment",
+      "description": "An attachment reference.",
+      "type": "object",
+      "required": ["name", "media_type", "size", "kind"],
+      "properties": {
+        "name": { "type": "string" },
+        "media_type": { "type": "string" },
+        "size": { "type": "integer" },
+        "kind": { "$ref": "#/$defs/AttachmentKind" }
+      }
+    },
+    "AttachmentRouting": {
+      "title": "AttachmentRouting",
+      "description": "How an attachment was routed into the conversation.",
+      "type": "object",
+      "required": ["attachment", "routed", "note"],
+      "properties": {
+        "attachment": { "$ref": "#/$defs/Attachment" },
+        "routed": { "type": "string", "description": "inline, vision, or metadata_only." },
+        "note": { "type": ["string", "null"] }
+      }
+    },
+    "ChatAttachParams": {
+      "title": "ChatAttachParams",
+      "description": "Params of chat.attach.",
+      "type": "object",
+      "required": ["session_id", "name"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "name": { "type": "string" },
+        "media_type": { "type": "string" },
+        "size": { "type": "integer" }
+      }
+    },
+    "PromptTemplate": {
+      "title": "PromptTemplate",
+      "description": "A saved prompt (chat_prompts row).",
+      "type": "object",
+      "required": ["id", "title", "body", "tags", "created_at"],
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "created_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "PromptListResult": {
+      "title": "PromptListResult",
+      "description": "Result of prompt.list.",
+      "type": "object",
+      "required": ["prompts"],
+      "properties": {
+        "prompts": { "type": "array", "items": { "$ref": "#/$defs/PromptTemplate" } }
+      }
+    },
+    "PromptCreateParams": {
+      "title": "PromptCreateParams",
+      "description": "Params of prompt.create.",
+      "type": "object",
+      "required": ["title", "body"],
+      "properties": {
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "tags": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ChatSessionCreatedPayload": {
+      "title": "ChatSessionCreatedPayload",
+      "description": "Payload of the chat.session.created event.",
+      "type": "object",
+      "required": ["session_id", "agent_id"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "agent_id": { "type": "string" }
+      }
+    },
+    "ChatMessageCreatedPayload": {
+      "title": "ChatMessageCreatedPayload",
+      "description": "Payload of the chat.message.created event.",
+      "type": "object",
+      "required": ["session_id", "message_id", "role", "seq"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "message_id": { "type": "string" },
+        "role": { "type": "string" },
+        "seq": { "type": "integer", "format": "int64" }
+      }
     }
   }
 }
