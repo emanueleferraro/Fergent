@@ -24,6 +24,7 @@ use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
 };
 use fergents_reversibility::ReversibilityService;
+use fergents_secrets::{Keychain, KeyringKeychain, SecretVault};
 use fergents_storage::{SqliteStorage, Storage, StorageError, Value};
 
 pub use brains::{BrainService, BusSink};
@@ -61,6 +62,9 @@ pub enum CoreError {
     /// A chat failure.
     #[error(transparent)]
     Chat(#[from] fergents_chat::ChatError),
+    /// A secret vault failure.
+    #[error(transparent)]
+    Secret(#[from] fergents_secrets::SecretError),
 }
 
 /// Kernel configuration.
@@ -113,6 +117,7 @@ pub struct Kernel {
     permissions: Arc<PermissionService>,
     reversibility: Arc<ReversibilityService>,
     chat: Arc<ChatService>,
+    secrets: Arc<SecretVault>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -124,6 +129,14 @@ impl Kernel {
     /// sessions, create the event bus, wire the brain subsystem, and emit
     /// `kernel.started`.
     pub fn start(config: &KernelConfig) -> Result<Arc<Self>, CoreError> {
+        Self::start_with_keychain(config, Arc::new(KeyringKeychain::new("fergents")))
+    }
+
+    /// Start the kernel with an explicit keychain backend (tests, headless tooling).
+    pub fn start_with_keychain(
+        config: &KernelConfig,
+        keychain: Arc<dyn Keychain>,
+    ) -> Result<Arc<Self>, CoreError> {
         std::fs::create_dir_all(&config.data_dir).ok();
         let storage = SqliteStorage::open(&config.global_db_path(), &config.migrations_dir)?;
         let storage = Arc::new(storage);
@@ -168,6 +181,8 @@ impl Kernel {
         }
         let storage_for_chat: Arc<dyn Storage> = storage.clone();
         let chat = Arc::new(ChatService::new(storage_for_chat, bus.clone()));
+        let storage_for_secrets: Arc<dyn Storage> = storage.clone();
+        let secrets = Arc::new(SecretVault::new(storage_for_secrets, keychain));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -189,6 +204,7 @@ impl Kernel {
             permissions,
             reversibility,
             chat,
+            secrets,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -261,6 +277,11 @@ impl Kernel {
     /// The chat backend.
     pub fn chat(&self) -> &ChatService {
         self.chat.as_ref()
+    }
+
+    /// The secret vault (OS keychain values, reference-only rows).
+    pub fn secrets(&self) -> &SecretVault {
+        self.secrets.as_ref()
     }
 
     /// Assemble, count, persist, and emit a context snapshot for a session.

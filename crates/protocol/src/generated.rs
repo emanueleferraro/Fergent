@@ -10565,6 +10565,225 @@ impl From<&SearchScores> for SearchScores {
         value.clone()
     }
 }
+#[doc = "Result of secret.delete."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SecretDeletedResult\","]
+#[doc = "  \"description\": \"Result of secret.delete.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"deleted\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"deleted\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SecretDeletedResult {
+    pub deleted: bool,
+}
+impl From<&SecretDeletedResult> for SecretDeletedResult {
+    fn from(value: &SecretDeletedResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of secret.list (names and metadata only)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SecretListResult\","]
+#[doc = "  \"description\": \"Result of secret.list (names and metadata only).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"secrets\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"secrets\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/SecretRef\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SecretListResult {
+    pub secrets: Vec<SecretRef>,
+}
+impl From<&SecretListResult> for SecretListResult {
+    fn from(value: &SecretListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params carrying a secret name (secret.delete, secret.test)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SecretNameParams\","]
+#[doc = "  \"description\": \"Params carrying a secret name (secret.delete, secret.test).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SecretNameParams {
+    pub name: String,
+}
+impl From<&SecretNameParams> for SecretNameParams {
+    fn from(value: &SecretNameParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A secret reference (secret_refs row). Values never leave the keychain."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SecretRef\","]
+#[doc = "  \"description\": \"A secret reference (secret_refs row). Values never leave the keychain.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"created_at\","]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"description\": \"Logical name, e.g. anthropic.api_key.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"provider\": {"]
+#[doc = "      \"description\": \"Owning provider, if any.\","]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SecretRef {
+    pub created_at: i64,
+    #[doc = "Logical name, e.g. anthropic.api_key."]
+    pub name: String,
+    #[doc = "Owning provider, if any."]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provider: Option<String>,
+}
+impl From<&SecretRef> for SecretRef {
+    fn from(value: &SecretRef) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of secret.set: write the value to the OS keychain."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SecretSetParams\","]
+#[doc = "  \"description\": \"Params of secret.set: write the value to the OS keychain.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\","]
+#[doc = "    \"value\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"provider\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"value\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SecretSetParams {
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub provider: Option<String>,
+    pub value: String,
+}
+impl From<&SecretSetParams> for SecretSetParams {
+    fn from(value: &SecretSetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of secret.test: presence only, never the value."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SecretTestResult\","]
+#[doc = "  \"description\": \"Result of secret.test: presence only, never the value.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\","]
+#[doc = "    \"present\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"present\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct SecretTestResult {
+    pub name: String,
+    pub present: bool,
+}
+impl From<&SecretTestResult> for SecretTestResult {
+    fn from(value: &SecretTestResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Result of spec.get."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]

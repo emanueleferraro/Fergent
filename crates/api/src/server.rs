@@ -1324,6 +1324,74 @@ async fn dispatch(
             })
             .await
         }
+        "secret.list" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .secrets()
+                    .list()
+                    .map(|secrets| serde_json::json!({ "secrets": to_value(&secrets) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "secret.set" => {
+            let name = params
+                .get("name")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing name".to_string()))?
+                .to_string();
+            let value = params
+                .get("value")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing value".to_string()))?
+                .to_string();
+            let provider = params
+                .get("provider")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .secrets()
+                    .set(&name, &value, provider.as_deref())
+                    .map(|secret| to_value(&secret))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "secret.delete" => {
+            let name = params
+                .get("name")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing name".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .secrets()
+                    .delete(&name)
+                    .map(|deleted| serde_json::json!({ "deleted": deleted }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "secret.test" => {
+            let name = params
+                .get("name")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing name".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .secrets()
+                    .test(&name)
+                    .map(|test| to_value(&test))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -1514,6 +1582,10 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
         | CoreError::Reversibility(fergents_reversibility::ReversibilityError::UnknownBackup(_))
         | CoreError::Chat(
             fergents_chat::ChatError::UnknownSession(_) | fergents_chat::ChatError::Invalid(_),
+        )
+        | CoreError::Secret(
+            fergents_secrets::SecretError::InvalidName(_)
+            | fergents_secrets::SecretError::Unknown(_),
         ) => (ErrorCode::InvalidParams, err.to_string()),
         _ => (ErrorCode::InternalError, err.to_string()),
     }
