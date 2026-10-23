@@ -38,6 +38,7 @@ export function MessageList({ chat }: MessageListProps): ReactElement {
           key={message.id}
           message={message}
           disabled={chat.sending}
+          capabilities={chat.capabilities}
           onRegenerate={() => void chat.retry()}
           onFork={() => void chat.fork()}
           onAnswer={(answer) => void chat.send(answer)}

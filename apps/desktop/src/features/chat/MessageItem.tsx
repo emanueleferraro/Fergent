@@ -9,14 +9,24 @@ import { MarkdownPreview } from '../editor/MarkdownPreview';
 import { t } from '../../i18n/i18n';
 
 import { ChoicePrompt } from './ChoicePrompt';
+import { RichBlock } from './RichBlock';
+import { splitRichBlocks, type RichKind } from './rich';
 import { ThinkingBlock } from './ThinkingBlock';
 import { ToolCard } from './ToolCard';
 import { parseMessage } from './model';
+
+const CAPABILITY_OF: Record<RichKind, string> = {
+  chart: 'capability.charts',
+  mermaid: 'capability.mermaid',
+  html: 'capability.html',
+};
 
 /** Props for `MessageItem`. */
 export interface MessageItemProps {
   message: ChatMessage;
   disabled: boolean;
+  /** Enabled capability ids, used to gate rich outputs. */
+  capabilities: Set<string>;
   onRegenerate: () => void;
   onFork: () => void;
   onAnswer: (answer: string) => void;
@@ -43,6 +53,7 @@ function roleLabel(role: string): string {
 export function MessageItem({
   message,
   disabled,
+  capabilities,
   onRegenerate,
   onFork,
   onAnswer,
@@ -50,6 +61,7 @@ export function MessageItem({
   const parsed = parseMessage(message);
   const isAssistant = message.role === 'assistant';
   const hasBody = parsed.body.length > 0;
+  const segments = isAssistant && hasBody ? splitRichBlocks(parsed.body) : [];
 
   return (
     <article className={`msg msg--${message.role}`} data-role={message.role}>
@@ -62,7 +74,19 @@ export function MessageItem({
         {parsed.choice ? (
           <ChoicePrompt choice={parsed.choice} disabled={disabled} onAnswer={onAnswer} />
         ) : null}
-        {hasBody && isAssistant ? <MarkdownPreview source={parsed.body} /> : null}
+        {segments.map((segment, index) =>
+          segment.kind === 'markdown' ? (
+            segment.text.trim().length > 0 ? (
+              <MarkdownPreview key={`md-${index}`} source={segment.text} />
+            ) : null
+          ) : (
+            <RichBlock
+              key={`rich-${index}`}
+              block={segment.block}
+              enabled={capabilities.has(CAPABILITY_OF[segment.block.kind])}
+            />
+          ),
+        )}
         {hasBody && !isAssistant ? <div className="msg__text">{parsed.body}</div> : null}
       </div>
       <div className="msg-actions">
