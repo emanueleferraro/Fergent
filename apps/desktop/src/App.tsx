@@ -9,6 +9,9 @@ import { version as uiVersion } from '@fergents/ui';
 
 import { CommandPalette } from './features/palette/CommandPalette';
 import { commands } from './features/palette/commands';
+import { ChatPanel } from './features/chat/ChatPanel';
+import { ChatSidebar } from './features/chat/ChatSidebar';
+import { useChat } from './features/chat/useChat';
 import { EditorArea } from './features/editor/EditorArea';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
@@ -82,6 +85,7 @@ export function App(): ReactElement {
   const { theme, toggle } = useTheme();
   const kernel = useMemo(() => createKernelClient(), []);
   const kernelState = useKernel(kernel, SUBSCRIBE_TOPICS);
+  const chat = useChat(kernel);
   const [activeId, setActiveId] = useState<RailId>('chat');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [openIds, setOpenIds] = useState<string[]>([]);
@@ -147,6 +151,8 @@ export function App(): ReactElement {
             onOpenDocument={openDocument}
             onSearch={(query) => setSearchQuery(query.length > 0 ? query : undefined)}
           />
+        ) : activeId === 'chat' ? (
+          <ChatSidebar chat={chat} />
         ) : (
           <>
             <div className="panel-title">{activeItem ? t(activeItem.titleKey) : ''}</div>
@@ -210,6 +216,8 @@ export function App(): ReactElement {
               )}
             </div>
           </div>
+        ) : activeId === 'chat' ? (
+          <ChatPanel kernel={kernel} chat={chat} />
         ) : activeId === 'settings' ? (
           <SettingsView kernel={kernel} />
         ) : (
