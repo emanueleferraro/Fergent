@@ -5,11 +5,7 @@
  * `secret.list` carries no value field and the form clears the input on save.
  */
 import { useCallback, useEffect, useState, type FormEvent, type ReactElement } from 'react';
-import type {
-  SecretListResult,
-  SecretRef,
-  SecretTestResult,
-} from '@fergents/protocol';
+import type { SecretListResult, SecretRef, SecretTestResult } from '@fergents/protocol';
 
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';

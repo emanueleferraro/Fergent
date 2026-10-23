@@ -77,9 +77,7 @@ describe('ProvidersSettings', () => {
     await screen.findByText('local');
     fireEvent.click(screen.getByRole('button', { name: t('settings.providers.test') }));
 
-    await screen.findByText(
-      t('settings.providers.test.failed', { detail: '401 unauthorized' }),
-    );
+    await screen.findByText(t('settings.providers.test.failed', { detail: '401 unauthorized' }));
   });
 
   it('adds a provider from the form', async () => {
@@ -123,7 +121,9 @@ describe('SecretsSettings', () => {
     render(<SecretsSettings kernel={kernel} />);
 
     await screen.findByText('anthropic.api_key');
-    expect(screen.getByText(t('settings.secrets.provider', { provider: 'anthropic' }))).toBeTruthy();
+    expect(
+      screen.getByText(t('settings.secrets.provider', { provider: 'anthropic' })),
+    ).toBeTruthy();
 
     fireEvent.change(screen.getByLabelText(t('settings.secrets.field.name')), {
       target: { value: 'anthropic.api_key' },
@@ -141,9 +141,9 @@ describe('SecretsSettings', () => {
     });
 
     // The value is sent once, then cleared; nothing in the UI shows it.
-    expect((screen.getByLabelText(t('settings.secrets.field.value')) as HTMLInputElement).value).toBe(
-      '',
-    );
+    expect(
+      (screen.getByLabelText(t('settings.secrets.field.value')) as HTMLInputElement).value,
+    ).toBe('');
     expect(document.body.textContent ?? '').not.toContain('sk-test-secret');
 
     const listed = await kernel.call<{ secrets: unknown[] }>('secret.list');

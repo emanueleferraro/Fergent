@@ -184,9 +184,11 @@ export function McpSettings({ kernel }: McpSettingsProps): ReactElement {
                       ? t('settings.mcp.connected')
                       : t('settings.mcp.disconnected')}
                     {status
-                      ? ` · ${status.healthy
-                          ? t('settings.mcp.health.ok')
-                          : t('settings.mcp.health.bad')}`
+                      ? ` · ${
+                          status.healthy
+                            ? t('settings.mcp.health.ok')
+                            : t('settings.mcp.health.bad')
+                        }`
                       : ''}
                   </div>
                   {result ? (
