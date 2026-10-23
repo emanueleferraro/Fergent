@@ -6,9 +6,9 @@ multi-agent orchestrator into a single, extensible desktop + CLI application.
 Everything runs on the user's device by default; the cloud is used only for
 LLM API calls, and only when providers are configured.
 
-**Version:** 0.1.0-draft
+**Version:** 0.2.0-phase2
 **License:** AGPL-3.0-or-later
-**Status:** Phase 1 (Brain) — in progress
+**Status:** Phase 2 (Agent Runtime & Chat UI) — delivered
 
 ---
 
@@ -73,6 +73,46 @@ Delivered in Phase 1:
 
 ---
 
+## Phase 2 status
+
+Phase 2 (see `ROADMAP.md` §6) turns the brain into an agent workspace: a real
+agent runtime, an LLM router with provider management, an MCP host, and a chat
+surface that can run, compare, and inspect agents.
+
+Delivered in Phase 2:
+
+- **Capability registry** (`crates/capabilities`): every Phase 2 feature is a
+  capability with dependencies, defaults, hot toggles, plugin registration,
+  and a kernel-authoritative gate (`capability_disabled`) over its commands
+  (ADR-021).
+- **LLM router and providers** (`crates/llm`, `crates/core`): the `Provider`
+  trait with mock, OpenAI, Anthropic, Google, and Ollama adapters, per-task
+  routes, token accounting, and a deterministic mock provider used in CI.
+- **Secrets** (`crates/secrets`): the OS keychain via `keyring`; the database
+  stores only `secret_refs`, never values (ADR-025).
+- **MCP host** (`crates/mcp`): stdio JSON-RPC servers, tool discovery, health,
+  and capability gating.
+- **Agent runtime** (`crates/agents`, `crates/core`): agent definitions on
+  disk, the ReAct loop, sessions and messages, memory tiers with compaction
+  into `session.md`, per-agent `brain.md`, spec/plan/tasks approval runs, and
+  permissions (ADR-023, ADR-024).
+- **Sub-agents** (`crates/core`): spawn/call/collect/cancel, messaging and
+  handoff, with per-parent limits.
+- **Chat backend** (`crates/chat`): sessions, transcripts, forks, prompt
+  library, FTS5 chat search, attachments, context inspection, and multi-model
+  compare as parallel sessions (ADR-026).
+- **Desktop UI** (`apps/desktop`): the chat surface (transcript, rich
+  sandboxed outputs, composer with mentions and prompts), context viewer,
+  provider/secret/MCP managers, feature toggles, the model selector, the
+  compare panel, the sub-agent monitor, and time travel over backups
+  (ADR-022).
+- **Verification**: protocol round-trip suites, per-crate tests, wired IPC
+  tests for every Phase 2 command, and a Phase 2 end-to-end test
+  (create agent → run → tool permission → capability toggle → `brain.md`
+  round-trip). All providers are mocked in CI; no network or API key needed.
+
+---
+
 ## Repository layout
 
 ```
@@ -87,6 +127,12 @@ crates/        Cargo workspace (Rust)
   brain/         brain model, vault layout, lifecycle, multi-brain ops
   index/         per-brain index: chunking, embeddings, FTS5, hybrid search
   graph/         entity graph (CozoDB) with a SQLite mirror
+  capabilities/  capability registry: dependencies, hot toggles, gating
+  llm/           provider trait, adapters, routes, token accounting
+  mcp/           MCP host: stdio servers, tool discovery, health
+  agents/        agent definitions, loop, sessions, memory, permissions
+  chat/          chat sessions, transcripts, forks, prompts, compare
+  secrets/       OS-keychain secret store (references only in the DB)
   fergentsd/     kernel daemon binary
   fergents/      CLI (TUI) binary
 packages/      pnpm workspace packages (protocol types, UI)

@@ -84,9 +84,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   driven by `FERGENTS_OFFLINE=1`; the heavy models are never downloaded in CI
   (deterministic stubs only).
 
+**Phase 2 — Agent Runtime & Chat UI**
+
+- Capability registry (`crates/capabilities`): declarative catalogue with
+  dependencies, `default_enabled`/`hot_toggle`, plugin registration, persisted
+  state, lifecycle events, and a kernel-authoritative gate that refuses the
+  commands of disabled capabilities with `capability_disabled` (ADR-021).
+- LLM router (`crates/llm`) and providers (`crates/core`): the `Provider` trait
+  with mock, OpenAI, Anthropic, Google, and Ollama adapters, per-task routes,
+  and token accounting; CI runs entirely against the deterministic mock.
+- Secrets (`crates/secrets`): OS keychain storage via `keyring` with only
+  `secret_refs` in the database; values never reach agents or logs (ADR-025).
+- MCP host (`crates/mcp`): stdio JSON-RPC servers, tool discovery, health
+  checks, and `mcp.server.*`/`mcp.tool.list` commands behind `capability.mcp`.
+- Agent runtime (`crates/agents`, `crates/core`): markdown agent definitions
+  with validation, enable/disable/update, the ReAct loop, sessions and
+  messages, memory tiers (working/episodic/semantic) with decay and
+  consolidation, compaction into `session.md`, per-agent `brain.md` (ADR-023),
+  permission gates, and the spec/plan/tasks approval workflow (ADR-024).
+- Sub-agents (`crates/core`): `agent.spawn`, `agent.call`, `agent.children`,
+  `agent.collect`, `agent.cancel`, `agent.message`, and `agent.handoff`, with
+  per-parent limits and `sub_agents.allow` enforcement.
+- Chat backend (`crates/chat`): sessions, transcripts, send/retry/regenerate/
+  fork, the prompt library, FTS5 chat search, attachment routing, the context
+  builder with `context.inspect`/`context.set_section`, and multi-model
+  `chat.compare.start` as parallel sessions (ADR-026).
+- Provider manager: `provider.list`/`add`/`remove`/`test`/`models` and
+  `provider.route.get`/`set` over the wire.
+- Desktop UI (`apps/desktop`): the chat surface (transcript with tool cards and
+  hover actions, streaming placeholder, sandboxed rich outputs — ADR-022 — and
+  a composer with `@` mentions and `/` prompts), the context viewer, feature
+  toggles, provider/secret/MCP managers, the model selector, the compare panel,
+  the sub-agent monitor, and time travel over backups.
+- Protocol: the Phase 2 command and event surface added to the schema with
+  regenerated Rust and TypeScript bindings and round-trip suites.
+- Verification: per-crate tests, wired IPC tests for every Phase 2 command, and
+  a Phase 2 end-to-end test (create agent → run → tool permission → capability
+  toggle → `brain.md` round-trip).
+
 ### Changed
 
 - `DATA_MODEL.md` now documents the per-brain schema alongside the global one.
-- `DECISIONS.md` added: the ADR log, recording ADR-001 … ADR-020.
+- `DECISIONS.md` added: the ADR log, recording ADR-001 … ADR-026.
 - `ARCHITECTURE.md` §17 and `README.md` updated for the Phase 1 crates,
   commands, and UI.
+- `README.md` updated for the Phase 2 crates, commands, and UI, and its status
+  now reads Phase 2 delivered.

@@ -795,6 +795,12 @@ A summary of the most consequential architectural decisions. Full ADRs in
 | ADR-018 | Swappable `VectorStore`/`Reranker`/`EntityExtractor` traits | Swappable engines; deterministic stubs keep models out of CI |
 | ADR-019 | Per-brain FTS5 tokenizer: `unicode61 remove_diacritics 2` | Language-neutral, predictable; configurable per brain |
 | ADR-020 | Phase 0 gaps fixed before Phase 1 implementation | Phase 1 builds on the daemon lifecycle and logging |
+| ADR-021 | Kernel-authoritative capability gating | One authority; "off" means unallocated; plugins participate |
+| ADR-022 | Sandboxed rich outputs (charts, Mermaid, HTML) | Model output is untrusted; the frame plus sanitization contains it |
+| ADR-023 | Diff-gated, file-backed `brain.md` | Inspectable, git-versionable, AI-editable, user-controlled |
+| ADR-024 | Persisted spec/plan/tasks approval runs | Gates survive restarts; edits are re-read on resume |
+| ADR-025 | Secrets in the OS keychain, references in the DB | Keys must not travel with the database |
+| ADR-026 | Compare as parallel sessions; scoped time travel | Reuses sessions; restores stay within their blast radius |
 
 ---
 
