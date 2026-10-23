@@ -51,6 +51,16 @@ async fn chat_round_trip() {
     let (_dir, socket, handle) = start_stack().await;
     let client = KernelClient::connect(&socket).await.unwrap();
 
+    client
+        .call(
+            "agent.create",
+            json!({
+                "definition": "---\nid: assistant\nname: Assistant\nmodel: mock-1\ntools: []\n---\n\nYou are a helpful assistant.\n"
+            }),
+        )
+        .await
+        .unwrap();
+
     let session = client
         .call(
             "chat.session.create",
@@ -64,28 +74,41 @@ async fn chat_round_trip() {
     let listed = client.call("chat.session.list", json!({})).await.unwrap();
     assert_eq!(listed["sessions"].as_array().unwrap().len(), 1);
 
-    // Messages + ordering.
-    client
+    // Sending appends the user turn and the agent's reply to the transcript.
+    let first = client
         .call(
             "chat.message.send",
             json!({ "session_id": session_id, "text": "Hello MCP" }),
         )
         .await
         .unwrap();
-    let message = client
+    assert_eq!(first["messages"].as_array().unwrap().len(), 2);
+    assert_eq!(first["messages"][0]["role"], json!("user"));
+    assert_eq!(first["messages"][1]["role"], json!("assistant"));
+
+    let second = client
         .call(
             "chat.message.send",
             json!({ "session_id": session_id, "text": "and JSON-RPC" }),
         )
         .await
         .unwrap();
-    assert_eq!(message["seq"], json!(2));
+    assert_eq!(second["messages"].as_array().unwrap().len(), 4);
 
     let messages = client
         .call("chat.message.list", json!({ "session_id": session_id }))
         .await
         .unwrap();
-    assert_eq!(messages["messages"].as_array().unwrap().len(), 2);
+    assert_eq!(messages["messages"].as_array().unwrap().len(), 4);
+
+    // Retry re-answers the last user turn without duplicating it.
+    let retried = client
+        .call("chat.message.retry", json!({ "session_id": session_id }))
+        .await
+        .unwrap();
+    let retried_messages = retried["messages"].as_array().unwrap();
+    assert_eq!(retried_messages.len(), 4);
+    assert_eq!(retried_messages.last().unwrap()["role"], json!("assistant"));
 
     // FTS search.
     let hits = client
@@ -105,7 +128,7 @@ async fn chat_round_trip() {
         .call("chat.message.list", json!({ "session_id": fork_id }))
         .await
         .unwrap();
-    assert_eq!(forked["messages"].as_array().unwrap().len(), 2);
+    assert_eq!(forked["messages"].as_array().unwrap().len(), 4);
 
     // Continue is capped.
     let turns = client
@@ -117,7 +140,7 @@ async fn chat_round_trip() {
         .unwrap();
     assert_eq!(turns["turns"], json!(3));
 
-    // Regenerate drops the last assistant answer (none here) and returns the prompt.
+    // Regenerate drops the last assistant answer and returns the prompt.
     client
         .call(
             "chat.message.send",
