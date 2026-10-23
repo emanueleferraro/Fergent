@@ -180,6 +180,24 @@ async fn chat_round_trip() {
             .is_empty()
     );
 
+    // Model pinning.
+    let pinned = client
+        .call(
+            "chat.session.model",
+            json!({ "session_id": session_id, "model": "mock:mock-model" }),
+        )
+        .await
+        .unwrap();
+    assert_eq!(pinned["model"], json!("mock:mock-model"));
+    let cleared = client
+        .call(
+            "chat.session.model",
+            json!({ "session_id": session_id, "model": null }),
+        )
+        .await
+        .unwrap();
+    assert!(cleared["model"].is_null());
+
     // Rename + delete.
     let renamed = client
         .call(

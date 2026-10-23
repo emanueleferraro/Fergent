@@ -2524,6 +2524,14 @@ export interface ChatSessionRenameParams {
 }
 
 /**
+ * Params of chat.session.model — pins the model a session runs on.
+ */
+export interface ChatSessionModelParams {
+  session_id: string;
+  model?: string | null;
+}
+
+/**
  * Result of chat.session.delete.
  */
 export interface ChatDeletedResult {

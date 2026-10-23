@@ -111,6 +111,29 @@ impl ChatService {
         self.require(session_id)
     }
 
+    /// Pin the model a session runs on (`None` restores the kernel default).
+    pub fn set_model(
+        &self,
+        session_id: &str,
+        model: Option<&str>,
+    ) -> Result<ChatSession, ChatError> {
+        self.require(session_id)?;
+        self.storage.execute(
+            "UPDATE agent_sessions SET model = ?1, updated_at = ?2 WHERE id = ?3",
+            &[
+                model.map_or(Value::Null, |m| Value::String(m.to_string())),
+                Value::from(now_ms()),
+                Value::String(session_id.to_string()),
+            ],
+        )?;
+        self.bus.publish(
+            "chat.session.updated",
+            "chat",
+            json!({ "session_id": session_id, "model": model }),
+        )?;
+        self.require(session_id)
+    }
+
     /// Delete a session and its messages.
     pub fn delete(&self, session_id: &str) -> Result<(), ChatError> {
         self.require(session_id)?;

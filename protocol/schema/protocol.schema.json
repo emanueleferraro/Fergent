@@ -2802,6 +2802,16 @@
         "title": { "type": "string" }
       }
     },
+    "ChatSessionModelParams": {
+      "title": "ChatSessionModelParams",
+      "description": "Params of chat.session.model — pins the model a session runs on.",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "model": { "type": ["string", "null"] }
+      }
+    },
     "ChatDeletedResult": {
       "title": "ChatDeletedResult",
       "description": "Result of chat.session.delete.",
