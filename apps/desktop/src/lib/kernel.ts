@@ -17,6 +17,9 @@ import type {
   ChatSession,
   Event,
   HealthSnapshot,
+  McpServer,
+  ProviderConfig,
+  SecretRef,
 } from '@fergents/protocol';
 
 /** Tauri event name carrying a forwarded kernel event. */
@@ -112,6 +115,9 @@ export class MockKernelClient implements KernelClient {
   private readonly mockSessions: ChatSession[] = [];
   private readonly mockAgents: AgentDefinition[] = [];
   private readonly mockMessages = new Map<string, ChatMessage[]>();
+  private readonly mockProviders: ProviderConfig[] = [];
+  private readonly mockSecrets: SecretRef[] = [];
+  private readonly mockMcp: McpServer[] = [];
   private readonly mockDisabledSections = new Set<string>(['summary', 'attachments']);
   private mockSeq = 0;
 
@@ -244,6 +250,51 @@ export class MockKernelClient implements KernelClient {
         }
         return { enabled: {}, budget: MOCK_CONTEXT_BUDGET };
       }
+      case 'provider.list':
+        return { providers: this.mockProviders };
+      case 'provider.add':
+        return this.mockAddProvider(payload);
+      case 'provider.remove': {
+        const index = this.mockProviders.findIndex((provider) => provider.id === agentId);
+        if (index >= 0) {
+          this.mockProviders.splice(index, 1);
+          return { deleted: true };
+        }
+        return { deleted: false };
+      }
+      case 'provider.test':
+        return { id: agentId, ok: true, detail: 'ok' };
+      case 'secret.list':
+        return { secrets: this.mockSecrets };
+      case 'secret.set':
+        return this.mockSetSecret(payload);
+      case 'secret.delete': {
+        const name = String(payload.name ?? '');
+        const index = this.mockSecrets.findIndex((secret) => secret.name === name);
+        if (index >= 0) {
+          this.mockSecrets.splice(index, 1);
+          return { deleted: true };
+        }
+        return { deleted: false };
+      }
+      case 'secret.test':
+        return { name: String(payload.name ?? ''), present: true };
+      case 'mcp.server.list':
+        return { servers: this.mockMcp };
+      case 'mcp.server.add':
+        return this.mockAddMcp(payload);
+      case 'mcp.server.remove': {
+        const index = this.mockMcp.findIndex((server) => server.id === agentId);
+        if (index >= 0) {
+          this.mockMcp.splice(index, 1);
+          return { deleted: true };
+        }
+        return { deleted: false };
+      }
+      case 'mcp.server.test':
+        return { id: agentId, ok: true, detail: '2 tool(s) discovered' };
+      case 'mcp.server.health':
+        return { id: agentId, connected: false, healthy: true };
       default:
         return null;
     }
@@ -271,6 +322,58 @@ export class MockKernelClient implements KernelClient {
       this.mockAgents.push(agent);
     }
     return agent;
+  }
+
+  private mockAddProvider(payload: Record<string, unknown>): ProviderConfig {
+    const provider: ProviderConfig = {
+      id: String(payload.id ?? `provider-${++this.mockSeq}`),
+      kind: String(payload.kind ?? 'mock') as ProviderConfig['kind'],
+      base_url: typeof payload.base_url === 'string' ? payload.base_url : null,
+      secret_name: typeof payload.secret_name === 'string' ? payload.secret_name : null,
+      models: Array.isArray(payload.models) ? (payload.models as string[]) : [],
+      created_at: Date.now(),
+    };
+    const index = this.mockProviders.findIndex((item) => item.id === provider.id);
+    if (index >= 0) {
+      this.mockProviders.splice(index, 1, provider);
+    } else {
+      this.mockProviders.push(provider);
+    }
+    return provider;
+  }
+
+  private mockSetSecret(payload: Record<string, unknown>): SecretRef {
+    // The value is deliberately dropped: the dashboard only ever sees refs.
+    const secret: SecretRef = {
+      name: String(payload.name ?? ''),
+      provider: typeof payload.provider === 'string' ? payload.provider : null,
+      created_at: Date.now(),
+    };
+    const index = this.mockSecrets.findIndex((item) => item.name === secret.name);
+    if (index >= 0) {
+      this.mockSecrets.splice(index, 1, secret);
+    } else {
+      this.mockSecrets.push(secret);
+    }
+    return secret;
+  }
+
+  private mockAddMcp(payload: Record<string, unknown>): McpServer {
+    const server: McpServer = {
+      id: String(payload.id ?? `mcp-${++this.mockSeq}`),
+      command: typeof payload.command === 'string' ? payload.command : null,
+      args: Array.isArray(payload.args) ? (payload.args as string[]) : [],
+      allow: payload.allow !== false,
+      connected: false,
+      created_at: Date.now(),
+    };
+    const index = this.mockMcp.findIndex((item) => item.id === server.id);
+    if (index >= 0) {
+      this.mockMcp.splice(index, 1, server);
+    } else {
+      this.mockMcp.push(server);
+    }
+    return server;
   }
 
   private mockContext(sessionId: string): unknown {

@@ -1542,6 +1542,12 @@ mark,
 .settings-label { font-size: var(--fs-body-sm); color: var(--text-strong); }
 .settings-hint { margin-top: 2px; font-size: var(--fs-caption); color: var(--text-muted); }
 .settings-control { flex-shrink: 0; display: flex; align-items: center; gap: var(--s-2); }
+.settings-form {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: var(--s-3);
+    align-items: end;
+}
 .settings-note {
     padding: var(--s-3) var(--s-4);
     border: 1px solid var(--color-accent-line);
