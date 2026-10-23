@@ -1529,6 +1529,94 @@ async fn dispatch(
             })
             .await
         }
+        "mcp.server.list" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .mcp()
+                    .list()
+                    .map(|servers| serde_json::json!({ "servers": to_value(&servers) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "mcp.server.add" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            let command = params
+                .get("command")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let args: Vec<String> = params
+                .get("args")
+                .and_then(Value::as_array)
+                .map(|args| {
+                    args.iter()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect()
+                })
+                .unwrap_or_default();
+            let allow = params.get("allow").and_then(Value::as_bool).unwrap_or(true);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .mcp()
+                    .add(&id, command.as_deref(), &args, allow)
+                    .map(|server| to_value(&server))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "mcp.server.remove" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            kernel
+                .mcp()
+                .remove(&id)
+                .await
+                .map(|deleted| serde_json::json!({ "deleted": deleted }))
+                .map_err(|err| map_core_error(CoreError::from(err)))
+        }
+        "mcp.server.test" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            kernel
+                .mcp()
+                .test(&id)
+                .await
+                .map(|test| to_value(&test))
+                .map_err(|err| map_core_error(CoreError::from(err)))
+        }
+        "mcp.server.health" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            kernel
+                .mcp()
+                .health(&id)
+                .await
+                .map(|health| to_value(&health))
+                .map_err(|err| map_core_error(CoreError::from(err)))
+        }
+        "mcp.tool.list" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                Ok(serde_json::json!({ "tools": to_value(&kernel.mcp().tools()) }))
+            })
+            .await
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -1590,6 +1678,7 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("backup.") => Some("capability.agents"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
+        method if method.starts_with("mcp.") => Some("capability.mcp"),
         _ => None,
     }
 }
@@ -1731,6 +1820,10 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
             | fergents_core::ProviderRegistryError::InvalidKind(_)
             | fergents_core::ProviderRegistryError::MissingBaseUrl(_)
             | fergents_core::ProviderRegistryError::MissingSecret(_),
+        )
+        | CoreError::Mcp(
+            fergents_core::McpServiceError::InvalidId(_)
+            | fergents_core::McpServiceError::Unknown(_),
         ) => (ErrorCode::InvalidParams, err.to_string()),
         _ => (ErrorCode::InternalError, err.to_string()),
     }

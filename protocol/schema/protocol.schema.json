@@ -1856,6 +1856,101 @@
         "models": { "type": "array", "items": { "type": "string" } }
       }
     },
+    "McpServer": {
+      "title": "McpServer",
+      "description": "A configured MCP server and its live connection state.",
+      "type": "object",
+      "required": ["id", "args", "allow", "connected", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "command": { "type": ["string", "null"] },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "allow": { "type": "boolean" },
+        "connected": { "type": "boolean" },
+        "created_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "McpServerListResult": {
+      "title": "McpServerListResult",
+      "description": "Result of mcp.server.list.",
+      "type": "object",
+      "required": ["servers"],
+      "properties": {
+        "servers": { "type": "array", "items": { "$ref": "#/$defs/McpServer" } }
+      }
+    },
+    "McpServerAddParams": {
+      "title": "McpServerAddParams",
+      "description": "Params of mcp.server.add: configure or replace a server.",
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "command": { "type": ["string", "null"] },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "allow": { "type": "boolean" }
+      }
+    },
+    "McpServerIdParams": {
+      "title": "McpServerIdParams",
+      "description": "Params carrying an MCP server id (remove, test, health).",
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": { "id": { "type": "string" } }
+    },
+    "McpServerDeletedResult": {
+      "title": "McpServerDeletedResult",
+      "description": "Result of mcp.server.remove.",
+      "type": "object",
+      "required": ["deleted"],
+      "properties": { "deleted": { "type": "boolean" } }
+    },
+    "McpServerTestResult": {
+      "title": "McpServerTestResult",
+      "description": "Result of mcp.server.test.",
+      "type": "object",
+      "required": ["id", "ok"],
+      "properties": {
+        "id": { "type": "string" },
+        "ok": { "type": "boolean" },
+        "detail": { "type": ["string", "null"] }
+      }
+    },
+    "McpServerHealthResult": {
+      "title": "McpServerHealthResult",
+      "description": "Result of mcp.server.health.",
+      "type": "object",
+      "required": ["id", "connected"],
+      "properties": {
+        "id": { "type": "string" },
+        "connected": { "type": "boolean" },
+        "healthy": { "type": ["boolean", "null"] }
+      }
+    },
+    "McpTool": {
+      "title": "McpTool",
+      "description": "A tool discovered from a connected MCP server.",
+      "type": "object",
+      "required": ["server", "name", "description"],
+      "additionalProperties": false,
+      "properties": {
+        "server": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" }
+      }
+    },
+    "McpToolListResult": {
+      "title": "McpToolListResult",
+      "description": "Result of mcp.tool.list.",
+      "type": "object",
+      "required": ["tools"],
+      "properties": {
+        "tools": { "type": "array", "items": { "$ref": "#/$defs/McpTool" } }
+      }
+    },
     "AgentRunParams": {
       "title": "AgentRunParams",
       "description": "Params of agent.run.",
