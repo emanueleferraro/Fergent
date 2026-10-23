@@ -188,6 +188,54 @@ fn secrets_roundtrip() {
 }
 
 #[test]
+fn providers_roundtrip() {
+    assert_roundtrip::<ProviderConfig>(json!({
+        "id": "anthropic",
+        "kind": "anthropic",
+        "base_url": null,
+        "secret_name": "anthropic.api_key",
+        "models": ["claude-sonnet-4.5"],
+        "created_at": 1792694626000_i64
+    }));
+    assert_roundtrip::<ProviderListResult>(json!({
+        "providers": [{
+            "id": "mock",
+            "kind": "mock",
+            "base_url": null,
+            "secret_name": null,
+            "models": ["mock-1"],
+            "created_at": 1792694626000_i64
+        }]
+    }));
+    assert_roundtrip::<ProviderAddParams>(json!({
+        "id": "ollama",
+        "kind": "ollama",
+        "base_url": "http://localhost:11434/v1",
+        "secret_name": null,
+        "models": ["qwen2.5:7b"]
+    }));
+    assert_roundtrip::<ProviderIdParams>(json!({ "id": "ollama" }));
+    assert_roundtrip::<ProviderDeletedResult>(json!({ "deleted": false }));
+    assert_roundtrip::<ProviderTestResult>(json!({
+        "id": "ollama",
+        "ok": true,
+        "detail": null
+    }));
+    assert_roundtrip::<ProviderModelsResult>(json!({ "models": ["mock-1"] }));
+    assert_roundtrip::<ProviderRoute>(json!({
+        "task": "chat",
+        "models": ["mock-1"]
+    }));
+    assert_roundtrip::<ProviderRoutesResult>(json!({
+        "routes": [{ "task": "chat", "models": ["mock-1"] }]
+    }));
+    assert_roundtrip::<ProviderRouteSetParams>(json!({
+        "task": "summarize",
+        "models": ["mock-1", "mock-2"]
+    }));
+}
+
+#[test]
 fn context_and_memory_roundtrip() {
     assert_roundtrip::<ContextSnapshot>(json!({
         "id": "01J8CTX",

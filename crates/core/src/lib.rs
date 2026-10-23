@@ -5,6 +5,11 @@
 //! server dispatches to (`ARCHITECTURE.md` §3.2).
 
 mod brains;
+mod providers;
+
+pub use providers::{
+    ProviderConfig, ProviderRegistryError, ProviderRoute, ProviderService, ProviderTest,
+};
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -65,6 +70,9 @@ pub enum CoreError {
     /// A secret vault failure.
     #[error(transparent)]
     Secret(#[from] fergents_secrets::SecretError),
+    /// A provider registry failure.
+    #[error(transparent)]
+    Provider(#[from] ProviderRegistryError),
 }
 
 /// Kernel configuration.
@@ -118,6 +126,7 @@ pub struct Kernel {
     reversibility: Arc<ReversibilityService>,
     chat: Arc<ChatService>,
     secrets: Arc<SecretVault>,
+    provider_service: Arc<ProviderService>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -183,6 +192,9 @@ impl Kernel {
         let chat = Arc::new(ChatService::new(storage_for_chat, bus.clone()));
         let storage_for_secrets: Arc<dyn Storage> = storage.clone();
         let secrets = Arc::new(SecretVault::new(storage_for_secrets, keychain));
+        let storage_for_providers: Arc<dyn Storage> = storage.clone();
+        let provider_service =
+            Arc::new(ProviderService::new(storage_for_providers, secrets.clone()));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -205,6 +217,7 @@ impl Kernel {
             reversibility,
             chat,
             secrets,
+            provider_service,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -282,6 +295,11 @@ impl Kernel {
     /// The secret vault (OS keychain values, reference-only rows).
     pub fn secrets(&self) -> &SecretVault {
         self.secrets.as_ref()
+    }
+
+    /// The provider registry and task routes.
+    pub fn providers(&self) -> &ProviderService {
+        self.provider_service.as_ref()
     }
 
     /// Assemble, count, persist, and emit a context snapshot for a session.
