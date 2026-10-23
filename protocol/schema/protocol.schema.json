@@ -1692,6 +1692,62 @@
       "required": ["deleted"],
       "properties": { "deleted": { "type": "string" } }
     },
+    "SecretRef": {
+      "title": "SecretRef",
+      "description": "A secret reference (secret_refs row). Values never leave the keychain.",
+      "type": "object",
+      "required": ["name", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "description": "Logical name, e.g. anthropic.api_key." },
+        "provider": { "type": ["string", "null"], "description": "Owning provider, if any." },
+        "created_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "SecretListResult": {
+      "title": "SecretListResult",
+      "description": "Result of secret.list (names and metadata only).",
+      "type": "object",
+      "required": ["secrets"],
+      "properties": { "secrets": { "type": "array", "items": { "$ref": "#/$defs/SecretRef" } } }
+    },
+    "SecretSetParams": {
+      "title": "SecretSetParams",
+      "description": "Params of secret.set: write the value to the OS keychain.",
+      "type": "object",
+      "required": ["name", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "value": { "type": "string" },
+        "provider": { "type": ["string", "null"] }
+      }
+    },
+    "SecretNameParams": {
+      "title": "SecretNameParams",
+      "description": "Params carrying a secret name (secret.delete, secret.test).",
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": { "name": { "type": "string" } }
+    },
+    "SecretDeletedResult": {
+      "title": "SecretDeletedResult",
+      "description": "Result of secret.delete.",
+      "type": "object",
+      "required": ["deleted"],
+      "properties": { "deleted": { "type": "boolean" } }
+    },
+    "SecretTestResult": {
+      "title": "SecretTestResult",
+      "description": "Result of secret.test: presence only, never the value.",
+      "type": "object",
+      "required": ["name", "present"],
+      "properties": {
+        "name": { "type": "string" },
+        "present": { "type": "boolean" }
+      }
+    },
     "AgentRunParams": {
       "title": "AgentRunParams",
       "description": "Params of agent.run.",

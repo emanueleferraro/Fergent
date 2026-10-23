@@ -164,6 +164,30 @@ fn permissions_and_backups_roundtrip() {
 }
 
 #[test]
+fn secrets_roundtrip() {
+    assert_roundtrip::<SecretRef>(json!({
+        "name": "anthropic.api_key",
+        "provider": "anthropic",
+        "created_at": 1792694626000_i64
+    }));
+    assert_roundtrip::<SecretListResult>(json!({
+        "secrets": [{
+            "name": "anthropic.api_key",
+            "provider": null,
+            "created_at": 1792694626000_i64
+        }]
+    }));
+    assert_roundtrip::<SecretSetParams>(json!({
+        "name": "openai.api_key",
+        "value": "sk-secret",
+        "provider": "openai"
+    }));
+    assert_roundtrip::<SecretNameParams>(json!({ "name": "openai.api_key" }));
+    assert_roundtrip::<SecretDeletedResult>(json!({ "deleted": true }));
+    assert_roundtrip::<SecretTestResult>(json!({ "name": "openai.api_key", "present": false }));
+}
+
+#[test]
 fn context_and_memory_roundtrip() {
     assert_roundtrip::<ContextSnapshot>(json!({
         "id": "01J8CTX",

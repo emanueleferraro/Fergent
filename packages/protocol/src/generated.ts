@@ -1592,6 +1592,59 @@ export interface AgentDeletedResult {
 }
 
 /**
+ * A secret reference (secret_refs row). Values never leave the keychain.
+ */
+export interface SecretRef {
+  /**
+   * Logical name, e.g. anthropic.api_key.
+   */
+  name: string;
+  /**
+   * Owning provider, if any.
+   */
+  provider?: string | null;
+  created_at: number;
+}
+
+/**
+ * Result of secret.list (names and metadata only).
+ */
+export interface SecretListResult {
+  secrets: SecretRef[];
+}
+
+/**
+ * Params of secret.set: write the value to the OS keychain.
+ */
+export interface SecretSetParams {
+  name: string;
+  value: string;
+  provider?: string | null;
+}
+
+/**
+ * Params carrying a secret name (secret.delete, secret.test).
+ */
+export interface SecretNameParams {
+  name: string;
+}
+
+/**
+ * Result of secret.delete.
+ */
+export interface SecretDeletedResult {
+  deleted: boolean;
+}
+
+/**
+ * Result of secret.test: presence only, never the value.
+ */
+export interface SecretTestResult {
+  name: string;
+  present: boolean;
+}
+
+/**
  * Params of agent.run.
  */
 export interface AgentRunParams {
