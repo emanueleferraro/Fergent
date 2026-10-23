@@ -21,6 +21,7 @@ import type {
   McpServer,
   ProviderConfig,
   SecretRef,
+  SubAgent,
 } from '@fergents/protocol';
 
 /** Tauri event name carrying a forwarded kernel event. */
@@ -119,6 +120,7 @@ export class MockKernelClient implements KernelClient {
   private readonly mockProviders: ProviderConfig[] = [];
   private readonly mockSecrets: SecretRef[] = [];
   private readonly mockMcp: McpServer[] = [];
+  private readonly mockChildren = new Map<string, SubAgent[]>();
   private readonly mockDisabledSections = new Set<string>(['summary', 'attachments']);
   private mockSeq = 0;
 
@@ -161,6 +163,7 @@ export class MockKernelClient implements KernelClient {
     const payload = (params ?? {}) as Record<string, unknown>;
     const sessionId = typeof payload.session_id === 'string' ? payload.session_id : '';
     const agentId = typeof payload.id === 'string' ? payload.id : '';
+    const parentId = typeof payload.parent_session_id === 'string' ? payload.parent_session_id : '';
 
     switch (method) {
       case 'system.health':
@@ -198,6 +201,24 @@ export class MockKernelClient implements KernelClient {
         }
         return { deleted: agentId };
       }
+      case 'agent.children':
+        return { children: this.mockChildren.get(parentId) ?? [] };
+      case 'agent.spawn':
+        return { child: this.mockSpawnChild(payload) };
+      case 'agent.cancel': {
+        const child = this.findChild(sessionId);
+        if (child) {
+          child.state = 'cancelled';
+          child.updated_at = Date.now();
+        }
+        return { cancelled: child !== null };
+      }
+      case 'agent.collect':
+        return { child: this.findChild(sessionId) };
+      case 'backup.list':
+        return { backups: [] };
+      case 'backup.restore':
+        return { restored: String(payload.backup_id ?? '') };
       case 'prompt.list':
         return { prompts: [] };
       case 'chat.session.list':
@@ -457,6 +478,34 @@ export class MockKernelClient implements KernelClient {
     });
     this.mockMessages.set(sessionId, messages);
     return { session_id: sessionId, messages };
+  }
+
+  private mockSpawnChild(payload: Record<string, unknown>): SubAgent {
+    const parent = String(payload.parent_session_id ?? '');
+    const now = Date.now();
+    const child: SubAgent = {
+      session_id: `mock-child-${++this.mockSeq}`,
+      agent_id: String(payload.agent_id ?? 'assistant'),
+      task: String(payload.task ?? ''),
+      parent_session_id: parent,
+      state: 'running',
+      result: null,
+      error: null,
+      created_at: now,
+      updated_at: now,
+    };
+    this.mockChildren.set(parent, [...(this.mockChildren.get(parent) ?? []), child]);
+    return child;
+  }
+
+  private findChild(sessionId: string): SubAgent | null {
+    for (const children of this.mockChildren.values()) {
+      const found = children.find((child) => child.session_id === sessionId);
+      if (found) {
+        return found;
+      }
+    }
+    return null;
   }
 
   private mockCompare(payload: Record<string, unknown>): ChatCompareStartResult {
