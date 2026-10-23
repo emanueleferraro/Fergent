@@ -21,11 +21,11 @@ describe('App smoke', () => {
     render(<App />);
 
     expect(screen.getByRole('navigation', { name: t('rail.label') })).toBeDefined();
-    expect(screen.getByRole('heading', { name: t('app.name') })).toBeDefined();
+    expect(screen.getByText(t('chat.history.empty'))).toBeDefined();
 
     await waitFor(() => {
-      expect(screen.getByText(t('kernel.connected'))).toBeDefined();
+      expect(screen.getByText(t('status.kernel', { status: t('kernel.connected') }))).toBeDefined();
     });
-    expect(screen.getByText('v0.1.0')).toBeDefined();
+    expect(screen.getByText(t('status.ui', { version: '0.1.0' }))).toBeDefined();
   });
 });

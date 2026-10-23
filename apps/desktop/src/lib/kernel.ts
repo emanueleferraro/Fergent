@@ -11,7 +11,7 @@
  */
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import type { Event, HealthSnapshot } from '@fergents/protocol';
+import type { ChatMessage, ChatSession, Event, HealthSnapshot } from '@fergents/protocol';
 
 /** Tauri event name carrying a forwarded kernel event. */
 export const KERNEL_EVENT = 'kernel://event';
@@ -81,6 +81,9 @@ export class MockKernelClient implements KernelClient {
 
   private readonly handlers = new Set<KernelEventHandler>();
   private readonly healthSnapshot: HealthSnapshot;
+  private readonly mockSessions: ChatSession[] = [];
+  private readonly mockMessages = new Map<string, ChatMessage[]>();
+  private mockSeq = 0;
 
   constructor(options: MockKernelClientOptions = {}) {
     this.healthSnapshot = options.health ?? DEFAULT_HEALTH;
@@ -92,7 +95,7 @@ export class MockKernelClient implements KernelClient {
 
   async call<T>(method: string, params: unknown = null): Promise<T> {
     this.calls.push({ method, params });
-    return this.respond(method) as T;
+    return this.respond(method, params) as T;
   }
 
   async health(): Promise<HealthSnapshot> {
@@ -117,7 +120,10 @@ export class MockKernelClient implements KernelClient {
     }
   }
 
-  private respond(method: string): unknown {
+  private respond(method: string, params: unknown): unknown {
+    const payload = (params ?? {}) as Record<string, unknown>;
+    const sessionId = typeof payload.session_id === 'string' ? payload.session_id : '';
+
     switch (method) {
       case 'system.health':
         return this.healthSnapshot;
@@ -143,9 +149,116 @@ export class MockKernelClient implements KernelClient {
         return null;
       case 'graph.query':
         return { rows: [] };
+      case 'agent.list':
+        return { agents: [] };
+      case 'agent.create':
+        return { id: 'assistant', name: 'Assistant', model: 'mock-1' };
+      case 'prompt.list':
+        return { prompts: [] };
+      case 'chat.session.list':
+        return { sessions: this.mockSessions };
+      case 'chat.session.create':
+        return this.createMockSession(payload);
+      case 'chat.session.rename': {
+        const session = this.mockSessions.find((item) => item.id === sessionId);
+        if (session) {
+          session.title = typeof payload.title === 'string' ? payload.title : session.title;
+        }
+        return session ?? null;
+      }
+      case 'chat.session.delete': {
+        const index = this.mockSessions.findIndex((item) => item.id === sessionId);
+        if (index >= 0) {
+          this.mockSessions.splice(index, 1);
+          this.mockMessages.delete(sessionId);
+        }
+        return { deleted: sessionId };
+      }
+      case 'chat.session.search':
+        return { hits: [] };
+      case 'chat.message.list':
+        return { session_id: sessionId, messages: this.mockMessages.get(sessionId) ?? [] };
+      case 'chat.message.send':
+        return this.mockSend(sessionId, payload);
+      case 'chat.message.retry':
+        return { session_id: sessionId, messages: this.mockMessages.get(sessionId) ?? [] };
+      case 'chat.message.fork':
+        return this.mockFork(sessionId);
+      case 'chat.attach':
+        return {
+          attachment: {
+            name: String(payload.name ?? 'file'),
+            media_type: String(payload.media_type ?? 'application/octet-stream'),
+            size: Number(payload.size ?? 0),
+            kind: 'file',
+          },
+          routed: 'metadata_only',
+          note: null,
+        };
       default:
         return null;
     }
+  }
+
+  private createMockSession(payload: Record<string, unknown>): ChatSession {
+    const now = Date.now();
+    const session: ChatSession = {
+      id: `mock-session-${++this.mockSeq}`,
+      agent_id: String(payload.agent_id ?? 'assistant'),
+      title: typeof payload.title === 'string' ? payload.title : null,
+      model: typeof payload.model === 'string' ? payload.model : null,
+      state: 'created',
+      parent_session_id: null,
+      permission_mode: 'auto',
+      summary: null,
+      tokens_in: 0,
+      tokens_out: 0,
+      cost_usd: 0,
+      created_at: now,
+      updated_at: now,
+    };
+    this.mockSessions.unshift(session);
+    this.mockMessages.set(session.id, []);
+    return session;
+  }
+
+  private mockSend(sessionId: string, payload: Record<string, unknown>): unknown {
+    const text = String(payload.text ?? '');
+    const messages = this.mockMessages.get(sessionId) ?? [];
+    const now = Date.now();
+    messages.push({
+      id: `mock-message-${++this.mockSeq}`,
+      session_id: sessionId,
+      seq: messages.length + 1,
+      role: 'user',
+      content: text,
+      tool_calls: {},
+      tokens: 0,
+      created_at: now,
+    });
+    messages.push({
+      id: `mock-message-${++this.mockSeq}`,
+      session_id: sessionId,
+      seq: messages.length + 1,
+      role: 'assistant',
+      content: 'This is the mock assistant. Configure a provider to get real answers.',
+      tool_calls: {},
+      tokens: 0,
+      created_at: now,
+    });
+    this.mockMessages.set(sessionId, messages);
+    return { session_id: sessionId, messages };
+  }
+
+  private mockFork(sessionId: string): ChatSession {
+    const source = this.mockSessions.find((item) => item.id === sessionId);
+    const forked = this.createMockSession({
+      agent_id: source?.agent_id ?? 'assistant',
+      title: source?.title ?? null,
+    });
+    forked.parent_session_id = sessionId;
+    this.mockMessages.set(forked.id, [...(this.mockMessages.get(sessionId) ?? [])]);
+    return forked;
   }
 }
 
