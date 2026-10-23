@@ -17,6 +17,7 @@ import type {
   ChatSessionSearchResult,
   PromptListResult,
   PromptTemplate,
+  ProviderListResult,
 } from '@fergents/protocol';
 
 import type { KernelClient } from '../../lib/kernel';
@@ -54,8 +55,11 @@ export interface ChatController {
   draft: string;
   /** Enabled capability ids (gates rich outputs). */
   capabilities: Set<string>;
+  /** Models offered by the configured providers (empty when none are set up). */
+  models: string[];
   setDraft: (value: string) => void;
   select: (id: string) => void;
+  setModel: (model: string | null) => Promise<void>;
   newSession: () => Promise<void>;
   createAssistant: () => Promise<void>;
   send: (text?: string) => Promise<void>;
@@ -90,6 +94,7 @@ export function useChat(kernel: KernelClient): ChatController {
   const [notice, setNotice] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
   const [capabilities, setCapabilities] = useState<Set<string>>(new Set());
+  const [models, setModels] = useState<string[]>([]);
 
   const activeIdRef = useRef(activeId);
   activeIdRef.current = activeId;
@@ -134,6 +139,23 @@ export function useChat(kernel: KernelClient): ChatController {
         if (active) {
           setLoading(false);
         }
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [kernel]);
+
+  useEffect(() => {
+    let active = true;
+    void (async () => {
+      try {
+        const result = await kernel.call<ProviderListResult>('provider.list');
+        if (active) {
+          setModels(result.providers.flatMap((provider) => provider.models));
+        }
+      } catch {
+        // Providers are optional: without them the selector only offers the default.
       }
     })();
     return () => {
@@ -292,6 +314,25 @@ export function useChat(kernel: KernelClient): ChatController {
     [kernel, loadSessions],
   );
 
+  const setModel = useCallback(
+    async (model: string | null): Promise<void> => {
+      if (!activeId) {
+        return;
+      }
+      setActionError(null);
+      try {
+        await kernel.call<ChatSession>('chat.session.model', {
+          session_id: activeId,
+          model,
+        });
+        await loadSessions();
+      } catch (cause) {
+        setActionError(messageOf(cause));
+      }
+    },
+    [kernel, activeId, loadSessions],
+  );
+
   const remove = useCallback(
     async (id: string): Promise<void> => {
       setActionError(null);
@@ -383,8 +424,10 @@ export function useChat(kernel: KernelClient): ChatController {
     notice,
     draft,
     capabilities,
+    models,
     setDraft,
     select,
+    setModel,
     newSession,
     createAssistant,
     send,

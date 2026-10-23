@@ -7,8 +7,10 @@ import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
 import { ContextViewer } from '../context/ContextViewer';
 
+import { ComparePanel } from './ComparePanel';
 import { Composer } from './Composer';
 import { MessageList } from './MessageList';
+import { ModelSelector } from './ModelSelector';
 import { formatCost, formatTokens, sessionTitle } from './model';
 import type { ChatController } from './useChat';
 
@@ -21,6 +23,7 @@ export interface ChatPanelProps {
 /** The main chat surface. */
 export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
   const [showContext, setShowContext] = useState(false);
+  const [showCompare, setShowCompare] = useState(false);
 
   if (chat.loading) {
     return <div className="chat-panel chat-panel--note">{t('chat.loading')}</div>;
@@ -69,12 +72,25 @@ export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
         </div>
         {active ? (
           <div className="chat-panel__stats">
+            <ModelSelector
+              value={active.model}
+              models={chat.models}
+              onChange={(model) => void chat.setModel(model)}
+            />
             <span className="badge">
               {t('chat.stats.tokens', {
                 tokens: formatTokens(active.tokens_in + active.tokens_out),
               })}
             </span>
             <span className="badge">{formatCost(active.cost_usd)}</span>
+            <button
+              type="button"
+              className="btn btn-sm"
+              aria-expanded={showCompare}
+              onClick={() => setShowCompare((open) => !open)}
+            >
+              {t('chat.compare.toggle')}
+            </button>
             <button
               type="button"
               className="btn btn-sm"
@@ -89,6 +105,10 @@ export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
 
       {chat.actionError ? <div className="inline-feedback error">{chat.actionError}</div> : null}
       {chat.notice ? <div className="inline-feedback info">{chat.notice}</div> : null}
+
+      {showCompare ? (
+        <ComparePanel kernel={kernel} agents={chat.agents} models={chat.models} />
+      ) : null}
 
       {showContext && active ? <ContextViewer kernel={kernel} sessionId={chat.activeId} /> : null}
 

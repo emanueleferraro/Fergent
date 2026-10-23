@@ -13,6 +13,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import type {
   AgentDefinition,
+  ChatCompareStartResult,
   ChatMessage,
   ChatSession,
   Event,
@@ -210,6 +211,15 @@ export class MockKernelClient implements KernelClient {
         }
         return session ?? null;
       }
+      case 'chat.session.model': {
+        const session = this.mockSessions.find((item) => item.id === sessionId);
+        if (session) {
+          session.model = typeof payload.model === 'string' ? payload.model : null;
+        }
+        return session ?? null;
+      }
+      case 'chat.compare.start':
+        return this.mockCompare(payload);
       case 'chat.session.delete': {
         const index = this.mockSessions.findIndex((item) => item.id === sessionId);
         if (index >= 0) {
@@ -447,6 +457,26 @@ export class MockKernelClient implements KernelClient {
     });
     this.mockMessages.set(sessionId, messages);
     return { session_id: sessionId, messages };
+  }
+
+  private mockCompare(payload: Record<string, unknown>): ChatCompareStartResult {
+    const agentId = String(payload.agent_id ?? 'assistant');
+    const models = Array.isArray(payload.models) ? payload.models.map(String) : [];
+    return {
+      sides: models.map((model) => {
+        const session = this.createMockSession({
+          agent_id: agentId,
+          title: `Compare · ${model}`,
+          model,
+        });
+        return {
+          session_id: session.id,
+          model,
+          content: `Mock answer from ${model}.`,
+          error: null,
+        };
+      }),
+    };
   }
 
   private mockFork(sessionId: string): ChatSession {

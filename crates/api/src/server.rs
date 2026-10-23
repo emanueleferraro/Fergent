@@ -1162,6 +1162,22 @@ async fn dispatch(
             })
             .await
         }
+        "chat.session.model" => {
+            let session_id = session_id_param(&params)?;
+            let model = params
+                .get("model")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .set_model(&session_id, model.as_deref())
+                    .map(|session| to_value(&session))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "chat.session.delete" => {
             let session_id = session_id_param(&params)?;
             let kernel = kernel.clone();

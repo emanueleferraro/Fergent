@@ -65,6 +65,14 @@ fn chat_roundtrip() {
         }]
     }));
     assert_roundtrip::<ChatMessageRetryParams>(json!({ "session_id": "01J8SESSION" }));
+    assert_roundtrip::<ChatSessionModelParams>(json!({
+        "session_id": "01J8SESSION",
+        "model": "anthropic:claude-sonnet-4.5"
+    }));
+    assert_roundtrip::<ChatSessionModelParams>(json!({
+        "session_id": "01J8SESSION",
+        "model": null
+    }));
     assert_roundtrip::<ChatMessageSendResult>(json!({
         "session_id": "01J8SESSION",
         "messages": [{

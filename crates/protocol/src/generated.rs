@@ -4989,6 +4989,43 @@ impl From<&ChatSessionListResult> for ChatSessionListResult {
         value.clone()
     }
 }
+#[doc = "Params of chat.session.model — pins the model a session runs on."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatSessionModelParams\","]
+#[doc = "  \"description\": \"Params of chat.session.model — pins the model a session runs on.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatSessionModelParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    pub session_id: String,
+}
+impl From<&ChatSessionModelParams> for ChatSessionModelParams {
+    fn from(value: &ChatSessionModelParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Params of chat.session.rename."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
