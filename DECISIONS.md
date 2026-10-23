@@ -155,6 +155,63 @@ Phase 1 implementation began.
 **Rationale.** Phase 1 builds directly on the daemon lifecycle and logging, so
 closing those gaps first avoided compounding them.
 
+## ADR-021 — Kernel-authoritative capability gating
+
+**Decision.** The kernel owns capability state (`capabilities` table); the UI is
+a projection of `capability.list` and can never enable behavior the kernel has
+not enabled. A disabled capability allocates nothing — no tasks, watchers,
+pools, tools, commands, or events — and its commands return
+`capability_disabled`. Optional capabilities default off; core ones default on.
+**Rationale.** One authority keeps the UI honest, makes "off" mean genuinely
+unallocated, and lets plugins participate through the same registry.
+
+## ADR-022 — Sandboxed rich outputs
+
+**Decision.** Charts (Recharts), Mermaid, and model-generated HTML render inside
+`<iframe sandbox="allow-scripts">` with a strict CSP, no `allow-same-origin`, and
+no network. Chart specs are validated JSON; markdown HTML is sanitized with an
+allowlist. `charts`/`mermaid`/`html` capabilities gate the blocks, which degrade
+to code blocks when disabled.
+**Rationale.** Model output is untrusted; the frame boundary plus sanitization
+contains it without giving up interactive visuals.
+
+## ADR-023 — Diff-gated, file-backed `brain.md`
+
+**Decision.** An agent's self-improving prompt lives at `agents/<id>/brain.md`,
+alongside `session.md` for compaction summaries. Edits are diff-gated: the
+default mode is **suggest** (user approves), **auto** applies immediately with
+an audit entry and a backup, and every change is revertible.
+**Rationale.** Plain files stay inspectable, git-versionable, and AI-editable;
+gating them preserves user control over the agent's own identity.
+
+## ADR-024 — Persisted spec/plan/tasks approval runs
+
+**Decision.** Spec workflows are first-class persisted runs (`runs`,
+`approvals`) with `awaiting_*_approval` states and per-run autonomy
+(`supervised`, `batch`, `auto`). Approval reuses the permission-card pattern,
+and resuming re-reads the (possibly edited) artifacts on disk.
+**Rationale.** Gates must survive restarts, and the user's edits must be the
+input the next stage sees.
+
+## ADR-025 — Secrets in the OS keychain
+
+**Decision.** API keys live in the OS keychain via `keyring`; the database
+stores only `secret_refs`. Values are resolved at call time inside the provider
+layer and never reach agents, prompts, logs, or plugins.
+**Rationale.** The local database is backed up, synced, and inspected; keys
+must not travel with it.
+
+## ADR-026 — Compare, fork, and time-travel semantics
+
+**Decision.** Multi-model compare is implemented as **parallel sessions** that
+the UI renders side by side; forking copies messages up to a turn into a new
+session with independent history and cost. Time travel restores session message
+state plus brain state at a chosen event via the persisted event log and
+per-brain snapshots, without rewinding unrelated projects, and the restore is
+itself audited and reversible.
+**Rationale.** Reusing sessions keeps everything in the existing model, and
+scoping restores to their blast radius keeps them safe.
+
 ---
 
 *End of `DECISIONS.md`.*
