@@ -18,6 +18,7 @@ fergents-permissions = { workspace = true }
 fergents-reversibility = { workspace = true }
 fergents-chat = { workspace = true }
 fergents-secrets = { workspace = true }
+fergents-mcp = { workspace = true }
 fergents-brain = { workspace = true }
 fergents-index = { workspace = true }
 fergents-graph = { workspace = true }

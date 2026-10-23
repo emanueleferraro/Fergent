@@ -236,6 +236,54 @@ fn providers_roundtrip() {
 }
 
 #[test]
+fn mcp_roundtrip() {
+    assert_roundtrip::<McpServer>(json!({
+        "id": "filesystem",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-filesystem"],
+        "allow": true,
+        "connected": false,
+        "created_at": 1792694626000_i64
+    }));
+    assert_roundtrip::<McpServerListResult>(json!({
+        "servers": [{
+            "id": "filesystem",
+            "command": null,
+            "args": [],
+            "allow": false,
+            "connected": false,
+            "created_at": 1792694626000_i64
+        }]
+    }));
+    assert_roundtrip::<McpServerAddParams>(json!({
+        "id": "filesystem",
+        "command": "npx",
+        "args": ["-y", "server"],
+        "allow": true
+    }));
+    assert_roundtrip::<McpServerIdParams>(json!({ "id": "filesystem" }));
+    assert_roundtrip::<McpServerDeletedResult>(json!({ "deleted": true }));
+    assert_roundtrip::<McpServerTestResult>(json!({
+        "id": "filesystem",
+        "ok": false,
+        "detail": "no command configured"
+    }));
+    assert_roundtrip::<McpServerHealthResult>(json!({
+        "id": "filesystem",
+        "connected": true,
+        "healthy": true
+    }));
+    assert_roundtrip::<McpTool>(json!({
+        "server": "filesystem",
+        "name": "read_file",
+        "description": "Read a file."
+    }));
+    assert_roundtrip::<McpToolListResult>(json!({
+        "tools": [{ "server": "filesystem", "name": "read_file", "description": "" }]
+    }));
+}
+
+#[test]
 fn context_and_memory_roundtrip() {
     assert_roundtrip::<ContextSnapshot>(json!({
         "id": "01J8CTX",

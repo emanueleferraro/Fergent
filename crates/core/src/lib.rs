@@ -5,7 +5,10 @@
 //! server dispatches to (`ARCHITECTURE.md` §3.2).
 
 mod brains;
+mod mcp;
 mod providers;
+
+pub use mcp::{McpHealth, McpServerRecord, McpService, McpServiceError, McpTest, McpTool};
 
 pub use providers::{
     ProviderConfig, ProviderRegistryError, ProviderRoute, ProviderService, ProviderTest,
@@ -73,6 +76,9 @@ pub enum CoreError {
     /// A provider registry failure.
     #[error(transparent)]
     Provider(#[from] ProviderRegistryError),
+    /// An MCP registry failure.
+    #[error(transparent)]
+    Mcp(#[from] McpServiceError),
 }
 
 /// Kernel configuration.
@@ -127,6 +133,7 @@ pub struct Kernel {
     chat: Arc<ChatService>,
     secrets: Arc<SecretVault>,
     provider_service: Arc<ProviderService>,
+    mcp_service: Arc<McpService>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -195,6 +202,8 @@ impl Kernel {
         let storage_for_providers: Arc<dyn Storage> = storage.clone();
         let provider_service =
             Arc::new(ProviderService::new(storage_for_providers, secrets.clone()));
+        let storage_for_mcp: Arc<dyn Storage> = storage.clone();
+        let mcp_service = Arc::new(McpService::new(storage_for_mcp));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -218,6 +227,7 @@ impl Kernel {
             chat,
             secrets,
             provider_service,
+            mcp_service,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -300,6 +310,11 @@ impl Kernel {
     /// The provider registry and task routes.
     pub fn providers(&self) -> &ProviderService {
         self.provider_service.as_ref()
+    }
+
+    /// The MCP server registry and live host.
+    pub fn mcp(&self) -> &McpService {
+        self.mcp_service.as_ref()
     }
 
     /// Assemble, count, persist, and emit a context snapshot for a session.

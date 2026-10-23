@@ -1728,6 +1728,83 @@ export interface ProviderRouteSetParams {
 }
 
 /**
+ * A configured MCP server and its live connection state.
+ */
+export interface McpServer {
+  id: string;
+  command?: string | null;
+  args: string[];
+  allow: boolean;
+  connected: boolean;
+  created_at: number;
+}
+
+/**
+ * Result of mcp.server.list.
+ */
+export interface McpServerListResult {
+  servers: McpServer[];
+}
+
+/**
+ * Params of mcp.server.add: configure or replace a server.
+ */
+export interface McpServerAddParams {
+  id: string;
+  command?: string | null;
+  args?: string[];
+  allow?: boolean;
+}
+
+/**
+ * Params carrying an MCP server id (remove, test, health).
+ */
+export interface McpServerIdParams {
+  id: string;
+}
+
+/**
+ * Result of mcp.server.remove.
+ */
+export interface McpServerDeletedResult {
+  deleted: boolean;
+}
+
+/**
+ * Result of mcp.server.test.
+ */
+export interface McpServerTestResult {
+  id: string;
+  ok: boolean;
+  detail?: string | null;
+}
+
+/**
+ * Result of mcp.server.health.
+ */
+export interface McpServerHealthResult {
+  id: string;
+  connected: boolean;
+  healthy?: boolean | null;
+}
+
+/**
+ * A tool discovered from a connected MCP server.
+ */
+export interface McpTool {
+  server: string;
+  name: string;
+  description: string;
+}
+
+/**
+ * Result of mcp.tool.list.
+ */
+export interface McpToolListResult {
+  tools: McpTool[];
+}
+
+/**
  * Params of agent.run.
  */
 export interface AgentRunParams {
