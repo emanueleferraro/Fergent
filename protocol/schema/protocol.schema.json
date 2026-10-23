@@ -1748,6 +1748,114 @@
         "present": { "type": "boolean" }
       }
     },
+    "ProviderConfig": {
+      "title": "ProviderConfig",
+      "description": "A configured LLM provider. API keys live in the keychain, referenced by secret_name.",
+      "type": "object",
+      "required": ["id", "kind", "models", "created_at"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["anthropic", "google", "openai", "ollama", "mock"]
+        },
+        "base_url": { "type": ["string", "null"] },
+        "secret_name": { "type": ["string", "null"] },
+        "models": { "type": "array", "items": { "type": "string" } },
+        "created_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "ProviderListResult": {
+      "title": "ProviderListResult",
+      "description": "Result of provider.list.",
+      "type": "object",
+      "required": ["providers"],
+      "properties": {
+        "providers": { "type": "array", "items": { "$ref": "#/$defs/ProviderConfig" } }
+      }
+    },
+    "ProviderAddParams": {
+      "title": "ProviderAddParams",
+      "description": "Params of provider.add: configure or replace a provider.",
+      "type": "object",
+      "required": ["id", "kind"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": ["anthropic", "google", "openai", "ollama", "mock"]
+        },
+        "base_url": { "type": ["string", "null"] },
+        "secret_name": { "type": ["string", "null"] },
+        "models": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ProviderIdParams": {
+      "title": "ProviderIdParams",
+      "description": "Params carrying a provider id (provider.remove, provider.test, provider.models).",
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": { "id": { "type": "string" } }
+    },
+    "ProviderDeletedResult": {
+      "title": "ProviderDeletedResult",
+      "description": "Result of provider.remove.",
+      "type": "object",
+      "required": ["deleted"],
+      "properties": { "deleted": { "type": "boolean" } }
+    },
+    "ProviderTestResult": {
+      "title": "ProviderTestResult",
+      "description": "Result of provider.test.",
+      "type": "object",
+      "required": ["id", "ok"],
+      "properties": {
+        "id": { "type": "string" },
+        "ok": { "type": "boolean" },
+        "detail": { "type": ["string", "null"] }
+      }
+    },
+    "ProviderModelsResult": {
+      "title": "ProviderModelsResult",
+      "description": "Result of provider.models.",
+      "type": "object",
+      "required": ["models"],
+      "properties": { "models": { "type": "array", "items": { "type": "string" } } }
+    },
+    "ProviderRoute": {
+      "title": "ProviderRoute",
+      "description": "An ordered model chain for a task.",
+      "type": "object",
+      "required": ["task", "models"],
+      "additionalProperties": false,
+      "properties": {
+        "task": { "type": "string" },
+        "models": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ProviderRoutesResult": {
+      "title": "ProviderRoutesResult",
+      "description": "Result of provider.route.get.",
+      "type": "object",
+      "required": ["routes"],
+      "properties": {
+        "routes": { "type": "array", "items": { "$ref": "#/$defs/ProviderRoute" } }
+      }
+    },
+    "ProviderRouteSetParams": {
+      "title": "ProviderRouteSetParams",
+      "description": "Params of provider.route.set.",
+      "type": "object",
+      "required": ["task", "models"],
+      "additionalProperties": false,
+      "properties": {
+        "task": { "type": "string" },
+        "models": { "type": "array", "items": { "type": "string" } }
+      }
+    },
     "AgentRunParams": {
       "title": "AgentRunParams",
       "description": "Params of agent.run.",

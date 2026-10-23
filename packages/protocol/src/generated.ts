@@ -1645,6 +1645,89 @@ export interface SecretTestResult {
 }
 
 /**
+ * A configured LLM provider. API keys live in the keychain, referenced by secret_name.
+ */
+export interface ProviderConfig {
+  id: string;
+  kind: 'anthropic' | 'google' | 'openai' | 'ollama' | 'mock';
+  base_url?: string | null;
+  secret_name?: string | null;
+  models: string[];
+  created_at: number;
+}
+
+/**
+ * Result of provider.list.
+ */
+export interface ProviderListResult {
+  providers: ProviderConfig[];
+}
+
+/**
+ * Params of provider.add: configure or replace a provider.
+ */
+export interface ProviderAddParams {
+  id: string;
+  kind: 'anthropic' | 'google' | 'openai' | 'ollama' | 'mock';
+  base_url?: string | null;
+  secret_name?: string | null;
+  models?: string[];
+}
+
+/**
+ * Params carrying a provider id (provider.remove, provider.test, provider.models).
+ */
+export interface ProviderIdParams {
+  id: string;
+}
+
+/**
+ * Result of provider.remove.
+ */
+export interface ProviderDeletedResult {
+  deleted: boolean;
+}
+
+/**
+ * Result of provider.test.
+ */
+export interface ProviderTestResult {
+  id: string;
+  ok: boolean;
+  detail?: string | null;
+}
+
+/**
+ * Result of provider.models.
+ */
+export interface ProviderModelsResult {
+  models: string[];
+}
+
+/**
+ * An ordered model chain for a task.
+ */
+export interface ProviderRoute {
+  task: string;
+  models: string[];
+}
+
+/**
+ * Result of provider.route.get.
+ */
+export interface ProviderRoutesResult {
+  routes: ProviderRoute[];
+}
+
+/**
+ * Params of provider.route.set.
+ */
+export interface ProviderRouteSetParams {
+  task: string;
+  models: string[];
+}
+
+/**
  * Params of agent.run.
  */
 export interface AgentRunParams {

@@ -9360,6 +9360,598 @@ impl From<&PromptTemplate> for PromptTemplate {
         value.clone()
     }
 }
+#[doc = "Params of provider.add: configure or replace a provider."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderAddParams\","]
+#[doc = "  \"description\": \"Params of provider.add: configure or replace a provider.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"kind\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"base_url\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"type\": \"string\","]
+#[doc = "      \"enum\": ["]
+#[doc = "        \"anthropic\","]
+#[doc = "        \"google\","]
+#[doc = "        \"openai\","]
+#[doc = "        \"ollama\","]
+#[doc = "        \"mock\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"models\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"secret_name\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderAddParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_url: Option<String>,
+    pub id: String,
+    pub kind: ProviderAddParamsKind,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub models: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub secret_name: Option<String>,
+}
+impl From<&ProviderAddParams> for ProviderAddParams {
+    fn from(value: &ProviderAddParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "ProviderAddParamsKind"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"anthropic\","]
+#[doc = "    \"google\","]
+#[doc = "    \"openai\","]
+#[doc = "    \"ollama\","]
+#[doc = "    \"mock\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum ProviderAddParamsKind {
+    #[serde(rename = "anthropic")]
+    Anthropic,
+    #[serde(rename = "google")]
+    Google,
+    #[serde(rename = "openai")]
+    Openai,
+    #[serde(rename = "ollama")]
+    Ollama,
+    #[serde(rename = "mock")]
+    Mock,
+}
+impl From<&ProviderAddParamsKind> for ProviderAddParamsKind {
+    fn from(value: &ProviderAddParamsKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for ProviderAddParamsKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Anthropic => write!(f, "anthropic"),
+            Self::Google => write!(f, "google"),
+            Self::Openai => write!(f, "openai"),
+            Self::Ollama => write!(f, "ollama"),
+            Self::Mock => write!(f, "mock"),
+        }
+    }
+}
+impl std::str::FromStr for ProviderAddParamsKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "anthropic" => Ok(Self::Anthropic),
+            "google" => Ok(Self::Google),
+            "openai" => Ok(Self::Openai),
+            "ollama" => Ok(Self::Ollama),
+            "mock" => Ok(Self::Mock),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for ProviderAddParamsKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for ProviderAddParamsKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for ProviderAddParamsKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "A configured LLM provider. API keys live in the keychain, referenced by secret_name."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderConfig\","]
+#[doc = "  \"description\": \"A configured LLM provider. API keys live in the keychain, referenced by secret_name.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"created_at\","]
+#[doc = "    \"id\","]
+#[doc = "    \"kind\","]
+#[doc = "    \"models\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"base_url\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"type\": \"string\","]
+#[doc = "      \"enum\": ["]
+#[doc = "        \"anthropic\","]
+#[doc = "        \"google\","]
+#[doc = "        \"openai\","]
+#[doc = "        \"ollama\","]
+#[doc = "        \"mock\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"models\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"secret_name\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderConfig {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_url: Option<String>,
+    pub created_at: i64,
+    pub id: String,
+    pub kind: ProviderConfigKind,
+    pub models: Vec<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub secret_name: Option<String>,
+}
+impl From<&ProviderConfig> for ProviderConfig {
+    fn from(value: &ProviderConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "ProviderConfigKind"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"anthropic\","]
+#[doc = "    \"google\","]
+#[doc = "    \"openai\","]
+#[doc = "    \"ollama\","]
+#[doc = "    \"mock\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum ProviderConfigKind {
+    #[serde(rename = "anthropic")]
+    Anthropic,
+    #[serde(rename = "google")]
+    Google,
+    #[serde(rename = "openai")]
+    Openai,
+    #[serde(rename = "ollama")]
+    Ollama,
+    #[serde(rename = "mock")]
+    Mock,
+}
+impl From<&ProviderConfigKind> for ProviderConfigKind {
+    fn from(value: &ProviderConfigKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for ProviderConfigKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Anthropic => write!(f, "anthropic"),
+            Self::Google => write!(f, "google"),
+            Self::Openai => write!(f, "openai"),
+            Self::Ollama => write!(f, "ollama"),
+            Self::Mock => write!(f, "mock"),
+        }
+    }
+}
+impl std::str::FromStr for ProviderConfigKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "anthropic" => Ok(Self::Anthropic),
+            "google" => Ok(Self::Google),
+            "openai" => Ok(Self::Openai),
+            "ollama" => Ok(Self::Ollama),
+            "mock" => Ok(Self::Mock),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for ProviderConfigKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for ProviderConfigKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for ProviderConfigKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Result of provider.remove."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderDeletedResult\","]
+#[doc = "  \"description\": \"Result of provider.remove.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"deleted\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"deleted\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ProviderDeletedResult {
+    pub deleted: bool,
+}
+impl From<&ProviderDeletedResult> for ProviderDeletedResult {
+    fn from(value: &ProviderDeletedResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params carrying a provider id (provider.remove, provider.test, provider.models)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderIdParams\","]
+#[doc = "  \"description\": \"Params carrying a provider id (provider.remove, provider.test, provider.models).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderIdParams {
+    pub id: String,
+}
+impl From<&ProviderIdParams> for ProviderIdParams {
+    fn from(value: &ProviderIdParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of provider.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderListResult\","]
+#[doc = "  \"description\": \"Result of provider.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"providers\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"providers\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ProviderConfig\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ProviderListResult {
+    pub providers: Vec<ProviderConfig>,
+}
+impl From<&ProviderListResult> for ProviderListResult {
+    fn from(value: &ProviderListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of provider.models."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderModelsResult\","]
+#[doc = "  \"description\": \"Result of provider.models.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"models\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"models\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ProviderModelsResult {
+    pub models: Vec<String>,
+}
+impl From<&ProviderModelsResult> for ProviderModelsResult {
+    fn from(value: &ProviderModelsResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "An ordered model chain for a task."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderRoute\","]
+#[doc = "  \"description\": \"An ordered model chain for a task.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"models\","]
+#[doc = "    \"task\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"models\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"task\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderRoute {
+    pub models: Vec<String>,
+    pub task: String,
+}
+impl From<&ProviderRoute> for ProviderRoute {
+    fn from(value: &ProviderRoute) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of provider.route.set."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderRouteSetParams\","]
+#[doc = "  \"description\": \"Params of provider.route.set.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"models\","]
+#[doc = "    \"task\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"models\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"task\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ProviderRouteSetParams {
+    pub models: Vec<String>,
+    pub task: String,
+}
+impl From<&ProviderRouteSetParams> for ProviderRouteSetParams {
+    fn from(value: &ProviderRouteSetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of provider.route.get."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderRoutesResult\","]
+#[doc = "  \"description\": \"Result of provider.route.get.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"routes\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"routes\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ProviderRoute\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ProviderRoutesResult {
+    pub routes: Vec<ProviderRoute>,
+}
+impl From<&ProviderRoutesResult> for ProviderRoutesResult {
+    fn from(value: &ProviderRoutesResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of provider.test."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ProviderTestResult\","]
+#[doc = "  \"description\": \"Result of provider.test.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"ok\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"detail\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"ok\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ProviderTestResult {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub detail: Option<String>,
+    pub id: String,
+    pub ok: bool,
+}
+impl From<&ProviderTestResult> for ProviderTestResult {
+    fn from(value: &ProviderTestResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "A graph relation (GRAPH.md §5.1, CozoDB `relation`)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]

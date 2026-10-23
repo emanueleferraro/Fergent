@@ -1,0 +1,365 @@
+//! The provider registry: configured LLM backends and task routes (task 2.17).
+//!
+//! Configuration only. API keys are never stored here: a provider references a
+//! secret by name and the vault resolves it at build time.
+
+use std::sync::Arc;
+
+use fergents_llm::{
+    AnthropicProvider, GoogleProvider, MockProvider, ModelInfo, OpenAiCompatProvider, Provider,
+};
+use fergents_secrets::SecretVault;
+use fergents_storage::{Storage, StorageError, Value};
+use serde::{Deserialize, Serialize};
+use thiserror::Error;
+
+/// Errors raised by the provider registry.
+#[derive(Debug, Error)]
+pub enum ProviderRegistryError {
+    /// The id is empty or contains whitespace.
+    #[error("invalid provider id: {0}")]
+    InvalidId(String),
+    /// No provider is configured under that id.
+    #[error("unknown provider: {0}")]
+    Unknown(String),
+    /// The kind is not one the kernel can build.
+    #[error("unknown provider kind: {0}")]
+    InvalidKind(String),
+    /// A required endpoint is missing.
+    #[error("provider {0} requires a base_url")]
+    MissingBaseUrl(String),
+    /// A required API key is missing.
+    #[error("provider {0} requires a secret")]
+    MissingSecret(String),
+    /// The referenced secret is missing.
+    #[error(transparent)]
+    Secret(#[from] fergents_secrets::SecretError),
+    /// The row could not be read or written.
+    #[error(transparent)]
+    Storage(#[from] StorageError),
+}
+
+/// A configured provider (never holds a key).
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ProviderConfig {
+    /// Stable id, e.g. `anthropic`.
+    pub id: String,
+    /// One of `anthropic`, `google`, `openai`, `ollama`, `mock`.
+    pub kind: String,
+    /// Endpoint override for compatible servers.
+    pub base_url: Option<String>,
+    /// Name of the secret holding the API key, if any.
+    pub secret_name: Option<String>,
+    /// Model ids advertised by this provider.
+    pub models: Vec<String>,
+    /// When the provider was configured (ms since the epoch).
+    pub created_at: i64,
+}
+
+/// The outcome of `provider.test`.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ProviderTest {
+    /// The tested provider id.
+    pub id: String,
+    /// Whether the provider answered.
+    pub ok: bool,
+    /// Failure detail when `ok` is false.
+    pub detail: Option<String>,
+}
+
+/// An ordered model chain for a task.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct ProviderRoute {
+    /// The task name, e.g. `chat`.
+    pub task: String,
+    /// Candidate models, in preference order.
+    pub models: Vec<String>,
+}
+
+const KINDS: [&str; 5] = ["anthropic", "google", "openai", "ollama", "mock"];
+
+fn validate_id(id: &str) -> Result<(), ProviderRegistryError> {
+    if id.is_empty() || id.len() > 64 || id.chars().any(char::is_whitespace) {
+        return Err(ProviderRegistryError::InvalidId(id.to_string()));
+    }
+    Ok(())
+}
+
+fn encode_models(models: &[String]) -> Result<String, ProviderRegistryError> {
+    serde_json::to_string(models)
+        .map_err(|err| ProviderRegistryError::InvalidId(format!("models: {err}")))
+}
+
+fn decode_models(raw: &str) -> Vec<String> {
+    serde_json::from_str(raw).unwrap_or_default()
+}
+
+fn now_ms() -> i64 {
+    use std::time::{SystemTime, UNIX_EPOCH};
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_or(0, |d| d.as_millis() as i64)
+}
+
+/// The provider registry facade.
+pub struct ProviderService {
+    storage: Arc<dyn Storage>,
+    secrets: Arc<SecretVault>,
+}
+
+impl ProviderService {
+    /// Build the registry over `storage`, resolving keys through `secrets`.
+    pub fn new(storage: Arc<dyn Storage>, secrets: Arc<SecretVault>) -> Self {
+        Self { storage, secrets }
+    }
+
+    /// Every configured provider, oldest first.
+    pub fn list(&self) -> Result<Vec<ProviderConfig>, ProviderRegistryError> {
+        let rows = self.storage.query(
+            "SELECT id, kind, base_url, secret_name, models, created_at \
+             FROM provider_configs ORDER BY created_at ASC",
+            &[],
+        )?;
+        Ok(rows.into_iter().map(row_to_config).collect())
+    }
+
+    /// One provider by id.
+    pub fn get(&self, id: &str) -> Result<ProviderConfig, ProviderRegistryError> {
+        let rows = self.storage.query(
+            "SELECT id, kind, base_url, secret_name, models, created_at \
+             FROM provider_configs WHERE id = ?1",
+            &[Value::String(id.to_string())],
+        )?;
+        rows.into_iter()
+            .next()
+            .map(row_to_config)
+            .ok_or_else(|| ProviderRegistryError::Unknown(id.to_string()))
+    }
+
+    /// Add or replace a provider.
+    pub fn add(
+        &self,
+        id: &str,
+        kind: &str,
+        base_url: Option<&str>,
+        secret_name: Option<&str>,
+        models: &[String],
+    ) -> Result<ProviderConfig, ProviderRegistryError> {
+        validate_id(id)?;
+        if !KINDS.contains(&kind) {
+            return Err(ProviderRegistryError::InvalidKind(kind.to_string()));
+        }
+        if kind == "openai" && base_url.is_none() {
+            return Err(ProviderRegistryError::MissingBaseUrl(id.to_string()));
+        }
+        let created_at = self
+            .storage
+            .query(
+                "SELECT created_at FROM provider_configs WHERE id = ?1",
+                &[Value::String(id.to_string())],
+            )?
+            .first()
+            .and_then(|row| row.get("created_at"))
+            .and_then(Value::as_i64)
+            .unwrap_or_else(now_ms);
+        self.storage.execute(
+            "INSERT INTO provider_configs (id, kind, base_url, secret_name, models, created_at) \
+             VALUES (?1, ?2, ?3, ?4, ?5, ?6) \
+             ON CONFLICT(id) DO UPDATE SET kind = excluded.kind, base_url = excluded.base_url, \
+             secret_name = excluded.secret_name, models = excluded.models",
+            &[
+                Value::String(id.to_string()),
+                Value::String(kind.to_string()),
+                base_url.map_or(Value::Null, |url| Value::String(url.to_string())),
+                secret_name.map_or(Value::Null, |name| Value::String(name.to_string())),
+                Value::String(encode_models(models)?),
+                Value::from(created_at),
+            ],
+        )?;
+        self.get(id)
+    }
+
+    /// Remove a provider. Returns whether it existed.
+    pub fn remove(&self, id: &str) -> Result<bool, ProviderRegistryError> {
+        validate_id(id)?;
+        let removed = self.storage.execute(
+            "DELETE FROM provider_configs WHERE id = ?1",
+            &[Value::String(id.to_string())],
+        )?;
+        Ok(removed > 0)
+    }
+
+    /// Resolve credentials and ask the backend how it is doing.
+    pub async fn test(&self, id: &str) -> Result<ProviderTest, ProviderRegistryError> {
+        let config = self.get(id)?;
+        let provider = self.build(&config)?;
+        match provider.health().await {
+            Ok(health) => Ok(ProviderTest {
+                id: id.to_string(),
+                ok: health.ok,
+                detail: health.detail,
+            }),
+            Err(err) => Ok(ProviderTest {
+                id: id.to_string(),
+                ok: false,
+                detail: Some(err.to_string()),
+            }),
+        }
+    }
+
+    /// The model ids a provider advertises, falling back to the configured list.
+    pub async fn models(&self, id: &str) -> Result<Vec<String>, ProviderRegistryError> {
+        let config = self.get(id)?;
+        let provider = self.build(&config)?;
+        let advertised = provider.models().await.unwrap_or_default();
+        if advertised.is_empty() {
+            return Ok(config.models);
+        }
+        Ok(advertised.into_iter().map(|model| model.id).collect())
+    }
+
+    /// Every task route, by task name.
+    pub fn routes(&self) -> Result<Vec<ProviderRoute>, ProviderRegistryError> {
+        let rows = self.storage.query(
+            "SELECT task, models FROM provider_routes ORDER BY task ASC",
+            &[],
+        )?;
+        Ok(rows
+            .into_iter()
+            .map(|row| ProviderRoute {
+                task: row
+                    .get("task")
+                    .and_then(Value::as_str)
+                    .unwrap_or_default()
+                    .to_string(),
+                models: row
+                    .get("models")
+                    .and_then(Value::as_str)
+                    .map(decode_models)
+                    .unwrap_or_default(),
+            })
+            .collect())
+    }
+
+    /// Replace the model chain for `task`.
+    pub fn set_route(
+        &self,
+        task: &str,
+        models: &[String],
+    ) -> Result<ProviderRoute, ProviderRegistryError> {
+        if task.is_empty() {
+            return Err(ProviderRegistryError::InvalidId(task.to_string()));
+        }
+        self.storage.execute(
+            "INSERT INTO provider_routes (task, models, updated_at) VALUES (?1, ?2, ?3) \
+             ON CONFLICT(task) DO UPDATE SET models = excluded.models, \
+             updated_at = excluded.updated_at",
+            &[
+                Value::String(task.to_string()),
+                Value::String(encode_models(models)?),
+                Value::from(now_ms()),
+            ],
+        )?;
+        Ok(ProviderRoute {
+            task: task.to_string(),
+            models: models.to_vec(),
+        })
+    }
+
+    fn resolve_key(
+        &self,
+        config: &ProviderConfig,
+    ) -> Result<Option<String>, ProviderRegistryError> {
+        match &config.secret_name {
+            Some(name) => Ok(Some(self.secrets.resolve(name)?)),
+            None => Ok(None),
+        }
+    }
+
+    /// Build a live provider from its configuration.
+    fn build(&self, config: &ProviderConfig) -> Result<Arc<dyn Provider>, ProviderRegistryError> {
+        let known = config
+            .models
+            .iter()
+            .map(|id| ModelInfo::new(id.clone()))
+            .collect::<Vec<_>>();
+        let provider: Arc<dyn Provider> = match config.kind.as_str() {
+            "mock" => Arc::new(MockProvider::new(config.id.clone()).with_models(known)),
+            "ollama" => {
+                let mut provider = OpenAiCompatProvider::new(
+                    config.id.clone(),
+                    config
+                        .base_url
+                        .clone()
+                        .unwrap_or_else(|| "http://localhost:11434/v1".to_string()),
+                );
+                if let Some(key) = self.resolve_key(config)? {
+                    provider = provider.with_api_key(key);
+                }
+                Arc::new(provider)
+            }
+            "openai" => {
+                let url = config
+                    .base_url
+                    .clone()
+                    .ok_or_else(|| ProviderRegistryError::MissingBaseUrl(config.id.clone()))?;
+                let mut provider = OpenAiCompatProvider::new(config.id.clone(), url);
+                if let Some(key) = self.resolve_key(config)? {
+                    provider = provider.with_api_key(key);
+                }
+                Arc::new(provider)
+            }
+            "anthropic" => {
+                let key = self
+                    .resolve_key(config)?
+                    .ok_or_else(|| ProviderRegistryError::MissingSecret(config.id.clone()))?;
+                let mut provider = AnthropicProvider::new(key);
+                if let Some(url) = &config.base_url {
+                    provider = provider.with_base_url(url.clone());
+                }
+                Arc::new(provider)
+            }
+            "google" => {
+                let key = self
+                    .resolve_key(config)?
+                    .ok_or_else(|| ProviderRegistryError::MissingSecret(config.id.clone()))?;
+                let mut provider = GoogleProvider::new(key);
+                if let Some(url) = &config.base_url {
+                    provider = provider.with_base_url(url.clone());
+                }
+                Arc::new(provider)
+            }
+            other => return Err(ProviderRegistryError::InvalidKind(other.to_string())),
+        };
+        Ok(provider)
+    }
+}
+
+fn row_to_config(row: fergents_storage::Row) -> ProviderConfig {
+    ProviderConfig {
+        id: row
+            .get("id")
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .to_string(),
+        kind: row
+            .get("kind")
+            .and_then(Value::as_str)
+            .unwrap_or_default()
+            .to_string(),
+        base_url: row
+            .get("base_url")
+            .and_then(Value::as_str)
+            .map(str::to_string),
+        secret_name: row
+            .get("secret_name")
+            .and_then(Value::as_str)
+            .map(str::to_string),
+        models: row
+            .get("models")
+            .and_then(Value::as_str)
+            .map(decode_models)
+            .unwrap_or_default(),
+        created_at: row.get("created_at").and_then(Value::as_i64).unwrap_or(0),
+    }
+}

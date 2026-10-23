@@ -1392,6 +1392,143 @@ async fn dispatch(
             })
             .await
         }
+        "provider.list" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .providers()
+                    .list()
+                    .map(|providers| serde_json::json!({ "providers": to_value(&providers) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "provider.add" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            let kind = params
+                .get("kind")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing kind".to_string()))?
+                .to_string();
+            let base_url = params
+                .get("base_url")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let secret_name = params
+                .get("secret_name")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let models: Vec<String> = params
+                .get("models")
+                .and_then(Value::as_array)
+                .map(|models| {
+                    models
+                        .iter()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect()
+                })
+                .unwrap_or_default();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .providers()
+                    .add(
+                        &id,
+                        &kind,
+                        base_url.as_deref(),
+                        secret_name.as_deref(),
+                        &models,
+                    )
+                    .map(|provider| to_value(&provider))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "provider.remove" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .providers()
+                    .remove(&id)
+                    .map(|deleted| serde_json::json!({ "deleted": deleted }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "provider.test" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            kernel
+                .providers()
+                .test(&id)
+                .await
+                .map(|test| to_value(&test))
+                .map_err(|err| map_core_error(CoreError::from(err)))
+        }
+        "provider.models" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            kernel
+                .providers()
+                .models(&id)
+                .await
+                .map(|models| serde_json::json!({ "models": models }))
+                .map_err(|err| map_core_error(CoreError::from(err)))
+        }
+        "provider.route.get" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .providers()
+                    .routes()
+                    .map(|routes| serde_json::json!({ "routes": to_value(&routes) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "provider.route.set" => {
+            let task = params
+                .get("task")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing task".to_string()))?
+                .to_string();
+            let models: Vec<String> = params
+                .get("models")
+                .and_then(Value::as_array)
+                .map(|models| {
+                    models
+                        .iter()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect()
+                })
+                .unwrap_or_default();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .providers()
+                    .set_route(&task, &models)
+                    .map(|route| to_value(&route))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -1452,6 +1589,7 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("permission.") => Some("capability.agents"),
         method if method.starts_with("backup.") => Some("capability.agents"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
+        method if method.starts_with("provider.") => Some("capability.llm"),
         _ => None,
     }
 }
@@ -1586,6 +1724,13 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
         | CoreError::Secret(
             fergents_secrets::SecretError::InvalidName(_)
             | fergents_secrets::SecretError::Unknown(_),
+        )
+        | CoreError::Provider(
+            fergents_core::ProviderRegistryError::InvalidId(_)
+            | fergents_core::ProviderRegistryError::Unknown(_)
+            | fergents_core::ProviderRegistryError::InvalidKind(_)
+            | fergents_core::ProviderRegistryError::MissingBaseUrl(_)
+            | fergents_core::ProviderRegistryError::MissingSecret(_),
         ) => (ErrorCode::InvalidParams, err.to_string()),
         _ => (ErrorCode::InternalError, err.to_string()),
     }
