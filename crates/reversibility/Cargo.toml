@@ -1,0 +1,19 @@
+[package]
+name = "fergents-reversibility"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents reversibility: timestamped file backups, restore, and audit."
+
+[dependencies]
+fergents-events = { workspace = true }
+fergents-storage = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ulid = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

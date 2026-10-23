@@ -15,6 +15,8 @@ fergents-capabilities = { workspace = true }
 fergents-llm = { workspace = true }
 fergents-agents = { workspace = true }
 fergents-permissions = { workspace = true }
+fergents-reversibility = { workspace = true }
+fergents-chat = { workspace = true }
 fergents-brain = { workspace = true }
 fergents-index = { workspace = true }
 fergents-graph = { workspace = true }
