@@ -7,6 +7,7 @@ import type {
   AgentDefinition,
   AgentListResult,
   AttachmentRouting,
+  CapabilityListResult,
   ChatMessage,
   ChatMessageListResult,
   ChatMessageSendResult,
@@ -51,6 +52,8 @@ export interface ChatController {
   searching: boolean;
   notice: string | null;
   draft: string;
+  /** Enabled capability ids (gates rich outputs). */
+  capabilities: Set<string>;
   setDraft: (value: string) => void;
   select: (id: string) => void;
   newSession: () => Promise<void>;
@@ -86,6 +89,7 @@ export function useChat(kernel: KernelClient): ChatController {
   const [searching, setSearching] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
+  const [capabilities, setCapabilities] = useState<Set<string>>(new Set());
 
   const activeIdRef = useRef(activeId);
   activeIdRef.current = activeId;
@@ -101,10 +105,11 @@ export function useChat(kernel: KernelClient): ChatController {
     setLoading(true);
     void (async () => {
       try {
-        const [agentList, sessionList, promptList] = await Promise.all([
+        const [agentList, sessionList, promptList, capabilityList] = await Promise.all([
           kernel.call<AgentListResult>('agent.list'),
           kernel.call<ChatSessionListResult>('chat.session.list', { limit: 50 }),
           kernel.call<PromptListResult>('prompt.list'),
+          kernel.call<CapabilityListResult | null>('capability.list'),
         ]);
         if (!active) {
           return;
@@ -112,6 +117,13 @@ export function useChat(kernel: KernelClient): ChatController {
         setAgents(agentList.agents);
         setSessions(sessionList.sessions);
         setPrompts(promptList.prompts);
+        setCapabilities(
+          new Set(
+            (capabilityList?.capabilities ?? [])
+              .filter((capability) => capability.enabled)
+              .map((capability) => capability.id),
+          ),
+        );
         setActiveId(sessionList.sessions[0]?.id ?? null);
         setError(null);
       } catch (cause) {
@@ -370,6 +382,7 @@ export function useChat(kernel: KernelClient): ChatController {
     searching,
     notice,
     draft,
+    capabilities,
     setDraft,
     select,
     newSession,

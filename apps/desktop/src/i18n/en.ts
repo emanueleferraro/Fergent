@@ -183,6 +183,16 @@ export const en = {
   'chat.noAgent.desc': 'Chat needs an agent definition. Create the default assistant to start.',
   'chat.noAgent.create': 'Create assistant',
 
+  'rich.kind.chart': 'chart',
+  'rich.kind.mermaid': 'diagram',
+  'rich.kind.html': 'HTML',
+  'rich.chart.title': 'Chart',
+  'rich.mermaid.title': 'Diagram',
+  'rich.html.title': 'Rich HTML',
+  'rich.loading': 'Rendering…',
+  'rich.disabled': '{kind} rendering is disabled. Enable the capability in Settings → Features.',
+  'rich.invalid': 'This {kind} block is invalid and was not rendered.',
+
   'context.title': 'Context',
   'context.subtitle': 'Sections the kernel sends to the model on the next turn.',
   'context.loading': 'Inspecting context…',
