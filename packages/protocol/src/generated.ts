@@ -1805,6 +1805,33 @@ export interface McpToolListResult {
 }
 
 /**
+ * One side of a compare run: its session, model, and reply.
+ */
+export interface ChatCompareSide {
+  session_id: string;
+  model: string;
+  content?: string | null;
+  error?: string | null;
+}
+
+/**
+ * Params of chat.compare.start: one prompt, several models (decision D9).
+ */
+export interface ChatCompareStartParams {
+  agent_id: string;
+  prompt: string;
+  models: string[];
+  title?: string | null;
+}
+
+/**
+ * Result of chat.compare.start.
+ */
+export interface ChatCompareStartResult {
+  sides: ChatCompareSide[];
+}
+
+/**
  * Params of agent.run.
  */
 export interface AgentRunParams {
