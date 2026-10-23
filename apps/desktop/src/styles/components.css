@@ -1832,6 +1832,28 @@ mark,
     background: var(--color-glass);
 }
 .compare-pane__head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-2); }
+.subagent-list, .timeline { display: flex; flex-direction: column; gap: var(--s-2); margin: 0; padding: 0; list-style: none; }
+.subagent, .timeline__row {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-3);
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    background: var(--color-glass);
+}
+.timeline__row { flex-direction: row; align-items: center; justify-content: space-between; }
+.subagent__head { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); }
+.subagent__task { margin: 0; font-size: 13px; color: var(--text-strong); }
+.subagent__result {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: inherit;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.timeline__path { font-size: 13px; color: var(--text-strong); word-break: break-all; }
 .compare-pane__body {
     margin: 0;
     white-space: pre-wrap;

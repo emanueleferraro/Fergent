@@ -11,6 +11,8 @@ import { ComparePanel } from './ComparePanel';
 import { Composer } from './Composer';
 import { MessageList } from './MessageList';
 import { ModelSelector } from './ModelSelector';
+import { SubAgentsPanel } from './SubAgentsPanel';
+import { TimelinePanel } from './TimelinePanel';
 import { formatCost, formatTokens, sessionTitle } from './model';
 import type { ChatController } from './useChat';
 
@@ -24,6 +26,8 @@ export interface ChatPanelProps {
 export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
   const [showContext, setShowContext] = useState(false);
   const [showCompare, setShowCompare] = useState(false);
+  const [showSubAgents, setShowSubAgents] = useState(false);
+  const [showTimeline, setShowTimeline] = useState(false);
 
   if (chat.loading) {
     return <div className="chat-panel chat-panel--note">{t('chat.loading')}</div>;
@@ -91,6 +95,26 @@ export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
             >
               {t('chat.compare.toggle')}
             </button>
+            {chat.capabilities.has('capability.sub-agents') ? (
+              <button
+                type="button"
+                className="btn btn-sm"
+                aria-expanded={showSubAgents}
+                onClick={() => setShowSubAgents((open) => !open)}
+              >
+                {t('subagents.toggle')}
+              </button>
+            ) : null}
+            {chat.capabilities.has('capability.agents') ? (
+              <button
+                type="button"
+                className="btn btn-sm"
+                aria-expanded={showTimeline}
+                onClick={() => setShowTimeline((open) => !open)}
+              >
+                {t('timeline.toggle')}
+              </button>
+            ) : null}
             <button
               type="button"
               className="btn btn-sm"
@@ -109,6 +133,12 @@ export function ChatPanel({ kernel, chat }: ChatPanelProps): ReactElement {
       {showCompare ? (
         <ComparePanel kernel={kernel} agents={chat.agents} models={chat.models} />
       ) : null}
+
+      {showSubAgents && active ? (
+        <SubAgentsPanel kernel={kernel} parentSessionId={active.id} agents={chat.agents} />
+      ) : null}
+
+      {showTimeline ? <TimelinePanel kernel={kernel} /> : null}
 
       {showContext && active ? <ContextViewer kernel={kernel} sessionId={chat.activeId} /> : null}
 
