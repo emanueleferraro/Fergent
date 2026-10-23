@@ -1986,6 +1986,164 @@
         "sides": { "type": "array", "items": { "$ref": "#/$defs/ChatCompareSide" } }
       }
     },
+    "SubAgent": {
+      "title": "SubAgent",
+      "description": "A tracked sub-agent run (AGENTS.md §9).",
+      "type": "object",
+      "required": ["session_id", "agent_id", "task", "state", "created_at", "updated_at"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "agent_id": { "type": "string" },
+        "task": { "type": "string" },
+        "parent_session_id": { "type": ["string", "null"] },
+        "state": { "type": "string" },
+        "result": { "type": ["string", "null"] },
+        "error": { "type": ["string", "null"] },
+        "created_at": { "type": "integer" },
+        "updated_at": { "type": "integer" }
+      }
+    },
+    "AgentSpawnParams": {
+      "title": "AgentSpawnParams",
+      "description": "Params of agent.spawn: run a child agent in the background.",
+      "type": "object",
+      "required": ["agent_id", "task"],
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": { "type": "string" },
+        "task": { "type": "string" },
+        "parent_session_id": { "type": ["string", "null"] },
+        "title": { "type": ["string", "null"] }
+      }
+    },
+    "AgentSpawnResult": {
+      "title": "AgentSpawnResult",
+      "description": "Result of agent.spawn / agent.call.",
+      "type": "object",
+      "required": ["child"],
+      "properties": {
+        "child": { "$ref": "#/$defs/SubAgent" }
+      }
+    },
+    "AgentChildrenParams": {
+      "title": "AgentChildrenParams",
+      "description": "Params of agent.children: list tracked sub-agents.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parent_session_id": { "type": ["string", "null"] }
+      }
+    },
+    "AgentChildrenResult": {
+      "title": "AgentChildrenResult",
+      "description": "Result of agent.children.",
+      "type": "object",
+      "required": ["children"],
+      "properties": {
+        "children": { "type": "array", "items": { "$ref": "#/$defs/SubAgent" } }
+      }
+    },
+    "AgentSessionParams": {
+      "title": "AgentSessionParams",
+      "description": "Params of agent.collect / agent.cancel: one sub-agent session.",
+      "type": "object",
+      "required": ["session_id"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" }
+      }
+    },
+    "AgentCollectResult": {
+      "title": "AgentCollectResult",
+      "description": "Result of agent.collect.",
+      "type": "object",
+      "required": ["child"],
+      "properties": {
+        "child": { "$ref": "#/$defs/SubAgent" }
+      }
+    },
+    "AgentCancelResult": {
+      "title": "AgentCancelResult",
+      "description": "Result of agent.cancel.",
+      "type": "object",
+      "required": ["cancelled"],
+      "properties": {
+        "cancelled": { "type": "boolean" }
+      }
+    },
+    "AgentMessageParams": {
+      "title": "AgentMessageParams",
+      "description": "Params of agent.message: append a message to a session.",
+      "type": "object",
+      "required": ["session_id", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "content": { "type": "string" }
+      }
+    },
+    "AgentMessageResult": {
+      "title": "AgentMessageResult",
+      "description": "Result of agent.message.",
+      "type": "object",
+      "required": ["session_id", "appended"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "appended": { "type": "boolean" }
+      }
+    },
+    "AgentHandoffParams": {
+      "title": "AgentHandoffParams",
+      "description": "Params of agent.handoff: transfer a task to another agent.",
+      "type": "object",
+      "required": ["from_session_id", "to_agent_id", "task"],
+      "additionalProperties": false,
+      "properties": {
+        "from_session_id": { "type": "string" },
+        "to_agent_id": { "type": "string" },
+        "task": { "type": "string" }
+      }
+    },
+    "AgentToggleParams": {
+      "title": "AgentToggleParams",
+      "description": "Params of agent.enable / agent.disable.",
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" }
+      }
+    },
+    "AgentEnabledResult": {
+      "title": "AgentEnabledResult",
+      "description": "Result of agent.enable / agent.disable.",
+      "type": "object",
+      "required": ["id", "enabled"],
+      "properties": {
+        "id": { "type": "string" },
+        "enabled": { "type": "boolean" }
+      }
+    },
+    "AgentUpdateParams": {
+      "title": "AgentUpdateParams",
+      "description": "Params of agent.update: replace a definition.",
+      "type": "object",
+      "required": ["definition"],
+      "additionalProperties": false,
+      "properties": {
+        "definition": { "type": "string" }
+      }
+    },
+    "AgentUpdateResult": {
+      "title": "AgentUpdateResult",
+      "description": "Result of agent.update: the stored definition.",
+      "type": "object",
+      "required": ["agent"],
+      "properties": {
+        "agent": { "type": "object" }
+      }
+    },
     "AgentRunParams": {
       "title": "AgentRunParams",
       "description": "Params of agent.run.",

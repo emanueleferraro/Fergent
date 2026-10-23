@@ -1832,6 +1832,127 @@ export interface ChatCompareStartResult {
 }
 
 /**
+ * A tracked sub-agent run (AGENTS.md §9).
+ */
+export interface SubAgent {
+  session_id: string;
+  agent_id: string;
+  task: string;
+  parent_session_id?: string | null;
+  state: string;
+  result?: string | null;
+  error?: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+/**
+ * Params of agent.spawn: run a child agent in the background.
+ */
+export interface AgentSpawnParams {
+  agent_id: string;
+  task: string;
+  parent_session_id?: string | null;
+  title?: string | null;
+}
+
+/**
+ * Result of agent.spawn / agent.call.
+ */
+export interface AgentSpawnResult {
+  child: SubAgent;
+}
+
+/**
+ * Params of agent.children: list tracked sub-agents.
+ */
+export interface AgentChildrenParams {
+  parent_session_id?: string | null;
+}
+
+/**
+ * Result of agent.children.
+ */
+export interface AgentChildrenResult {
+  children: SubAgent[];
+}
+
+/**
+ * Params of agent.collect / agent.cancel: one sub-agent session.
+ */
+export interface AgentSessionParams {
+  session_id: string;
+}
+
+/**
+ * Result of agent.collect.
+ */
+export interface AgentCollectResult {
+  child: SubAgent;
+}
+
+/**
+ * Result of agent.cancel.
+ */
+export interface AgentCancelResult {
+  cancelled: boolean;
+}
+
+/**
+ * Params of agent.message: append a message to a session.
+ */
+export interface AgentMessageParams {
+  session_id: string;
+  content: string;
+}
+
+/**
+ * Result of agent.message.
+ */
+export interface AgentMessageResult {
+  session_id: string;
+  appended: boolean;
+}
+
+/**
+ * Params of agent.handoff: transfer a task to another agent.
+ */
+export interface AgentHandoffParams {
+  from_session_id: string;
+  to_agent_id: string;
+  task: string;
+}
+
+/**
+ * Params of agent.enable / agent.disable.
+ */
+export interface AgentToggleParams {
+  id: string;
+}
+
+/**
+ * Result of agent.enable / agent.disable.
+ */
+export interface AgentEnabledResult {
+  id: string;
+  enabled: boolean;
+}
+
+/**
+ * Params of agent.update: replace a definition.
+ */
+export interface AgentUpdateParams {
+  definition: string;
+}
+
+/**
+ * Result of agent.update: the stored definition.
+ */
+export interface AgentUpdateResult {
+  agent: {};
+}
+
+/**
  * Params of agent.run.
  */
 export interface AgentRunParams {

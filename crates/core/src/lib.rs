@@ -7,8 +7,10 @@
 mod brains;
 mod mcp;
 mod providers;
+mod subagents;
 
 pub use mcp::{McpHealth, McpServerRecord, McpService, McpServiceError, McpTest, McpTool};
+pub use subagents::{SubAgentError, SubAgentManager, SubAgentRecord};
 
 pub use providers::{
     ProviderConfig, ProviderRegistryError, ProviderRoute, ProviderService, ProviderTest,
@@ -147,6 +149,7 @@ pub struct Kernel {
     secrets: Arc<SecretVault>,
     provider_service: Arc<ProviderService>,
     mcp_service: Arc<McpService>,
+    subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -226,6 +229,7 @@ impl Kernel {
             bus.clone(),
         ));
         let _ = agents.load();
+        let subagents = Arc::new(SubAgentManager::new(agents.clone(), bus.clone()));
         let kernel = Arc::new(Self {
             storage,
             bus,
@@ -241,6 +245,7 @@ impl Kernel {
             secrets,
             provider_service,
             mcp_service,
+            subagents,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -328,6 +333,11 @@ impl Kernel {
     /// The MCP server registry and live host.
     pub fn mcp(&self) -> &McpService {
         self.mcp_service.as_ref()
+    }
+
+    /// The sub-agent manager (async children, collect, cancel, handoff).
+    pub fn subagents(&self) -> &SubAgentManager {
+        self.subagents.as_ref()
     }
 
     /// Run one prompt against several models in parallel, each side in its own

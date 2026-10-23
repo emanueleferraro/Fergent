@@ -39,6 +39,20 @@ pub enum AgentError {
     /// No session is registered with this id.
     #[error("unknown session: {0}")]
     UnknownSession(String),
+    /// The agent is disabled (`agent.disable`).
+    #[error("agent is disabled: {0}")]
+    Disabled(String),
+    /// The agent definition does not permit sub-agents.
+    #[error("agent {0} does not allow sub-agents")]
+    SubAgentsNotAllowed(String),
+    /// The sub-agent limit for this run was reached.
+    #[error("sub-agent limit reached for {agent} (max {limit})")]
+    SubAgentLimit {
+        /// The agent that tried to spawn.
+        agent: String,
+        /// The configured cap.
+        limit: u32,
+    },
     /// No workflow run is registered with this id.
     #[error("unknown run: {0}")]
     UnknownRun(String),
@@ -63,6 +77,9 @@ impl AgentError {
             AgentError::Tool(_) => "agent_tool_error",
             AgentError::PermissionDenied { .. } => "agent_permission_denied",
             AgentError::UnknownSession(_) => "agent_unknown_session",
+            AgentError::Disabled(_) => "agent_disabled",
+            AgentError::SubAgentsNotAllowed(_) => "agent_subagents_not_allowed",
+            AgentError::SubAgentLimit { .. } => "agent_subagent_limit",
             AgentError::UnknownRun(_) => "run_unknown",
             AgentError::Io(_) => "io_error",
             AgentError::Serde(_) => "serde_error",

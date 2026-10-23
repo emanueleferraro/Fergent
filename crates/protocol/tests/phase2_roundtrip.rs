@@ -306,6 +306,51 @@ fn compare_roundtrip() {
 }
 
 #[test]
+fn subagents_roundtrip() {
+    let child = json!({
+        "session_id": "01J8CHILD",
+        "agent_id": "worker",
+        "task": "hi",
+        "parent_session_id": "01J8PARENT",
+        "state": "done",
+        "result": "echo: hi",
+        "error": null,
+        "created_at": 1792694626000_i64,
+        "updated_at": 1792694626100_i64
+    });
+    assert_roundtrip::<SubAgent>(child.clone());
+    assert_roundtrip::<AgentSpawnParams>(json!({
+        "agent_id": "worker",
+        "task": "hi",
+        "parent_session_id": "01J8PARENT",
+        "title": null
+    }));
+    assert_roundtrip::<AgentSpawnResult>(json!({ "child": child.clone() }));
+    assert_roundtrip::<AgentChildrenParams>(json!({ "parent_session_id": "01J8PARENT" }));
+    assert_roundtrip::<AgentChildrenResult>(json!({ "children": [child.clone()] }));
+    assert_roundtrip::<AgentSessionParams>(json!({ "session_id": "01J8CHILD" }));
+    assert_roundtrip::<AgentCollectResult>(json!({ "child": child }));
+    assert_roundtrip::<AgentCancelResult>(json!({ "cancelled": true }));
+    assert_roundtrip::<AgentMessageParams>(json!({
+        "session_id": "01J8CHILD",
+        "content": "keep going"
+    }));
+    assert_roundtrip::<AgentMessageResult>(json!({
+        "session_id": "01J8CHILD",
+        "appended": true
+    }));
+    assert_roundtrip::<AgentHandoffParams>(json!({
+        "from_session_id": "01J8PARENT",
+        "to_agent_id": "worker",
+        "task": "take over"
+    }));
+    assert_roundtrip::<AgentToggleParams>(json!({ "id": "worker" }));
+    assert_roundtrip::<AgentEnabledResult>(json!({ "id": "worker", "enabled": false }));
+    assert_roundtrip::<AgentUpdateParams>(json!({ "definition": "---\nid: worker\n---\n" }));
+    assert_roundtrip::<AgentUpdateResult>(json!({ "agent": { "id": "worker" } }));
+}
+
+#[test]
 fn context_and_memory_roundtrip() {
     assert_roundtrip::<ContextSnapshot>(json!({
         "id": "01J8CTX",
