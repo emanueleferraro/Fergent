@@ -13,7 +13,7 @@ import { EditorArea } from './features/editor/EditorArea';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
 import { SearchPanel } from './features/search/SearchPanel';
-import { BrainSettings } from './features/settings/BrainSettings';
+import { SettingsView } from './features/settings/SettingsView';
 import { useTheme } from './features/theme/theme';
 import { useKernel, type KernelStatus } from './hooks/useKernel';
 import { t } from './i18n/i18n';
@@ -211,7 +211,7 @@ export function App(): ReactElement {
             </div>
           </div>
         ) : activeId === 'settings' ? (
-          <BrainSettings kernel={kernel} />
+          <SettingsView kernel={kernel} />
         ) : (
           <>
             <h1 className="t-h1">{t('app.name')}</h1>

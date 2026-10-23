@@ -1520,6 +1520,7 @@ mark,
    SETTINGS
    ============================================================ */
 .settings { display: flex; flex-direction: column; gap: var(--s-6); max-width: 720px; }
+.settings-view { display: flex; flex-direction: column; gap: var(--s-5); }
 .settings-section { display: flex; flex-direction: column; gap: var(--s-1); }
 .settings-section-title {
     margin-bottom: var(--s-2);

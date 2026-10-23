@@ -137,6 +137,10 @@ export class MockKernelClient implements KernelClient {
         return { mentions: [] };
       case 'search.query':
         return { results: [] };
+      case 'capability.list':
+        return { capabilities: [] };
+      case 'capability.set':
+        return null;
       case 'graph.query':
         return { rows: [] };
       default:
