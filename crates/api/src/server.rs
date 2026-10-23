@@ -1141,6 +1141,52 @@ async fn dispatch(
             })
             .await
         }
+        "chat.message.retry" => {
+            let session_id = session_id_param(&params)?;
+            let session = kernel
+                .chat()
+                .get(&session_id)
+                .map_err(|err| map_core_error(CoreError::from(err)))?
+                .ok_or_else(|| {
+                    (
+                        ErrorCode::InvalidParams,
+                        format!("unknown session: {session_id}"),
+                    )
+                })?;
+            let prompt = kernel
+                .chat()
+                .regenerate(&session_id)
+                .map_err(|err| map_core_error(CoreError::from(err)))?
+                .ok_or_else(|| {
+                    (
+                        ErrorCode::InvalidParams,
+                        "no user turn to retry".to_string(),
+                    )
+                })?;
+            let service = kernel.agents_service().clone();
+            let observer = fergents_agents::NoopObserver;
+            service
+                .resume_in_session(
+                    &session.agent_id,
+                    &prompt.content,
+                    &session_id,
+                    &observer,
+                    None,
+                )
+                .await
+                .map_err(map_agent_error)?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .chat()
+                    .messages(&session_id)
+                    .map(|messages| {
+                        serde_json::json!({ "session_id": session_id, "messages": messages })
+                    })
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "chat.message.list" => {
             let session_id = session_id_param(&params)?;
             let kernel = kernel.clone();

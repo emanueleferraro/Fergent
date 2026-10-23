@@ -2405,6 +2405,15 @@
         "messages": { "type": "array", "items": { "$ref": "#/$defs/ChatMessage" } }
       }
     },
+    "ChatMessageRetryParams": {
+      "title": "ChatMessageRetryParams",
+      "description": "Params of chat.message.retry: re-answer the last user turn.",
+      "type": "object",
+      "required": ["session_id"],
+      "properties": {
+        "session_id": { "type": "string" }
+      }
+    },
     "ChatRegenerateResult": {
       "title": "ChatRegenerateResult",
       "description": "Result of chat.message.regenerate: the prompt to re-answer.",

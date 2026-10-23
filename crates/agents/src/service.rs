@@ -181,6 +181,28 @@ impl AgentService {
             .await
     }
 
+    /// Re-run the agent on a task whose user turn is already in `session_id`.
+    ///
+    /// Used by `chat.message.retry`: the transcript keeps the existing user
+    /// turn and only the new assistant/tool turns are appended.
+    pub async fn resume_in_session(
+        &self,
+        id: &str,
+        task: &str,
+        session_id: &str,
+        observer: &dyn RunObserver,
+        cancel: Option<&std::sync::atomic::AtomicBool>,
+    ) -> Result<RunOutcome, AgentError> {
+        let definition = self
+            .get(id)
+            .ok_or_else(|| AgentError::UnknownAgent(id.to_string()))?;
+        if self.store.get_session(session_id)?.is_none() {
+            return Err(AgentError::UnknownSession(session_id.to_string()));
+        }
+        self.execute_with(&definition, task, session_id, observer, cancel, true)
+            .await
+    }
+
     /// The shared run body: mark running, execute, persist, publish.
     async fn execute(
         &self,
@@ -189,6 +211,21 @@ impl AgentService {
         session_id: &str,
         observer: &dyn RunObserver,
         cancel: Option<&std::sync::atomic::AtomicBool>,
+    ) -> Result<RunOutcome, AgentError> {
+        self.execute_with(definition, task, session_id, observer, cancel, false)
+            .await
+    }
+
+    /// The shared run body; `skip_user_turn` leaves an already-stored user
+    /// message out of the persisted transcript.
+    async fn execute_with(
+        &self,
+        definition: &AgentDefinition,
+        task: &str,
+        session_id: &str,
+        observer: &dyn RunObserver,
+        cancel: Option<&std::sync::atomic::AtomicBool>,
+        skip_user_turn: bool,
     ) -> Result<RunOutcome, AgentError> {
         self.store.set_state(session_id, RunState::Running)?;
         self.bus.publish(
@@ -204,7 +241,7 @@ impl AgentService {
 
         match outcome {
             Ok(outcome) => {
-                self.persist_outcome(&outcome)?;
+                self.persist_outcome(&outcome, skip_user_turn)?;
                 let state = state_for_stop(outcome.stop);
                 self.store.set_state(session_id, state)?;
                 self.bus.publish(
@@ -291,7 +328,12 @@ impl AgentService {
         self.store.get_session(id)
     }
 
-    fn persist_outcome(&self, outcome: &RunOutcome) -> Result<(), AgentError> {
+    fn persist_outcome(
+        &self,
+        outcome: &RunOutcome,
+        skip_user_turn: bool,
+    ) -> Result<(), AgentError> {
+        let mut skip_user = skip_user_turn;
         for message in &outcome.messages {
             let role = match message.role {
                 fergents_llm::Role::System => continue,
@@ -299,6 +341,10 @@ impl AgentService {
                 fergents_llm::Role::Assistant => "assistant",
                 fergents_llm::Role::Tool => "tool",
             };
+            if role == "user" && skip_user {
+                skip_user = false;
+                continue;
+            }
             let content = message.text_content();
             let content = if content.is_empty() {
                 render_blocks(message)

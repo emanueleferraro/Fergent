@@ -2208,6 +2208,13 @@ export interface ChatMessageSendResult {
 }
 
 /**
+ * Params of chat.message.retry: re-answer the last user turn.
+ */
+export interface ChatMessageRetryParams {
+  session_id: string;
+}
+
+/**
  * Result of chat.message.regenerate: the prompt to re-answer.
  */
 export interface ChatRegenerateResult {

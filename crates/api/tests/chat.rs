@@ -101,6 +101,15 @@ async fn chat_round_trip() {
         .unwrap();
     assert_eq!(messages["messages"].as_array().unwrap().len(), 4);
 
+    // Retry re-answers the last user turn without duplicating it.
+    let retried = client
+        .call("chat.message.retry", json!({ "session_id": session_id }))
+        .await
+        .unwrap();
+    let retried_messages = retried["messages"].as_array().unwrap();
+    assert_eq!(retried_messages.len(), 4);
+    assert_eq!(retried_messages.last().unwrap()["role"], json!("assistant"));
+
     // FTS search.
     let hits = client
         .call("chat.session.search", json!({ "query": "MCP" }))

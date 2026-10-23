@@ -64,6 +64,7 @@ fn chat_roundtrip() {
             "created_at": 1792694626000_i64
         }]
     }));
+    assert_roundtrip::<ChatMessageRetryParams>(json!({ "session_id": "01J8SESSION" }));
     assert_roundtrip::<ChatMessageSendResult>(json!({
         "session_id": "01J8SESSION",
         "messages": [{
