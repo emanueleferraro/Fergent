@@ -2395,6 +2395,16 @@
         "messages": { "type": "array", "items": { "$ref": "#/$defs/ChatMessage" } }
       }
     },
+    "ChatMessageSendResult": {
+      "title": "ChatMessageSendResult",
+      "description": "Result of chat.message.send: the session transcript after the agent reply.",
+      "type": "object",
+      "required": ["session_id", "messages"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "messages": { "type": "array", "items": { "$ref": "#/$defs/ChatMessage" } }
+      }
+    },
     "ChatRegenerateResult": {
       "title": "ChatRegenerateResult",
       "description": "Result of chat.message.regenerate: the prompt to re-answer.",

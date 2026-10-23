@@ -2200,6 +2200,14 @@ export interface ChatMessageListResult {
 }
 
 /**
+ * Result of chat.message.send: the session transcript after the agent reply.
+ */
+export interface ChatMessageSendResult {
+  session_id: string;
+  messages: ChatMessage[];
+}
+
+/**
  * Result of chat.message.regenerate: the prompt to re-answer.
  */
 export interface ChatRegenerateResult {

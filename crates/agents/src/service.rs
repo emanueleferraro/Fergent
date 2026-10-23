@@ -155,7 +155,42 @@ impl AgentService {
         let session_id = ulid::Ulid::new().to_string();
         self.store
             .create_session(&session_id, &definition.id, Some(task))?;
-        self.store.set_state(&session_id, RunState::Running)?;
+        self.execute(&definition, task, &session_id, observer, cancel)
+            .await
+    }
+
+    /// Run an agent on `task` inside an existing session (a chat session).
+    ///
+    /// The session must already exist; its transcript receives the user turn,
+    /// every assistant/tool turn, and the final state.
+    pub async fn run_in_session(
+        &self,
+        id: &str,
+        task: &str,
+        session_id: &str,
+        observer: &dyn RunObserver,
+        cancel: Option<&std::sync::atomic::AtomicBool>,
+    ) -> Result<RunOutcome, AgentError> {
+        let definition = self
+            .get(id)
+            .ok_or_else(|| AgentError::UnknownAgent(id.to_string()))?;
+        if self.store.get_session(session_id)?.is_none() {
+            return Err(AgentError::UnknownSession(session_id.to_string()));
+        }
+        self.execute(&definition, task, session_id, observer, cancel)
+            .await
+    }
+
+    /// The shared run body: mark running, execute, persist, publish.
+    async fn execute(
+        &self,
+        definition: &AgentDefinition,
+        task: &str,
+        session_id: &str,
+        observer: &dyn RunObserver,
+        cancel: Option<&std::sync::atomic::AtomicBool>,
+    ) -> Result<RunOutcome, AgentError> {
+        self.store.set_state(session_id, RunState::Running)?;
         self.bus.publish(
             "agent.run.started",
             "agents",
@@ -164,14 +199,14 @@ impl AgentService {
 
         let outcome = self
             .runtime
-            .run(&definition, task, &session_id, observer, cancel)
+            .run(definition, task, session_id, observer, cancel)
             .await;
 
         match outcome {
             Ok(outcome) => {
                 self.persist_outcome(&outcome)?;
                 let state = state_for_stop(outcome.stop);
-                self.store.set_state(&session_id, state)?;
+                self.store.set_state(session_id, state)?;
                 self.bus.publish(
                     "agent.run.finished",
                     "agents",
@@ -184,7 +219,7 @@ impl AgentService {
                 Ok(outcome)
             }
             Err(err) => {
-                self.store.set_state(&session_id, RunState::Error)?;
+                self.store.set_state(session_id, RunState::Error)?;
                 self.bus.publish(
                     "agent.run.finished",
                     "agents",

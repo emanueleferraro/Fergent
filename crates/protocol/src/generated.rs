@@ -3999,6 +3999,43 @@ impl From<&ChatMessageSendParams> for ChatMessageSendParams {
         value.clone()
     }
 }
+#[doc = "Result of chat.message.send: the session transcript after the agent reply."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatMessageSendResult\","]
+#[doc = "  \"description\": \"Result of chat.message.send: the session transcript after the agent reply.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"messages\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"messages\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ChatMessage\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatMessageSendResult {
+    pub messages: Vec<ChatMessage>,
+    pub session_id: String,
+}
+impl From<&ChatMessageSendResult> for ChatMessageSendResult {
+    fn from(value: &ChatMessageSendResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Result of chat.message.regenerate: the prompt to re-answer."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]

@@ -1113,12 +1113,30 @@ async fn dispatch(
                 .and_then(Value::as_str)
                 .ok_or((ErrorCode::InvalidParams, "missing text".to_string()))?
                 .to_string();
+            let session = kernel
+                .chat()
+                .get(&session_id)
+                .map_err(|err| map_core_error(CoreError::from(err)))?
+                .ok_or_else(|| {
+                    (
+                        ErrorCode::InvalidParams,
+                        format!("unknown session: {session_id}"),
+                    )
+                })?;
+            let service = kernel.agents_service().clone();
+            let observer = fergents_agents::NoopObserver;
+            service
+                .run_in_session(&session.agent_id, &text, &session_id, &observer, None)
+                .await
+                .map_err(map_agent_error)?;
             let kernel = kernel.clone();
             run_blocking(move || {
                 kernel
                     .chat()
-                    .send(&session_id, &text)
-                    .map(|message| to_value(&message))
+                    .messages(&session_id)
+                    .map(|messages| {
+                        serde_json::json!({ "session_id": session_id, "messages": messages })
+                    })
                     .map_err(CoreError::from)
             })
             .await
