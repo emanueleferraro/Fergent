@@ -1951,6 +1951,41 @@
         "tools": { "type": "array", "items": { "$ref": "#/$defs/McpTool" } }
       }
     },
+    "ChatCompareSide": {
+      "title": "ChatCompareSide",
+      "description": "One side of a compare run: its session, model, and reply.",
+      "type": "object",
+      "required": ["session_id", "model"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "model": { "type": "string" },
+        "content": { "type": ["string", "null"] },
+        "error": { "type": ["string", "null"] }
+      }
+    },
+    "ChatCompareStartParams": {
+      "title": "ChatCompareStartParams",
+      "description": "Params of chat.compare.start: one prompt, several models (decision D9).",
+      "type": "object",
+      "required": ["agent_id", "prompt", "models"],
+      "additionalProperties": false,
+      "properties": {
+        "agent_id": { "type": "string" },
+        "prompt": { "type": "string" },
+        "models": { "type": "array", "items": { "type": "string" } },
+        "title": { "type": ["string", "null"] }
+      }
+    },
+    "ChatCompareStartResult": {
+      "title": "ChatCompareStartResult",
+      "description": "Result of chat.compare.start.",
+      "type": "object",
+      "required": ["sides"],
+      "properties": {
+        "sides": { "type": "array", "items": { "$ref": "#/$defs/ChatCompareSide" } }
+      }
+    },
     "AgentRunParams": {
       "title": "AgentRunParams",
       "description": "Params of agent.run.",

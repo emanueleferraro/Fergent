@@ -6,7 +6,8 @@
 use std::sync::Arc;
 
 use fergents_llm::{
-    AnthropicProvider, GoogleProvider, MockProvider, ModelInfo, OpenAiCompatProvider, Provider,
+    AnthropicProvider, ChatRequest, ChatResponse, GoogleProvider, MockProvider, ModelInfo,
+    OpenAiCompatProvider, Provider,
 };
 use fergents_secrets::SecretVault;
 use fergents_storage::{Storage, StorageError, Value};
@@ -34,6 +35,9 @@ pub enum ProviderRegistryError {
     /// The referenced secret is missing.
     #[error(transparent)]
     Secret(#[from] fergents_secrets::SecretError),
+    /// The provider call failed.
+    #[error(transparent)]
+    Llm(#[from] fergents_llm::ProviderError),
     /// The row could not be read or written.
     #[error(transparent)]
     Storage(#[from] StorageError),
@@ -216,6 +220,26 @@ impl ProviderService {
             return Ok(config.models);
         }
         Ok(advertised.into_iter().map(|model| model.id).collect())
+    }
+
+    /// The provider configuration that advertises `model`.
+    pub fn config_for_model(&self, model: &str) -> Result<ProviderConfig, ProviderRegistryError> {
+        self.list()?
+            .into_iter()
+            .find(|config| config.models.iter().any(|id| id == model))
+            .ok_or_else(|| ProviderRegistryError::Unknown(model.to_string()))
+    }
+
+    /// Run a non-streaming completion against the provider serving `model`.
+    pub async fn complete(
+        &self,
+        model: &str,
+        mut request: ChatRequest,
+    ) -> Result<ChatResponse, ProviderRegistryError> {
+        let config = self.config_for_model(model)?;
+        let provider = self.build(&config)?;
+        request.model = model.to_string();
+        Ok(provider.chat(request).await?)
     }
 
     /// Every task route, by task name.

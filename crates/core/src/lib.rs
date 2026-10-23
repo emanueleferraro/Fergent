@@ -24,9 +24,9 @@ use fergents_agents::{
     MemoryStore, SectionInput, SectionKind, ToolRegistry, WorkflowService,
 };
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
-use fergents_chat::ChatService;
+use fergents_chat::{ChatMessage, ChatService};
 use fergents_events::{now_ms, EventBus};
-use fergents_llm::MockProvider;
+use fergents_llm::{ChatRequest, MockProvider};
 use fergents_permissions::PermissionService;
 use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
@@ -116,6 +116,19 @@ pub struct ToolInfo {
     pub name: String,
     /// Short human-readable description.
     pub description: String,
+}
+
+/// One side of a compare run (spec decision D9).
+#[derive(Debug, Clone)]
+pub struct CompareSide {
+    /// The session holding this side of the comparison.
+    pub session_id: String,
+    /// The model that answered.
+    pub model: String,
+    /// The assistant reply, when the call succeeded.
+    pub message: Option<ChatMessage>,
+    /// The failure detail, when the call failed.
+    pub error: Option<String>,
 }
 
 /// The kernel facade.
@@ -315,6 +328,57 @@ impl Kernel {
     /// The MCP server registry and live host.
     pub fn mcp(&self) -> &McpService {
         self.mcp_service.as_ref()
+    }
+
+    /// Run one prompt against several models in parallel, each side in its own
+    /// session (`capability.compare`, spec decision D9).
+    pub async fn compare(
+        &self,
+        agent_id: &str,
+        prompt: &str,
+        models: &[String],
+        title: Option<&str>,
+    ) -> Result<Vec<CompareSide>, CoreError> {
+        if models.len() < 2 {
+            return Err(fergents_chat::ChatError::Invalid(
+                "compare needs at least two models".to_string(),
+            )
+            .into());
+        }
+        let mut sessions = Vec::with_capacity(models.len());
+        for model in models {
+            let session = self.chat.create_session(agent_id, title, Some(model))?;
+            self.chat.send(&session.id, prompt)?;
+            sessions.push((session.id, model.clone()));
+        }
+        let responses = futures::future::join_all(sessions.iter().map(|(_, model)| {
+            self.providers()
+                .complete(model, ChatRequest::user(model.clone(), prompt))
+        }))
+        .await;
+        let mut sides = Vec::with_capacity(sessions.len());
+        for ((session_id, model), response) in sessions.into_iter().zip(responses) {
+            match response {
+                Ok(response) => {
+                    let message =
+                        self.chat
+                            .append(&session_id, "assistant", &response.text(), None)?;
+                    sides.push(CompareSide {
+                        session_id,
+                        model,
+                        message: Some(message),
+                        error: None,
+                    });
+                }
+                Err(err) => sides.push(CompareSide {
+                    session_id,
+                    model,
+                    message: None,
+                    error: Some(err.to_string()),
+                }),
+            }
+        }
+        Ok(sides)
     }
 
     /// Assemble, count, persist, and emit a context snapshot for a session.

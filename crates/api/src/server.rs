@@ -1529,6 +1529,49 @@ async fn dispatch(
             })
             .await
         }
+        "chat.compare.start" => {
+            let agent_id = params
+                .get("agent_id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing agent_id".to_string()))?
+                .to_string();
+            let prompt = params
+                .get("prompt")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing prompt".to_string()))?
+                .to_string();
+            let models: Vec<String> = params
+                .get("models")
+                .and_then(Value::as_array)
+                .map(|models| {
+                    models
+                        .iter()
+                        .filter_map(Value::as_str)
+                        .map(str::to_string)
+                        .collect()
+                })
+                .unwrap_or_default();
+            let title = params
+                .get("title")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let sides = kernel
+                .compare(&agent_id, &prompt, &models, title.as_deref())
+                .await
+                .map_err(map_core_error)?;
+            let sides: Vec<Value> = sides
+                .into_iter()
+                .map(|side| {
+                    serde_json::json!({
+                        "session_id": side.session_id,
+                        "model": side.model,
+                        "content": side.message.map(|message| message.content),
+                        "error": side.error,
+                    })
+                })
+                .collect();
+            Ok(serde_json::json!({ "sides": sides }))
+        }
         "mcp.server.list" => {
             let kernel = kernel.clone();
             run_blocking(move || {
@@ -1668,6 +1711,7 @@ fn required_capability(method: &str) -> Option<&'static str> {
     match method {
         "search.query" => Some("capability.search"),
         "chat.session.search" => Some("capability.chat-search"),
+        "chat.compare.start" => Some("capability.compare"),
         method if method.starts_with("graph.") => Some("capability.graph"),
         method if method.starts_with("agent.") => Some("capability.agents"),
         method if method.starts_with("chat.") => Some("capability.chat"),

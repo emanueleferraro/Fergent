@@ -284,6 +284,28 @@ fn mcp_roundtrip() {
 }
 
 #[test]
+fn compare_roundtrip() {
+    assert_roundtrip::<ChatCompareSide>(json!({
+        "session_id": "01J8LEFT",
+        "model": "mock-1",
+        "content": "echo: hello",
+        "error": null
+    }));
+    assert_roundtrip::<ChatCompareStartParams>(json!({
+        "agent_id": "assistant",
+        "prompt": "hello",
+        "models": ["mock-1", "mock-2"],
+        "title": null
+    }));
+    assert_roundtrip::<ChatCompareStartResult>(json!({
+        "sides": [
+            { "session_id": "01J8LEFT", "model": "mock-1", "content": "echo: hello", "error": null },
+            { "session_id": "01J8RIGHT", "model": "mock-2", "content": null, "error": "no provider" }
+        ]
+    }));
+}
+
+#[test]
 fn context_and_memory_roundtrip() {
     assert_roundtrip::<ContextSnapshot>(json!({
         "id": "01J8CTX",
