@@ -12,6 +12,9 @@ pub enum ProjectError {
     /// Event bus failure.
     #[error("event error: {0}")]
     Event(#[from] EventError),
+    /// Backup (reversibility) failure.
+    #[error("reversibility error: {0}")]
+    Reversibility(#[from] fergents_reversibility::ReversibilityError),
     /// Filesystem failure.
     #[error("project io error: {0}")]
     Io(#[from] std::io::Error),
@@ -27,6 +30,12 @@ pub enum ProjectError {
     /// A relative path would escape the project root.
     #[error("path escapes the project root: {0}")]
     Escape(String),
+    /// The file changed underneath the caller (`base_etag` mismatch).
+    #[error("file conflict: {0}")]
+    Conflict(String),
+    /// The filesystem watcher failed to start.
+    #[error("file watcher error: {0}")]
+    Watch(String),
     /// An argument is invalid.
     #[error("invalid project request: {0}")]
     Invalid(String),
@@ -38,11 +47,14 @@ impl ProjectError {
         match self {
             Self::Storage(_) => "storage_error",
             Self::Event(_) => "event_error",
+            Self::Reversibility(_) => "reversibility_error",
             Self::Io(_) => "project_io_error",
             Self::Unknown(_) => "project_unknown",
             Self::Untrusted(_) => "project_untrusted",
             Self::InvalidPath(_) => "project_invalid_path",
             Self::Escape(_) => "project_path_escape",
+            Self::Conflict(_) => "file_conflict",
+            Self::Watch(_) => "file_watch_error",
             Self::Invalid(_) => "project_invalid",
         }
     }

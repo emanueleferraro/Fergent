@@ -3201,6 +3201,177 @@
       "properties": {
         "hits": { "type": "array", "items": { "$ref": "#/$defs/ProjectSearchHit" } }
       }
+    },
+    "FileSnapshot": {
+      "title": "FileSnapshot",
+      "description": "A file read from a project (spec decision D2).",
+      "type": "object",
+      "required": [
+        "path",
+        "content",
+        "etag",
+        "size",
+        "language_id",
+        "truncated",
+        "binary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "content": { "type": "string" },
+        "etag": { "type": "string" },
+        "size": { "type": "integer", "format": "int64" },
+        "language_id": { "type": "string" },
+        "truncated": { "type": "boolean" },
+        "binary": { "type": "boolean" }
+      }
+    },
+    "FileEntry": {
+      "title": "FileEntry",
+      "description": "One entry in a project directory listing.",
+      "type": "object",
+      "required": ["name", "path", "kind", "size"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "kind": { "type": "string", "enum": ["file", "dir"] },
+        "size": { "type": "integer", "format": "int64" }
+      }
+    },
+    "FileStat": {
+      "title": "FileStat",
+      "description": "Metadata for one project path.",
+      "type": "object",
+      "required": ["path", "kind", "size", "modified_at", "etag"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "kind": { "type": "string", "enum": ["file", "dir"] },
+        "size": { "type": "integer", "format": "int64" },
+        "modified_at": { "type": "integer", "format": "int64" },
+        "etag": { "type": "string" }
+      }
+    },
+    "FileReadParams": {
+      "title": "FileReadParams",
+      "description": "Params of file.read.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "FileReadResult": {
+      "title": "FileReadResult",
+      "description": "Result of file.read.",
+      "type": "object",
+      "required": ["file"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "$ref": "#/$defs/FileSnapshot" }
+      }
+    },
+    "FileWriteParams": {
+      "title": "FileWriteParams",
+      "description": "Params of file.write.",
+      "type": "object",
+      "required": ["project_id", "path", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "content": { "type": "string" },
+        "base_etag": { "type": ["string", "null"] }
+      }
+    },
+    "FileWriteResult": {
+      "title": "FileWriteResult",
+      "description": "Result of file.write and file.create.",
+      "type": "object",
+      "required": ["file"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "$ref": "#/$defs/FileSnapshot" }
+      }
+    },
+    "FileCreateParams": {
+      "title": "FileCreateParams",
+      "description": "Params of file.create.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "content": { "type": "string" }
+      }
+    },
+    "FilePathParams": {
+      "title": "FilePathParams",
+      "description": "Params carrying a project id and a path.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "FileRenameParams": {
+      "title": "FileRenameParams",
+      "description": "Params of file.rename.",
+      "type": "object",
+      "required": ["project_id", "from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "from": { "type": "string" },
+        "to": { "type": "string" }
+      }
+    },
+    "FileStatResult": {
+      "title": "FileStatResult",
+      "description": "Result of file.stat, file.mkdir, and file.rename.",
+      "type": "object",
+      "required": ["entry"],
+      "additionalProperties": false,
+      "properties": {
+        "entry": { "$ref": "#/$defs/FileStat" }
+      }
+    },
+    "FileDeleteResult": {
+      "title": "FileDeleteResult",
+      "description": "Result of file.delete.",
+      "type": "object",
+      "required": ["deleted"],
+      "additionalProperties": false,
+      "properties": {
+        "deleted": { "type": "boolean" }
+      }
+    },
+    "FileListParams": {
+      "title": "FileListParams",
+      "description": "Params of file.list.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "FileListResult": {
+      "title": "FileListResult",
+      "description": "Result of file.list.",
+      "type": "object",
+      "required": ["entries"],
+      "additionalProperties": false,
+      "properties": {
+        "entries": { "type": "array", "items": { "$ref": "#/$defs/FileEntry" } }
+      }
     }
   }
 }
