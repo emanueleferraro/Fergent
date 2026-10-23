@@ -168,3 +168,52 @@ async fn capabilities_list_get_set_register_and_guard() {
     let _ = client.call("kernel.shutdown", json!({})).await;
     handle.join().await.unwrap();
 }
+
+/// Task 2.20: the ecosystem extensions ship off, allocate when enabled, and
+/// disappear from the enabled set when disabled again.
+#[tokio::test(flavor = "multi_thread")]
+async fn ecosystem_extensions_are_capability_gated() {
+    const EXTENSIONS: [&str; 5] = [
+        "capability.voice",
+        "capability.ombra",
+        "capability.agent-web",
+        "capability.plugin-factory",
+        "capability.workflow-debugger",
+    ];
+
+    let (_dir, socket, handle, _kernel) = start_stack().await;
+    let client = KernelClient::connect(&socket).await.unwrap();
+
+    let listed = client.call("capability.list", json!({})).await.unwrap();
+    for id in EXTENSIONS {
+        let view = find(&listed, id);
+        assert_eq!(view["enabled"], json!(false), "{id} must start disabled");
+        assert_eq!(view["default_enabled"], json!(false), "{id} default");
+    }
+
+    for id in EXTENSIONS {
+        let enabled = client
+            .call(
+                "capability.set",
+                json!({ "id": id, "enabled": true, "auto_enable_deps": true }),
+            )
+            .await
+            .unwrap();
+        assert_eq!(enabled["enabled"], json!(true), "{id} must enable");
+
+        let listed = client.call("capability.list", json!({})).await.unwrap();
+        assert_eq!(find(&listed, id)["enabled"], json!(true));
+
+        let disabled = client
+            .call("capability.set", json!({ "id": id, "enabled": false }))
+            .await
+            .unwrap();
+        assert_eq!(disabled["enabled"], json!(false), "{id} must disable");
+
+        let listed = client.call("capability.list", json!({})).await.unwrap();
+        assert_eq!(find(&listed, id)["enabled"], json!(false));
+    }
+
+    let _ = client.call("kernel.shutdown", json!({})).await;
+    handle.join().await.unwrap();
+}
