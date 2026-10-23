@@ -569,6 +569,91 @@ async fn dispatch(
                 .map(|_| serde_json::json!({ "deleted": id }))
                 .map_err(map_agent_error)
         }
+        "agent.update" => {
+            let markdown = params
+                .get("definition")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing definition".to_string()))?;
+            kernel
+                .agents()
+                .update(markdown)
+                .map(|definition| serde_json::json!({ "agent": to_value(&definition) }))
+                .map_err(map_agent_error)
+        }
+        "agent.enable" | "agent.disable" => {
+            let id = agent_id_param(&params)?;
+            let enabled = request.method == "agent.enable";
+            kernel
+                .agents()
+                .set_enabled(id, enabled)
+                .map(|definition| {
+                    serde_json::json!({ "id": definition.id, "enabled": definition.enabled })
+                })
+                .map_err(map_agent_error)
+        }
+        "agent.spawn" => {
+            let agent_id = agent_id_param(&params)?;
+            let task = required_str(&params, "task")?;
+            let parent = optional_str(&params, "parent_session_id");
+            let title = optional_str(&params, "title");
+            kernel
+                .subagents()
+                .spawn(agent_id, task, parent, title)
+                .map(|child| serde_json::json!({ "child": to_value(&child) }))
+                .map_err(map_subagent_error)
+        }
+        "agent.call" => {
+            let agent_id = agent_id_param(&params)?;
+            let task = required_str(&params, "task")?;
+            let parent = optional_str(&params, "parent_session_id");
+            let title = optional_str(&params, "title");
+            kernel
+                .subagents()
+                .call(agent_id, task, parent, title)
+                .await
+                .map(|child| serde_json::json!({ "child": to_value(&child) }))
+                .map_err(map_subagent_error)
+        }
+        "agent.children" => {
+            let parent = optional_str(&params, "parent_session_id");
+            Ok(serde_json::json!({ "children": kernel.subagents().list(parent) }))
+        }
+        "agent.collect" => {
+            let session_id = session_id_param(&params)?;
+            kernel
+                .subagents()
+                .get(&session_id)
+                .map(|child| serde_json::json!({ "child": to_value(&child) }))
+                .map_err(map_subagent_error)
+        }
+        "agent.cancel" => {
+            let session_id = session_id_param(&params)?;
+            kernel
+                .subagents()
+                .cancel(&session_id)
+                .map(|cancelled| serde_json::json!({ "cancelled": cancelled }))
+                .map_err(map_subagent_error)
+        }
+        "agent.message" => {
+            let session_id = session_id_param(&params)?;
+            let content = required_str(&params, "content")?;
+            kernel
+                .subagents()
+                .message(&session_id, content)
+                .map(|_| serde_json::json!({ "session_id": session_id, "appended": true }))
+                .map_err(map_subagent_error)
+        }
+        "agent.handoff" => {
+            let from_session_id = required_str(&params, "from_session_id")?.to_string();
+            let to_agent_id = required_str(&params, "to_agent_id")?;
+            let task = required_str(&params, "task")?;
+            kernel
+                .subagents()
+                .handoff(&from_session_id, to_agent_id, task)
+                .await
+                .map(|child| serde_json::json!({ "child": to_value(&child) }))
+                .map_err(map_subagent_error)
+        }
         "agent.run" => {
             let id = agent_id_param(&params)?.to_string();
             let task = params
@@ -1712,6 +1797,10 @@ fn required_capability(method: &str) -> Option<&'static str> {
         "search.query" => Some("capability.search"),
         "chat.session.search" => Some("capability.chat-search"),
         "chat.compare.start" => Some("capability.compare"),
+        "agent.spawn" | "agent.call" | "agent.children" | "agent.collect" | "agent.cancel" => {
+            Some("capability.sub-agents")
+        }
+        "agent.message" | "agent.handoff" => Some("capability.agent-sync"),
         method if method.starts_with("graph.") => Some("capability.graph"),
         method if method.starts_with("agent.") => Some("capability.agents"),
         method if method.starts_with("chat.") => Some("capability.chat"),
@@ -1771,6 +1860,31 @@ fn agent_id_param(params: &Value) -> Result<&str, (ErrorCode, String)> {
         .or_else(|| params.get("id"))
         .and_then(Value::as_str)
         .ok_or_else(|| (ErrorCode::InvalidParams, "missing agent_id".to_string()))
+}
+
+/// Read a required string field.
+fn required_str<'a>(params: &'a Value, key: &str) -> Result<&'a str, (ErrorCode, String)> {
+    params
+        .get(key)
+        .and_then(Value::as_str)
+        .ok_or_else(|| (ErrorCode::InvalidParams, format!("missing {key}")))
+}
+
+/// Read an optional string field.
+fn optional_str<'a>(params: &'a Value, key: &str) -> Option<&'a str> {
+    params.get(key).and_then(Value::as_str)
+}
+
+/// Map a sub-agent error to the closest wire error code.
+fn map_subagent_error(err: fergents_core::SubAgentError) -> (ErrorCode, String) {
+    use fergents_core::SubAgentError;
+    let code = match &err {
+        SubAgentError::Agent(_) | SubAgentError::UnknownSession(_) | SubAgentError::Unknown(_) => {
+            ErrorCode::InvalidParams
+        }
+        SubAgentError::Event(_) => ErrorCode::InternalError,
+    };
+    (code, format!("{}: {}", err.code(), err))
 }
 
 /// Map an agent error to the closest wire error code.

@@ -109,12 +109,47 @@ impl AgentService {
     /// when validation fails.
     pub fn create(&self, markdown: &str) -> Result<AgentDefinition, AgentError> {
         let definition = AgentDefinition::parse(markdown)?;
+        self.write_and_register(definition, "agent.created")
+    }
+
+    /// Overwrite an existing definition (`agent.update`).
+    pub fn update(&self, markdown: &str) -> Result<AgentDefinition, AgentError> {
+        let definition = AgentDefinition::parse(markdown)?;
+        if self.get(&definition.id).is_none() {
+            return Err(AgentError::UnknownAgent(definition.id));
+        }
+        self.write_and_register(definition, "agent.updated")
+    }
+
+    /// Toggle the `enabled` flag of a definition (`agent.enable`/`disable`).
+    pub fn set_enabled(&self, id: &str, enabled: bool) -> Result<AgentDefinition, AgentError> {
+        let mut definition = self
+            .get(id)
+            .ok_or_else(|| AgentError::UnknownAgent(id.to_string()))?;
+        if definition.enabled == enabled {
+            return Ok(definition);
+        }
+        definition.enabled = enabled;
+        let topic = if enabled {
+            "agent.enabled"
+        } else {
+            "agent.disabled"
+        };
+        self.write_and_register(definition, topic)
+    }
+
+    /// Persist a definition and register it, publishing `topic`.
+    fn write_and_register(
+        &self,
+        definition: AgentDefinition,
+        topic: &str,
+    ) -> Result<AgentDefinition, AgentError> {
         let normalized = definition.to_markdown()?;
         std::fs::create_dir_all(&self.dir)?;
         std::fs::write(self.path_for(&definition.id), normalized)?;
         self.register(definition.clone());
         self.bus.publish(
-            "agent.created",
+            topic,
             "agents",
             json!({ "id": definition.id, "name": definition.name }),
         )?;
@@ -141,6 +176,17 @@ impl AgentService {
         Ok(())
     }
 
+    /// Create a session for `agent_id` without running the agent.
+    pub fn create_session(
+        &self,
+        agent_id: &str,
+        title: Option<&str>,
+    ) -> Result<String, AgentError> {
+        let session_id = ulid::Ulid::new().to_string();
+        self.store.create_session(&session_id, agent_id, title)?;
+        Ok(session_id)
+    }
+
     /// Run an agent on `task`, persisting the session and its messages.
     pub async fn run(
         &self,
@@ -149,12 +195,8 @@ impl AgentService {
         observer: &dyn RunObserver,
         cancel: Option<&std::sync::atomic::AtomicBool>,
     ) -> Result<RunOutcome, AgentError> {
-        let definition = self
-            .get(id)
-            .ok_or_else(|| AgentError::UnknownAgent(id.to_string()))?;
-        let session_id = ulid::Ulid::new().to_string();
-        self.store
-            .create_session(&session_id, &definition.id, Some(task))?;
+        let definition = self.active_definition(id)?;
+        let session_id = self.create_session(&definition.id, Some(task))?;
         self.execute(&definition, task, &session_id, observer, cancel)
             .await
     }
@@ -171,9 +213,7 @@ impl AgentService {
         observer: &dyn RunObserver,
         cancel: Option<&std::sync::atomic::AtomicBool>,
     ) -> Result<RunOutcome, AgentError> {
-        let definition = self
-            .get(id)
-            .ok_or_else(|| AgentError::UnknownAgent(id.to_string()))?;
+        let definition = self.active_definition(id)?;
         if self.store.get_session(session_id)?.is_none() {
             return Err(AgentError::UnknownSession(session_id.to_string()));
         }
@@ -193,14 +233,23 @@ impl AgentService {
         observer: &dyn RunObserver,
         cancel: Option<&std::sync::atomic::AtomicBool>,
     ) -> Result<RunOutcome, AgentError> {
-        let definition = self
-            .get(id)
-            .ok_or_else(|| AgentError::UnknownAgent(id.to_string()))?;
+        let definition = self.active_definition(id)?;
         if self.store.get_session(session_id)?.is_none() {
             return Err(AgentError::UnknownSession(session_id.to_string()));
         }
         self.execute_with(&definition, task, session_id, observer, cancel, true)
             .await
+    }
+
+    /// Fetch a definition that may be run (known and enabled).
+    fn active_definition(&self, id: &str) -> Result<AgentDefinition, AgentError> {
+        let definition = self
+            .get(id)
+            .ok_or_else(|| AgentError::UnknownAgent(id.to_string()))?;
+        if !definition.enabled {
+            return Err(AgentError::Disabled(definition.id));
+        }
+        Ok(definition)
     }
 
     /// The shared run body: mark running, execute, persist, publish.
@@ -279,6 +328,19 @@ impl AgentService {
     /// The messages of a session.
     pub fn session_messages(&self, id: &str) -> Result<Vec<AgentMessageRecord>, AgentError> {
         self.store.messages(id)
+    }
+
+    /// Append a message to a session transcript.
+    pub fn append_message(
+        &self,
+        session_id: &str,
+        role: &str,
+        content: &str,
+    ) -> Result<(), AgentError> {
+        if self.store.get_session(session_id)?.is_none() {
+            return Err(AgentError::UnknownSession(session_id.to_string()));
+        }
+        self.store.append_message(session_id, role, content)
     }
 
     /// Compact a session when its transcript exceeds `threshold_tokens`.

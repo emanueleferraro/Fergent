@@ -27,6 +27,128 @@ pub mod error {
         }
     }
 }
+#[doc = "Result of agent.cancel."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentCancelResult\","]
+#[doc = "  \"description\": \"Result of agent.cancel.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"cancelled\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"cancelled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentCancelResult {
+    pub cancelled: bool,
+}
+impl From<&AgentCancelResult> for AgentCancelResult {
+    fn from(value: &AgentCancelResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of agent.children: list tracked sub-agents."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentChildrenParams\","]
+#[doc = "  \"description\": \"Params of agent.children: list tracked sub-agents.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"parent_session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AgentChildrenParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parent_session_id: Option<String>,
+}
+impl From<&AgentChildrenParams> for AgentChildrenParams {
+    fn from(value: &AgentChildrenParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.children."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentChildrenResult\","]
+#[doc = "  \"description\": \"Result of agent.children.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"children\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"children\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/SubAgent\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentChildrenResult {
+    pub children: Vec<SubAgent>,
+}
+impl From<&AgentChildrenResult> for AgentChildrenResult {
+    fn from(value: &AgentChildrenResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.collect."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentCollectResult\","]
+#[doc = "  \"description\": \"Result of agent.collect.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"child\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"child\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SubAgent\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentCollectResult {
+    pub child: SubAgent,
+}
+impl From<&AgentCollectResult> for AgentCollectResult {
+    fn from(value: &AgentCollectResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Params of agent.create: the full Markdown definition."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -230,6 +352,81 @@ pub struct AgentDeletedResult {
 }
 impl From<&AgentDeletedResult> for AgentDeletedResult {
     fn from(value: &AgentDeletedResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.enable / agent.disable."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentEnabledResult\","]
+#[doc = "  \"description\": \"Result of agent.enable / agent.disable.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"enabled\","]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentEnabledResult {
+    pub enabled: bool,
+    pub id: String,
+}
+impl From<&AgentEnabledResult> for AgentEnabledResult {
+    fn from(value: &AgentEnabledResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of agent.handoff: transfer a task to another agent."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentHandoffParams\","]
+#[doc = "  \"description\": \"Params of agent.handoff: transfer a task to another agent.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"from_session_id\","]
+#[doc = "    \"task\","]
+#[doc = "    \"to_agent_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"from_session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"task\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"to_agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AgentHandoffParams {
+    pub from_session_id: String,
+    pub task: String,
+    pub to_agent_id: String,
+}
+impl From<&AgentHandoffParams> for AgentHandoffParams {
+    fn from(value: &AgentHandoffParams) -> Self {
         value.clone()
     }
 }
@@ -497,6 +694,42 @@ impl From<&AgentMemoryConfig> for AgentMemoryConfig {
         value.clone()
     }
 }
+#[doc = "Params of agent.message: append a message to a session."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentMessageParams\","]
+#[doc = "  \"description\": \"Params of agent.message: append a message to a session.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AgentMessageParams {
+    pub content: String,
+    pub session_id: String,
+}
+impl From<&AgentMessageParams> for AgentMessageParams {
+    fn from(value: &AgentMessageParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "A persisted agent message."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -544,6 +777,40 @@ pub struct AgentMessageRecord {
 }
 impl From<&AgentMessageRecord> for AgentMessageRecord {
     fn from(value: &AgentMessageRecord) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.message."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentMessageResult\","]
+#[doc = "  \"description\": \"Result of agent.message.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"appended\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"appended\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentMessageResult {
+    pub appended: bool,
+    pub session_id: String,
+}
+impl From<&AgentMessageResult> for AgentMessageResult {
+    fn from(value: &AgentMessageResult) -> Self {
         value.clone()
     }
 }
@@ -826,6 +1093,37 @@ impl From<&AgentSessionMessagesResult> for AgentSessionMessagesResult {
         value.clone()
     }
 }
+#[doc = "Params of agent.collect / agent.cancel: one sub-agent session."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentSessionParams\","]
+#[doc = "  \"description\": \"Params of agent.collect / agent.cancel: one sub-agent session.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AgentSessionParams {
+    pub session_id: String,
+}
+impl From<&AgentSessionParams> for AgentSessionParams {
+    fn from(value: &AgentSessionParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "A persisted agent session."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -893,6 +1191,87 @@ impl From<&AgentSessionRecord> for AgentSessionRecord {
         value.clone()
     }
 }
+#[doc = "Params of agent.spawn: run a child agent in the background."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentSpawnParams\","]
+#[doc = "  \"description\": \"Params of agent.spawn: run a child agent in the background.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent_id\","]
+#[doc = "    \"task\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"parent_session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"task\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"title\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AgentSpawnParams {
+    pub agent_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parent_session_id: Option<String>,
+    pub task: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub title: Option<String>,
+}
+impl From<&AgentSpawnParams> for AgentSpawnParams {
+    fn from(value: &AgentSpawnParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.spawn / agent.call."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentSpawnResult\","]
+#[doc = "  \"description\": \"Result of agent.spawn / agent.call.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"child\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"child\": {"]
+#[doc = "      \"$ref\": \"#/$defs/SubAgent\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentSpawnResult {
+    pub child: SubAgent,
+}
+impl From<&AgentSpawnResult> for AgentSpawnResult {
+    fn from(value: &AgentSpawnResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Sub-agent settings of an agent definition (AGENTS.md §9)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -933,6 +1312,97 @@ pub struct AgentSubAgentsConfig {
 }
 impl From<&AgentSubAgentsConfig> for AgentSubAgentsConfig {
     fn from(value: &AgentSubAgentsConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of agent.enable / agent.disable."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentToggleParams\","]
+#[doc = "  \"description\": \"Params of agent.enable / agent.disable.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AgentToggleParams {
+    pub id: String,
+}
+impl From<&AgentToggleParams> for AgentToggleParams {
+    fn from(value: &AgentToggleParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of agent.update: replace a definition."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentUpdateParams\","]
+#[doc = "  \"description\": \"Params of agent.update: replace a definition.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"definition\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"definition\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct AgentUpdateParams {
+    pub definition: String,
+}
+impl From<&AgentUpdateParams> for AgentUpdateParams {
+    fn from(value: &AgentUpdateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of agent.update: the stored definition."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"AgentUpdateResult\","]
+#[doc = "  \"description\": \"Result of agent.update: the stored definition.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent\": {"]
+#[doc = "      \"type\": \"object\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct AgentUpdateResult {
+    pub agent: ::serde_json::Map<String, ::serde_json::Value>,
+}
+impl From<&AgentUpdateResult> for AgentUpdateResult {
+    fn from(value: &AgentUpdateResult) -> Self {
         value.clone()
     }
 }
@@ -12039,6 +12509,86 @@ impl std::convert::TryFrom<String> for StorageStatus {
     type Error = self::error::ConversionError;
     fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
         value.parse()
+    }
+}
+#[doc = "A tracked sub-agent run (AGENTS.md §9)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SubAgent\","]
+#[doc = "  \"description\": \"A tracked sub-agent run (AGENTS.md §9).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"agent_id\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"session_id\","]
+#[doc = "    \"state\","]
+#[doc = "    \"task\","]
+#[doc = "    \"updated_at\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"agent_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"error\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"parent_session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"result\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"task\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"updated_at\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SubAgent {
+    pub agent_id: String,
+    pub created_at: i64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub parent_session_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub result: Option<String>,
+    pub session_id: String,
+    pub state: String,
+    pub task: String,
+    pub updated_at: i64,
+}
+impl From<&SubAgent> for SubAgent {
+    fn from(value: &SubAgent) -> Self {
+        value.clone()
     }
 }
 #[doc = "SubscribeParams"]

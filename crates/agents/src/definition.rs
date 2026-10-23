@@ -163,6 +163,9 @@ pub struct AgentDefinition {
     /// Sub-agent settings.
     #[serde(default)]
     pub sub_agents: SubAgentsConfig,
+    /// Whether the agent may be run and spawned (`agent.enable`/`disable`).
+    #[serde(default = "default_enabled")]
+    pub enabled: bool,
     /// Free-form categorization tags.
     #[serde(default)]
     pub tags: Vec<String>,
@@ -179,6 +182,10 @@ pub struct AgentDefinition {
 
 fn default_version() -> String {
     "0.1.0".to_string()
+}
+
+fn default_enabled() -> bool {
+    true
 }
 
 impl AgentDefinition {
