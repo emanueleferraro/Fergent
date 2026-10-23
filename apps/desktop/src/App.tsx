@@ -12,6 +12,7 @@ import { commands } from './features/palette/commands';
 import { ChatPanel } from './features/chat/ChatPanel';
 import { ChatSidebar } from './features/chat/ChatSidebar';
 import { useChat } from './features/chat/useChat';
+import { AgentsView } from './features/agents/AgentsView';
 import { EditorArea } from './features/editor/EditorArea';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
@@ -220,6 +221,8 @@ export function App(): ReactElement {
           <ChatPanel kernel={kernel} chat={chat} />
         ) : activeId === 'settings' ? (
           <SettingsView kernel={kernel} />
+        ) : activeId === 'agents' ? (
+          <AgentsView kernel={kernel} />
         ) : (
           <>
             <h1 className="t-h1">{t('app.name')}</h1>

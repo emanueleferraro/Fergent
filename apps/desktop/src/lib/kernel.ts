@@ -11,7 +11,13 @@
  */
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
-import type { ChatMessage, ChatSession, Event, HealthSnapshot } from '@fergents/protocol';
+import type {
+  AgentDefinition,
+  ChatMessage,
+  ChatSession,
+  Event,
+  HealthSnapshot,
+} from '@fergents/protocol';
 
 /** Tauri event name carrying a forwarded kernel event. */
 export const KERNEL_EVENT = 'kernel://event';
@@ -104,6 +110,7 @@ export class MockKernelClient implements KernelClient {
   private readonly handlers = new Set<KernelEventHandler>();
   private readonly healthSnapshot: HealthSnapshot;
   private readonly mockSessions: ChatSession[] = [];
+  private readonly mockAgents: AgentDefinition[] = [];
   private readonly mockMessages = new Map<string, ChatMessage[]>();
   private readonly mockDisabledSections = new Set<string>(['summary', 'attachments']);
   private mockSeq = 0;
@@ -146,6 +153,7 @@ export class MockKernelClient implements KernelClient {
   private respond(method: string, params: unknown): unknown {
     const payload = (params ?? {}) as Record<string, unknown>;
     const sessionId = typeof payload.session_id === 'string' ? payload.session_id : '';
+    const agentId = typeof payload.id === 'string' ? payload.id : '';
 
     switch (method) {
       case 'system.health':
@@ -173,9 +181,16 @@ export class MockKernelClient implements KernelClient {
       case 'graph.query':
         return { rows: [] };
       case 'agent.list':
-        return { agents: [] };
+        return { agents: this.mockAgents };
       case 'agent.create':
-        return { id: 'assistant', name: 'Assistant', model: 'mock-1' };
+        return this.mockCreateAgent(payload);
+      case 'agent.delete': {
+        const index = this.mockAgents.findIndex((agent) => agent.id === agentId);
+        if (index >= 0) {
+          this.mockAgents.splice(index, 1);
+        }
+        return { deleted: agentId };
+      }
       case 'prompt.list':
         return { prompts: [] };
       case 'chat.session.list':
@@ -232,6 +247,30 @@ export class MockKernelClient implements KernelClient {
       default:
         return null;
     }
+  }
+
+  private mockCreateAgent(payload: Record<string, unknown>): AgentDefinition {
+    const definition = String(payload.definition ?? '');
+    const field = (name: string): string | undefined => {
+      const match = new RegExp(`^${name}:\\s*"?([^"\\n]*)"?$`, 'm').exec(definition);
+      return match?.[1]?.trim();
+    };
+    const agent: AgentDefinition = {
+      id: field('id') ?? `agent-${++this.mockSeq}`,
+      name: field('name') ?? 'Agent',
+      description: field('description') ?? '',
+      model: field('model') ?? 'mock-1',
+      tools: [],
+      skills: [],
+      mcp: [],
+    };
+    const index = this.mockAgents.findIndex((item) => item.id === agent.id);
+    if (index >= 0) {
+      this.mockAgents.splice(index, 1, agent);
+    } else {
+      this.mockAgents.push(agent);
+    }
+    return agent;
   }
 
   private mockContext(sessionId: string): unknown {

@@ -2025,6 +2025,84 @@ mark,
 }
 
 /* ============================================================
+   AGENTS
+   ============================================================ */
+.agents-view {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: var(--s-4);
+    height: 100%;
+    min-height: 0;
+}
+.agents-view--note { color: var(--text-muted); }
+.agents-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding-right: var(--s-3);
+    border-right: 1px solid var(--color-border);
+    overflow-y: auto;
+}
+.agents-list__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+}
+.agents-list__items {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.agents-list__items li { display: flex; align-items: center; gap: var(--s-1); }
+.agent-row {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1px solid transparent;
+    border-radius: var(--r-sm);
+    background: transparent;
+    text-align: left;
+    color: inherit;
+    cursor: pointer;
+}
+.agent-row:hover { background: var(--color-hover); }
+.agent-row--active {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent-line);
+}
+.agent-row__icon { font-size: 16px; }
+.agent-row__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.agent-row__name {
+    font-size: var(--fs-body-sm);
+    color: var(--text-strong);
+}
+.agent-builder {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    overflow-y: auto;
+    padding-right: var(--s-2);
+}
+.agent-form {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-3);
+}
+.agent-form .field--full { grid-column: 1 / -1; }
+
+/* ============================================================
    RICH OUTPUTS
    ============================================================ */
 .rich-block {
