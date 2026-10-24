@@ -235,19 +235,32 @@ export class MockKernelClient implements KernelClient {
       case 'file.write': {
         const path = String(payload.path ?? '');
         const content = String(payload.content ?? '');
-        this.mockProjectContents.set(`${projectId}:${path}`, content);
+        const key = `${projectId}:${path}`;
+        const previous = this.mockProjectContents.get(key) ?? '';
+        const base = payload.base_etag;
+        if (typeof base === 'string' && base !== `mock-${previous.length}`) {
+          throw new Error(`rpc error -32008: file conflict: ${path}`);
+        }
+        this.mockProjectContents.set(key, content);
+        const files = this.mockProjectFiles.get(projectId) ?? [];
+        if (!files.includes(path)) {
+          this.mockProjectFiles.set(projectId, [...files, path]);
+        }
         return {
           file: {
             path,
             content,
             etag: `mock-${content.length}`,
             size: content.length,
-            language_id: 'plaintext',
+            language_id: mockLanguage(path),
             truncated: false,
             binary: false,
           },
         };
       }
+      case 'lsp.symbols':
+      case 'lsp.format':
+        return { result: [] };
       case 'capability.list':
         return { capabilities: [] };
       case 'capability.set':
@@ -416,7 +429,15 @@ export class MockKernelClient implements KernelClient {
       updated_at: now,
     };
     this.mockProjects.unshift(project);
-    this.mockProjectFiles.set(project.id, []);
+    this.mockProjectFiles.set(project.id, ['README.md', 'src/main.ts']);
+    this.mockProjectContents.set(
+      `${project.id}:README.md`,
+      `# ${project.name}\n\nOpened in Fergents.\n`,
+    );
+    this.mockProjectContents.set(
+      `${project.id}:src/main.ts`,
+      'export function main(): void {\n  console.log("hello");\n}\n',
+    );
     return project;
   }
 
@@ -428,7 +449,7 @@ export class MockKernelClient implements KernelClient {
         content,
         etag: `mock-${content.length}`,
         size: content.length,
-        language_id: 'plaintext',
+        language_id: mockLanguage(path),
         truncated: false,
         binary: false,
       },
@@ -642,6 +663,33 @@ export class MockKernelClient implements KernelClient {
     this.mockMessages.set(forked.id, [...(this.mockMessages.get(sessionId) ?? [])]);
     return forked;
   }
+}
+
+/** The mock's language ids, mirroring the kernel's extension mapping. */
+const MOCK_LANGUAGES: Record<string, string> = {
+  css: 'css',
+  go: 'go',
+  html: 'html',
+  js: 'javascript',
+  json: 'json',
+  jsx: 'javascript',
+  md: 'markdown',
+  py: 'python',
+  rs: 'rust',
+  scss: 'scss',
+  sh: 'shell',
+  sql: 'sql',
+  toml: 'toml',
+  ts: 'typescript',
+  tsx: 'typescript',
+  yml: 'yaml',
+  yaml: 'yaml',
+};
+
+/** The Monaco language id for a mock file path. */
+function mockLanguage(path: string): string {
+  const extension = path.split('.').pop()?.toLowerCase() ?? '';
+  return MOCK_LANGUAGES[extension] ?? 'plaintext';
 }
 
 /** Create the appropriate client for the current environment. */

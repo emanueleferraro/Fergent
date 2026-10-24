@@ -2317,6 +2317,84 @@ mark,
     color: var(--text-default);
     white-space: pre;
 }
+.ide-view__banner {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+}
+
+/* Monaco + outline (Phase 3, UI.md §8). */
+.ide-editor {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+}
+.ide-editor__main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+}
+.ide-editor__monaco {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+.ide-editor__outline {
+    flex: 0 0 180px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-3);
+    overflow: auto;
+    border-right: 1px solid var(--border-default);
+}
+.ide-outline {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+}
+.ide-outline--nested {
+    padding-left: var(--s-3);
+}
+.ide-outline__item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    width: 100%;
+    padding: var(--s-1) var(--s-2);
+    border: none;
+    border-radius: var(--r-xs);
+    background: none;
+    color: var(--text-default);
+    font: inherit;
+    font-size: var(--fs-label);
+    text-align: left;
+    cursor: pointer;
+}
+.ide-outline__item:hover,
+.ide-outline__item:focus-visible {
+    background: var(--color-hover);
+    outline: none;
+}
+.ide-outline__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.ide-outline__detail {
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 
 /* ============================================================
    REDUCED MOTION
