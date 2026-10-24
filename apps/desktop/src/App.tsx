@@ -14,6 +14,7 @@ import { ChatSidebar } from './features/chat/ChatSidebar';
 import { useChat } from './features/chat/useChat';
 import { AgentsView } from './features/agents/AgentsView';
 import { EditorArea } from './features/editor/EditorArea';
+import { useProjectEditor } from './features/editor/useProjectEditor';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
 import { IdeView } from './features/ide/IdeView';
@@ -94,38 +95,17 @@ export function App(): ReactElement {
   const chat = useChat(kernel);
   const projects = useProjects(kernel);
   const projectId = projects.active?.id ?? null;
+  const trusted = projects.active?.trust === 'trusted';
   const ideLayout = useIdeLayout(kernel, projectId);
+  const editor = useProjectEditor(kernel, projectId, { trusted });
   const [activeId, setActiveId] = useState<RailId>('chat');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
-  const [openPaths, setOpenPaths] = useState<string[]>([]);
-  const [activePath, setActivePath] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
   const [brainView, setBrainView] = useState<'notes' | 'graph'>('notes');
   const openIdsRef = useRef(openIds);
   openIdsRef.current = openIds;
-
-  // Switching projects closes that project's tabs: paths are project-relative.
-  useEffect(() => {
-    setOpenPaths([]);
-    setActivePath(undefined);
-  }, [projectId]);
-
-  const openFile = useCallback((path: string) => {
-    setOpenPaths((prev) => (prev.includes(path) ? prev : [...prev, path]));
-    setActivePath(path);
-  }, []);
-
-  const closeFile = useCallback(
-    (path: string) => {
-      setOpenPaths((prev) => prev.filter((candidate) => candidate !== path));
-      setActivePath((current) =>
-        current === path ? openPaths.filter((candidate) => candidate !== path).at(-1) : current,
-      );
-    },
-    [openPaths],
-  );
 
   const openDocument = useCallback((documentId: string) => {
     setOpenIds((prev) => (prev.includes(documentId) ? prev : [...prev, documentId]));
@@ -200,12 +180,12 @@ export function App(): ReactElement {
             active={projects.active}
             files={projects.files}
             statuses={projects.statuses}
-            activePath={activePath}
+            activePath={editor.activePath ?? undefined}
             error={projects.error}
             onSelectProject={projects.select}
             onOpenProject={(path) => void projects.open(path)}
-            onTrust={(trusted) => void projects.trust(trusted)}
-            onOpenFile={openFile}
+            onTrust={(trustedNow) => void projects.trust(trustedNow)}
+            onOpenFile={(path) => void editor.open(path)}
             onOpenNote={openNoteFromIde}
           />
         ) : (
@@ -295,10 +275,9 @@ export function App(): ReactElement {
               <IdeView
                 kernel={kernel}
                 projectId={projectId}
-                openPaths={openPaths}
-                activePath={activePath}
-                onSelect={setActivePath}
-                onClose={closeFile}
+                editor={editor}
+                theme={theme}
+                trusted={trusted}
               />
             }
           />

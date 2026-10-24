@@ -1,12 +1,16 @@
 /**
- * The IDE main area (UI.md §8): the project tab strip plus a read-only file
- * preview. Monaco replaces the preview in task 3.7; until then the tab strip,
- * breadcrumb, and file reads are the real thing, wired to the kernel.
+ * The IDE main area (UI.md §8): the project tab strip, breadcrumb, outline and
+ * the Monaco editor. Documents, dirty state and saving are owned by
+ * `useProjectEditor`; this component is presentation plus the LSP outline.
  */
-import { useEffect, useState, type ReactElement } from 'react';
-import type { FileReadResult } from '@fergents/protocol';
+import { useEffect, useRef, useState, type ReactElement } from 'react';
+import type { LspRequestResult } from '@fergents/protocol';
 
 import { EditorTabs, type EditorTab } from '../editor/EditorTabs';
+import { MonacoHost, type RevealRequest } from '../editor/MonacoHost';
+import { isDirty } from '../editor/documents';
+import { parseOutline, type OutlineItem } from '../editor/outline';
+import type { EditorController } from '../editor/useProjectEditor';
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
 import { baseName } from '../project/model';
@@ -16,131 +20,186 @@ export interface IdeViewProps {
   kernel: KernelClient;
   /** The active project id, or `null` when nothing is open. */
   projectId: string | null;
-  /** Open file paths, in tab order. */
-  openPaths: readonly string[];
-  /** The active file path. */
-  activePath?: string | undefined;
-  onSelect: (path: string) => void;
-  onClose: (path: string) => void;
+  /** The code editor controller. */
+  editor: EditorController;
+  theme: 'dark' | 'light';
+  /** Whether the project is trusted (spec D3). */
+  trusted: boolean;
 }
 
-interface LoadedFile {
-  path: string;
-  content: string;
-  binary: boolean;
-  truncated: boolean;
+/** Render an outline tree, deepest last. */
+function OutlineList({
+  items,
+  onReveal,
+  depth = 1,
+}: {
+  items: readonly OutlineItem[];
+  onReveal: (item: OutlineItem) => void;
+  depth?: number;
+}): ReactElement {
+  return (
+    <ul className={depth === 1 ? 'ide-outline' : 'ide-outline ide-outline--nested'} role="group">
+      {items.map((item) => (
+        <li key={`${item.line}:${item.column}:${item.name}`} role="treeitem" aria-level={depth}>
+          <button type="button" className="ide-outline__item" onClick={() => onReveal(item)}>
+            <span className="ide-outline__name">{item.name}</span>
+            {item.detail === null ? null : (
+              <span className="ide-outline__detail t-caption">{item.detail}</span>
+            )}
+          </button>
+          {item.children.length === 0 ? null : (
+            <OutlineList items={item.children} onReveal={onReveal} depth={depth + 1} />
+          )}
+        </li>
+      ))}
+    </ul>
+  );
 }
 
 /** The tabbed project file view. */
-export function IdeView({
-  kernel,
-  projectId,
-  openPaths,
-  activePath,
-  onSelect,
-  onClose,
-}: IdeViewProps): ReactElement {
-  const [file, setFile] = useState<LoadedFile | null>(null);
-  const [error, setError] = useState<string | null>(null);
+export function IdeView({ kernel, projectId, editor, theme, trusted }: IdeViewProps): ReactElement {
+  const { documents, active, activePath, conflict } = editor;
+  const [outline, setOutline] = useState<OutlineItem[]>([]);
+  const [reveal, setReveal] = useState<RevealRequest | null>(null);
+  const revealToken = useRef(0);
 
+  // The outline is best-effort: no server means no outline, never an error.
   useEffect(() => {
-    if (projectId === null || activePath === undefined) {
-      setFile(null);
-      setError(null);
+    if (projectId === null || activePath === null || !trusted) {
+      setOutline([]);
       return;
     }
     let cancelled = false;
-    setError(null);
-    setFile(null);
     void (async () => {
       try {
-        const result = await kernel.call<FileReadResult>('file.read', {
+        const result = await kernel.call<LspRequestResult>('lsp.symbols', {
           project_id: projectId,
           path: activePath,
         });
         if (!cancelled) {
-          setFile({
-            path: result.file.path,
-            content: result.file.content,
-            binary: result.file.binary,
-            truncated: result.file.truncated,
-          });
+          setOutline(parseOutline(result.result));
         }
-      } catch (cause) {
+      } catch {
         if (!cancelled) {
-          setFile(null);
-          setError(cause instanceof Error ? cause.message : String(cause));
+          setOutline([]);
         }
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [kernel, projectId, activePath]);
+  }, [kernel, projectId, activePath, trusted]);
 
-  const tabs: EditorTab[] = openPaths.map((path) => ({
-    documentId: path,
-    title: baseName(path),
+  const revealAt = (line: number): void => {
+    revealToken.current += 1;
+    setReveal({ line, token: revealToken.current });
+  };
+
+  const tabs: EditorTab[] = documents.map((document) => ({
+    documentId: document.path,
+    title: baseName(document.path),
+    modified: isDirty(document),
   }));
 
-  const body = (): ReactElement => {
-    if (file !== null) {
-      if (file.binary) {
-        return (
-          <div className="empty">
-            <div className="empty-title">{t('ide.view.binary.title')}</div>
-            <div className="empty-desc">{t('ide.view.binary.desc')}</div>
-          </div>
-        );
-      }
-      return (
-        <>
-          <pre className="ide-view__preview t-mono" aria-label={activePath}>
-            {file.content}
-          </pre>
-          {file.truncated ? (
-            <div className="inline-feedback warning">{t('ide.view.truncated')}</div>
-          ) : null}
-        </>
-      );
-    }
-    if (error !== null) {
-      return (
-        <div className="empty">
-          <div className="empty-title">{t('ide.view.error.title')}</div>
-          <div className="empty-desc">{error}</div>
-        </div>
-      );
-    }
-    return (
-      <div className="empty">
-        <div className="empty-title">{t('ide.view.loading')}</div>
-      </div>
-    );
-  };
+  const segments = active === null ? [] : active.path.split('/').filter((part) => part.length > 0);
 
   return (
     <div className="ide-view">
       <EditorTabs
         tabs={tabs}
-        activeId={activePath}
-        onSelect={onSelect}
-        onClose={onClose}
+        activeId={activePath ?? undefined}
+        onSelect={editor.select}
+        onClose={editor.close}
         ariaLabel={t('ide.tabs.label')}
       />
-      {activePath !== undefined ? (
+      {active === null ? (
+        <div className="empty">
+          <div className="empty-title">
+            {editor.busy ? t('ide.view.loading') : t('ide.view.empty.title')}
+          </div>
+          <div className="empty-desc">{t('ide.view.empty.desc')}</div>
+        </div>
+      ) : (
         <>
           <div className="editor-breadcrumb">
             <span>{t('ide.view.root')}</span>
-            <span className="current">{activePath}</span>
+            {segments.map((segment, index) => (
+              <span
+                key={`${index}:${segment}`}
+                className={index === segments.length - 1 ? 'current' : undefined}
+              >
+                {segment}
+              </span>
+            ))}
           </div>
-          <div className="ide-view__body">{body()}</div>
+
+          {!trusted ? (
+            <div className="inline-feedback warning">{t('ide.view.untrusted')}</div>
+          ) : null}
+
+          {conflict === null ? null : (
+            <div className="inline-feedback warning ide-view__banner">
+              <span>{conflict.external ? t('ide.conflict.external') : t('ide.conflict.save')}</span>
+              <button className="btn btn-sm" type="button" onClick={() => void editor.reload()}>
+                {t('ide.conflict.reload')}
+              </button>
+              <button className="btn btn-sm" type="button" onClick={() => void editor.keepMine()}>
+                {t('ide.conflict.keep')}
+              </button>
+              <button
+                className="btn btn-ghost btn-sm"
+                type="button"
+                onClick={editor.dismissConflict}
+              >
+                {t('ide.conflict.dismiss')}
+              </button>
+            </div>
+          )}
+
+          {editor.error === null ? null : (
+            <div className="inline-feedback error">{editor.error}</div>
+          )}
+
+          {active.truncated ? (
+            <div className="inline-feedback warning">{t('ide.view.truncated')}</div>
+          ) : null}
+          {active.readOnly && !active.binary && !active.truncated && trusted ? (
+            <div className="inline-feedback warning">{t('ide.view.readOnly')}</div>
+          ) : null}
+
+          <div className="ide-view__body">
+            {active.binary ? (
+              <div className="empty">
+                <div className="empty-title">{t('ide.view.binary.title')}</div>
+                <div className="empty-desc">{t('ide.view.binary.desc')}</div>
+              </div>
+            ) : (
+              <div className="ide-editor">
+                {outline.length === 0 ? null : (
+                  <aside className="ide-editor__outline" aria-label={t('ide.outline.label')}>
+                    <div className="panel-title">{t('ide.outline.label')}</div>
+                    <OutlineList items={outline} onReveal={(item) => revealAt(item.line)} />
+                  </aside>
+                )}
+                <div className="ide-editor__main">
+                  <MonacoHost
+                    path={active.path}
+                    content={active.content}
+                    languageId={active.languageId}
+                    readOnly={active.readOnly || !trusted}
+                    theme={theme}
+                    openPaths={documents.map((document) => document.path)}
+                    reveal={reveal}
+                    onChange={(content) => editor.change(active.path, content)}
+                    onSave={() => void editor.save(active.path)}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {editor.busy ? <div className="inline-feedback">{t('ide.view.busy')}</div> : null}
         </>
-      ) : (
-        <div className="empty">
-          <div className="empty-title">{t('ide.view.empty.title')}</div>
-          <div className="empty-desc">{t('ide.view.empty.desc')}</div>
-        </div>
       )}
     </div>
   );
