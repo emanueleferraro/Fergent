@@ -30,6 +30,7 @@ use fergents_chat::{ChatMessage, ChatService};
 use fergents_events::{now_ms, EventBus};
 use fergents_ide::{file_tools, FileService, ProjectService};
 use fergents_llm::{ChatRequest, MockProvider};
+use fergents_lsp::LspService;
 use fergents_permissions::PermissionService;
 use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
@@ -85,6 +86,9 @@ pub enum CoreError {
     /// A project layer failure.
     #[error(transparent)]
     Project(#[from] fergents_ide::ProjectError),
+    /// An LSP failure.
+    #[error(transparent)]
+    Lsp(#[from] fergents_lsp::LspError),
 }
 
 /// Kernel configuration.
@@ -155,6 +159,7 @@ pub struct Kernel {
     mcp_service: Arc<McpService>,
     projects: Arc<ProjectService>,
     files: Arc<FileService>,
+    lsp: Arc<LspService>,
     subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
@@ -236,6 +241,11 @@ impl Kernel {
         for tool in file_tools(files.clone()) {
             tools.register(tool);
         }
+        let lsp = Arc::new(LspService::new(
+            storage.clone(),
+            bus.clone(),
+            projects.clone(),
+        ));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -263,6 +273,7 @@ impl Kernel {
             mcp_service,
             projects,
             files,
+            lsp,
             subagents,
             started: Instant::now(),
             started_ms: now_ms(),
@@ -363,6 +374,11 @@ impl Kernel {
     /// Project-scoped file operations, backups, and the external-change watcher.
     pub fn files(&self) -> &FileService {
         self.files.as_ref()
+    }
+
+    /// Language-server sessions, document sync, and diagnostics.
+    pub fn lsp(&self) -> &LspService {
+        self.lsp.as_ref()
     }
 
     /// The sub-agent manager (async children, collect, cancel, handoff).

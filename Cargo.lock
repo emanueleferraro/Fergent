@@ -1460,6 +1460,7 @@ dependencies = [
  "fergents-graph",
  "fergents-ide",
  "fergents-index",
+ "fergents-lsp",
  "fergents-permissions",
  "fergents-protocol",
  "fergents-reversibility",
@@ -1558,6 +1559,7 @@ dependencies = [
  "fergents-ide",
  "fergents-index",
  "fergents-llm",
+ "fergents-lsp",
  "fergents-mcp",
  "fergents-permissions",
  "fergents-protocol",
@@ -1665,6 +1667,20 @@ dependencies = [
  "tiktoken-rs",
  "tokio",
  "tracing",
+]
+
+[[package]]
+name = "fergents-lsp"
+version = "0.1.0"
+dependencies = [
+ "fergents-events",
+ "fergents-ide",
+ "fergents-storage",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
+ "ulid",
 ]
 
 [[package]]

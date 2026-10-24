@@ -55,6 +55,14 @@ pub fn default_catalogue() -> Vec<Capability> {
             true,
         ),
         capability(
+            "capability.lsp",
+            "Language Servers",
+            "Language-server sessions, document sync, and diagnostics.",
+            &["capability.ide"],
+            true,
+            true,
+        ),
+        capability(
             "capability.llm",
             "LLM Router",
             "Providers, routing, budgets, and caches.",
