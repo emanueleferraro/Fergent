@@ -6,6 +6,8 @@
  */
 import type { FileSnapshot } from '@fergents/protocol';
 
+import { applyTextEdits, type TextEdit } from './textEdits';
+
 /** Files larger than this open read-only (spec §2, default 5 MB). */
 export const MAX_EDITABLE_BYTES = 5 * 1024 * 1024;
 
@@ -91,6 +93,7 @@ export type EditorAction =
   | { type: 'select'; path: string }
   | { type: 'close'; path: string }
   | { type: 'change'; path: string; content: string }
+  | { type: 'applyEdits'; path: string; edits: readonly TextEdit[] }
   | { type: 'saved'; snapshot: FileSnapshot }
   | { type: 'reload'; snapshot: FileSnapshot }
   | { type: 'reset' };
@@ -150,6 +153,19 @@ export function editorReducer(state: EditorState, action: EditorAction): EditorS
         documents: state.documents.map((document) =>
           document.path === action.path && !document.readOnly
             ? { ...document, content: action.content, preview: false }
+            : document,
+        ),
+      };
+    case 'applyEdits':
+      return {
+        ...state,
+        documents: state.documents.map((document) =>
+          document.path === action.path && !document.readOnly && action.edits.length > 0
+            ? {
+                ...document,
+                content: applyTextEdits(document.content, action.edits),
+                preview: false,
+              }
             : document,
         ),
       };

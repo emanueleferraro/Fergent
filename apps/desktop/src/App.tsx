@@ -55,7 +55,9 @@ const RAIL_ICONS: Record<RailId, string> = {
   settings: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8zM12 3v2M12 19v2M3 12h2M19 12h2',
 };
 
-const SUBSCRIBE_TOPICS = ['kernel.'] as const;
+// An empty topic list subscribes to every event: the IDE needs `file.changed`,
+// `lsp.diagnostics`, and `term.*` alongside the kernel's own events.
+const SUBSCRIBE_TOPICS: readonly string[] = [];
 
 function statusKey(status: KernelStatus): MessageKey {
   switch (status) {
@@ -275,6 +277,7 @@ export function App(): ReactElement {
               <IdeView
                 kernel={kernel}
                 projectId={projectId}
+                projectRoot={projects.active?.path ?? ''}
                 editor={editor}
                 theme={theme}
                 trusted={trusted}

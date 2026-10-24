@@ -2396,6 +2396,156 @@ mark,
     white-space: nowrap;
 }
 
+/* Problems panel + LSP actions (Phase 3, task 3.8). */
+.ide-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    flex-wrap: wrap;
+    padding: var(--s-2) var(--s-4);
+    border-bottom: 1px solid var(--border-default);
+    background: var(--surface-2);
+}
+.ide-view__status {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+    padding: var(--s-1) var(--s-3);
+    border-top: 1px solid var(--border-default);
+    background: var(--surface-2);
+}
+.problems-panel {
+    display: flex;
+    flex-direction: column;
+    flex: 0 0 auto;
+    min-height: 140px;
+    max-height: 45%;
+    border-top: 1px solid var(--border-default);
+    background: var(--surface-2);
+}
+.problems-panel__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-3);
+    border-bottom: 1px solid var(--border-default);
+}
+.problems-panel__counts {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    margin-left: auto;
+}
+.problems-count {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--s-1);
+    font-size: var(--fs-caption);
+    color: var(--text-muted);
+}
+.problems-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    overflow: auto;
+}
+.problems-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+}
+.problems-group__title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+}
+.problems-group__name {
+    font-size: var(--fs-body-sm);
+    color: var(--text-strong);
+}
+.problems-group__items {
+    list-style: none;
+    margin: 0;
+    padding: 0 0 0 var(--s-3);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+}
+.problem-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    width: 100%;
+    padding: var(--s-1) var(--s-2);
+    border: none;
+    border-radius: var(--r-xs);
+    background: none;
+    color: var(--text-default);
+    font: inherit;
+    font-size: var(--fs-body-sm);
+    text-align: left;
+    cursor: pointer;
+}
+.problem-item:hover,
+.problem-item:focus-visible {
+    background: var(--color-hover);
+    outline: none;
+}
+.problem-item__dot {
+    flex-shrink: 0;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+}
+.problem-item__message {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.problem-item__position,
+.problem-item__source {
+    flex-shrink: 0;
+    color: var(--text-muted);
+}
+.problem-severity--error {
+    color: var(--color-danger);
+}
+.problem-severity--warning {
+    color: var(--color-warning);
+}
+.problem-severity--info {
+    color: var(--color-info);
+}
+.problem-severity--hint {
+    color: var(--text-muted);
+}
+.lsp-server {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding: var(--s-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-sm);
+}
+.lsp-server__main {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    min-width: 0;
+}
+.lsp-server__language {
+    color: var(--text-strong);
+}
+.lsp-server__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+}
+
 /* ============================================================
    REDUCED MOTION
    ============================================================ */

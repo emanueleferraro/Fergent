@@ -18,6 +18,7 @@ import type {
   ChatSession,
   Event,
   HealthSnapshot,
+  LspServer,
   McpServer,
   Project,
   ProviderConfig,
@@ -127,6 +128,32 @@ export class MockKernelClient implements KernelClient {
   private readonly mockLayouts = new Map<string, unknown>();
   private readonly mockProjectFiles = new Map<string, string[]>();
   private readonly mockProjectContents = new Map<string, string>();
+  private readonly mockLspServers: LspServer[] = [
+    {
+      id: 'typescript',
+      language_id: 'typescript',
+      command: 'typescript-language-server',
+      args: ['--stdio'],
+      env: {},
+      root_strategy: 'project',
+      source: 'builtin',
+      enabled: true,
+      status: 'stopped',
+      installed: true,
+    },
+    {
+      id: 'rust',
+      language_id: 'rust',
+      command: 'rust-analyzer',
+      args: [],
+      env: {},
+      root_strategy: 'project',
+      source: 'builtin',
+      enabled: true,
+      status: 'not_installed',
+      installed: false,
+    },
+  ];
   private mockSeq = 0;
 
   constructor(options: MockKernelClientOptions = {}) {
@@ -260,7 +287,42 @@ export class MockKernelClient implements KernelClient {
       }
       case 'lsp.symbols':
       case 'lsp.format':
+      case 'lsp.hover':
+      case 'lsp.definition':
+      case 'lsp.rename':
+      case 'lsp.code_action':
         return { result: [] };
+      case 'lsp.document.open':
+      case 'lsp.document.change':
+      case 'lsp.document.save':
+      case 'lsp.document.close':
+        return { ok: true };
+      case 'lsp.diagnostics.list':
+        return { diagnostics: [] };
+      case 'lsp.server.list':
+        return { servers: this.mockLspServers };
+      case 'lsp.server.status': {
+        const language = typeof payload.language_id === 'string' ? payload.language_id : '';
+        const server = this.mockLspServers.find((item) => item.language_id === language);
+        return { server: server ?? null };
+      }
+      case 'lsp.server.start':
+      case 'lsp.server.restart': {
+        const language = typeof payload.language_id === 'string' ? payload.language_id : '';
+        const server = this.mockServersByLanguage(language);
+        if (server !== null) {
+          server.status = 'ready';
+        }
+        return { server };
+      }
+      case 'lsp.server.stop': {
+        const language = typeof payload.language_id === 'string' ? payload.language_id : '';
+        const server = this.mockServersByLanguage(language);
+        if (server !== null) {
+          server.status = 'stopped';
+        }
+        return { stopped: server !== null };
+      }
       case 'capability.list':
         return { capabilities: [] };
       case 'capability.set':
@@ -439,6 +501,10 @@ export class MockKernelClient implements KernelClient {
       'export function main(): void {\n  console.log("hello");\n}\n',
     );
     return project;
+  }
+
+  private mockServersByLanguage(languageId: string): LspServer | null {
+    return this.mockLspServers.find((server) => server.language_id === languageId) ?? null;
   }
 
   private mockReadFile(projectId: string, path: string): unknown {

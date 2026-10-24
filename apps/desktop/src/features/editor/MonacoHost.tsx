@@ -7,24 +7,37 @@
 import { useEffect, useRef, useState, type ReactElement } from 'react';
 
 import { t } from '../../i18n/i18n';
+import { toMonacoMarker, type Problem } from '../lsp/problems';
 import { loadMonaco } from './monaco';
 import {
   disposeAllModels,
   disposeModelsOutside,
   editorOptions,
   ensureModel,
+  modelPath,
+  monacoLanguage,
   syncModelValue,
   themeName,
   type MonacoEditor,
+  type MonacoHoverProvider,
   type MonacoLike,
   type MonacoModel,
 } from './monacoAdapter';
 
-/** A request to scroll a one-based line into view (outline, go-to-definition). */
+/** A request to scroll a one-based position into view (outline, problems). */
 export interface RevealRequest {
   line: number;
+  column?: number | undefined;
   /** Changes even when the line is the same, so the effect re-runs. */
   token: number;
+}
+
+/** The LSP operations the host wires into Monaco (positions are one-based). */
+export interface MonacoHostLsp {
+  hover: (path: string, line: number, column: number) => Promise<string | null>;
+  onDefinition: (path: string, line: number, column: number) => void;
+  onRename: (path: string, line: number, column: number) => void;
+  onCodeActions: (path: string, line: number, column: number) => void;
 }
 
 /** Props for `MonacoHost`. */
@@ -38,6 +51,10 @@ export interface MonacoHostProps {
   /** Every open tab, so models of closed tabs can be disposed. */
   openPaths: readonly string[];
   reveal?: RevealRequest | null | undefined;
+  /** Diagnostics of the active file, rendered as inline squiggles. */
+  markers?: readonly Problem[] | undefined;
+  /** LSP interactions, or `null` when the project is untrusted. */
+  lsp?: MonacoHostLsp | null | undefined;
   onChange: (content: string) => void;
   onSave: () => void;
 }
@@ -51,6 +68,8 @@ export function MonacoHost({
   theme,
   openPaths,
   reveal,
+  markers,
+  lsp,
   onChange,
   onSave,
 }: MonacoHostProps): ReactElement {
@@ -66,6 +85,10 @@ export function MonacoHost({
   onSaveRef.current = onSave;
   const themeRef = useRef(theme);
   themeRef.current = theme;
+  const lspRef = useRef(lsp);
+  lspRef.current = lsp;
+  const hoverProviders = useRef<{ dispose(): void }[]>([]);
+  const hoverLanguages = useRef<Set<string>>(new Set());
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -85,8 +108,41 @@ export function MonacoHost({
           ...editorOptions(readOnlyRef.current ?? false),
           model: null,
         });
+        // The cursor position of the active model, or `null` before a model.
+        const cursor = (): { path: string; line: number; column: number } | null => {
+          const position = editor.getPosition();
+          const current = modelPathRef.current;
+          return position === null || current === null
+            ? null
+            : { path: current, line: position.lineNumber, column: position.column };
+        };
         // Ctrl/Cmd+S saves through the kernel; Ctrl+F/Ctrl+H are Monaco defaults.
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => onSaveRef.current());
+        // LSP shortcuts: F12 definition, F2 rename, Ctrl+. quick fixes.
+        editor.addCommand(monaco.KeyCode.F12, () => {
+          const at = cursor();
+          if (at !== null) {
+            lspRef.current?.onDefinition(at.path, at.line, at.column);
+          }
+        });
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.F12, () => {
+          const at = cursor();
+          if (at !== null) {
+            lspRef.current?.onDefinition(at.path, at.line, at.column);
+          }
+        });
+        editor.addCommand(monaco.KeyCode.F2, () => {
+          const at = cursor();
+          if (at !== null) {
+            lspRef.current?.onRename(at.path, at.line, at.column);
+          }
+        });
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Period, () => {
+          const at = cursor();
+          if (at !== null) {
+            lspRef.current?.onCodeActions(at.path, at.line, at.column);
+          }
+        });
         subscription = editor.onDidChangeModelContent(() => onChangeRef.current(editor.getValue()));
         editorRef.current = editor;
         setReady(true);
@@ -99,6 +155,11 @@ export function MonacoHost({
     return () => {
       cancelled = true;
       subscription?.dispose();
+      for (const provider of hoverProviders.current) {
+        provider.dispose();
+      }
+      hoverProviders.current = [];
+      hoverLanguages.current.clear();
       editorRef.current?.dispose();
       editorRef.current = null;
       disposeAllModels(modelsRef.current);
@@ -140,13 +201,52 @@ export function MonacoHost({
     }
   }, [ready, theme]);
 
+  // One hover provider per language, reading the editor's current path.
+  useEffect(() => {
+    const monaco = monacoRef.current;
+    if (!ready || monaco === null) {
+      return;
+    }
+    const language = monacoLanguage(languageId);
+    if (hoverLanguages.current.has(language)) {
+      return;
+    }
+    hoverLanguages.current.add(language);
+    const provider: MonacoHoverProvider = {
+      async provideHover(model, position): Promise<{ contents: unknown[] } | null> {
+        const actions = lspRef.current;
+        const target = modelPath(model);
+        if (!actions || target === null) {
+          return null;
+        }
+        const markdown = await actions.hover(target, position.lineNumber, position.column);
+        return markdown === null ? null : { contents: [{ value: markdown }] };
+      },
+    };
+    hoverProviders.current.push(monaco.languages.registerHoverProvider(language, provider));
+  }, [ready, languageId]);
+
+  // Inline squiggles for the active file (the Problems panel owns the truth).
+  useEffect(() => {
+    const monaco = monacoRef.current;
+    const editor = editorRef.current;
+    if (!ready || monaco === null || editor === null) {
+      return;
+    }
+    const model = editor.getModel();
+    if (model === null) {
+      return;
+    }
+    monaco.editor.setModelMarkers?.(model, 'fergents-lsp', (markers ?? []).map(toMonacoMarker));
+  }, [ready, path, markers]);
+
   useEffect(() => {
     const editor = editorRef.current;
     if (!ready || editor === null || reveal === undefined || reveal === null) {
       return;
     }
     editor.revealLineInCenter(reveal.line);
-    editor.setPosition({ lineNumber: reveal.line, column: 1 });
+    editor.setPosition({ lineNumber: reveal.line, column: reveal.column ?? 1 });
     editor.focus();
   }, [ready, reveal]);
 

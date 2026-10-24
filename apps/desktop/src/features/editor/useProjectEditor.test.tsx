@@ -206,4 +206,50 @@ describe('useProjectEditor', () => {
     expect(changed.current.documents).toEqual([]);
     expect(result.current.documents).toHaveLength(1);
   });
+
+  it('applies a workspace edit to the open buffer without writing', async () => {
+    const { kernel, result } = await setup();
+    await act(async () => {
+      await result.current.open('src/main.ts');
+    });
+
+    await act(async () => {
+      await result.current.applyWorkspaceEdits([
+        {
+          path: 'src/main.ts',
+          edits: [
+            {
+              range: { start: { line: 0, character: 16 }, end: { line: 0, character: 20 } },
+              newText: 'run',
+            },
+          ],
+        },
+      ]);
+    });
+
+    expect(result.current.active?.content).toContain('export function run(');
+    expect(result.current.active === null ? null : isDirty(result.current.active)).toBe(true);
+    expect(kernel.calls.some((call) => call.method === 'file.write')).toBe(false);
+  });
+
+  it('rewrites a closed file through the kernel for a workspace edit', async () => {
+    const { kernel, projectId, result } = await setup();
+
+    await act(async () => {
+      await result.current.applyWorkspaceEdits([
+        {
+          path: 'README.md',
+          edits: [
+            {
+              range: { start: { line: 0, character: 2 }, end: { line: 0, character: 6 } },
+              newText: 'demo2',
+            },
+          ],
+        },
+      ]);
+    });
+
+    expect(await readContent(kernel, projectId, 'README.md')).toContain('# demo2');
+    expect(result.current.error).toBeNull();
+  });
 });

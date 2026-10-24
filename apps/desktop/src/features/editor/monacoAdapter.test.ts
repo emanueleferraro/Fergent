@@ -42,7 +42,7 @@ function fakeMonaco(): {
   const monaco: MonacoLike = {
     Uri: { parse: (value: string) => value },
     KeyMod: { CtrlCmd: 2048 },
-    KeyCode: { KeyS: 49 },
+    KeyCode: { KeyS: 49, F2: 60, F12: 70, Period: 80 },
     editor: {
       create: () => {
         throw new Error('not used by the adapter');
@@ -54,6 +54,9 @@ function fakeMonaco(): {
         return model;
       },
       getModel: (uri) => models.get(String(uri)) ?? null,
+    },
+    languages: {
+      registerHoverProvider: () => ({ dispose: () => undefined }),
     },
   };
   return { monaco, models, languages };

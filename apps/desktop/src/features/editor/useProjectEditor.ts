@@ -17,7 +17,7 @@ import {
   type EditorDocument,
   type EditorState,
 } from './documents';
-import { applyTextEdits, isTextEdit } from './textEdits';
+import { applyTextEdits, isTextEdit, type FileEdits, type TextEdit } from './textEdits';
 
 /** A save that could not proceed because the file changed underneath us. */
 export interface EditorConflict {
@@ -50,6 +50,13 @@ export interface EditorController {
   select: (path: string) => void;
   close: (path: string) => void;
   change: (path: string, content: string) => void;
+  /** Apply LSP text edits to an open buffer, leaving it dirty (rename, fixes). */
+  applyEdits: (path: string, edits: readonly TextEdit[]) => void;
+  /**
+   * Apply a multi-file workspace edit: open buffers are changed in memory,
+   * closed files are rewritten through the kernel (rename, quick fixes).
+   */
+  applyWorkspaceEdits: (changes: readonly FileEdits[]) => Promise<void>;
   save: (path?: string) => Promise<void>;
   reload: (path?: string) => Promise<void>;
   keepMine: (path?: string) => Promise<void>;
@@ -207,6 +214,49 @@ export function useProjectEditor(
     dispatch({ type: 'change', path, content });
   }, []);
 
+  const applyEdits = useCallback((path: string, edits: readonly TextEdit[]) => {
+    dispatch({ type: 'applyEdits', path, edits });
+  }, []);
+
+  const applyWorkspaceEdits = useCallback(
+    async (changes: readonly FileEdits[]) => {
+      if (projectId === null || changes.length === 0) {
+        return;
+      }
+      setBusy(true);
+      setError(null);
+      let failure: string | null = null;
+      try {
+        for (const change of changes) {
+          const document = documentFor(stateRef.current, change.path);
+          if (document !== null) {
+            if (!document.readOnly) {
+              dispatch({ type: 'applyEdits', path: change.path, edits: change.edits });
+            }
+            continue;
+          }
+          // A closed file is edited on disk; conflicts are left to the caller.
+          try {
+            const snapshot = await readFile(kernel, projectId, change.path);
+            if (snapshot.file.binary || snapshot.file.truncated) {
+              continue;
+            }
+            const content = applyTextEdits(snapshot.file.content, change.edits);
+            await writeFile(kernel, projectId, change.path, content, snapshot.file.etag);
+          } catch (cause) {
+            failure = messageOf(cause);
+          }
+        }
+        if (failure !== null) {
+          setError(failure);
+        }
+      } finally {
+        setBusy(false);
+      }
+    },
+    [kernel, projectId],
+  );
+
   const save = useCallback(
     async (path?: string) => {
       const target = path ?? stateRef.current.activePath;
@@ -303,6 +353,8 @@ export function useProjectEditor(
     select,
     close,
     change,
+    applyEdits,
+    applyWorkspaceEdits,
     save,
     reload,
     keepMine,
