@@ -2843,3 +2843,124 @@ export interface ProjectSearchParams {
 export interface ProjectSearchResult {
   hits: ProjectSearchHit[];
 }
+
+/**
+ * A file read from a project (spec decision D2).
+ */
+export interface FileSnapshot {
+  path: string;
+  content: string;
+  etag: string;
+  size: number;
+  language_id: string;
+  truncated: boolean;
+  binary: boolean;
+}
+
+/**
+ * One entry in a project directory listing.
+ */
+export interface FileEntry {
+  name: string;
+  path: string;
+  kind: 'file' | 'dir';
+  size: number;
+}
+
+/**
+ * Metadata for one project path.
+ */
+export interface FileStat {
+  path: string;
+  kind: 'file' | 'dir';
+  size: number;
+  modified_at: number;
+  etag: string;
+}
+
+/**
+ * Params of file.read.
+ */
+export interface FileReadParams {
+  project_id: string;
+  path: string;
+}
+
+/**
+ * Result of file.read.
+ */
+export interface FileReadResult {
+  file: FileSnapshot;
+}
+
+/**
+ * Params of file.write.
+ */
+export interface FileWriteParams {
+  project_id: string;
+  path: string;
+  content: string;
+  base_etag?: string | null;
+}
+
+/**
+ * Result of file.write and file.create.
+ */
+export interface FileWriteResult {
+  file: FileSnapshot;
+}
+
+/**
+ * Params of file.create.
+ */
+export interface FileCreateParams {
+  project_id: string;
+  path: string;
+  content?: string;
+}
+
+/**
+ * Params carrying a project id and a path.
+ */
+export interface FilePathParams {
+  project_id: string;
+  path: string;
+}
+
+/**
+ * Params of file.rename.
+ */
+export interface FileRenameParams {
+  project_id: string;
+  from: string;
+  to: string;
+}
+
+/**
+ * Result of file.stat, file.mkdir, and file.rename.
+ */
+export interface FileStatResult {
+  entry: FileStat;
+}
+
+/**
+ * Result of file.delete.
+ */
+export interface FileDeleteResult {
+  deleted: boolean;
+}
+
+/**
+ * Params of file.list.
+ */
+export interface FileListParams {
+  project_id: string;
+  path?: string;
+}
+
+/**
+ * Result of file.list.
+ */
+export interface FileListResult {
+  entries: FileEntry[];
+}

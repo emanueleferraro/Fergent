@@ -50,6 +50,155 @@ async fn start_stack() -> (tempfile::TempDir, SocketPath, ServerHandle, Arc<Kern
 }
 
 #[tokio::test(flavor = "multi_thread")]
+async fn file_operations_over_ipc() {
+    let (dir, socket, handle, _kernel) = start_stack().await;
+    let client = KernelClient::connect(&socket).await.unwrap();
+
+    let workspace = dir.path().join("workspace");
+    std::fs::create_dir_all(&workspace).unwrap();
+    let opened = client
+        .call(
+            "project.open",
+            json!({ "path": workspace.to_string_lossy() }),
+        )
+        .await
+        .unwrap();
+    let id = opened["project"]["id"].as_str().unwrap().to_string();
+
+    // Writes are refused until the project is trusted.
+    let err = client
+        .call(
+            "file.write",
+            json!({ "project_id": id, "path": "a.txt", "content": "one\n" }),
+        )
+        .await
+        .unwrap_err();
+    match err {
+        fergents_api::ApiError::Rpc { code, .. } => {
+            assert_eq!(code, ErrorCode::ProjectUntrusted.as_i32())
+        }
+        other => panic!("unexpected error: {other:?}"),
+    }
+
+    client
+        .call(
+            "project.trust",
+            json!({ "project_id": id, "trusted": true }),
+        )
+        .await
+        .unwrap();
+
+    // --- write / read -----------------------------------------------------
+    let written = client
+        .call(
+            "file.write",
+            json!({ "project_id": id, "path": "a.txt", "content": "one\n" }),
+        )
+        .await
+        .unwrap();
+    let etag = written["file"]["etag"].as_str().unwrap().to_string();
+    assert_eq!(written["file"]["language_id"], json!("plaintext"));
+
+    let read = client
+        .call("file.read", json!({ "project_id": id, "path": "a.txt" }))
+        .await
+        .unwrap();
+    assert_eq!(read["file"]["content"], json!("one\n"));
+    assert_eq!(read["file"]["etag"], json!(etag));
+
+    // --- stale etag -------------------------------------------------------
+    let err = client
+        .call(
+            "file.write",
+            json!({
+                "project_id": id,
+                "path": "a.txt",
+                "content": "two\n",
+                "base_etag": "deadbeef"
+            }),
+        )
+        .await
+        .unwrap_err();
+    match err {
+        fergents_api::ApiError::Rpc { code, .. } => {
+            assert_eq!(code, ErrorCode::FileConflict.as_i32())
+        }
+        other => panic!("unexpected error: {other:?}"),
+    }
+
+    // --- mkdir / create / list / rename / delete --------------------------
+    client
+        .call("file.mkdir", json!({ "project_id": id, "path": "src" }))
+        .await
+        .unwrap();
+    client
+        .call(
+            "file.create",
+            json!({ "project_id": id, "path": "src/main.rs", "content": "fn main() {}\n" }),
+        )
+        .await
+        .unwrap();
+
+    let listed = client
+        .call("file.list", json!({ "project_id": id, "path": "" }))
+        .await
+        .unwrap();
+    let names: Vec<_> = listed["entries"]
+        .as_array()
+        .unwrap()
+        .iter()
+        .map(|entry| entry["name"].as_str().unwrap().to_string())
+        .collect();
+    assert_eq!(names, vec!["src", "a.txt"]);
+
+    let renamed = client
+        .call(
+            "file.rename",
+            json!({ "project_id": id, "from": "src/main.rs", "to": "src/lib.rs" }),
+        )
+        .await
+        .unwrap();
+    assert_eq!(renamed["entry"]["path"], json!("src/lib.rs"));
+
+    let stat = client
+        .call(
+            "file.stat",
+            json!({ "project_id": id, "path": "src/lib.rs" }),
+        )
+        .await
+        .unwrap();
+    assert_eq!(stat["entry"]["kind"], json!("file"));
+
+    let deleted = client
+        .call("file.delete", json!({ "project_id": id, "path": "src" }))
+        .await
+        .unwrap();
+    assert_eq!(deleted["deleted"], json!(true));
+
+    // --- guard ------------------------------------------------------------
+    client
+        .call(
+            "capability.set",
+            json!({ "id": "capability.ide", "enabled": false }),
+        )
+        .await
+        .unwrap();
+    let err = client
+        .call("file.list", json!({ "project_id": id }))
+        .await
+        .unwrap_err();
+    match err {
+        fergents_api::ApiError::Rpc { code, .. } => {
+            assert_eq!(code, ErrorCode::CapabilityDisabled.as_i32())
+        }
+        other => panic!("unexpected error: {other:?}"),
+    }
+
+    let _ = client.call("kernel.shutdown", json!({})).await;
+    handle.join().await.unwrap();
+}
+
+#[tokio::test(flavor = "multi_thread")]
 async fn project_lifecycle_over_ipc() {
     let (dir, socket, handle, _kernel) = start_stack().await;
     let client = KernelClient::connect(&socket).await.unwrap();

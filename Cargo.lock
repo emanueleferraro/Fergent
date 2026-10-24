@@ -1615,13 +1615,19 @@ dependencies = [
 name = "fergents-ide"
 version = "0.1.0"
 dependencies = [
+ "fergents-agents",
  "fergents-events",
+ "fergents-reversibility",
  "fergents-storage",
+ "hex",
  "ignore",
+ "notify",
  "serde",
  "serde_json",
+ "sha2",
  "tempfile",
  "thiserror 1.0.69",
+ "tokio",
  "ulid",
 ]
 

@@ -1432,7 +1432,11 @@ async fn dispatch(
                 kernel
                     .projects()
                     .open(&path)
-                    .map(|project| serde_json::json!({ "project": to_value(&project) }))
+                    .map(|project| {
+                        // Watch for external changes as soon as a project opens.
+                        let _ = kernel.files().watch(&project.id);
+                        serde_json::json!({ "project": to_value(&project) })
+                    })
                     .map_err(CoreError::from)
             })
             .await
@@ -1467,7 +1471,10 @@ async fn dispatch(
                 kernel
                     .projects()
                     .close(&project_id)
-                    .map(|closed| serde_json::json!({ "closed": closed }))
+                    .map(|closed| {
+                        kernel.files().unwatch(&project_id);
+                        serde_json::json!({ "closed": closed })
+                    })
                     .map_err(CoreError::from)
             })
             .await
@@ -1540,6 +1547,118 @@ async fn dispatch(
                     .projects()
                     .search(&project_id, &query, limit)
                     .map(|hits| serde_json::json!({ "hits": to_value(&hits) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.read" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .read(&project_id, &path)
+                    .map(|file| serde_json::json!({ "file": to_value(&file) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.write" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let content = required_str(&params, "content")?.to_string();
+            let base_etag = optional_str(&params, "base_etag").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .write(&project_id, &path, &content, base_etag.as_deref())
+                    .map(|file| serde_json::json!({ "file": to_value(&file) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.create" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let content = optional_str(&params, "content")
+                .unwrap_or_default()
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .create(&project_id, &path, &content)
+                    .map(|file| serde_json::json!({ "file": to_value(&file) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.mkdir" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .mkdir(&project_id, &path)
+                    .map(|entry| serde_json::json!({ "entry": to_value(&entry) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.rename" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let from = required_str(&params, "from")?.to_string();
+            let to = required_str(&params, "to")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .rename(&project_id, &from, &to)
+                    .map(|entry| serde_json::json!({ "entry": to_value(&entry) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.delete" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .delete(&project_id, &path)
+                    .map(|deleted| serde_json::json!({ "deleted": deleted }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.list" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = optional_str(&params, "path")
+                .unwrap_or_default()
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .list(&project_id, &path)
+                    .map(|entries| serde_json::json!({ "entries": to_value(&entries) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.stat" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .stat(&project_id, &path)
+                    .map(|entry| serde_json::json!({ "entry": to_value(&entry) }))
                     .map_err(CoreError::from)
             })
             .await
@@ -1945,6 +2064,7 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("permission.") => Some("capability.agents"),
         method if method.starts_with("backup.") => Some("capability.agents"),
         method if method.starts_with("project.") => Some("capability.ide"),
+        method if method.starts_with("file.") => Some("capability.ide"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
         method if method.starts_with("mcp.") => Some("capability.mcp"),
@@ -2088,6 +2208,9 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
         }
         CoreError::Project(fergents_ide::ProjectError::Untrusted(_)) => {
             (ErrorCode::ProjectUntrusted, err.to_string())
+        }
+        CoreError::Project(fergents_ide::ProjectError::Conflict(_)) => {
+            (ErrorCode::FileConflict, err.to_string())
         }
         CoreError::Project(_) => (ErrorCode::InvalidParams, err.to_string()),
         CoreError::Capability(cap) => {

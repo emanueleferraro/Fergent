@@ -60,6 +60,87 @@ fn project_mutation_roundtrip() {
 }
 
 #[test]
+fn file_roundtrip() {
+    assert_roundtrip::<FileSnapshot>(json!({
+        "path": "src/main.rs",
+        "content": "fn main() {}\n",
+        "etag": "a".repeat(64),
+        "size": 13,
+        "language_id": "rust",
+        "truncated": false,
+        "binary": false
+    }));
+    assert_roundtrip::<FileEntry>(json!({
+        "name": "main.rs",
+        "path": "src/main.rs",
+        "kind": "file",
+        "size": 13
+    }));
+    assert_roundtrip::<FileStat>(json!({
+        "path": "src/main.rs",
+        "kind": "file",
+        "size": 13,
+        "modified_at": 1792694626000_i64,
+        "etag": "a".repeat(64)
+    }));
+    assert_roundtrip::<FileReadParams>(json!({
+        "project_id": "01J9PROJECT",
+        "path": "src/main.rs"
+    }));
+    assert_roundtrip::<FileReadResult>(json!({ "file": {
+        "path": "src/main.rs",
+        "content": "fn main() {}\n",
+        "etag": "a".repeat(64),
+        "size": 13,
+        "language_id": "rust",
+        "truncated": false,
+        "binary": false
+    }}));
+}
+
+#[test]
+fn file_mutation_roundtrip() {
+    assert_roundtrip::<FileWriteParams>(json!({
+        "project_id": "01J9PROJECT",
+        "path": "src/main.rs",
+        "content": "fn main() {}\n",
+        "base_etag": "a".repeat(64)
+    }));
+    assert_roundtrip::<FileCreateParams>(json!({
+        "project_id": "01J9PROJECT",
+        "path": "src/new.rs",
+        "content": ""
+    }));
+    assert_roundtrip::<FilePathParams>(json!({
+        "project_id": "01J9PROJECT",
+        "path": "src/main.rs"
+    }));
+    assert_roundtrip::<FileRenameParams>(json!({
+        "project_id": "01J9PROJECT",
+        "from": "src/main.rs",
+        "to": "src/lib.rs"
+    }));
+    assert_roundtrip::<FileDeleteResult>(json!({ "deleted": true }));
+    assert_roundtrip::<FileListParams>(json!({
+        "project_id": "01J9PROJECT",
+        "path": "src"
+    }));
+    assert_roundtrip::<FileListResult>(json!({ "entries": [{
+        "name": "main.rs",
+        "path": "src/main.rs",
+        "kind": "file",
+        "size": 13
+    }]}));
+    assert_roundtrip::<FileStatResult>(json!({ "entry": {
+        "path": "src/main.rs",
+        "kind": "file",
+        "size": 13,
+        "modified_at": 1792694626000_i64,
+        "etag": "a".repeat(64)
+    }}));
+}
+
+#[test]
 fn project_query_roundtrip() {
     assert_roundtrip::<ProjectFilesParams>(json!({
         "project_id": "01J9PROJECT",

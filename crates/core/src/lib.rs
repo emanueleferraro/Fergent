@@ -28,7 +28,7 @@ use fergents_agents::{
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_chat::{ChatMessage, ChatService};
 use fergents_events::{now_ms, EventBus};
-use fergents_ide::ProjectService;
+use fergents_ide::{file_tools, FileService, ProjectService};
 use fergents_llm::{ChatRequest, MockProvider};
 use fergents_permissions::PermissionService;
 use fergents_protocol::{
@@ -154,6 +154,7 @@ pub struct Kernel {
     provider_service: Arc<ProviderService>,
     mcp_service: Arc<McpService>,
     projects: Arc<ProjectService>,
+    files: Arc<FileService>,
     subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
@@ -227,6 +228,14 @@ impl Kernel {
         let mcp_service = Arc::new(McpService::new(storage_for_mcp));
         let storage_for_projects: Arc<dyn Storage> = storage.clone();
         let projects = Arc::new(ProjectService::new(storage_for_projects, bus.clone()));
+        let files = Arc::new(FileService::new(
+            projects.clone(),
+            reversibility.clone(),
+            bus.clone(),
+        ));
+        for tool in file_tools(files.clone()) {
+            tools.register(tool);
+        }
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -253,6 +262,7 @@ impl Kernel {
             provider_service,
             mcp_service,
             projects,
+            files,
             subagents,
             started: Instant::now(),
             started_ms: now_ms(),
@@ -260,6 +270,8 @@ impl Kernel {
             providers: RwLock::new(Vec::new()),
         });
         kernel.reconcile_sessions()?;
+        // Resume watching every known project (file.changed events).
+        let _ = kernel.files.watch_all();
         kernel.bus.publish(
             "kernel.started",
             "kernel",
@@ -346,6 +358,11 @@ impl Kernel {
     /// The project layer (open, trust, file index, search).
     pub fn projects(&self) -> &ProjectService {
         self.projects.as_ref()
+    }
+
+    /// Project-scoped file operations, backups, and the external-change watcher.
+    pub fn files(&self) -> &FileService {
+        self.files.as_ref()
     }
 
     /// The sub-agent manager (async children, collect, cancel, handoff).

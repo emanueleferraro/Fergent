@@ -6767,6 +6767,47 @@ impl From<&FileChangedPayload> for FileChangedPayload {
         value.clone()
     }
 }
+#[doc = "Params of file.create."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileCreateParams\","]
+#[doc = "  \"description\": \"Params of file.create.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileCreateParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub content: Option<String>,
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&FileCreateParams> for FileCreateParams {
+    fn from(value: &FileCreateParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Payload of the file.created event."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -6796,6 +6837,37 @@ impl From<&FileCreatedPayload> for FileCreatedPayload {
         value.clone()
     }
 }
+#[doc = "Result of file.delete."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileDeleteResult\","]
+#[doc = "  \"description\": \"Result of file.delete.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"deleted\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"deleted\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileDeleteResult {
+    pub deleted: bool,
+}
+impl From<&FileDeleteResult> for FileDeleteResult {
+    fn from(value: &FileDeleteResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Payload of the file.deleted event."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -6822,6 +6894,344 @@ pub struct FileDeletedPayload {
 }
 impl From<&FileDeletedPayload> for FileDeletedPayload {
     fn from(value: &FileDeletedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One entry in a project directory listing."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileEntry\","]
+#[doc = "  \"description\": \"One entry in a project directory listing.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"kind\","]
+#[doc = "    \"name\","]
+#[doc = "    \"path\","]
+#[doc = "    \"size\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"type\": \"string\","]
+#[doc = "      \"enum\": ["]
+#[doc = "        \"file\","]
+#[doc = "        \"dir\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"size\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileEntry {
+    pub kind: FileEntryKind,
+    pub name: String,
+    pub path: String,
+    pub size: i64,
+}
+impl From<&FileEntry> for FileEntry {
+    fn from(value: &FileEntry) -> Self {
+        value.clone()
+    }
+}
+#[doc = "FileEntryKind"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"file\","]
+#[doc = "    \"dir\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum FileEntryKind {
+    #[serde(rename = "file")]
+    File,
+    #[serde(rename = "dir")]
+    Dir,
+}
+impl From<&FileEntryKind> for FileEntryKind {
+    fn from(value: &FileEntryKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for FileEntryKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::File => write!(f, "file"),
+            Self::Dir => write!(f, "dir"),
+        }
+    }
+}
+impl std::str::FromStr for FileEntryKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "file" => Ok(Self::File),
+            "dir" => Ok(Self::Dir),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for FileEntryKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for FileEntryKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for FileEntryKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params of file.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileListParams\","]
+#[doc = "  \"description\": \"Params of file.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileListParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    pub project_id: String,
+}
+impl From<&FileListParams> for FileListParams {
+    fn from(value: &FileListParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of file.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileListResult\","]
+#[doc = "  \"description\": \"Result of file.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"entries\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"entries\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/FileEntry\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileListResult {
+    pub entries: Vec<FileEntry>,
+}
+impl From<&FileListResult> for FileListResult {
+    fn from(value: &FileListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params carrying a project id and a path."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FilePathParams\","]
+#[doc = "  \"description\": \"Params carrying a project id and a path.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FilePathParams {
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&FilePathParams> for FilePathParams {
+    fn from(value: &FilePathParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of file.read."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileReadParams\","]
+#[doc = "  \"description\": \"Params of file.read.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileReadParams {
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&FileReadParams> for FileReadParams {
+    fn from(value: &FileReadParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of file.read."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileReadResult\","]
+#[doc = "  \"description\": \"Result of file.read.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"file\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"file\": {"]
+#[doc = "      \"$ref\": \"#/$defs/FileSnapshot\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileReadResult {
+    pub file: FileSnapshot,
+}
+impl From<&FileReadResult> for FileReadResult {
+    fn from(value: &FileReadResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of file.rename."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileRenameParams\","]
+#[doc = "  \"description\": \"Params of file.rename.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"from\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"to\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"from\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"to\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileRenameParams {
+    pub from: String,
+    pub project_id: String,
+    pub to: String,
+}
+impl From<&FileRenameParams> for FileRenameParams {
+    fn from(value: &FileRenameParams) -> Self {
         value.clone()
     }
 }
@@ -6856,6 +7266,309 @@ pub struct FileRenamedPayload {
 }
 impl From<&FileRenamedPayload> for FileRenamedPayload {
     fn from(value: &FileRenamedPayload) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A file read from a project (spec decision D2)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileSnapshot\","]
+#[doc = "  \"description\": \"A file read from a project (spec decision D2).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"binary\","]
+#[doc = "    \"content\","]
+#[doc = "    \"etag\","]
+#[doc = "    \"language_id\","]
+#[doc = "    \"path\","]
+#[doc = "    \"size\","]
+#[doc = "    \"truncated\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"binary\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"etag\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"language_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"size\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"truncated\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileSnapshot {
+    pub binary: bool,
+    pub content: String,
+    pub etag: String,
+    pub language_id: String,
+    pub path: String,
+    pub size: i64,
+    pub truncated: bool,
+}
+impl From<&FileSnapshot> for FileSnapshot {
+    fn from(value: &FileSnapshot) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Metadata for one project path."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileStat\","]
+#[doc = "  \"description\": \"Metadata for one project path.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"etag\","]
+#[doc = "    \"kind\","]
+#[doc = "    \"modified_at\","]
+#[doc = "    \"path\","]
+#[doc = "    \"size\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"etag\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"type\": \"string\","]
+#[doc = "      \"enum\": ["]
+#[doc = "        \"file\","]
+#[doc = "        \"dir\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"modified_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"size\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileStat {
+    pub etag: String,
+    pub kind: FileStatKind,
+    pub modified_at: i64,
+    pub path: String,
+    pub size: i64,
+}
+impl From<&FileStat> for FileStat {
+    fn from(value: &FileStat) -> Self {
+        value.clone()
+    }
+}
+#[doc = "FileStatKind"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"file\","]
+#[doc = "    \"dir\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum FileStatKind {
+    #[serde(rename = "file")]
+    File,
+    #[serde(rename = "dir")]
+    Dir,
+}
+impl From<&FileStatKind> for FileStatKind {
+    fn from(value: &FileStatKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for FileStatKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::File => write!(f, "file"),
+            Self::Dir => write!(f, "dir"),
+        }
+    }
+}
+impl std::str::FromStr for FileStatKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "file" => Ok(Self::File),
+            "dir" => Ok(Self::Dir),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for FileStatKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for FileStatKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for FileStatKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Result of file.stat, file.mkdir, and file.rename."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileStatResult\","]
+#[doc = "  \"description\": \"Result of file.stat, file.mkdir, and file.rename.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"entry\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"entry\": {"]
+#[doc = "      \"$ref\": \"#/$defs/FileStat\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileStatResult {
+    pub entry: FileStat,
+}
+impl From<&FileStatResult> for FileStatResult {
+    fn from(value: &FileStatResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of file.write."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileWriteParams\","]
+#[doc = "  \"description\": \"Params of file.write.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"base_etag\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileWriteParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub base_etag: Option<String>,
+    pub content: String,
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&FileWriteParams> for FileWriteParams {
+    fn from(value: &FileWriteParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of file.write and file.create."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"FileWriteResult\","]
+#[doc = "  \"description\": \"Result of file.write and file.create.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"file\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"file\": {"]
+#[doc = "      \"$ref\": \"#/$defs/FileSnapshot\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct FileWriteResult {
+    pub file: FileSnapshot,
+}
+impl From<&FileWriteResult> for FileWriteResult {
+    fn from(value: &FileWriteResult) -> Self {
         value.clone()
     }
 }
