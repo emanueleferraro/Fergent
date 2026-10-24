@@ -19,6 +19,10 @@ pub enum ErrorCode {
     StorageError,
     ShutdownInProgress,
     CapabilityDisabled,
+    /// The project exists but the user has not trusted it (Phase 3, decision D3).
+    ProjectUntrusted,
+    /// An optimistic-concurrency write conflict (Phase 3, decision D2).
+    FileConflict,
 }
 
 impl ErrorCode {
@@ -36,6 +40,8 @@ impl ErrorCode {
             ErrorCode::StorageError => -32004,
             ErrorCode::ShutdownInProgress => -32005,
             ErrorCode::CapabilityDisabled => -32006,
+            ErrorCode::ProjectUntrusted => -32007,
+            ErrorCode::FileConflict => -32008,
         }
     }
 }
@@ -63,5 +69,7 @@ mod tests {
         assert_eq!(ErrorCode::StorageError.as_i32(), -32004);
         assert_eq!(ErrorCode::ShutdownInProgress.as_i32(), -32005);
         assert_eq!(ErrorCode::CapabilityDisabled.as_i32(), -32006);
+        assert_eq!(ErrorCode::ProjectUntrusted.as_i32(), -32007);
+        assert_eq!(ErrorCode::FileConflict.as_i32(), -32008);
     }
 }

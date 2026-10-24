@@ -1,4 +1,4 @@
-﻿[workspace]
+[workspace]
 resolver = "2"
 members = [
     "crates/protocol",
@@ -13,6 +13,7 @@ members = [
     "crates/reversibility",
     "crates/chat",
     "crates/secrets",
+    "crates/ide",
     "crates/api",
     "crates/supervisor",
     "crates/markdown",
@@ -53,6 +54,7 @@ fergents-permissions = { path = "crates/permissions", version = "0.1.0" }
 fergents-reversibility = { path = "crates/reversibility", version = "0.1.0" }
 fergents-chat = { path = "crates/chat", version = "0.1.0" }
 fergents-secrets = { path = "crates/secrets", version = "0.1.0" }
+fergents-ide = { path = "crates/ide", version = "0.1.0" }
 fergents-api = { path = "crates/api", version = "0.1.0" }
 fergents-supervisor = { path = "crates/supervisor", version = "0.1.0" }
 fergents-markdown = { path = "crates/markdown", version = "0.1.0" }

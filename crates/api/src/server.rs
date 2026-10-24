@@ -1425,6 +1425,125 @@ async fn dispatch(
             })
             .await
         }
+        "project.open" => {
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .open(&path)
+                    .map(|project| serde_json::json!({ "project": to_value(&project) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "project.list" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .list()
+                    .map(|projects| serde_json::json!({ "projects": to_value(&projects) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "project.get" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .get(&project_id)
+                    .map(|project| serde_json::json!({ "project": to_value(&project) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "project.close" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .close(&project_id)
+                    .map(|closed| serde_json::json!({ "closed": closed }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "project.trust" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let trusted = params
+                .get("trusted")
+                .and_then(Value::as_bool)
+                .ok_or((ErrorCode::InvalidParams, "missing trusted".to_string()))?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .set_trust(&project_id, trusted)
+                    .map(|project| serde_json::json!({ "project": to_value(&project) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "project.update" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let name = optional_str(&params, "name").map(str::to_string);
+            let brain_id = params
+                .get("brain_id")
+                .map(|value| value.as_str().map(str::to_string));
+            let settings = params
+                .get("settings")
+                .filter(|value| !value.is_null())
+                .cloned();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .update(&project_id, name.as_deref(), brain_id, settings)
+                    .map(|project| serde_json::json!({ "project": to_value(&project) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "project.files" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let query = optional_str(&params, "query")
+                .unwrap_or_default()
+                .to_string();
+            let limit = params
+                .get("limit")
+                .and_then(Value::as_u64)
+                .map(|v| v as usize);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .files(&project_id, &query, limit)
+                    .map(|files| serde_json::json!({ "files": files }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "project.search" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let query = required_str(&params, "query")?.to_string();
+            let limit = params
+                .get("limit")
+                .and_then(Value::as_u64)
+                .map(|v| v as usize);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .search(&project_id, &query, limit)
+                    .map(|hits| serde_json::json!({ "hits": to_value(&hits) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "secret.list" => {
             let kernel = kernel.clone();
             run_blocking(move || {
@@ -1825,6 +1944,7 @@ fn required_capability(method: &str) -> Option<&'static str> {
         | "run.reject" => Some("capability.spec-workflow"),
         method if method.starts_with("permission.") => Some("capability.agents"),
         method if method.starts_with("backup.") => Some("capability.agents"),
+        method if method.starts_with("project.") => Some("capability.ide"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
         method if method.starts_with("mcp.") => Some("capability.mcp"),
@@ -1963,6 +2083,13 @@ where
 fn map_core_error(err: CoreError) -> (ErrorCode, String) {
     match &err {
         CoreError::Storage(_) => (ErrorCode::StorageError, err.to_string()),
+        CoreError::Project(fergents_ide::ProjectError::Storage(_)) => {
+            (ErrorCode::StorageError, err.to_string())
+        }
+        CoreError::Project(fergents_ide::ProjectError::Untrusted(_)) => {
+            (ErrorCode::ProjectUntrusted, err.to_string())
+        }
+        CoreError::Project(_) => (ErrorCode::InvalidParams, err.to_string()),
         CoreError::Capability(cap) => {
             let code = if matches!(cap, fergents_capabilities::CapabilityError::Disabled(_)) {
                 ErrorCode::CapabilityDisabled

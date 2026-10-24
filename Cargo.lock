@@ -1458,6 +1458,7 @@ dependencies = [
  "fergents-core",
  "fergents-events",
  "fergents-graph",
+ "fergents-ide",
  "fergents-index",
  "fergents-permissions",
  "fergents-protocol",
@@ -1554,6 +1555,7 @@ dependencies = [
  "fergents-chat",
  "fergents-events",
  "fergents-graph",
+ "fergents-ide",
  "fergents-index",
  "fergents-llm",
  "fergents-mcp",
@@ -1606,6 +1608,20 @@ dependencies = [
  "tempfile",
  "thiserror 1.0.69",
  "tokenizers",
+ "ulid",
+]
+
+[[package]]
+name = "fergents-ide"
+version = "0.1.0"
+dependencies = [
+ "fergents-events",
+ "fergents-storage",
+ "ignore",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror 1.0.69",
  "ulid",
 ]
 

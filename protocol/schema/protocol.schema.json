@@ -3005,6 +3005,202 @@
         "role": { "type": "string" },
         "seq": { "type": "integer", "format": "int64" }
       }
+    },
+    "TrustState": {
+      "title": "TrustState",
+      "description": "Whether a project may run code (spec decision D3).",
+      "type": "string",
+      "enum": ["untrusted", "trusted"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "An opened code workspace (spec Appendix B).",
+      "type": "object",
+      "required": [
+        "id",
+        "path",
+        "name",
+        "vcs",
+        "brain_id",
+        "trust",
+        "settings",
+        "last_opened_at",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "path": { "type": "string" },
+        "name": { "type": "string" },
+        "vcs": { "type": ["string", "null"] },
+        "brain_id": { "type": ["string", "null"] },
+        "trust": { "$ref": "#/$defs/TrustState" },
+        "settings": { "description": "Free-form project settings." },
+        "last_opened_at": { "type": "integer", "format": "int64" },
+        "created_at": { "type": "integer", "format": "int64" },
+        "updated_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "ProjectOpenParams": {
+      "title": "ProjectOpenParams",
+      "description": "Params of project.open.",
+      "type": "object",
+      "required": ["path"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" }
+      }
+    },
+    "ProjectOpenResult": {
+      "title": "ProjectOpenResult",
+      "description": "Result of project.open.",
+      "type": "object",
+      "required": ["project"],
+      "additionalProperties": false,
+      "properties": {
+        "project": { "$ref": "#/$defs/Project" }
+      }
+    },
+    "ProjectListResult": {
+      "title": "ProjectListResult",
+      "description": "Result of project.list.",
+      "type": "object",
+      "required": ["projects"],
+      "additionalProperties": false,
+      "properties": {
+        "projects": { "type": "array", "items": { "$ref": "#/$defs/Project" } }
+      }
+    },
+    "ProjectIdParams": {
+      "title": "ProjectIdParams",
+      "description": "Params carrying a project id.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" }
+      }
+    },
+    "ProjectGetResult": {
+      "title": "ProjectGetResult",
+      "description": "Result of project.get.",
+      "type": "object",
+      "required": ["project"],
+      "additionalProperties": false,
+      "properties": {
+        "project": { "anyOf": [{ "$ref": "#/$defs/Project" }, { "type": "null" }] }
+      }
+    },
+    "ProjectCloseResult": {
+      "title": "ProjectCloseResult",
+      "description": "Result of project.close.",
+      "type": "object",
+      "required": ["closed"],
+      "additionalProperties": false,
+      "properties": {
+        "closed": { "type": "boolean" }
+      }
+    },
+    "ProjectTrustParams": {
+      "title": "ProjectTrustParams",
+      "description": "Params of project.trust.",
+      "type": "object",
+      "required": ["project_id", "trusted"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "trusted": { "type": "boolean" }
+      }
+    },
+    "ProjectTrustResult": {
+      "title": "ProjectTrustResult",
+      "description": "Result of project.trust.",
+      "type": "object",
+      "required": ["project"],
+      "additionalProperties": false,
+      "properties": {
+        "project": { "$ref": "#/$defs/Project" }
+      }
+    },
+    "ProjectUpdateParams": {
+      "title": "ProjectUpdateParams",
+      "description": "Params of project.update.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "name": { "type": ["string", "null"] },
+        "brain_id": { "type": ["string", "null"] },
+        "settings": { "description": "Replacement settings object." }
+      }
+    },
+    "ProjectUpdateResult": {
+      "title": "ProjectUpdateResult",
+      "description": "Result of project.update.",
+      "type": "object",
+      "required": ["project"],
+      "additionalProperties": false,
+      "properties": {
+        "project": { "$ref": "#/$defs/Project" }
+      }
+    },
+    "ProjectFilesParams": {
+      "title": "ProjectFilesParams",
+      "description": "Params of project.files.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "query": { "type": "string" },
+        "limit": { "type": ["integer", "null"] }
+      }
+    },
+    "ProjectFilesResult": {
+      "title": "ProjectFilesResult",
+      "description": "Result of project.files.",
+      "type": "object",
+      "required": ["files"],
+      "additionalProperties": false,
+      "properties": {
+        "files": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ProjectSearchHit": {
+      "title": "ProjectSearchHit",
+      "description": "One text-search hit.",
+      "type": "object",
+      "required": ["path", "line", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "line": { "type": "integer", "format": "uint32" },
+        "text": { "type": "string" }
+      }
+    },
+    "ProjectSearchParams": {
+      "title": "ProjectSearchParams",
+      "description": "Params of project.search.",
+      "type": "object",
+      "required": ["project_id", "query"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "query": { "type": "string" },
+        "limit": { "type": ["integer", "null"] }
+      }
+    },
+    "ProjectSearchResult": {
+      "title": "ProjectSearchResult",
+      "description": "Result of project.search.",
+      "type": "object",
+      "required": ["hits"],
+      "additionalProperties": false,
+      "properties": {
+        "hits": { "type": "array", "items": { "$ref": "#/$defs/ProjectSearchHit" } }
+      }
     }
   }
 }
