@@ -3664,3 +3664,164 @@ export interface GitRemoteResult {
   operation: string;
   output: string;
 }
+
+/**
+ * One file of a Composer proposal: the current text, the proposed text, and their hunks.
+ */
+export interface ComposerFile {
+  path: string;
+  language_id: string;
+  original: string;
+  proposed: string;
+  binary: boolean;
+  hunks: GitDiffHunk[];
+  additions: number;
+  deletions: number;
+}
+
+/**
+ * Lifecycle of a Composer run.
+ */
+export type ComposerState = 'proposed' | 'applied' | 'rejected' | 'failed';
+
+/**
+ * A multi-file edit proposal and its outcome.
+ */
+export interface ComposerRun {
+  id: string;
+  project_id: string;
+  prompt: string;
+  /**
+   * The model's short explanation of the proposal.
+   */
+  message: string;
+  state: ComposerState;
+  model: string;
+  files: ComposerFile[];
+  additions: number;
+  deletions: number;
+  error?: string | null;
+  created_at: number;
+  updated_at: number;
+}
+
+/**
+ * Params of composer.start.
+ */
+export interface ComposerStartParams {
+  project_id: string;
+  prompt: string;
+  paths?: string[] | null;
+  active_path?: string | null;
+  selection?: string | null;
+  model?: string | null;
+}
+
+/**
+ * Result of composer.start.
+ */
+export interface ComposerStartResult {
+  run: ComposerRun;
+}
+
+/**
+ * Params of composer.get, composer.apply, composer.reject, and composer.cancel.
+ */
+export interface ComposerRunParams {
+  run_id: string;
+}
+
+/**
+ * Result of composer.get and composer.reject.
+ */
+export interface ComposerRunResult {
+  run: ComposerRun;
+}
+
+/**
+ * Params of composer.apply: the run and the accepted hunk ids.
+ */
+export interface ComposerApplyParams {
+  run_id: string;
+  accepted: string[];
+}
+
+/**
+ * One file written by composer.apply.
+ */
+export interface ComposerAppliedFile {
+  path: string;
+  etag: string;
+}
+
+/**
+ * Result of composer.apply.
+ */
+export interface ComposerApplyResult {
+  run: ComposerRun;
+  applied: ComposerAppliedFile[];
+}
+
+/**
+ * Result of composer.cancel.
+ */
+export interface ComposerCancelResult {
+  cancelled: boolean;
+}
+
+/**
+ * Params of inline.complete. The client sends the text around the cursor; the kernel never reads the buffer.
+ */
+export interface InlineCompleteParams {
+  project_id: string;
+  path: string;
+  prefix: string;
+  suffix: string;
+  language_id?: string | null;
+  model?: string | null;
+  max_tokens?: number | null;
+  request_id?: string | null;
+}
+
+/**
+ * Result of inline.complete.
+ */
+export interface InlineCompleteResult {
+  suggestion: string;
+  model: string;
+  latency_ms: number;
+  cancelled: boolean;
+}
+
+/**
+ * Params of inline.cancel.
+ */
+export interface InlineCancelParams {
+  request_id: string;
+}
+
+/**
+ * Result of inline.cancel.
+ */
+export interface InlineCancelResult {
+  cancelled: boolean;
+}
+
+/**
+ * Params of inline.action: a quick action over the current selection.
+ */
+export interface InlineActionParams {
+  project_id: string;
+  path: string;
+  action: 'explain' | 'refactor' | 'tests' | 'document' | 'fix';
+  selection: string;
+  instruction?: string | null;
+  model?: string | null;
+}
+
+/**
+ * Result of inline.action: a Composer run holding the proposal (possibly empty for explain).
+ */
+export interface InlineActionResult {
+  run: ComposerRun;
+}

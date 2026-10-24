@@ -107,6 +107,7 @@ export function App(): ReactElement {
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [idePanel, setIdePanel] = useState<IdePanel>('none');
   const [showScm, setShowScm] = useState(false);
+  const [showComposer, setShowComposer] = useState(false);
   const [showChat, setShowChat] = useState(true);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
@@ -143,6 +144,17 @@ export function App(): ReactElement {
 
   const toggleIdePanel = useCallback((panel: Exclude<IdePanel, 'none'>) => {
     setIdePanel((current) => (current === panel ? 'none' : panel));
+  }, []);
+
+  // The right rail shows one panel at a time.
+  const toggleScm = useCallback(() => {
+    setShowScm((shown) => !shown);
+    setShowComposer(false);
+  }, []);
+
+  const toggleComposer = useCallback(() => {
+    setShowComposer((shown) => !shown);
+    setShowScm(false);
   }, []);
 
   const selectTab = useCallback(
@@ -219,11 +231,21 @@ export function App(): ReactElement {
       jumpToTab,
       toggleProblems: () => toggleIdePanel('problems'),
       toggleTerminal: () => toggleIdePanel('terminal'),
-      toggleScm: () => setShowScm((shown) => !shown),
+      toggleScm,
       toggleChat: () => setShowChat((shown) => !shown),
+      toggleComposer,
       addToChat,
     }),
-    [addToChat, editor, formatDocument, jumpToTab, selectTab, toggleIdePanel],
+    [
+      addToChat,
+      editor,
+      formatDocument,
+      jumpToTab,
+      selectTab,
+      toggleComposer,
+      toggleIdePanel,
+      toggleScm,
+    ],
   );
 
   const paletteCommands = useMemo(() => [...commands, ...ideCommands(ideActions)], [ideActions]);
@@ -308,7 +330,9 @@ export function App(): ReactElement {
       panel={idePanel}
       onPanelChange={setIdePanel}
       showScm={showScm}
-      onToggleScm={() => setShowScm((shown) => !shown)}
+      onToggleScm={toggleScm}
+      showComposer={showComposer}
+      onToggleComposer={toggleComposer}
     />
   );
 

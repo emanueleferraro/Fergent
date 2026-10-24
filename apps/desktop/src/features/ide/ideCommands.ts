@@ -23,6 +23,8 @@ export interface IdeActions {
   toggleScm(): void;
   /** Show or hide the chat pane beside the IDE (`Ctrl+\`). */
   toggleChat(): void;
+  /** Show or hide the Composer panel. */
+  toggleComposer(): void;
   /** Append the active file to the chat draft (`@path`). */
   addToChat(): void;
 }
@@ -71,6 +73,12 @@ export function ideCommands(actions: IdeActions): Command[] {
       groupKey: 'palette.group.ide',
       shortcut: 'Ctrl+\\',
       run: () => actions.toggleChat(),
+    },
+    {
+      id: 'ide.toggleComposer',
+      titleKey: 'ide.command.composer',
+      groupKey: 'palette.group.ide',
+      run: () => actions.toggleComposer(),
     },
   ];
   if (!actions.hasDocument) {

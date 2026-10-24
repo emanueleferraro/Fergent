@@ -48,6 +48,7 @@ vi.mock('../editor/monaco', () => ({
     },
     languages: {
       registerHoverProvider: () => ({ dispose: () => undefined }),
+      registerInlineCompletionsProvider: () => ({ dispose: () => undefined }),
     },
   }),
 }));

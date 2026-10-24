@@ -13,9 +13,13 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import type {
   AgentDefinition,
+  CapabilityView,
   ChatCompareStartResult,
   ChatMessage,
   ChatSession,
+  ComposerAppliedFile,
+  ComposerFile,
+  ComposerRun,
   Event,
   GitBlameLine,
   GitBranch,
@@ -169,6 +173,17 @@ export class MockKernelClient implements KernelClient {
     },
   ];
   private mockSeq = 0;
+  private mockComposerRuns = new Map<string, ComposerRun>();
+  private mockCapabilities = new Map<string, boolean>([
+    ['capability.ide', true],
+    ['capability.lsp', true],
+    ['capability.terminal', true],
+    ['capability.git', true],
+    ['capability.git-remote', false],
+    ['capability.llm', true],
+    ['capability.composer', true],
+    ['capability.inline-ai', false],
+  ]);
 
   constructor(options: MockKernelClientOptions = {}) {
     this.healthSnapshot = options.health ?? DEFAULT_HEALTH;
@@ -308,6 +323,68 @@ export class MockKernelClient implements KernelClient {
         return { lines: this.mockBlame(projectId, String(payload.path ?? '')) };
       case 'git.conflicts':
         return { conflicts: [] };
+      case 'composer.start':
+        return { run: this.mockComposerStart(projectId, payload) };
+      case 'composer.get': {
+        const run = this.mockComposerRuns.get(String(payload.run_id));
+        if (run === undefined) {
+          throw new Error('unknown composer run');
+        }
+        return { run };
+      }
+      case 'composer.apply': {
+        const run = this.mockComposerRuns.get(String(payload.run_id));
+        if (run === undefined) {
+          throw new Error('unknown composer run');
+        }
+        const accepted = Array.isArray(payload.accepted) ? payload.accepted.map(String) : [];
+        const applied: ComposerAppliedFile[] = [];
+        for (const file of run.files) {
+          const ids = file.hunks.map((_, index) => `${file.path}:${index}`);
+          if (!ids.some((id) => accepted.includes(id))) {
+            continue;
+          }
+          this.mockProjectContents.set(`${run.project_id}:${file.path}`, file.proposed);
+          applied.push({ path: file.path, etag: `mock-${file.proposed.length}` });
+        }
+        if (applied.length === 0) {
+          throw new Error('no hunks accepted');
+        }
+        run.state = 'applied';
+        run.updated_at = Date.now();
+        return { run, applied };
+      }
+      case 'composer.reject': {
+        const run = this.mockComposerRuns.get(String(payload.run_id));
+        if (run === undefined) {
+          throw new Error('unknown composer run');
+        }
+        run.state = 'rejected';
+        run.updated_at = Date.now();
+        return { run };
+      }
+      case 'composer.cancel': {
+        const run = this.mockComposerRuns.get(String(payload.run_id));
+        if (run === undefined) {
+          throw new Error('unknown composer run');
+        }
+        const cancelled = run.state === 'proposed';
+        if (cancelled) {
+          run.state = 'rejected';
+        }
+        return { cancelled };
+      }
+      case 'inline.complete':
+        return {
+          suggestion: '// mock completion',
+          model: 'mock-1',
+          latency_ms: 1,
+          cancelled: false,
+        };
+      case 'inline.cancel':
+        return { cancelled: true };
+      case 'inline.action':
+        return { run: this.mockComposerStart(projectId, payload) };
       case 'git.resolve':
         return { resolved: true };
       case 'file.read':
@@ -399,9 +476,11 @@ export class MockKernelClient implements KernelClient {
         return { ok: index >= 0 };
       }
       case 'capability.list':
-        return { capabilities: [] };
-      case 'capability.set':
+        return { capabilities: this.mockCapabilityViews() };
+      case 'capability.set': {
+        this.mockCapabilities.set(String(payload.id ?? ''), payload.enabled === true);
         return null;
+      }
       case 'graph.query':
         return { rows: [] };
       case 'agent.list':
@@ -725,6 +804,90 @@ export class MockKernelClient implements KernelClient {
         time: head.time,
         content: line,
       }));
+  }
+
+  private mockCapabilityViews(): CapabilityView[] {
+    const names: Record<string, string> = {
+      'capability.ide': 'IDE',
+      'capability.lsp': 'Language Servers',
+      'capability.terminal': 'Terminal',
+      'capability.git': 'Git',
+      'capability.git-remote': 'Git Remote',
+      'capability.llm': 'LLM Router',
+      'capability.composer': 'Composer',
+      'capability.inline-ai': 'Inline AI',
+    };
+    const dependencies: Record<string, string[]> = {
+      'capability.lsp': ['capability.ide'],
+      'capability.terminal': ['capability.ide'],
+      'capability.git': ['capability.ide'],
+      'capability.git-remote': ['capability.git'],
+      'capability.composer': ['capability.ide', 'capability.agents'],
+      'capability.inline-ai': ['capability.ide', 'capability.llm'],
+    };
+    return [...this.mockCapabilities].map(([id, enabled]) => ({
+      id,
+      name: names[id] ?? id,
+      version: '0.1.0',
+      source: 'kernel',
+      description: null,
+      dependencies: dependencies[id] ?? [],
+      resources: [],
+      enabled,
+      default_enabled: id !== 'capability.inline-ai' && id !== 'capability.git-remote',
+      hot_toggle: true,
+      restart_required: false,
+      config: {},
+    }));
+  }
+
+  private mockComposerStart(projectId: string, payload: Record<string, unknown>): ComposerRun {
+    const explicit = typeof payload.active_path === 'string' ? payload.active_path : '';
+    const requested = typeof payload.path === 'string' ? payload.path : '';
+    const active = explicit !== '' ? explicit : requested;
+    const path = active === '' ? 'README.md' : active;
+    const original = this.mockProjectContents.get(`${projectId}:${path}`) ?? '';
+    const lines = original === '' ? [] : original.split('\n');
+    const insertAt = original === '' ? 0 : lines.length - (original.endsWith('\n') ? 1 : 0);
+    const proposed = `${original}${original !== '' && !original.endsWith('\n') ? '\n' : ''}// Added by the mock Composer\n`;
+    const file: ComposerFile = {
+      path,
+      language_id: mockLanguage(path),
+      original,
+      proposed,
+      binary: false,
+      hunks: [
+        {
+          old_start: insertAt,
+          old_lines: 0,
+          new_start: insertAt + 1,
+          new_lines: 1,
+          header: `@@ -${insertAt},0 +${insertAt + 1},1 @@`,
+          lines: [
+            { kind: 'add', new_line: insertAt + 1, content: '// Added by the mock Composer' },
+          ],
+        },
+      ],
+      additions: 1,
+      deletions: 0,
+    };
+    const now = Date.now();
+    const run: ComposerRun = {
+      id: `composer-${++this.mockSeq}`,
+      project_id: projectId,
+      prompt: String(payload.prompt ?? ''),
+      message: 'Add a mock comment',
+      state: 'proposed',
+      model: 'mock-1',
+      files: [file],
+      additions: 1,
+      deletions: 0,
+      error: null,
+      created_at: now,
+      updated_at: now,
+    };
+    this.mockComposerRuns.set(run.id, run);
+    return run;
   }
 
   private mockReadFile(projectId: string, path: string): unknown {

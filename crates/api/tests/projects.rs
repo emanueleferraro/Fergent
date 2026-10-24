@@ -57,6 +57,8 @@ async fn disable_ide(client: &KernelClient) {
         "capability.git",
         "capability.terminal",
         "capability.lsp",
+        "capability.composer",
+        "capability.inline-ai",
         "capability.ide",
     ] {
         client

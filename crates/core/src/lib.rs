@@ -5,10 +5,17 @@
 //! server dispatches to (`ARCHITECTURE.md` §3.2).
 
 mod brains;
+mod composer;
+mod inline;
 mod mcp;
 mod providers;
 mod subagents;
 
+pub use composer::{
+    apply_hunks, diff_hunks, CompletionClient, ComposerError, ComposerService, ModelResolver,
+    ProposalRequest,
+};
+pub use inline::{CompleteRequest, InlineError, InlineService};
 pub use mcp::{McpHealth, McpServerRecord, McpService, McpServiceError, McpTest, McpTool};
 pub use subagents::{SubAgentError, SubAgentManager, SubAgentRecord};
 
@@ -97,6 +104,12 @@ pub enum CoreError {
     /// A git failure.
     #[error(transparent)]
     Git(#[from] fergents_git::GitError),
+    /// A Composer failure.
+    #[error(transparent)]
+    Composer(#[from] ComposerError),
+    /// An Inline AI failure.
+    #[error(transparent)]
+    Inline(#[from] InlineError),
 }
 
 /// Kernel configuration.
@@ -170,6 +183,8 @@ pub struct Kernel {
     lsp: Arc<LspService>,
     terminal: Arc<TerminalService>,
     git: Arc<GitService>,
+    composer: Arc<ComposerService>,
+    inline: Arc<InlineService>,
     subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
@@ -251,6 +266,26 @@ impl Kernel {
         for tool in file_tools(files.clone()) {
             tools.register(tool);
         }
+        // Composer and Inline AI share one completion surface and one model
+        // resolver (task routes first, then the first configured provider).
+        let completion: Arc<dyn CompletionClient> = Arc::new(RegistryCompletion {
+            providers: provider_service.clone(),
+        });
+        let model_for = task_model_resolver(provider_service.clone());
+        let composer = Arc::new(ComposerService::new(
+            projects.clone(),
+            files.clone(),
+            bus.clone(),
+            completion.clone(),
+            model_for.clone(),
+        ));
+        let inline = Arc::new(InlineService::new(
+            projects.clone(),
+            composer.clone(),
+            completion,
+            model_for,
+            bus.clone(),
+        ));
         let lsp = Arc::new(LspService::new(
             storage.clone(),
             bus.clone(),
@@ -301,6 +336,8 @@ impl Kernel {
             lsp,
             terminal,
             git,
+            composer,
+            inline,
             subagents,
             started: Instant::now(),
             started_ms: now_ms(),
@@ -418,6 +455,16 @@ impl Kernel {
     /// Repository status, diffs, commits, branches, and history.
     pub fn git(&self) -> &GitService {
         self.git.as_ref()
+    }
+
+    /// The Composer: model-authored multi-file proposals with per-hunk approval.
+    pub fn composer(&self) -> &ComposerService {
+        self.composer.as_ref()
+    }
+
+    /// Inline AI: bounded completions and selection quick actions.
+    pub fn inline(&self) -> &InlineService {
+        self.inline.as_ref()
     }
 
     /// The sub-agent manager (async children, collect, cancel, handoff).
@@ -756,6 +803,48 @@ pub fn default_data_dir() -> PathBuf {
         .or_else(|_| std::env::var("USERPROFILE"))
         .unwrap_or_else(|_| ".".to_string());
     PathBuf::from(home).join(".fergents")
+}
+
+/// The completion surface backed by the provider registry.
+struct RegistryCompletion {
+    providers: Arc<ProviderService>,
+}
+
+impl CompletionClient for RegistryCompletion {
+    fn complete<'a>(
+        &'a self,
+        model: &'a str,
+        request: ChatRequest,
+    ) -> std::pin::Pin<Box<dyn std::future::Future<Output = Result<String, String>> + Send + 'a>>
+    {
+        Box::pin(async move {
+            self.providers
+                .complete(model, request)
+                .await
+                .map(|response| response.text())
+                .map_err(|err| err.to_string())
+        })
+    }
+}
+
+/// Resolve a model for a task: its route first, then the first provider model.
+fn task_model_resolver(providers: Arc<ProviderService>) -> ModelResolver {
+    Arc::new(move |task: &str| {
+        if let Ok(routes) = providers.routes() {
+            if let Some(model) = routes
+                .into_iter()
+                .find(|route| route.task == task)
+                .and_then(|route| route.models.into_iter().next())
+            {
+                return Some(model);
+            }
+        }
+        providers
+            .list()
+            .ok()?
+            .into_iter()
+            .find_map(|config| config.models.into_iter().next())
+    })
 }
 
 #[cfg(test)]

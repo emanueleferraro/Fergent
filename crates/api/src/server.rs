@@ -10,12 +10,13 @@ use fergents_protocol::{
     BrainArchiveParams, BrainAttachParams, BrainCloseParams, BrainCreateParams, BrainDeleteParams,
     BrainDetachParams, BrainDuplicateParams, BrainExportParams, BrainGetParams, BrainImportParams,
     BrainListParams, BrainMoveParams, BrainOpenParams, BrainReindexParams, BrainTemplateSaveParams,
-    BrainUnarchiveParams, BrainUpdateParams, DailyOpenParams, DocWriteParams, ErrorCode,
-    ErrorResponse, GraphAlgoParams, GraphEntitiesMergeParams, GraphNeighborsParams,
-    GraphQueryParams, GraphSubgraphParams, HelloParams, JsonRpcError, Notification, PingResult,
-    ReplayParams, Request, RequestId, Response, SearchQueryParams, SubscribeParams,
-    TemplateCreateParams, TemplateRenderParams, UnsubscribeParams, WelcomeResult, KERNEL_VERSION,
-    PROTOCOL_VERSION,
+    BrainUnarchiveParams, BrainUpdateParams, ComposerApplyParams, ComposerRunParams,
+    ComposerStartParams, DailyOpenParams, DocWriteParams, ErrorCode, ErrorResponse,
+    GraphAlgoParams, GraphEntitiesMergeParams, GraphNeighborsParams, GraphQueryParams,
+    GraphSubgraphParams, HelloParams, InlineActionParams, InlineCancelParams, InlineCompleteParams,
+    JsonRpcError, Notification, PingResult, ReplayParams, Request, RequestId, Response,
+    SearchQueryParams, SubscribeParams, TemplateCreateParams, TemplateRenderParams,
+    UnsubscribeParams, WelcomeResult, KERNEL_VERSION, PROTOCOL_VERSION,
 };
 use serde::Serialize;
 use serde_json::Value;
@@ -2384,6 +2385,99 @@ async fn dispatch(
             })
             .await
         }
+        "composer.start" => {
+            let p: ComposerStartParams = from_params(&params)?;
+            let run = kernel
+                .composer()
+                .propose(fergents_core::ProposalRequest {
+                    project_id: p.project_id,
+                    prompt: p.prompt,
+                    paths: p.paths.unwrap_or_default(),
+                    active_path: p.active_path,
+                    selection: p.selection,
+                    model: p.model,
+                })
+                .await
+                .map_err(|err| map_core_error(CoreError::Composer(err)))?;
+            Ok(serde_json::json!({ "run": to_value(&run) }))
+        }
+        "composer.get" => {
+            let p: ComposerRunParams = from_params(&params)?;
+            kernel
+                .composer()
+                .get(&p.run_id)
+                .map(|run| serde_json::json!({ "run": to_value(&run) }))
+                .map_err(|err| map_core_error(CoreError::Composer(err)))
+        }
+        "composer.apply" => {
+            let p: ComposerApplyParams = from_params(&params)?;
+            let (run, applied) = kernel
+                .composer()
+                .apply(&p.run_id, &p.accepted)
+                .map_err(|err| map_core_error(CoreError::Composer(err)))?;
+            Ok(serde_json::json!({
+                "run": to_value(&run),
+                "applied": to_value(&applied),
+            }))
+        }
+        "composer.reject" => {
+            let p: ComposerRunParams = from_params(&params)?;
+            kernel
+                .composer()
+                .reject(&p.run_id)
+                .map(|run| serde_json::json!({ "run": to_value(&run) }))
+                .map_err(|err| map_core_error(CoreError::Composer(err)))
+        }
+        "composer.cancel" => {
+            let p: ComposerRunParams = from_params(&params)?;
+            kernel
+                .composer()
+                .cancel(&p.run_id)
+                .map(|cancelled| serde_json::json!({ "cancelled": cancelled }))
+                .map_err(|err| map_core_error(CoreError::Composer(err)))
+        }
+        "inline.complete" => {
+            let p: InlineCompleteParams = from_params(&params)?;
+            let result = kernel
+                .inline()
+                .complete(fergents_core::CompleteRequest {
+                    project_id: p.project_id,
+                    path: p.path,
+                    prefix: p.prefix,
+                    suffix: p.suffix,
+                    language_id: p.language_id,
+                    model: p.model,
+                    max_tokens: p.max_tokens.map(|tokens| tokens.get() as u32),
+                    request_id: p.request_id,
+                })
+                .await
+                .map_err(|err| map_core_error(CoreError::Inline(err)))?;
+            Ok(to_value(&result))
+        }
+        "inline.cancel" => {
+            let p: InlineCancelParams = from_params(&params)?;
+            Ok(serde_json::json!({ "cancelled": kernel.inline().cancel(&p.request_id) }))
+        }
+        "inline.action" => {
+            let p: InlineActionParams = from_params(&params)?;
+            let action = p.action.to_string();
+            let run = kernel
+                .inline()
+                .action(
+                    fergents_core::ProposalRequest {
+                        project_id: p.project_id,
+                        prompt: p.instruction.unwrap_or_default(),
+                        paths: vec![p.path.clone()],
+                        active_path: Some(p.path),
+                        selection: Some(p.selection),
+                        model: p.model,
+                    },
+                    &action,
+                )
+                .await
+                .map_err(|err| map_core_error(CoreError::Inline(err)))?;
+            Ok(serde_json::json!({ "run": to_value(&run) }))
+        }
         "secret.list" => {
             let kernel = kernel.clone();
             run_blocking(move || {
@@ -2791,6 +2885,8 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("term.") => Some("capability.terminal"),
         "git.fetch" | "git.pull" | "git.push" => Some("capability.git-remote"),
         method if method.starts_with("git.") => Some("capability.git"),
+        method if method.starts_with("composer.") => Some("capability.composer"),
+        method if method.starts_with("inline.") => Some("capability.inline-ai"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
         method if method.starts_with("mcp.") => Some("capability.mcp"),
@@ -3041,6 +3137,29 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
         | CoreError::Mcp(
             fergents_core::McpServiceError::InvalidId(_)
             | fergents_core::McpServiceError::Unknown(_),
+        ) => (ErrorCode::InvalidParams, err.to_string()),
+        CoreError::Composer(fergents_core::ComposerError::Project(
+            fergents_ide::ProjectError::Untrusted(_),
+        ))
+        | CoreError::Inline(fergents_core::InlineError::Project(
+            fergents_ide::ProjectError::Untrusted(_),
+        )) => (ErrorCode::ProjectUntrusted, err.to_string()),
+        CoreError::Composer(fergents_core::ComposerError::Project(
+            fergents_ide::ProjectError::Conflict(_),
+        )) => (ErrorCode::FileConflict, err.to_string()),
+        CoreError::Composer(
+            fergents_core::ComposerError::UnknownRun(_)
+            | fergents_core::ComposerError::NotProposed(_, _)
+            | fergents_core::ComposerError::NoModel(_)
+            | fergents_core::ComposerError::InvalidProposal(_)
+            | fergents_core::ComposerError::NothingAccepted
+            | fergents_core::ComposerError::Project(_),
+        )
+        | CoreError::Inline(
+            fergents_core::InlineError::ContextTooLarge
+            | fergents_core::InlineError::NoModel(_)
+            | fergents_core::InlineError::Project(_)
+            | fergents_core::InlineError::Composer(_),
         ) => (ErrorCode::InvalidParams, err.to_string()),
         _ => (ErrorCode::InternalError, err.to_string()),
     }

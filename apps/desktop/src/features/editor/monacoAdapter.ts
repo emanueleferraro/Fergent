@@ -10,6 +10,17 @@ export interface MonacoModel {
   getValue(): string;
   setValue(value: string): void;
   dispose(): void;
+  getOffsetAt?(position: { lineNumber: number; column: number }): number;
+  getValueInRange?(range: unknown): string;
+}
+
+/** A Monaco selection range (one-based, as Monaco reports it). */
+export interface MonacoRange {
+  startLineNumber: number;
+  startColumn: number;
+  endLineNumber: number;
+  endColumn: number;
+  isEmpty?(): boolean;
 }
 
 /** The subset of a Monaco editor instance the adapter uses. */
@@ -21,6 +32,7 @@ export interface MonacoEditor {
   onDidChangeModelContent(listener: () => void): { dispose(): void };
   getValue(): string;
   getPosition(): { lineNumber: number; column: number } | null;
+  getSelection?(): MonacoRange | null;
   focus(): void;
   revealLineInCenter(line: number): void;
   setPosition(position: { lineNumber: number; column: number }): void;
@@ -33,6 +45,27 @@ export interface MonacoHoverProvider {
     model: MonacoModel,
     position: { lineNumber: number; column: number },
   ): Promise<{ contents: unknown[] } | null>;
+}
+
+/** One ghost-text suggestion returned by an inline completion provider. */
+export interface MonacoInlineItem {
+  insertText: string;
+}
+
+/** The inline completion list; `dispose` is Monaco's optional cleanup hook. */
+export interface MonacoInlineCompletions {
+  items: MonacoInlineItem[];
+  dispose?(): void;
+}
+
+/** A Monaco inline completion provider (ghost text; Tab accepts, Esc hides). */
+export interface MonacoInlineProvider {
+  provideInlineCompletions(
+    model: MonacoModel,
+    position: { lineNumber: number; column: number },
+    context: unknown,
+    token: unknown,
+  ): Promise<MonacoInlineCompletions | null>;
 }
 
 /** The slice of the `monaco` namespace used by the IDE. */
@@ -49,6 +82,10 @@ export interface MonacoLike {
   };
   languages: {
     registerHoverProvider(languageId: string, provider: MonacoHoverProvider): { dispose(): void };
+    registerInlineCompletionsProvider(
+      languageId: string,
+      provider: MonacoInlineProvider,
+    ): { dispose(): void };
   };
 }
 
@@ -112,6 +149,8 @@ export function editorOptions(readOnly: boolean): Record<string, unknown> {
     insertSpaces: true,
     fixedOverflowWidgets: true,
     wordWrap: 'off',
+    // Ghost text for inline AI (task 3.12); Tab accepts, Esc dismisses.
+    inlineSuggest: { enabled: true },
     // Find/replace (Ctrl+F / Ctrl+H) and multi-cursor are Monaco defaults.
   };
 }

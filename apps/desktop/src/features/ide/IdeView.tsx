@@ -5,10 +5,15 @@
  * `useProjectEditor`; this component is presentation plus the LSP wiring.
  */
 import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
-import type { LspRequestResult } from '@fergents/protocol';
+import type { ComposerRun, LspRequestResult } from '@fergents/protocol';
 
 import { EditorTabs, type EditorTab } from '../editor/EditorTabs';
-import { MonacoHost, type MonacoHostLsp, type RevealRequest } from '../editor/MonacoHost';
+import {
+  MonacoHost,
+  type MonacoHostInline,
+  type MonacoHostLsp,
+  type RevealRequest,
+} from '../editor/MonacoHost';
 import { isDirty } from '../editor/documents';
 import { parseOutline, type OutlineItem } from '../editor/outline';
 import type { EditorController } from '../editor/useProjectEditor';
@@ -19,10 +24,34 @@ import { useLspDocuments } from '../lsp/useLspDocuments';
 import { useLspEditor } from '../lsp/useLspEditor';
 import { useProblems } from '../lsp/useProblems';
 import { SourceControlPanel } from '../git/SourceControlPanel';
+import { ComposerPanel } from '../composer/ComposerPanel';
+import { InlineActionPanel } from '../inline/InlineActionPanel';
+import type { InlineActionKind } from '../inline/inlineEngine';
+import { INLINE_MAX_TOKENS } from '../inline/inlineModel';
+import { useInlineAi } from '../inline/useInlineAi';
+import { useCapabilityEnabled } from '../settings/useCapabilityEnabled';
 import { TerminalPanel } from '../terminal/TerminalPanel';
 import { t } from '../../i18n/i18n';
+import type { MessageKey } from '../../i18n/en';
 import type { KernelClient } from '../../lib/kernel';
 import { baseName } from '../project/model';
+
+/** The inline quick actions on `Ctrl+.` (spec §6). */
+const INLINE_ACTIONS: readonly { kind: InlineActionKind; key: MessageKey }[] = [
+  { kind: 'explain', key: 'inline.action.explain' },
+  { kind: 'refactor', key: 'inline.action.refactor' },
+  { kind: 'tests', key: 'inline.action.tests' },
+  { kind: 'document', key: 'inline.action.document' },
+  { kind: 'fix', key: 'inline.action.fix' },
+];
+
+/** Where `Ctrl+.` was pressed: the quick-action menu anchors on this. */
+interface QuickContext {
+  path: string;
+  line: number;
+  column: number;
+  selection: string;
+}
 
 /** Which bottom panel the IDE shows (`none` hides both). */
 export type IdePanel = 'none' | 'problems' | 'terminal';
@@ -45,6 +74,9 @@ export interface IdeViewProps {
   /** Whether the source-control panel is open. */
   showScm: boolean;
   onToggleScm: () => void;
+  /** Whether the Composer panel is open. */
+  showComposer: boolean;
+  onToggleComposer: () => void;
 }
 
 /** Render an outline tree, deepest last. */
@@ -88,15 +120,21 @@ export function IdeView({
   onPanelChange,
   showScm,
   onToggleScm,
+  showComposer,
+  onToggleComposer,
 }: IdeViewProps): ReactElement {
   const { documents, active, activePath, conflict } = editor;
   const [outline, setOutline] = useState<OutlineItem[]>([]);
   const [reveal, setReveal] = useState<RevealRequest | null>(null);
   const revealToken = useRef(0);
   const [actions, setActions] = useState<LspCodeAction[] | null>(null);
+  const [quick, setQuick] = useState<QuickContext | null>(null);
+  const [inlineRun, setInlineRun] = useState<ComposerRun | null>(null);
   const [lspError, setLspError] = useState<string | null>(null);
   const problems = useProblems(kernel, projectId, trusted);
   const lsp = useLspEditor(kernel, projectId, projectRoot, trusted);
+  const inlineEnabled = useCapabilityEnabled(kernel, 'capability.inline-ai');
+  const inline = useInlineAi(kernel, projectId, trusted, inlineEnabled);
   useLspDocuments(kernel, projectId, trusted, documents);
 
   // The outline is best-effort: no server means no outline, never an error.
@@ -169,14 +207,39 @@ export function IdeView({
     })();
   };
 
-  const showCodeActions = (path: string, line: number, column: number): void => {
+  const showQuickActions = (
+    path: string,
+    line: number,
+    column: number,
+    selection: string,
+  ): void => {
+    setQuick({ path, line, column, selection });
     void (async () => {
       setActions(await lsp.codeActions(path, line, column));
     })();
   };
 
-  const applyAction = (action: LspCodeAction): void => {
+  const closeQuickActions = (): void => {
+    setQuick(null);
     setActions(null);
+  };
+
+  const runInlineAction = (kind: InlineActionKind): void => {
+    const at = quick;
+    if (at === null) {
+      return;
+    }
+    closeQuickActions();
+    void (async () => {
+      const run = await inline.action(kind, at.path, at.selection);
+      if (run !== null) {
+        setInlineRun(run);
+      }
+    })();
+  };
+
+  const applyAction = (action: LspCodeAction): void => {
+    closeQuickActions();
     if (action.edits.length > 0) {
       void editor.applyWorkspaceEdits(action.edits);
     }
@@ -187,9 +250,18 @@ export function IdeView({
         hover: lsp.hover,
         onDefinition: goToDefinition,
         onRename: renameSymbol,
-        onCodeActions: showCodeActions,
+        onCodeActions: (path, line, column) => showQuickActions(path, line, column, ''),
       }
     : null;
+
+  const hostInline: MonacoHostInline | null =
+    trusted && inlineEnabled
+      ? {
+          complete: (path, text, offset, languageId, readOnly) =>
+            inline.suggest({ path, text, offset, languageId, readOnly }),
+          onQuickActions: showQuickActions,
+        }
+      : null;
 
   const tabs: EditorTab[] = documents.map((document) => ({
     documentId: document.path,
@@ -266,10 +338,32 @@ export function IdeView({
 
               {lspError === null ? null : <div className="inline-feedback info">{lspError}</div>}
 
-              {actions === null ? null : (
-                <div className="ide-actions" role="menu" aria-label={t('lsp.actions.label')}>
-                  <span className="panel-title">{t('lsp.actions.label')}</span>
-                  {actions.length === 0 ? (
+              {inline.status.error === null ? null : (
+                <div className="inline-feedback error">
+                  {t('inline.failed', { error: inline.status.error })}
+                </div>
+              )}
+
+              {quick === null ? null : (
+                <div className="ide-actions" role="menu" aria-label={t('ide.actions.label')}>
+                  <span className="panel-title">{t('ide.actions.label')}</span>
+                  {inlineEnabled && trusted ? (
+                    <>
+                      <span className="t-caption">{t('inline.actions.label')}</span>
+                      {INLINE_ACTIONS.map(({ kind, key }) => (
+                        <button
+                          key={kind}
+                          role="menuitem"
+                          type="button"
+                          className="btn btn-sm"
+                          onClick={() => runInlineAction(kind)}
+                        >
+                          {t(key)}
+                        </button>
+                      ))}
+                    </>
+                  ) : null}
+                  {actions === null ? null : actions.length === 0 ? (
                     <span className="t-caption">{t('lsp.actions.empty')}</span>
                   ) : (
                     actions.map((action) => (
@@ -287,7 +381,7 @@ export function IdeView({
                   <button
                     className="btn btn-ghost btn-sm"
                     type="button"
-                    onClick={() => setActions(null)}
+                    onClick={closeQuickActions}
                   >
                     {t('lsp.actions.close')}
                   </button>
@@ -329,6 +423,7 @@ export function IdeView({
                         reveal={reveal}
                         markers={markers}
                         lsp={hostLsp}
+                        inline={hostInline}
                         onChange={(content) => editor.change(active.path, content)}
                         onSave={() => void editor.save(active.path)}
                       />
@@ -349,6 +444,38 @@ export function IdeView({
             trusted={trusted}
             activePath={activePath}
             onClose={onToggleScm}
+          />
+        ) : null}
+
+        {inlineRun === null ? null : (
+          <InlineActionPanel
+            key={inlineRun.id}
+            kernel={kernel}
+            run={inlineRun}
+            theme={theme}
+            onClose={() => setInlineRun(null)}
+            onApplied={(paths) => {
+              for (const path of paths) {
+                void editor.reload(path);
+              }
+            }}
+          />
+        )}
+
+        {inlineRun !== null ? null : showComposer ? (
+          <ComposerPanel
+            kernel={kernel}
+            projectId={projectId}
+            trusted={trusted}
+            activePath={activePath}
+            openPaths={documents.map((document) => document.path)}
+            theme={theme}
+            onClose={onToggleComposer}
+            onApplied={(paths) => {
+              for (const path of paths) {
+                void editor.reload(path);
+              }
+            }}
           />
         ) : null}
       </div>
@@ -403,6 +530,23 @@ export function IdeView({
         >
           {t('ide.scm.toggle')}
         </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          type="button"
+          aria-pressed={showComposer}
+          onClick={onToggleComposer}
+        >
+          {t('ide.composer.toggle')}
+        </button>
+        <span className="t-caption">
+          {inlineEnabled ? t('inline.status', { tokens: INLINE_MAX_TOKENS }) : t('inline.off')}
+        </span>
+        {inline.status.latencyMs === null ? null : (
+          <span className="t-caption">{t('inline.latency', { ms: inline.status.latencyMs })}</span>
+        )}
+        {inline.status.suppressed === 'largeFile' ? (
+          <span className="t-caption">{t('inline.suppressed.largeFile')}</span>
+        ) : null}
         <span className="t-caption">
           {t('ide.problems.summary', {
             errors: problems.counts.error,

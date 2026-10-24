@@ -111,6 +111,22 @@ pub fn default_catalogue() -> Vec<Capability> {
             false,
         ),
         capability(
+            "capability.composer",
+            "Composer",
+            "Model-authored multi-file proposals with per-hunk approval.",
+            &["capability.ide", "capability.agents"],
+            true,
+            true,
+        ),
+        capability(
+            "capability.inline-ai",
+            "Inline AI",
+            "Ghost-text completions and selection quick actions.",
+            &["capability.ide", "capability.llm"],
+            false,
+            true,
+        ),
+        capability(
             "capability.memory",
             "Memory",
             "Episodic, semantic, and file-backed agent memory.",

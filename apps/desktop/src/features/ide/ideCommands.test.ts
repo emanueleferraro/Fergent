@@ -19,6 +19,7 @@ function actions(overrides: Partial<IdeActions> = {}): IdeActions {
     toggleTerminal: vi.fn(),
     toggleScm: vi.fn(),
     toggleChat: vi.fn(),
+    toggleComposer: vi.fn(),
     addToChat: vi.fn(),
     ...overrides,
   };
@@ -54,6 +55,7 @@ describe('ideCommands', () => {
       'ide.toggleTerminal',
       'ide.toggleScm',
       'ide.toggleChat',
+      'ide.toggleComposer',
     ]);
   });
 
@@ -86,6 +88,7 @@ describe('ideCommands', () => {
     expect(handlers.toggleTerminal).toHaveBeenCalledTimes(1);
     expect(handlers.toggleScm).toHaveBeenCalledTimes(1);
     expect(handlers.toggleChat).toHaveBeenCalledTimes(1);
+    expect(handlers.toggleComposer).toHaveBeenCalledTimes(1);
     expect(handlers.addToChat).toHaveBeenCalledTimes(1);
   });
 
