@@ -20,6 +20,7 @@ import {
   themeName,
   type MonacoEditor,
   type MonacoHoverProvider,
+  type MonacoInlineProvider,
   type MonacoLike,
   type MonacoModel,
 } from './monacoAdapter';
@@ -40,6 +41,20 @@ export interface MonacoHostLsp {
   onCodeActions: (path: string, line: number, column: number) => void;
 }
 
+/** The inline AI surface the host wires into Monaco (task 3.12). */
+export interface MonacoHostInline {
+  /** Resolve a ghost-text suggestion for the cursor, or `null` for none. */
+  complete: (
+    path: string,
+    text: string,
+    offset: number,
+    languageId: string,
+    readOnly: boolean,
+  ) => Promise<string | null>;
+  /** `Ctrl+.` on the current selection (quick actions, never in-place edits). */
+  onQuickActions: (path: string, line: number, column: number, selection: string) => void;
+}
+
 /** Props for `MonacoHost`. */
 export interface MonacoHostProps {
   path: string;
@@ -55,6 +70,8 @@ export interface MonacoHostProps {
   markers?: readonly Problem[] | undefined;
   /** LSP interactions, or `null` when the project is untrusted. */
   lsp?: MonacoHostLsp | null | undefined;
+  /** Inline AI, or `null` when the project is untrusted. */
+  inline?: MonacoHostInline | null | undefined;
   onChange: (content: string) => void;
   onSave: () => void;
 }
@@ -70,6 +87,7 @@ export function MonacoHost({
   reveal,
   markers,
   lsp,
+  inline,
   onChange,
   onSave,
 }: MonacoHostProps): ReactElement {
@@ -87,8 +105,12 @@ export function MonacoHost({
   themeRef.current = theme;
   const lspRef = useRef(lsp);
   lspRef.current = lsp;
+  const inlineRef = useRef(inline);
+  inlineRef.current = inline;
   const hoverProviders = useRef<{ dispose(): void }[]>([]);
   const hoverLanguages = useRef<Set<string>>(new Set());
+  const inlineProviders = useRef<{ dispose(): void }[]>([]);
+  const inlineLanguages = useRef<Set<string>>(new Set());
   const [ready, setReady] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -116,6 +138,18 @@ export function MonacoHost({
             ? null
             : { path: current, line: position.lineNumber, column: position.column };
         };
+        // The selected text, or an empty string when the selection is empty.
+        const selectionText = (): string => {
+          const selection = editor.getSelection?.() ?? null;
+          const model = editor.getModel();
+          if (selection === null || model === null || typeof model.getValueInRange !== 'function') {
+            return '';
+          }
+          if (selection.isEmpty?.() === true) {
+            return '';
+          }
+          return model.getValueInRange(selection);
+        };
         // Ctrl/Cmd+S saves through the kernel; Ctrl+F/Ctrl+H are Monaco defaults.
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => onSaveRef.current());
         // LSP shortcuts: F12 definition, F2 rename, Ctrl+. quick fixes.
@@ -137,11 +171,18 @@ export function MonacoHost({
             lspRef.current?.onRename(at.path, at.line, at.column);
           }
         });
+        // Ctrl+. opens quick actions: inline AI first, then the LSP fixes.
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.Period, () => {
           const at = cursor();
-          if (at !== null) {
-            lspRef.current?.onCodeActions(at.path, at.line, at.column);
+          if (at === null) {
+            return;
           }
+          const inlineActions = inlineRef.current;
+          if (inlineActions !== null && inlineActions !== undefined) {
+            inlineActions.onQuickActions(at.path, at.line, at.column, selectionText());
+            return;
+          }
+          lspRef.current?.onCodeActions(at.path, at.line, at.column);
         });
         subscription = editor.onDidChangeModelContent(() => onChangeRef.current(editor.getValue()));
         editorRef.current = editor;
@@ -160,6 +201,11 @@ export function MonacoHost({
       }
       hoverProviders.current = [];
       hoverLanguages.current.clear();
+      for (const provider of inlineProviders.current) {
+        provider.dispose();
+      }
+      inlineProviders.current = [];
+      inlineLanguages.current.clear();
       editorRef.current?.dispose();
       editorRef.current = null;
       disposeAllModels(modelsRef.current);
@@ -224,6 +270,43 @@ export function MonacoHost({
       },
     };
     hoverProviders.current.push(monaco.languages.registerHoverProvider(language, provider));
+  }, [ready, languageId]);
+
+  // One inline completion provider per language (task 3.12). Monaco renders the
+  // result as ghost text: Tab accepts it, Esc dismisses it.
+  useEffect(() => {
+    const monaco = monacoRef.current;
+    if (!ready || monaco === null) {
+      return;
+    }
+    const language = monacoLanguage(languageId);
+    if (inlineLanguages.current.has(language)) {
+      return;
+    }
+    inlineLanguages.current.add(language);
+    const provider: MonacoInlineProvider = {
+      async provideInlineCompletions(model, position) {
+        const actions = inlineRef.current;
+        const target = modelPath(model);
+        if (actions === null || actions === undefined || target === null) {
+          return null;
+        }
+        if (typeof model.getOffsetAt !== 'function') {
+          return null;
+        }
+        const suggestion = await actions.complete(
+          target,
+          model.getValue(),
+          model.getOffsetAt(position),
+          language,
+          readOnlyRef.current === true,
+        );
+        return suggestion === null ? null : { items: [{ insertText: suggestion }] };
+      },
+    };
+    inlineProviders.current.push(
+      monaco.languages.registerInlineCompletionsProvider(language, provider),
+    );
   }, [ready, languageId]);
 
   // Inline squiggles for the active file (the Problems panel owns the truth).

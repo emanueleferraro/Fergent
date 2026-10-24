@@ -4353,6 +4353,237 @@
         "operation": { "type": "string" },
         "output": { "type": "string" }
       }
+    },
+    "ComposerFile": {
+      "title": "ComposerFile",
+      "description": "One file of a Composer proposal: the current text, the proposed text, and their hunks.",
+      "type": "object",
+      "required": [
+        "path",
+        "language_id",
+        "original",
+        "proposed",
+        "binary",
+        "hunks",
+        "additions",
+        "deletions"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "language_id": { "type": "string" },
+        "original": { "type": "string" },
+        "proposed": { "type": "string" },
+        "binary": { "type": "boolean" },
+        "hunks": { "type": "array", "items": { "$ref": "#/$defs/GitDiffHunk" } },
+        "additions": { "type": "integer", "minimum": 0 },
+        "deletions": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "ComposerState": {
+      "title": "ComposerState",
+      "description": "Lifecycle of a Composer run.",
+      "type": "string",
+      "enum": ["proposed", "applied", "rejected", "failed"]
+    },
+    "ComposerRun": {
+      "title": "ComposerRun",
+      "description": "A multi-file edit proposal and its outcome.",
+      "type": "object",
+      "required": [
+        "id",
+        "project_id",
+        "prompt",
+        "message",
+        "state",
+        "model",
+        "files",
+        "additions",
+        "deletions",
+        "created_at",
+        "updated_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "prompt": { "type": "string" },
+        "message": { "type": "string", "description": "The model's short explanation of the proposal." },
+        "state": { "$ref": "#/$defs/ComposerState" },
+        "model": { "type": "string" },
+        "files": { "type": "array", "items": { "$ref": "#/$defs/ComposerFile" } },
+        "additions": { "type": "integer", "minimum": 0 },
+        "deletions": { "type": "integer", "minimum": 0 },
+        "error": { "type": ["string", "null"] },
+        "created_at": { "type": "integer", "format": "int64" },
+        "updated_at": { "type": "integer", "format": "int64" }
+      }
+    },
+    "ComposerStartParams": {
+      "title": "ComposerStartParams",
+      "description": "Params of composer.start.",
+      "type": "object",
+      "required": ["project_id", "prompt"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "prompt": { "type": "string" },
+        "paths": { "type": ["array", "null"], "items": { "type": "string" } },
+        "active_path": { "type": ["string", "null"] },
+        "selection": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] }
+      }
+    },
+    "ComposerStartResult": {
+      "title": "ComposerStartResult",
+      "description": "Result of composer.start.",
+      "type": "object",
+      "required": ["run"],
+      "additionalProperties": false,
+      "properties": {
+        "run": { "$ref": "#/$defs/ComposerRun" }
+      }
+    },
+    "ComposerRunParams": {
+      "title": "ComposerRunParams",
+      "description": "Params of composer.get, composer.apply, composer.reject, and composer.cancel.",
+      "type": "object",
+      "required": ["run_id"],
+      "additionalProperties": false,
+      "properties": {
+        "run_id": { "type": "string" }
+      }
+    },
+    "ComposerRunResult": {
+      "title": "ComposerRunResult",
+      "description": "Result of composer.get and composer.reject.",
+      "type": "object",
+      "required": ["run"],
+      "additionalProperties": false,
+      "properties": {
+        "run": { "$ref": "#/$defs/ComposerRun" }
+      }
+    },
+    "ComposerApplyParams": {
+      "title": "ComposerApplyParams",
+      "description": "Params of composer.apply: the run and the accepted hunk ids.",
+      "type": "object",
+      "required": ["run_id", "accepted"],
+      "additionalProperties": false,
+      "properties": {
+        "run_id": { "type": "string" },
+        "accepted": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ComposerAppliedFile": {
+      "title": "ComposerAppliedFile",
+      "description": "One file written by composer.apply.",
+      "type": "object",
+      "required": ["path", "etag"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "etag": { "type": "string" }
+      }
+    },
+    "ComposerApplyResult": {
+      "title": "ComposerApplyResult",
+      "description": "Result of composer.apply.",
+      "type": "object",
+      "required": ["run", "applied"],
+      "additionalProperties": false,
+      "properties": {
+        "run": { "$ref": "#/$defs/ComposerRun" },
+        "applied": { "type": "array", "items": { "$ref": "#/$defs/ComposerAppliedFile" } }
+      }
+    },
+    "ComposerCancelResult": {
+      "title": "ComposerCancelResult",
+      "description": "Result of composer.cancel.",
+      "type": "object",
+      "required": ["cancelled"],
+      "additionalProperties": false,
+      "properties": {
+        "cancelled": { "type": "boolean" }
+      }
+    },
+    "InlineCompleteParams": {
+      "title": "InlineCompleteParams",
+      "description": "Params of inline.complete. The client sends the text around the cursor; the kernel never reads the buffer.",
+      "type": "object",
+      "required": ["project_id", "path", "prefix", "suffix"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "prefix": { "type": "string" },
+        "suffix": { "type": "string" },
+        "language_id": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] },
+        "max_tokens": { "type": ["integer", "null"], "minimum": 1 },
+        "request_id": { "type": ["string", "null"] }
+      }
+    },
+    "InlineCompleteResult": {
+      "title": "InlineCompleteResult",
+      "description": "Result of inline.complete.",
+      "type": "object",
+      "required": ["suggestion", "model", "latency_ms", "cancelled"],
+      "additionalProperties": false,
+      "properties": {
+        "suggestion": { "type": "string" },
+        "model": { "type": "string" },
+        "latency_ms": { "type": "integer", "format": "int64", "minimum": 0 },
+        "cancelled": { "type": "boolean" }
+      }
+    },
+    "InlineCancelParams": {
+      "title": "InlineCancelParams",
+      "description": "Params of inline.cancel.",
+      "type": "object",
+      "required": ["request_id"],
+      "additionalProperties": false,
+      "properties": {
+        "request_id": { "type": "string" }
+      }
+    },
+    "InlineCancelResult": {
+      "title": "InlineCancelResult",
+      "description": "Result of inline.cancel.",
+      "type": "object",
+      "required": ["cancelled"],
+      "additionalProperties": false,
+      "properties": {
+        "cancelled": { "type": "boolean" }
+      }
+    },
+    "InlineActionParams": {
+      "title": "InlineActionParams",
+      "description": "Params of inline.action: a quick action over the current selection.",
+      "type": "object",
+      "required": ["project_id", "path", "action", "selection"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "action": {
+          "type": "string",
+          "enum": ["explain", "refactor", "tests", "document", "fix"]
+        },
+        "selection": { "type": "string" },
+        "instruction": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] }
+      }
+    },
+    "InlineActionResult": {
+      "title": "InlineActionResult",
+      "description": "Result of inline.action: a Composer run holding the proposal (possibly empty for explain).",
+      "type": "object",
+      "required": ["run"],
+      "additionalProperties": false,
+      "properties": {
+        "run": { "$ref": "#/$defs/ComposerRun" }
+      }
     }
   }
 }

@@ -53,6 +53,8 @@ export interface PreviewFileInput {
   languageId?: string | undefined;
   /** The file content on disk before the proposal. */
   original: string;
+  /** The exact proposed text, when the producer already has it. */
+  proposed?: string | undefined;
   binary?: boolean | undefined;
   hunks: readonly GitDiffHunk[];
 }
@@ -99,7 +101,7 @@ export function buildPreviewFile(input: PreviewFileInput): PreviewFile {
     path: input.path,
     languageId: input.languageId ?? 'plaintext',
     original: input.original,
-    proposed: applyHunks(input.original, hunks, all),
+    proposed: input.proposed ?? applyHunks(input.original, hunks, all),
     binary: input.binary === true,
     hunks,
     additions: hunks.reduce((total, hunk) => total + hunk.additions, 0),

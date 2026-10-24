@@ -5126,6 +5126,569 @@ impl From<&ChatSessionSearchResult> for ChatSessionSearchResult {
         value.clone()
     }
 }
+#[doc = "One file written by composer.apply."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerAppliedFile\","]
+#[doc = "  \"description\": \"One file written by composer.apply.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"etag\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"etag\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerAppliedFile {
+    pub etag: String,
+    pub path: String,
+}
+impl From<&ComposerAppliedFile> for ComposerAppliedFile {
+    fn from(value: &ComposerAppliedFile) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of composer.apply: the run and the accepted hunk ids."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerApplyParams\","]
+#[doc = "  \"description\": \"Params of composer.apply: the run and the accepted hunk ids.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"accepted\","]
+#[doc = "    \"run_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"accepted\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerApplyParams {
+    pub accepted: Vec<String>,
+    pub run_id: String,
+}
+impl From<&ComposerApplyParams> for ComposerApplyParams {
+    fn from(value: &ComposerApplyParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of composer.apply."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerApplyResult\","]
+#[doc = "  \"description\": \"Result of composer.apply.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"applied\","]
+#[doc = "    \"run\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"applied\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ComposerAppliedFile\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"run\": {"]
+#[doc = "      \"$ref\": \"#/$defs/ComposerRun\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerApplyResult {
+    pub applied: Vec<ComposerAppliedFile>,
+    pub run: ComposerRun,
+}
+impl From<&ComposerApplyResult> for ComposerApplyResult {
+    fn from(value: &ComposerApplyResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of composer.cancel."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerCancelResult\","]
+#[doc = "  \"description\": \"Result of composer.cancel.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"cancelled\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"cancelled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerCancelResult {
+    pub cancelled: bool,
+}
+impl From<&ComposerCancelResult> for ComposerCancelResult {
+    fn from(value: &ComposerCancelResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One file of a Composer proposal: the current text, the proposed text, and their hunks."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerFile\","]
+#[doc = "  \"description\": \"One file of a Composer proposal: the current text, the proposed text, and their hunks.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"additions\","]
+#[doc = "    \"binary\","]
+#[doc = "    \"deletions\","]
+#[doc = "    \"hunks\","]
+#[doc = "    \"language_id\","]
+#[doc = "    \"original\","]
+#[doc = "    \"path\","]
+#[doc = "    \"proposed\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"additions\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"binary\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"deletions\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"hunks\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitDiffHunk\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"language_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"original\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"proposed\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerFile {
+    pub additions: u64,
+    pub binary: bool,
+    pub deletions: u64,
+    pub hunks: Vec<GitDiffHunk>,
+    pub language_id: String,
+    pub original: String,
+    pub path: String,
+    pub proposed: String,
+}
+impl From<&ComposerFile> for ComposerFile {
+    fn from(value: &ComposerFile) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A multi-file edit proposal and its outcome."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerRun\","]
+#[doc = "  \"description\": \"A multi-file edit proposal and its outcome.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"additions\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"deletions\","]
+#[doc = "    \"files\","]
+#[doc = "    \"id\","]
+#[doc = "    \"message\","]
+#[doc = "    \"model\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"prompt\","]
+#[doc = "    \"state\","]
+#[doc = "    \"updated_at\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"additions\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"deletions\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"error\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"files\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/ComposerFile\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"message\": {"]
+#[doc = "      \"description\": \"The model's short explanation of the proposal.\","]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"prompt\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/ComposerState\""]
+#[doc = "    },"]
+#[doc = "    \"updated_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerRun {
+    pub additions: u64,
+    pub created_at: i64,
+    pub deletions: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+    pub files: Vec<ComposerFile>,
+    pub id: String,
+    #[doc = "The model's short explanation of the proposal."]
+    pub message: String,
+    pub model: String,
+    pub project_id: String,
+    pub prompt: String,
+    pub state: ComposerState,
+    pub updated_at: i64,
+}
+impl From<&ComposerRun> for ComposerRun {
+    fn from(value: &ComposerRun) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of composer.get, composer.apply, composer.reject, and composer.cancel."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerRunParams\","]
+#[doc = "  \"description\": \"Params of composer.get, composer.apply, composer.reject, and composer.cancel.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"run_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"run_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerRunParams {
+    pub run_id: String,
+}
+impl From<&ComposerRunParams> for ComposerRunParams {
+    fn from(value: &ComposerRunParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of composer.get and composer.reject."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerRunResult\","]
+#[doc = "  \"description\": \"Result of composer.get and composer.reject.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"run\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"run\": {"]
+#[doc = "      \"$ref\": \"#/$defs/ComposerRun\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerRunResult {
+    pub run: ComposerRun,
+}
+impl From<&ComposerRunResult> for ComposerRunResult {
+    fn from(value: &ComposerRunResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of composer.start."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerStartParams\","]
+#[doc = "  \"description\": \"Params of composer.start.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\","]
+#[doc = "    \"prompt\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"active_path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"paths\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"prompt\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"selection\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerStartParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub active_path: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub paths: Option<Vec<String>>,
+    pub project_id: String,
+    pub prompt: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub selection: Option<String>,
+}
+impl From<&ComposerStartParams> for ComposerStartParams {
+    fn from(value: &ComposerStartParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of composer.start."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerStartResult\","]
+#[doc = "  \"description\": \"Result of composer.start.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"run\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"run\": {"]
+#[doc = "      \"$ref\": \"#/$defs/ComposerRun\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct ComposerStartResult {
+    pub run: ComposerRun,
+}
+impl From<&ComposerStartResult> for ComposerStartResult {
+    fn from(value: &ComposerStartResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Lifecycle of a Composer run."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ComposerState\","]
+#[doc = "  \"description\": \"Lifecycle of a Composer run.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"proposed\","]
+#[doc = "    \"applied\","]
+#[doc = "    \"rejected\","]
+#[doc = "    \"failed\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum ComposerState {
+    #[serde(rename = "proposed")]
+    Proposed,
+    #[serde(rename = "applied")]
+    Applied,
+    #[serde(rename = "rejected")]
+    Rejected,
+    #[serde(rename = "failed")]
+    Failed,
+}
+impl From<&ComposerState> for ComposerState {
+    fn from(value: &ComposerState) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for ComposerState {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Proposed => write!(f, "proposed"),
+            Self::Applied => write!(f, "applied"),
+            Self::Rejected => write!(f, "rejected"),
+            Self::Failed => write!(f, "failed"),
+        }
+    }
+}
+impl std::str::FromStr for ComposerState {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "proposed" => Ok(Self::Proposed),
+            "applied" => Ok(Self::Applied),
+            "rejected" => Ok(Self::Rejected),
+            "failed" => Ok(Self::Failed),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for ComposerState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for ComposerState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for ComposerState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
 #[doc = "Payload of the context.built event."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -10853,6 +11416,383 @@ pub struct IndexStatusResult {
 }
 impl From<&IndexStatusResult> for IndexStatusResult {
     fn from(value: &IndexStatusResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of inline.action: a quick action over the current selection."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"InlineActionParams\","]
+#[doc = "  \"description\": \"Params of inline.action: a quick action over the current selection.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"action\","]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"selection\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"action\": {"]
+#[doc = "      \"type\": \"string\","]
+#[doc = "      \"enum\": ["]
+#[doc = "        \"explain\","]
+#[doc = "        \"refactor\","]
+#[doc = "        \"tests\","]
+#[doc = "        \"document\","]
+#[doc = "        \"fix\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"instruction\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"selection\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct InlineActionParams {
+    pub action: InlineActionParamsAction,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub instruction: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    pub path: String,
+    pub project_id: String,
+    pub selection: String,
+}
+impl From<&InlineActionParams> for InlineActionParams {
+    fn from(value: &InlineActionParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "InlineActionParamsAction"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"explain\","]
+#[doc = "    \"refactor\","]
+#[doc = "    \"tests\","]
+#[doc = "    \"document\","]
+#[doc = "    \"fix\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum InlineActionParamsAction {
+    #[serde(rename = "explain")]
+    Explain,
+    #[serde(rename = "refactor")]
+    Refactor,
+    #[serde(rename = "tests")]
+    Tests,
+    #[serde(rename = "document")]
+    Document,
+    #[serde(rename = "fix")]
+    Fix,
+}
+impl From<&InlineActionParamsAction> for InlineActionParamsAction {
+    fn from(value: &InlineActionParamsAction) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for InlineActionParamsAction {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Explain => write!(f, "explain"),
+            Self::Refactor => write!(f, "refactor"),
+            Self::Tests => write!(f, "tests"),
+            Self::Document => write!(f, "document"),
+            Self::Fix => write!(f, "fix"),
+        }
+    }
+}
+impl std::str::FromStr for InlineActionParamsAction {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "explain" => Ok(Self::Explain),
+            "refactor" => Ok(Self::Refactor),
+            "tests" => Ok(Self::Tests),
+            "document" => Ok(Self::Document),
+            "fix" => Ok(Self::Fix),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for InlineActionParamsAction {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for InlineActionParamsAction {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for InlineActionParamsAction {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Result of inline.action: a Composer run holding the proposal (possibly empty for explain)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"InlineActionResult\","]
+#[doc = "  \"description\": \"Result of inline.action: a Composer run holding the proposal (possibly empty for explain).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"run\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"run\": {"]
+#[doc = "      \"$ref\": \"#/$defs/ComposerRun\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct InlineActionResult {
+    pub run: ComposerRun,
+}
+impl From<&InlineActionResult> for InlineActionResult {
+    fn from(value: &InlineActionResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of inline.cancel."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"InlineCancelParams\","]
+#[doc = "  \"description\": \"Params of inline.cancel.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"request_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"request_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct InlineCancelParams {
+    pub request_id: String,
+}
+impl From<&InlineCancelParams> for InlineCancelParams {
+    fn from(value: &InlineCancelParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of inline.cancel."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"InlineCancelResult\","]
+#[doc = "  \"description\": \"Result of inline.cancel.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"cancelled\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"cancelled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct InlineCancelResult {
+    pub cancelled: bool,
+}
+impl From<&InlineCancelResult> for InlineCancelResult {
+    fn from(value: &InlineCancelResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of inline.complete. The client sends the text around the cursor; the kernel never reads the buffer."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"InlineCompleteParams\","]
+#[doc = "  \"description\": \"Params of inline.complete. The client sends the text around the cursor; the kernel never reads the buffer.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"prefix\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"suffix\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"language_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"max_tokens\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"minimum\": 1.0"]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"prefix\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"request_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"suffix\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct InlineCompleteParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub language_id: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_tokens: Option<std::num::NonZeroU64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub model: Option<String>,
+    pub path: String,
+    pub prefix: String,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub request_id: Option<String>,
+    pub suffix: String,
+}
+impl From<&InlineCompleteParams> for InlineCompleteParams {
+    fn from(value: &InlineCompleteParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of inline.complete."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"InlineCompleteResult\","]
+#[doc = "  \"description\": \"Result of inline.complete.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"cancelled\","]
+#[doc = "    \"latency_ms\","]
+#[doc = "    \"model\","]
+#[doc = "    \"suggestion\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"cancelled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"latency_ms\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"model\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"suggestion\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct InlineCompleteResult {
+    pub cancelled: bool,
+    pub latency_ms: i64,
+    pub model: String,
+    pub suggestion: String,
+}
+impl From<&InlineCompleteResult> for InlineCompleteResult {
+    fn from(value: &InlineCompleteResult) -> Self {
         value.clone()
     }
 }

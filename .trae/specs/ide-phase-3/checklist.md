@@ -76,8 +76,8 @@ the behaviour is implemented, tested, and merged.
 - [x] Terminal tabs/split/shell selector; live session reconnect
 - [x] Source control: status/diff/stage/commit/branches/log/blame/conflicts
 - [x] Diff preview with per-hunk/file/all approval and line stats
-- [ ] Inline AI ghost text (opt-in), Tab/Esc, quick actions, suppression rules
-- [ ] Composer proposal → approve subset → reversible apply; reject writes
+- [x] Inline AI ghost text (opt-in), Tab/Esc, quick actions, suppression rules
+- [x] Composer proposal → approve subset → reversible apply; reject writes
       nothing
 - [ ] Agent mode: spec/plan/tasks tabs, approval cards, `@file`/`@selection`
 - [ ] Chat + IDE split persisted, resizable by keyboard, restores on restart

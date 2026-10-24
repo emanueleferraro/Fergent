@@ -57,6 +57,7 @@ function fakeMonaco(): {
     },
     languages: {
       registerHoverProvider: () => ({ dispose: () => undefined }),
+      registerInlineCompletionsProvider: () => ({ dispose: () => undefined }),
     },
   };
   return { monaco, models, languages };

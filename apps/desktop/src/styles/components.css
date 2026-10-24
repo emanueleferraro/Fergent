@@ -3063,3 +3063,95 @@ mark,
         scroll-behavior: auto !important;
     }
 }
+/* ============================================================
+   COMPOSER (task 3.13)
+   ============================================================ */
+.composer-panel {
+    display: flex;
+    flex: 0 0 460px;
+    flex-direction: column;
+    min-width: 320px;
+    min-height: 0;
+    border-left: 1px solid var(--border-default);
+    background: var(--surface-1);
+}
+.composer-panel__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    padding: var(--s-1) var(--s-2);
+    border-bottom: 1px solid var(--border-default);
+}
+.composer-panel__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-3);
+}
+.composer-panel__input {
+    width: 100%;
+    resize: vertical;
+    padding: var(--s-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    color: var(--text-default);
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    line-height: 1.5;
+}
+.composer-panel__input:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+}
+.composer-panel__hint {
+    margin: 0;
+    color: var(--color-warning);
+}
+.composer-panel__error {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    color: var(--color-danger);
+    background: var(--color-danger-soft);
+}
+.composer-panel__empty {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-3);
+}
+.composer-panel .diff-preview {
+    min-height: 0;
+}
+
+/* ============================================================
+   INLINE AI (task 3.12)
+   ============================================================ */
+.inline-panel {
+    display: flex;
+    flex: 0 0 460px;
+    flex-direction: column;
+    min-width: 320px;
+    min-height: 0;
+    border-left: 1px solid var(--border-default);
+    background: var(--surface-1);
+}
+.inline-panel__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    padding: var(--s-1) var(--s-2);
+    border-bottom: 1px solid var(--border-default);
+}
+.inline-panel__message {
+    margin: 0;
+    padding: var(--s-3);
+    color: var(--text-default);
+    white-space: pre-wrap;
+}
+.inline-panel .diff-preview {
+    min-height: 0;
+}

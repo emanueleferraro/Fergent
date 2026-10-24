@@ -129,6 +129,9 @@ notify = "8"
 # `.fergbrain` archive (BRAIN.md §14) — spec Dependencies
 zip = { version = "2", default-features = false, features = ["deflate"] }
 
+# Diffing proposed edits into hunks (Composer, Phase 3) — spec D15
+similar = "2"
+
 # Identifiers, hashing, time
 ulid = { version = "1", features = ["serde"] }
 sha2 = "0.10"
