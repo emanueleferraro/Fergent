@@ -71,6 +71,22 @@ pub fn default_catalogue() -> Vec<Capability> {
             true,
         ),
         capability(
+            "capability.git",
+            "Source Control",
+            "Repository status, diffs, staging, commits, branches, and history.",
+            &["capability.ide"],
+            true,
+            true,
+        ),
+        capability(
+            "capability.git-remote",
+            "Git Remote",
+            "Fetch, pull, and push against configured remotes.",
+            &["capability.git"],
+            false,
+            true,
+        ),
+        capability(
             "capability.llm",
             "LLM Router",
             "Providers, routing, budgets, and caches.",

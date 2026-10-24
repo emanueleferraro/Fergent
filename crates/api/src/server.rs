@@ -2122,6 +2122,240 @@ async fn dispatch(
             })
             .await
         }
+        "git.status" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .status(&project_id)
+                    .map(|status| serde_json::json!({ "status": to_value(&status) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.diff" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = optional_str(&params, "path").map(str::to_string);
+            let staged = params
+                .get("staged")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            let commit = optional_str(&params, "commit").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .diff(&project_id, path.as_deref(), staged, commit.as_deref())
+                    .map(|files| serde_json::json!({ "files": to_value(&files) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.stage" | "git.unstage" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let paths = required_strings(&params, "paths")?;
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let stage = request.method == "git.stage";
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                let result = if stage {
+                    kernel.git().stage(&project_id, &paths, &actor)
+                } else {
+                    kernel.git().unstage(&project_id, &paths, &actor)
+                };
+                result
+                    .map(|paths| serde_json::json!({ "paths": paths }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.discard" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let paths = required_strings(&params, "paths")?;
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .discard(&project_id, &paths, &actor)
+                    .map(|backup| serde_json::json!({ "backup": backup }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.commit" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let message = required_str(&params, "message")?.to_string();
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let session_id = optional_str(&params, "session_id").map(str::to_string);
+            let allow_empty = params
+                .get("allow_empty")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .commit(
+                        &project_id,
+                        &message,
+                        &actor,
+                        session_id.as_deref(),
+                        allow_empty,
+                    )
+                    .map(|commit| serde_json::json!({ "commit": to_value(&commit) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.branches" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .branches(&project_id)
+                    .map(|branches| serde_json::json!({ "branches": to_value(&branches) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.branch.create" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let name = required_str(&params, "name")?.to_string();
+            let from = optional_str(&params, "from").map(str::to_string);
+            let checkout = params
+                .get("checkout")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .create_branch(&project_id, &name, from.as_deref(), checkout, &actor)
+                    .map(|branch| serde_json::json!({ "branch": to_value(&branch) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.branch.switch" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let name = required_str(&params, "name")?.to_string();
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .switch_branch(&project_id, &name, &actor)
+                    .map(|status| serde_json::json!({ "status": to_value(&status) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.log" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let limit = params
+                .get("limit")
+                .and_then(Value::as_u64)
+                .map(|value| value as usize);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .log(&project_id, limit)
+                    .map(|commits| serde_json::json!({ "commits": to_value(&commits) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.show" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let commit = required_str(&params, "commit")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .show(&project_id, &commit)
+                    .map(|detail| {
+                        serde_json::json!({
+                            "commit": to_value(&detail.commit),
+                            "message": detail.message,
+                            "files": to_value(&detail.files),
+                        })
+                    })
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.blame" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .blame(&project_id, &path)
+                    .map(|lines| serde_json::json!({ "lines": to_value(&lines) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.conflicts" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .conflicts(&project_id)
+                    .map(|conflicts| serde_json::json!({ "conflicts": to_value(&conflicts) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.resolve" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let strategy = fergents_git::ResolveStrategy::parse(required_str(&params, "strategy")?)
+                .ok_or((
+                    ErrorCode::InvalidParams,
+                    "invalid resolve strategy".to_string(),
+                ))?;
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .git()
+                    .resolve(&project_id, &path, strategy, &actor)
+                    .map(|resolved| serde_json::json!({ "resolved": resolved }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "git.fetch" | "git.pull" | "git.push" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let remote = optional_str(&params, "remote").map(str::to_string);
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let operation = request.method.clone();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                let result = match operation.as_str() {
+                    "git.fetch" => kernel.git().fetch(&project_id, remote.as_deref(), &actor),
+                    "git.pull" => kernel.git().pull(&project_id, remote.as_deref(), &actor),
+                    _ => kernel.git().push(&project_id, remote.as_deref(), &actor),
+                };
+                result
+                    .map(|result| {
+                        serde_json::json!({
+                            "operation": result.operation,
+                            "output": result.output,
+                        })
+                    })
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "secret.list" => {
             let kernel = kernel.clone();
             run_blocking(move || {
@@ -2526,6 +2760,8 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("file.") => Some("capability.ide"),
         method if method.starts_with("lsp.") => Some("capability.lsp"),
         method if method.starts_with("term.") => Some("capability.terminal"),
+        "git.fetch" | "git.pull" | "git.push" => Some("capability.git-remote"),
+        method if method.starts_with("git.") => Some("capability.git"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
         method if method.starts_with("mcp.") => Some("capability.mcp"),
@@ -2598,6 +2834,21 @@ fn required_u32(params: &Value, key: &str) -> Result<u32, (ErrorCode, String)> {
         .get(key)
         .and_then(Value::as_u64)
         .map(|value| value as u32)
+        .ok_or_else(|| (ErrorCode::InvalidParams, format!("missing {key}")))
+}
+
+/// Read a required array of strings.
+fn required_strings(params: &Value, key: &str) -> Result<Vec<String>, (ErrorCode, String)> {
+    params
+        .get(key)
+        .and_then(Value::as_array)
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(Value::as_str)
+                .map(str::to_string)
+                .collect()
+        })
         .ok_or_else(|| (ErrorCode::InvalidParams, format!("missing {key}")))
 }
 
@@ -2710,6 +2961,22 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
             | fergents_terminal::TerminalError::Invalid(_),
         ) => (ErrorCode::InvalidParams, err.to_string()),
         CoreError::Terminal(_) => (ErrorCode::InternalError, err.to_string()),
+        CoreError::Git(fergents_git::GitError::Project(fergents_ide::ProjectError::Untrusted(
+            _,
+        ))) => (ErrorCode::ProjectUntrusted, err.to_string()),
+        CoreError::Git(fergents_git::GitError::Storage(_)) => {
+            (ErrorCode::StorageError, err.to_string())
+        }
+        CoreError::Git(fergents_git::GitError::RemoteDisabled) => {
+            (ErrorCode::CapabilityDisabled, err.to_string())
+        }
+        CoreError::Git(
+            fergents_git::GitError::Project(_)
+            | fergents_git::GitError::NotRepository(_)
+            | fergents_git::GitError::Invalid(_)
+            | fergents_git::GitError::Cli(_),
+        ) => (ErrorCode::InvalidParams, err.to_string()),
+        CoreError::Git(_) => (ErrorCode::InternalError, err.to_string()),
         CoreError::Capability(cap) => {
             let code = if matches!(cap, fergents_capabilities::CapabilityError::Disabled(_)) {
                 ErrorCode::CapabilityDisabled

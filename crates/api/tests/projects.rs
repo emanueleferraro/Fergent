@@ -52,7 +52,13 @@ async fn start_stack() -> (tempfile::TempDir, SocketPath, ServerHandle, Arc<Kern
 /// Disable `capability.ide`, first switching off the enabled dependents that
 /// would otherwise block it.
 async fn disable_ide(client: &KernelClient) {
-    for id in ["capability.terminal", "capability.lsp", "capability.ide"] {
+    for id in [
+        "capability.git-remote",
+        "capability.git",
+        "capability.terminal",
+        "capability.lsp",
+        "capability.ide",
+    ] {
         client
             .call("capability.set", json!({ "id": id, "enabled": false }))
             .await

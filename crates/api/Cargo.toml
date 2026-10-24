@@ -24,6 +24,7 @@ fergents-secrets = { workspace = true }
 fergents-ide = { workspace = true }
 fergents-lsp = { workspace = true }
 fergents-terminal = { workspace = true }
+fergents-git = { workspace = true }
 chrono = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
@@ -36,3 +37,4 @@ anyhow = { workspace = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }
+git2 = { version = "0.19", default-features = false, features = ["vendored-libgit2"] }

@@ -25,6 +25,7 @@ fergents-mcp = { workspace = true }
 fergents-brain = { workspace = true }
 fergents-index = { workspace = true }
 fergents-graph = { workspace = true }
+fergents-git = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 ulid = { workspace = true }

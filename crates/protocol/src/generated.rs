@@ -7572,6 +7572,687 @@ impl From<&FileWriteResult> for FileWriteResult {
         value.clone()
     }
 }
+#[doc = "One blamed line."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBlameLine\","]
+#[doc = "  \"description\": \"One blamed line.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"author\","]
+#[doc = "    \"commit\","]
+#[doc = "    \"content\","]
+#[doc = "    \"line\","]
+#[doc = "    \"short_commit\","]
+#[doc = "    \"time\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"author\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"commit\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"line\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 1.0"]
+#[doc = "    },"]
+#[doc = "    \"short_commit\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"time\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBlameLine {
+    pub author: String,
+    pub commit: String,
+    pub content: String,
+    pub line: std::num::NonZeroU64,
+    pub short_commit: String,
+    pub time: i64,
+}
+impl From<&GitBlameLine> for GitBlameLine {
+    fn from(value: &GitBlameLine) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.blame."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBlameParams\","]
+#[doc = "  \"description\": \"Params of git.blame.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBlameParams {
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&GitBlameParams> for GitBlameParams {
+    fn from(value: &GitBlameParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.blame."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBlameResult\","]
+#[doc = "  \"description\": \"Result of git.blame.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"lines\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"lines\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitBlameLine\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBlameResult {
+    pub lines: Vec<GitBlameLine>,
+}
+impl From<&GitBlameResult> for GitBlameResult {
+    fn from(value: &GitBlameResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One local branch."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBranch\","]
+#[doc = "  \"description\": \"One local branch.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"ahead\","]
+#[doc = "    \"behind\","]
+#[doc = "    \"is_head\","]
+#[doc = "    \"name\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"ahead\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"behind\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"is_head\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"upstream\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBranch {
+    pub ahead: u64,
+    pub behind: u64,
+    pub is_head: bool,
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub upstream: Option<String>,
+}
+impl From<&GitBranch> for GitBranch {
+    fn from(value: &GitBranch) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.branch.create."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBranchCreateParams\","]
+#[doc = "  \"description\": \"Params of git.branch.create.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"checkout\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"from\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBranchCreateParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub checkout: Option<bool>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub from: Option<String>,
+    pub name: String,
+    pub project_id: String,
+}
+impl From<&GitBranchCreateParams> for GitBranchCreateParams {
+    fn from(value: &GitBranchCreateParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.branch.create."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBranchResult\","]
+#[doc = "  \"description\": \"Result of git.branch.create.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"branch\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"branch\": {"]
+#[doc = "      \"$ref\": \"#/$defs/GitBranch\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBranchResult {
+    pub branch: GitBranch,
+}
+impl From<&GitBranchResult> for GitBranchResult {
+    fn from(value: &GitBranchResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.branch.switch."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBranchSwitchParams\","]
+#[doc = "  \"description\": \"Params of git.branch.switch.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"name\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBranchSwitchParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    pub name: String,
+    pub project_id: String,
+}
+impl From<&GitBranchSwitchParams> for GitBranchSwitchParams {
+    fn from(value: &GitBranchSwitchParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.branches."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBranchesParams\","]
+#[doc = "  \"description\": \"Params of git.branches.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBranchesParams {
+    pub project_id: String,
+}
+impl From<&GitBranchesParams> for GitBranchesParams {
+    fn from(value: &GitBranchesParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.branches."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitBranchesResult\","]
+#[doc = "  \"description\": \"Result of git.branches.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"branches\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"branches\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitBranch\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitBranchesResult {
+    pub branches: Vec<GitBranch>,
+}
+impl From<&GitBranchesResult> for GitBranchesResult {
+    fn from(value: &GitBranchesResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "What happened to one path."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitChangeKind\","]
+#[doc = "  \"description\": \"What happened to one path.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"added\","]
+#[doc = "    \"modified\","]
+#[doc = "    \"deleted\","]
+#[doc = "    \"renamed\","]
+#[doc = "    \"typechange\","]
+#[doc = "    \"conflicted\","]
+#[doc = "    \"untracked\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum GitChangeKind {
+    #[serde(rename = "added")]
+    Added,
+    #[serde(rename = "modified")]
+    Modified,
+    #[serde(rename = "deleted")]
+    Deleted,
+    #[serde(rename = "renamed")]
+    Renamed,
+    #[serde(rename = "typechange")]
+    Typechange,
+    #[serde(rename = "conflicted")]
+    Conflicted,
+    #[serde(rename = "untracked")]
+    Untracked,
+}
+impl From<&GitChangeKind> for GitChangeKind {
+    fn from(value: &GitChangeKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for GitChangeKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Added => write!(f, "added"),
+            Self::Modified => write!(f, "modified"),
+            Self::Deleted => write!(f, "deleted"),
+            Self::Renamed => write!(f, "renamed"),
+            Self::Typechange => write!(f, "typechange"),
+            Self::Conflicted => write!(f, "conflicted"),
+            Self::Untracked => write!(f, "untracked"),
+        }
+    }
+}
+impl std::str::FromStr for GitChangeKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "added" => Ok(Self::Added),
+            "modified" => Ok(Self::Modified),
+            "deleted" => Ok(Self::Deleted),
+            "renamed" => Ok(Self::Renamed),
+            "typechange" => Ok(Self::Typechange),
+            "conflicted" => Ok(Self::Conflicted),
+            "untracked" => Ok(Self::Untracked),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for GitChangeKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for GitChangeKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for GitChangeKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "The result of a commit."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitCommit\","]
+#[doc = "  \"description\": \"The result of a commit.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\","]
+#[doc = "    \"short_id\","]
+#[doc = "    \"summary\","]
+#[doc = "    \"trailers\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"short_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"summary\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"trailers\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitCommit {
+    pub id: String,
+    pub short_id: String,
+    pub summary: String,
+    pub trailers: Vec<String>,
+}
+impl From<&GitCommit> for GitCommit {
+    fn from(value: &GitCommit) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One commit in the log."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitCommitInfo\","]
+#[doc = "  \"description\": \"One commit in the log.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"author\","]
+#[doc = "    \"author_email\","]
+#[doc = "    \"id\","]
+#[doc = "    \"short_id\","]
+#[doc = "    \"summary\","]
+#[doc = "    \"time\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"author\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"author_email\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"short_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"summary\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"time\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitCommitInfo {
+    pub author: String,
+    pub author_email: String,
+    pub id: String,
+    pub short_id: String,
+    pub summary: String,
+    pub time: i64,
+}
+impl From<&GitCommitInfo> for GitCommitInfo {
+    fn from(value: &GitCommitInfo) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.commit."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitCommitParams\","]
+#[doc = "  \"description\": \"Params of git.commit.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"message\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"allow_empty\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"message\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitCommitParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub allow_empty: Option<bool>,
+    pub message: String,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub session_id: Option<String>,
+}
+impl From<&GitCommitParams> for GitCommitParams {
+    fn from(value: &GitCommitParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.commit."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitCommitResult\","]
+#[doc = "  \"description\": \"Result of git.commit.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"commit\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"commit\": {"]
+#[doc = "      \"$ref\": \"#/$defs/GitCommit\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitCommitResult {
+    pub commit: GitCommit,
+}
+impl From<&GitCommitResult> for GitCommitResult {
+    fn from(value: &GitCommitResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "The [git] section of brain.toml. Parsed and preserved only in Phase 1 (no runtime effect)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
@@ -7615,6 +8296,1207 @@ pub struct GitConfig {
 }
 impl From<&GitConfig> for GitConfig {
     fn from(value: &GitConfig) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One conflicted path."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitConflict\","]
+#[doc = "  \"description\": \"One conflicted path.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"has_base\","]
+#[doc = "    \"has_ours\","]
+#[doc = "    \"has_theirs\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"has_base\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"has_ours\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"has_theirs\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitConflict {
+    pub has_base: bool,
+    pub has_ours: bool,
+    pub has_theirs: bool,
+    pub path: String,
+}
+impl From<&GitConflict> for GitConflict {
+    fn from(value: &GitConflict) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.conflicts."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitConflictsParams\","]
+#[doc = "  \"description\": \"Params of git.conflicts.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitConflictsParams {
+    pub project_id: String,
+}
+impl From<&GitConflictsParams> for GitConflictsParams {
+    fn from(value: &GitConflictsParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.conflicts."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitConflictsResult\","]
+#[doc = "  \"description\": \"Result of git.conflicts.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"conflicts\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"conflicts\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitConflict\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitConflictsResult {
+    pub conflicts: Vec<GitConflict>,
+}
+impl From<&GitConflictsResult> for GitConflictsResult {
+    fn from(value: &GitConflictsResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One hunk of a file diff."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitDiffHunk\","]
+#[doc = "  \"description\": \"One hunk of a file diff.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"header\","]
+#[doc = "    \"lines\","]
+#[doc = "    \"new_lines\","]
+#[doc = "    \"new_start\","]
+#[doc = "    \"old_lines\","]
+#[doc = "    \"old_start\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"header\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"lines\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitDiffLine\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"new_lines\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"new_start\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"old_lines\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"old_start\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitDiffHunk {
+    pub header: String,
+    pub lines: Vec<GitDiffLine>,
+    pub new_lines: u64,
+    pub new_start: u64,
+    pub old_lines: u64,
+    pub old_start: u64,
+}
+impl From<&GitDiffHunk> for GitDiffHunk {
+    fn from(value: &GitDiffHunk) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One line of a diff hunk."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitDiffLine\","]
+#[doc = "  \"description\": \"One line of a diff hunk.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"content\","]
+#[doc = "    \"kind\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"content\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"type\": \"string\","]
+#[doc = "      \"enum\": ["]
+#[doc = "        \"context\","]
+#[doc = "        \"add\","]
+#[doc = "        \"del\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"new_line\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"old_line\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitDiffLine {
+    pub content: String,
+    pub kind: GitDiffLineKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub new_line: Option<u64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub old_line: Option<u64>,
+}
+impl From<&GitDiffLine> for GitDiffLine {
+    fn from(value: &GitDiffLine) -> Self {
+        value.clone()
+    }
+}
+#[doc = "GitDiffLineKind"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"context\","]
+#[doc = "    \"add\","]
+#[doc = "    \"del\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum GitDiffLineKind {
+    #[serde(rename = "context")]
+    Context,
+    #[serde(rename = "add")]
+    Add,
+    #[serde(rename = "del")]
+    Del,
+}
+impl From<&GitDiffLineKind> for GitDiffLineKind {
+    fn from(value: &GitDiffLineKind) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for GitDiffLineKind {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Context => write!(f, "context"),
+            Self::Add => write!(f, "add"),
+            Self::Del => write!(f, "del"),
+        }
+    }
+}
+impl std::str::FromStr for GitDiffLineKind {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "context" => Ok(Self::Context),
+            "add" => Ok(Self::Add),
+            "del" => Ok(Self::Del),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for GitDiffLineKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for GitDiffLineKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for GitDiffLineKind {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params of git.diff."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitDiffParams\","]
+#[doc = "  \"description\": \"Params of git.diff.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"commit\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"staged\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitDiffParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub commit: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub staged: Option<bool>,
+}
+impl From<&GitDiffParams> for GitDiffParams {
+    fn from(value: &GitDiffParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.diff."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitDiffResult\","]
+#[doc = "  \"description\": \"Result of git.diff.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"files\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"files\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitFileDiff\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitDiffResult {
+    pub files: Vec<GitFileDiff>,
+}
+impl From<&GitDiffResult> for GitDiffResult {
+    fn from(value: &GitDiffResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.discard; the backup makes it reversible."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitDiscardResult\","]
+#[doc = "  \"description\": \"Result of git.discard; the backup makes it reversible.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"backup\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"backup\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitDiscardResult {
+    pub backup: String,
+}
+impl From<&GitDiscardResult> for GitDiscardResult {
+    fn from(value: &GitDiscardResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One changed file with its hunks."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitFileDiff\","]
+#[doc = "  \"description\": \"One changed file with its hunks.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"binary\","]
+#[doc = "    \"hunks\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"binary\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"hunks\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitDiffHunk\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"original_path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitFileDiff {
+    pub binary: bool,
+    pub hunks: Vec<GitDiffHunk>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_path: Option<String>,
+    pub path: String,
+}
+impl From<&GitFileDiff> for GitFileDiff {
+    fn from(value: &GitFileDiff) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A changed file in a commit, without hunks."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitFileSummary\","]
+#[doc = "  \"description\": \"A changed file in a commit, without hunks.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"additions\","]
+#[doc = "    \"deletions\","]
+#[doc = "    \"path\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"additions\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"deletions\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"original_path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitFileSummary {
+    pub additions: u64,
+    pub deletions: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_path: Option<String>,
+    pub path: String,
+}
+impl From<&GitFileSummary> for GitFileSummary {
+    fn from(value: &GitFileSummary) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.log."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitLogParams\","]
+#[doc = "  \"description\": \"Params of git.log.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"limit\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"minimum\": 1.0"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitLogParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub limit: Option<std::num::NonZeroU64>,
+    pub project_id: String,
+}
+impl From<&GitLogParams> for GitLogParams {
+    fn from(value: &GitLogParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.log."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitLogResult\","]
+#[doc = "  \"description\": \"Result of git.log.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"commits\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"commits\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitCommitInfo\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitLogResult {
+    pub commits: Vec<GitCommitInfo>,
+}
+impl From<&GitLogResult> for GitLogResult {
+    fn from(value: &GitLogResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of the path-based git commands."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitPathsParams\","]
+#[doc = "  \"description\": \"Params of the path-based git commands.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"paths\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"paths\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitPathsParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    pub paths: Vec<String>,
+    pub project_id: String,
+}
+impl From<&GitPathsParams> for GitPathsParams {
+    fn from(value: &GitPathsParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.fetch, git.pull, and git.push."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitRemoteParams\","]
+#[doc = "  \"description\": \"Params of git.fetch, git.pull, and git.push.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"remote\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitRemoteParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub remote: Option<String>,
+}
+impl From<&GitRemoteParams> for GitRemoteParams {
+    fn from(value: &GitRemoteParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of a remote git operation."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitRemoteResult\","]
+#[doc = "  \"description\": \"Result of a remote git operation.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"operation\","]
+#[doc = "    \"output\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"operation\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"output\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitRemoteResult {
+    pub operation: String,
+    pub output: String,
+}
+impl From<&GitRemoteResult> for GitRemoteResult {
+    fn from(value: &GitRemoteResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The repository status, including upstream tracking."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitRepoStatus\","]
+#[doc = "  \"description\": \"The repository status, including upstream tracking.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"ahead\","]
+#[doc = "    \"behind\","]
+#[doc = "    \"branch\","]
+#[doc = "    \"clean\","]
+#[doc = "    \"detached\","]
+#[doc = "    \"entries\","]
+#[doc = "    \"head\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"ahead\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"behind\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"branch\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"clean\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"detached\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"entries\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitStatusEntry\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"head\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitRepoStatus {
+    pub ahead: u64,
+    pub behind: u64,
+    pub branch: Option<String>,
+    pub clean: bool,
+    pub detached: bool,
+    pub entries: Vec<GitStatusEntry>,
+    pub head: Option<String>,
+    pub project_id: String,
+}
+impl From<&GitRepoStatus> for GitRepoStatus {
+    fn from(value: &GitRepoStatus) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.resolve."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitResolveParams\","]
+#[doc = "  \"description\": \"Params of git.resolve.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"strategy\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"strategy\": {"]
+#[doc = "      \"type\": \"string\","]
+#[doc = "      \"enum\": ["]
+#[doc = "        \"ours\","]
+#[doc = "        \"theirs\","]
+#[doc = "        \"mark_resolved\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitResolveParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    pub path: String,
+    pub project_id: String,
+    pub strategy: GitResolveParamsStrategy,
+}
+impl From<&GitResolveParams> for GitResolveParams {
+    fn from(value: &GitResolveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "GitResolveParamsStrategy"]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"ours\","]
+#[doc = "    \"theirs\","]
+#[doc = "    \"mark_resolved\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum GitResolveParamsStrategy {
+    #[serde(rename = "ours")]
+    Ours,
+    #[serde(rename = "theirs")]
+    Theirs,
+    #[serde(rename = "mark_resolved")]
+    MarkResolved,
+}
+impl From<&GitResolveParamsStrategy> for GitResolveParamsStrategy {
+    fn from(value: &GitResolveParamsStrategy) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for GitResolveParamsStrategy {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Ours => write!(f, "ours"),
+            Self::Theirs => write!(f, "theirs"),
+            Self::MarkResolved => write!(f, "mark_resolved"),
+        }
+    }
+}
+impl std::str::FromStr for GitResolveParamsStrategy {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "ours" => Ok(Self::Ours),
+            "theirs" => Ok(Self::Theirs),
+            "mark_resolved" => Ok(Self::MarkResolved),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for GitResolveParamsStrategy {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for GitResolveParamsStrategy {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for GitResolveParamsStrategy {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Result of git.resolve."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitResolveResult\","]
+#[doc = "  \"description\": \"Result of git.resolve.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"resolved\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"resolved\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitResolveResult {
+    pub resolved: bool,
+}
+impl From<&GitResolveResult> for GitResolveResult {
+    fn from(value: &GitResolveResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.show."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitShowParams\","]
+#[doc = "  \"description\": \"Params of git.show.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"commit\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"commit\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitShowParams {
+    pub commit: String,
+    pub project_id: String,
+}
+impl From<&GitShowParams> for GitShowParams {
+    fn from(value: &GitShowParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.show."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitShowResult\","]
+#[doc = "  \"description\": \"Result of git.show.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"commit\","]
+#[doc = "    \"files\","]
+#[doc = "    \"message\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"commit\": {"]
+#[doc = "      \"$ref\": \"#/$defs/GitCommitInfo\""]
+#[doc = "    },"]
+#[doc = "    \"files\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/GitFileSummary\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"message\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitShowResult {
+    pub commit: GitCommitInfo,
+    pub files: Vec<GitFileSummary>,
+    pub message: String,
+}
+impl From<&GitShowResult> for GitShowResult {
+    fn from(value: &GitShowResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.stage and git.unstage."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitStageResult\","]
+#[doc = "  \"description\": \"Result of git.stage and git.unstage.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"paths\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"paths\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitStageResult {
+    pub paths: u64,
+}
+impl From<&GitStageResult> for GitStageResult {
+    fn from(value: &GitStageResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One changed path in the working tree or the index."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitStatusEntry\","]
+#[doc = "  \"description\": \"One changed path in the working tree or the index.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"kind\","]
+#[doc = "    \"path\","]
+#[doc = "    \"staged\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"kind\": {"]
+#[doc = "      \"$ref\": \"#/$defs/GitChangeKind\""]
+#[doc = "    },"]
+#[doc = "    \"original_path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"staged\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitStatusEntry {
+    pub kind: GitChangeKind,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub original_path: Option<String>,
+    pub path: String,
+    pub staged: bool,
+}
+impl From<&GitStatusEntry> for GitStatusEntry {
+    fn from(value: &GitStatusEntry) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of git.status."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitStatusParams\","]
+#[doc = "  \"description\": \"Params of git.status.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitStatusParams {
+    pub project_id: String,
+}
+impl From<&GitStatusParams> for GitStatusParams {
+    fn from(value: &GitStatusParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of git.status and git.branch.switch."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"GitStatusResult\","]
+#[doc = "  \"description\": \"Result of git.status and git.branch.switch.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"status\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"status\": {"]
+#[doc = "      \"$ref\": \"#/$defs/GitRepoStatus\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct GitStatusResult {
+    pub status: GitRepoStatus,
+}
+impl From<&GitStatusResult> for GitStatusResult {
+    fn from(value: &GitStatusResult) -> Self {
         value.clone()
     }
 }
