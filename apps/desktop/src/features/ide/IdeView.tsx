@@ -18,6 +18,7 @@ import { toProblem } from '../lsp/problems';
 import { useLspDocuments } from '../lsp/useLspDocuments';
 import { useLspEditor } from '../lsp/useLspEditor';
 import { useProblems } from '../lsp/useProblems';
+import { SourceControlPanel } from '../git/SourceControlPanel';
 import { TerminalPanel } from '../terminal/TerminalPanel';
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
@@ -81,6 +82,7 @@ export function IdeView({
   const revealToken = useRef(0);
   const [showProblems, setShowProblems] = useState(false);
   const [showTerminal, setShowTerminal] = useState(false);
+  const [showScm, setShowScm] = useState(false);
   const [actions, setActions] = useState<LspCodeAction[] | null>(null);
   const [lspError, setLspError] = useState<string | null>(null);
   const problems = useProblems(kernel, projectId, trusted);
@@ -189,137 +191,157 @@ export function IdeView({
 
   return (
     <div className="ide-view">
-      <EditorTabs
-        tabs={tabs}
-        activeId={activePath ?? undefined}
-        onSelect={editor.select}
-        onClose={editor.close}
-        ariaLabel={t('ide.tabs.label')}
-      />
-      {active === null ? (
-        <div className="empty">
-          <div className="empty-title">
-            {editor.busy ? t('ide.view.loading') : t('ide.view.empty.title')}
-          </div>
-          <div className="empty-desc">{t('ide.view.empty.desc')}</div>
-        </div>
-      ) : (
-        <>
-          <div className="editor-breadcrumb">
-            <span>{t('ide.view.root')}</span>
-            {segments.map((segment, index) => (
-              <span
-                key={`${index}:${segment}`}
-                className={index === segments.length - 1 ? 'current' : undefined}
-              >
-                {segment}
-              </span>
-            ))}
-          </div>
-
-          {!trusted ? (
-            <div className="inline-feedback warning">{t('ide.view.untrusted')}</div>
-          ) : null}
-
-          {conflict === null ? null : (
-            <div className="inline-feedback warning ide-view__banner">
-              <span>{conflict.external ? t('ide.conflict.external') : t('ide.conflict.save')}</span>
-              <button className="btn btn-sm" type="button" onClick={() => void editor.reload()}>
-                {t('ide.conflict.reload')}
-              </button>
-              <button className="btn btn-sm" type="button" onClick={() => void editor.keepMine()}>
-                {t('ide.conflict.keep')}
-              </button>
-              <button
-                className="btn btn-ghost btn-sm"
-                type="button"
-                onClick={editor.dismissConflict}
-              >
-                {t('ide.conflict.dismiss')}
-              </button>
+      <div className="ide-view__workspace">
+        <div className="ide-view__column">
+          <EditorTabs
+            tabs={tabs}
+            activeId={activePath ?? undefined}
+            onSelect={editor.select}
+            onClose={editor.close}
+            ariaLabel={t('ide.tabs.label')}
+          />
+          {active === null ? (
+            <div className="empty">
+              <div className="empty-title">
+                {editor.busy ? t('ide.view.loading') : t('ide.view.empty.title')}
+              </div>
+              <div className="empty-desc">{t('ide.view.empty.desc')}</div>
             </div>
-          )}
-
-          {editor.error === null ? null : (
-            <div className="inline-feedback error">{editor.error}</div>
-          )}
-
-          {lspError === null ? null : <div className="inline-feedback info">{lspError}</div>}
-
-          {actions === null ? null : (
-            <div className="ide-actions" role="menu" aria-label={t('lsp.actions.label')}>
-              <span className="panel-title">{t('lsp.actions.label')}</span>
-              {actions.length === 0 ? (
-                <span className="t-caption">{t('lsp.actions.empty')}</span>
-              ) : (
-                actions.map((action) => (
-                  <button
-                    key={action.title}
-                    role="menuitem"
-                    type="button"
-                    className="btn btn-sm"
-                    onClick={() => applyAction(action)}
+          ) : (
+            <>
+              <div className="editor-breadcrumb">
+                <span>{t('ide.view.root')}</span>
+                {segments.map((segment, index) => (
+                  <span
+                    key={`${index}:${segment}`}
+                    className={index === segments.length - 1 ? 'current' : undefined}
                   >
-                    {action.title}
+                    {segment}
+                  </span>
+                ))}
+              </div>
+
+              {!trusted ? (
+                <div className="inline-feedback warning">{t('ide.view.untrusted')}</div>
+              ) : null}
+
+              {conflict === null ? null : (
+                <div className="inline-feedback warning ide-view__banner">
+                  <span>
+                    {conflict.external ? t('ide.conflict.external') : t('ide.conflict.save')}
+                  </span>
+                  <button className="btn btn-sm" type="button" onClick={() => void editor.reload()}>
+                    {t('ide.conflict.reload')}
                   </button>
-                ))
-              )}
-              <button
-                className="btn btn-ghost btn-sm"
-                type="button"
-                onClick={() => setActions(null)}
-              >
-                {t('lsp.actions.close')}
-              </button>
-            </div>
-          )}
-
-          {active.truncated ? (
-            <div className="inline-feedback warning">{t('ide.view.truncated')}</div>
-          ) : null}
-          {active.readOnly && !active.binary && !active.truncated && trusted ? (
-            <div className="inline-feedback warning">{t('ide.view.readOnly')}</div>
-          ) : null}
-
-          <div className="ide-view__body">
-            {active.binary ? (
-              <div className="empty">
-                <div className="empty-title">{t('ide.view.binary.title')}</div>
-                <div className="empty-desc">{t('ide.view.binary.desc')}</div>
-              </div>
-            ) : (
-              <div className="ide-editor">
-                {outline.length === 0 ? null : (
-                  <aside className="ide-editor__outline" aria-label={t('ide.outline.label')}>
-                    <div className="panel-title">{t('ide.outline.label')}</div>
-                    <OutlineList
-                      items={outline}
-                      onReveal={(item) => revealAt(item.line, item.column)}
-                    />
-                  </aside>
-                )}
-                <div className="ide-editor__main">
-                  <MonacoHost
-                    path={active.path}
-                    content={active.content}
-                    languageId={active.languageId}
-                    readOnly={active.readOnly || !trusted}
-                    theme={theme}
-                    openPaths={documents.map((document) => document.path)}
-                    reveal={reveal}
-                    markers={markers}
-                    lsp={hostLsp}
-                    onChange={(content) => editor.change(active.path, content)}
-                    onSave={() => void editor.save(active.path)}
-                  />
+                  <button
+                    className="btn btn-sm"
+                    type="button"
+                    onClick={() => void editor.keepMine()}
+                  >
+                    {t('ide.conflict.keep')}
+                  </button>
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    type="button"
+                    onClick={editor.dismissConflict}
+                  >
+                    {t('ide.conflict.dismiss')}
+                  </button>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
 
-          {editor.busy ? <div className="inline-feedback">{t('ide.view.busy')}</div> : null}
-        </>
-      )}
+              {editor.error === null ? null : (
+                <div className="inline-feedback error">{editor.error}</div>
+              )}
+
+              {lspError === null ? null : <div className="inline-feedback info">{lspError}</div>}
+
+              {actions === null ? null : (
+                <div className="ide-actions" role="menu" aria-label={t('lsp.actions.label')}>
+                  <span className="panel-title">{t('lsp.actions.label')}</span>
+                  {actions.length === 0 ? (
+                    <span className="t-caption">{t('lsp.actions.empty')}</span>
+                  ) : (
+                    actions.map((action) => (
+                      <button
+                        key={action.title}
+                        role="menuitem"
+                        type="button"
+                        className="btn btn-sm"
+                        onClick={() => applyAction(action)}
+                      >
+                        {action.title}
+                      </button>
+                    ))
+                  )}
+                  <button
+                    className="btn btn-ghost btn-sm"
+                    type="button"
+                    onClick={() => setActions(null)}
+                  >
+                    {t('lsp.actions.close')}
+                  </button>
+                </div>
+              )}
+
+              {active.truncated ? (
+                <div className="inline-feedback warning">{t('ide.view.truncated')}</div>
+              ) : null}
+              {active.readOnly && !active.binary && !active.truncated && trusted ? (
+                <div className="inline-feedback warning">{t('ide.view.readOnly')}</div>
+              ) : null}
+
+              <div className="ide-view__body">
+                {active.binary ? (
+                  <div className="empty">
+                    <div className="empty-title">{t('ide.view.binary.title')}</div>
+                    <div className="empty-desc">{t('ide.view.binary.desc')}</div>
+                  </div>
+                ) : (
+                  <div className="ide-editor">
+                    {outline.length === 0 ? null : (
+                      <aside className="ide-editor__outline" aria-label={t('ide.outline.label')}>
+                        <div className="panel-title">{t('ide.outline.label')}</div>
+                        <OutlineList
+                          items={outline}
+                          onReveal={(item) => revealAt(item.line, item.column)}
+                        />
+                      </aside>
+                    )}
+                    <div className="ide-editor__main">
+                      <MonacoHost
+                        path={active.path}
+                        content={active.content}
+                        languageId={active.languageId}
+                        readOnly={active.readOnly || !trusted}
+                        theme={theme}
+                        openPaths={documents.map((document) => document.path)}
+                        reveal={reveal}
+                        markers={markers}
+                        lsp={hostLsp}
+                        onChange={(content) => editor.change(active.path, content)}
+                        onSave={() => void editor.save(active.path)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {editor.busy ? <div className="inline-feedback">{t('ide.view.busy')}</div> : null}
+            </>
+          )}
+        </div>
+
+        {showScm ? (
+          <SourceControlPanel
+            kernel={kernel}
+            projectId={projectId}
+            trusted={trusted}
+            activePath={activePath}
+            onClose={() => setShowScm(false)}
+          />
+        ) : null}
+      </div>
 
       {showProblems ? (
         <ProblemsPanel
@@ -368,6 +390,14 @@ export function IdeView({
           }}
         >
           {t('ide.terminal.toggle')}
+        </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          type="button"
+          aria-pressed={showScm}
+          onClick={() => setShowScm((shown) => !shown)}
+        >
+          {t('ide.scm.toggle')}
         </button>
         <span className="t-caption">
           {t('ide.problems.summary', {

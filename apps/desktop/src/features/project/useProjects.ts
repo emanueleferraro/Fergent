@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type {
   GitChangeKind,
-  GitRepoStatus,
+  GitStatusResult,
   Project,
   ProjectFilesResult,
   ProjectListResult,
@@ -24,6 +24,9 @@ import { statusMap } from './model';
 
 /** Upper bound on the files the explorer asks for (the kernel caps at 500). */
 export const MAX_PROJECT_FILES = 500;
+
+/** Debounce for badge refreshes (a save can emit several events). */
+export const BADGE_REFRESH_MS = 300;
 
 /** The project state exposed to the IDE surfaces. */
 export interface ProjectsController {
@@ -108,9 +111,10 @@ export function useProjects(kernel: KernelClient): ProjectsController {
         }
       }
       try {
-        const status = await kernel.call<GitRepoStatus>('git.status', { project_id: activeId });
+        const result = await kernel.call<GitStatusResult>('git.status', { project_id: activeId });
         if (!cancelled) {
-          setStatuses(statusMap(status));
+          // The kernel wraps the status: `git.status` → `{ status }`.
+          setStatuses(statusMap(result.status));
         }
       } catch {
         if (!cancelled) {
@@ -122,6 +126,44 @@ export function useProjects(kernel: KernelClient): ProjectsController {
       cancelled = true;
     };
   }, [kernel, activeId, revision]);
+
+  // Saves and git operations change the tree badges; refresh after the burst.
+  useEffect(() => {
+    let cancelled = false;
+    let unlisten: (() => void) | undefined;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+    void kernel
+      .onEvent((event) => {
+        if (
+          event.kind !== 'file.saved' &&
+          event.kind !== 'git.status.changed' &&
+          event.kind !== 'git.commit.created'
+        ) {
+          return;
+        }
+        if (timer !== null) {
+          clearTimeout(timer);
+        }
+        timer = setTimeout(() => {
+          timer = null;
+          setRevision((current) => current + 1);
+        }, BADGE_REFRESH_MS);
+      })
+      .then((off) => {
+        if (cancelled) {
+          off();
+        } else {
+          unlisten = off;
+        }
+      });
+    return () => {
+      cancelled = true;
+      unlisten?.();
+      if (timer !== null) {
+        clearTimeout(timer);
+      }
+    };
+  }, [kernel]);
 
   const open = useCallback(
     async (path: string) => {

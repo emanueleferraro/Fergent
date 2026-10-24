@@ -17,6 +17,13 @@ import type {
   ChatMessage,
   ChatSession,
   Event,
+  GitBlameLine,
+  GitBranch,
+  GitCommit,
+  GitCommitInfo,
+  GitFileDiff,
+  GitRepoStatus,
+  GitStatusEntry,
   HealthSnapshot,
   LspServer,
   McpServer,
@@ -130,6 +137,11 @@ export class MockKernelClient implements KernelClient {
   private readonly mockProjectFiles = new Map<string, string[]>();
   private readonly mockProjectContents = new Map<string, string>();
   private readonly mockTermSessions: TermSession[] = [];
+  private mockGitEntries: GitStatusEntry[] = [];
+  private readonly mockGitBranches: GitBranch[] = [
+    { name: 'main', is_head: true, upstream: null, ahead: 0, behind: 0 },
+  ];
+  private readonly mockGitLog: GitCommitInfo[] = [];
   private readonly mockLspServers: LspServer[] = [
     {
       id: 'typescript',
@@ -249,16 +261,55 @@ export class MockKernelClient implements KernelClient {
         this.mockLayouts.set(projectId, payload.layout);
         return { layout: payload.layout };
       case 'git.status':
-        return {
-          project_id: projectId,
-          branch: null,
-          head: null,
-          detached: false,
-          ahead: 0,
-          behind: 0,
-          clean: true,
-          entries: [],
-        };
+        return { status: this.mockGitStatus(projectId) };
+      case 'git.diff':
+        return { files: this.mockGitDiff(payload) };
+      case 'git.stage':
+      case 'git.unstage': {
+        const staged = method === 'git.stage';
+        const paths = Array.isArray(payload.paths) ? payload.paths.map(String) : [];
+        let moved = 0;
+        for (const path of paths) {
+          const entry = this.mockGitEntries.find(
+            (item) => item.path === path && item.staged !== staged,
+          );
+          if (entry !== undefined) {
+            entry.staged = staged;
+            moved += 1;
+          }
+        }
+        return { paths: moved };
+      }
+      case 'git.discard': {
+        const paths = Array.isArray(payload.paths) ? payload.paths.map(String) : [];
+        this.mockGitEntries = this.mockGitEntries.filter(
+          (entry) => entry.staged || !paths.includes(entry.path),
+        );
+        return { backup: `mock-backup-${++this.mockSeq}` };
+      }
+      case 'git.commit':
+        return { commit: this.mockCommit(payload) };
+      case 'git.branches':
+        return { branches: this.mockGitBranches };
+      case 'git.branch.create':
+        return { branch: this.mockCreateBranch(payload) };
+      case 'git.branch.switch': {
+        const name = String(payload.name ?? '');
+        for (const branch of this.mockGitBranches) {
+          branch.is_head = branch.name === name;
+        }
+        return { status: this.mockGitStatus(projectId) };
+      }
+      case 'git.log': {
+        const limit = typeof payload.limit === 'number' ? payload.limit : this.mockGitLog.length;
+        return { commits: this.mockGitLog.slice(0, limit) };
+      }
+      case 'git.blame':
+        return { lines: this.mockBlame(projectId, String(payload.path ?? '')) };
+      case 'git.conflicts':
+        return { conflicts: [] };
+      case 'git.resolve':
+        return { resolved: true };
       case 'file.read':
         return this.mockReadFile(projectId, String(payload.path ?? ''));
       case 'file.write': {
@@ -524,6 +575,21 @@ export class MockKernelClient implements KernelClient {
       `${project.id}:src/main.ts`,
       'export function main(): void {\n  console.log("hello");\n}\n',
     );
+    if (this.mockGitEntries.length === 0 && this.mockGitLog.length === 0) {
+      const head = '0'.repeat(39) + '1';
+      this.mockGitLog.push({
+        id: head,
+        short_id: head.slice(0, 7),
+        author: 'Fergents',
+        author_email: 'dev@fergents.local',
+        time: Math.floor(Date.now() / 1000),
+        summary: 'Initial commit',
+      });
+      this.mockGitEntries.push(
+        { path: 'README.md', kind: 'modified', staged: false },
+        { path: 'src/main.ts', kind: 'untracked', staged: false },
+      );
+    }
     return project;
   }
 
@@ -548,6 +614,117 @@ export class MockKernelClient implements KernelClient {
     };
     this.mockTermSessions.push(session);
     return session;
+  }
+
+  private mockGitStatus(projectId: string): GitRepoStatus {
+    const head = this.mockGitBranches.find((branch) => branch.is_head) ?? null;
+    return {
+      project_id: projectId,
+      branch: head?.name ?? null,
+      head: this.mockGitLog[0]?.id ?? null,
+      detached: false,
+      ahead: 0,
+      behind: 0,
+      clean: this.mockGitEntries.length === 0,
+      entries: this.mockGitEntries.map((entry) => ({ ...entry })),
+    };
+  }
+
+  private mockGitDiff(payload: Record<string, unknown>): GitFileDiff[] {
+    if (typeof payload.commit === 'string') {
+      return [];
+    }
+    const staged = payload.staged === true;
+    const requested = typeof payload.path === 'string' ? payload.path : null;
+    const paths =
+      requested === null
+        ? this.mockGitEntries.filter((entry) => entry.staged === staged).map((entry) => entry.path)
+        : [requested];
+    return paths.map((path) => this.mockFileDiff(path));
+  }
+
+  private mockFileDiff(path: string): GitFileDiff {
+    return {
+      path,
+      binary: false,
+      hunks: [
+        {
+          old_start: 1,
+          old_lines: 2,
+          new_start: 1,
+          new_lines: 3,
+          header: '@@ -1,2 +1,3 @@',
+          lines: [
+            { kind: 'context', old_line: 1, new_line: 1, content: `# ${path}` },
+            { kind: 'del', old_line: 2, new_line: null, content: 'Old line' },
+            { kind: 'add', old_line: null, new_line: 2, content: 'New line' },
+          ],
+        },
+      ],
+    };
+  }
+
+  private mockCommit(payload: Record<string, unknown>): GitCommit {
+    const message = String(payload.message ?? '').trim();
+    const sequence = String(++this.mockSeq).padStart(40, '0');
+    const commit: GitCommit = {
+      id: sequence,
+      short_id: sequence.slice(0, 7),
+      summary: message,
+      trailers: [],
+    };
+    this.mockGitLog.unshift({
+      id: commit.id,
+      short_id: commit.short_id,
+      author: 'You',
+      author_email: 'you@fergents.local',
+      time: Math.floor(Date.now() / 1000),
+      summary: message,
+    });
+    this.mockGitEntries = this.mockGitEntries.filter((entry) => !entry.staged);
+    return commit;
+  }
+
+  private mockCreateBranch(payload: Record<string, unknown>): GitBranch {
+    const name = String(payload.name ?? '').trim();
+    const existing = this.mockGitBranches.find((branch) => branch.name === name);
+    if (existing !== undefined) {
+      return existing;
+    }
+    const checkout = payload.checkout === true;
+    if (checkout) {
+      for (const branch of this.mockGitBranches) {
+        branch.is_head = false;
+      }
+    }
+    const branch: GitBranch = {
+      name,
+      is_head: checkout,
+      upstream: null,
+      ahead: 0,
+      behind: 0,
+    };
+    this.mockGitBranches.push(branch);
+    return branch;
+  }
+
+  private mockBlame(projectId: string, path: string): GitBlameLine[] {
+    const head = this.mockGitLog[0];
+    if (head === undefined) {
+      return [];
+    }
+    const content = this.mockProjectContents.get(`${projectId}:${path}`) ?? '';
+    return content
+      .split('\n')
+      .slice(0, 100)
+      .map((line, index) => ({
+        line: index + 1,
+        commit: head.id,
+        short_commit: head.short_id,
+        author: head.author,
+        time: head.time,
+        content: line,
+      }));
   }
 
   private mockReadFile(projectId: string, path: string): unknown {
