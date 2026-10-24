@@ -2011,6 +2011,117 @@ async fn dispatch(
             })
             .await
         }
+        "term.open" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let shell = optional_str(&params, "shell").map(str::to_string);
+            let cwd = optional_str(&params, "cwd").map(str::to_string);
+            let cols = params.get("cols").and_then(Value::as_u64).map(|v| v as u16);
+            let rows = params.get("rows").and_then(Value::as_u64).map(|v| v as u16);
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .open(
+                        &project_id,
+                        shell.as_deref(),
+                        cwd.as_deref(),
+                        cols,
+                        rows,
+                        &actor,
+                    )
+                    .map(|session| serde_json::json!({ "session": to_value(&session) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.write" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let data = required_str(&params, "data")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .write(&session_id, &data)
+                    .map(|()| serde_json::json!({ "ok": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.resize" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let cols = required_u32(&params, "cols")? as u16;
+            let rows = required_u32(&params, "rows")? as u16;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .resize(&session_id, cols, rows)
+                    .map(|()| serde_json::json!({ "ok": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.close" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .close(&session_id)
+                    .map(|closed| serde_json::json!({ "ok": closed }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.list" => {
+            let project_id = optional_str(&params, "project_id").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .list(project_id.as_deref())
+                    .map(|sessions| serde_json::json!({ "sessions": to_value(&sessions) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.read" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let max_lines = params
+                .get("max_lines")
+                .and_then(Value::as_u64)
+                .map(|value| value as usize);
+            let max_bytes = params
+                .get("max_bytes")
+                .and_then(Value::as_u64)
+                .map(|value| value as usize);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .read(&session_id, max_lines, max_bytes)
+                    .map(|output| serde_json::json!({ "output": output }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.exec" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let command = required_str(&params, "command")?.to_string();
+            let actor = optional_str(&params, "actor")
+                .unwrap_or("agent")
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .exec(&project_id, &command, &actor)
+                    .map(|session| serde_json::json!({ "session": to_value(&session) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "secret.list" => {
             let kernel = kernel.clone();
             run_blocking(move || {
@@ -2414,6 +2525,7 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("project.") => Some("capability.ide"),
         method if method.starts_with("file.") => Some("capability.ide"),
         method if method.starts_with("lsp.") => Some("capability.lsp"),
+        method if method.starts_with("term.") => Some("capability.terminal"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
         method if method.starts_with("mcp.") => Some("capability.mcp"),
@@ -2584,6 +2696,20 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
             | fergents_lsp::LspError::DocumentNotOpen(_),
         ) => (ErrorCode::InvalidParams, err.to_string()),
         CoreError::Lsp(_) => (ErrorCode::InternalError, err.to_string()),
+        CoreError::Terminal(fergents_terminal::TerminalError::Project(
+            fergents_ide::ProjectError::Untrusted(_),
+        )) => (ErrorCode::ProjectUntrusted, err.to_string()),
+        CoreError::Terminal(fergents_terminal::TerminalError::Storage(_)) => {
+            (ErrorCode::StorageError, err.to_string())
+        }
+        CoreError::Terminal(
+            fergents_terminal::TerminalError::Project(_)
+            | fergents_terminal::TerminalError::UnknownSession(_)
+            | fergents_terminal::TerminalError::NotRunning(_)
+            | fergents_terminal::TerminalError::ShellNotAllowed(_)
+            | fergents_terminal::TerminalError::Invalid(_),
+        ) => (ErrorCode::InvalidParams, err.to_string()),
+        CoreError::Terminal(_) => (ErrorCode::InternalError, err.to_string()),
         CoreError::Capability(cap) => {
             let code = if matches!(cap, fergents_capabilities::CapabilityError::Disabled(_)) {
                 ErrorCode::CapabilityDisabled

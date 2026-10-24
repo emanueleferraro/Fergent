@@ -3183,3 +3183,114 @@ export interface LspDiagnosticsParams {
 export interface LspDiagnosticsResult {
   diagnostics: LspDiagnostic[];
 }
+
+/**
+ * The lifecycle state of a terminal session.
+ */
+export type TermSessionState = 'running' | 'exited' | 'closed';
+
+/**
+ * One terminal session (spec Appendix B).
+ */
+export interface TermSession {
+  id: string;
+  project_id: string;
+  shell: string;
+  cwd: string;
+  cols: number;
+  rows: number;
+  state: TermSessionState;
+  exit_code: number | null;
+  actor: string;
+  created_at: number;
+  closed_at: number | null;
+}
+
+/**
+ * Params of term.open.
+ */
+export interface TermOpenParams {
+  project_id: string;
+  shell?: string | null;
+  cwd?: string | null;
+  cols?: number | null;
+  rows?: number | null;
+  actor?: string | null;
+}
+
+/**
+ * Result of term.open and term.exec.
+ */
+export interface TermSessionResult {
+  session: TermSession;
+}
+
+/**
+ * Params carrying a terminal session id.
+ */
+export interface TermIdParams {
+  session_id: string;
+}
+
+/**
+ * Params of term.write.
+ */
+export interface TermWriteParams {
+  session_id: string;
+  data: string;
+}
+
+/**
+ * Params of term.resize.
+ */
+export interface TermResizeParams {
+  session_id: string;
+  cols: number;
+  rows: number;
+}
+
+/**
+ * Acknowledges term.write, term.resize, and term.close.
+ */
+export interface TermAck {
+  ok: boolean;
+}
+
+/**
+ * Params of term.list.
+ */
+export interface TermListParams {
+  project_id?: string | null;
+}
+
+/**
+ * Result of term.list.
+ */
+export interface TermListResult {
+  sessions: TermSession[];
+}
+
+/**
+ * Params of term.read.
+ */
+export interface TermReadParams {
+  session_id: string;
+  max_lines?: number | null;
+  max_bytes?: number | null;
+}
+
+/**
+ * Result of term.read.
+ */
+export interface TermReadResult {
+  output: string;
+}
+
+/**
+ * Params of term.exec.
+ */
+export interface TermExecParams {
+  project_id: string;
+  command: string;
+  actor?: string | null;
+}

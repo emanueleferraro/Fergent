@@ -38,6 +38,7 @@ use fergents_protocol::{
 use fergents_reversibility::ReversibilityService;
 use fergents_secrets::{Keychain, KeyringKeychain, SecretVault};
 use fergents_storage::{SqliteStorage, Storage, StorageError, Value};
+use fergents_terminal::{terminal_tools, TerminalService};
 
 pub use brains::{BrainService, BusSink};
 
@@ -89,6 +90,9 @@ pub enum CoreError {
     /// An LSP failure.
     #[error(transparent)]
     Lsp(#[from] fergents_lsp::LspError),
+    /// A terminal failure.
+    #[error(transparent)]
+    Terminal(#[from] fergents_terminal::TerminalError),
 }
 
 /// Kernel configuration.
@@ -160,6 +164,7 @@ pub struct Kernel {
     projects: Arc<ProjectService>,
     files: Arc<FileService>,
     lsp: Arc<LspService>,
+    terminal: Arc<TerminalService>,
     subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
@@ -246,6 +251,14 @@ impl Kernel {
             bus.clone(),
             projects.clone(),
         ));
+        let terminal = Arc::new(TerminalService::new(
+            storage.clone(),
+            bus.clone(),
+            projects.clone(),
+        ));
+        for tool in terminal_tools(terminal.clone()) {
+            tools.register(tool);
+        }
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -274,6 +287,7 @@ impl Kernel {
             projects,
             files,
             lsp,
+            terminal,
             subagents,
             started: Instant::now(),
             started_ms: now_ms(),
@@ -283,6 +297,8 @@ impl Kernel {
         kernel.reconcile_sessions()?;
         // Resume watching every known project (file.changed events).
         let _ = kernel.files.watch_all();
+        // PTY sessions do not survive a kernel restart.
+        let _ = kernel.terminal.reconcile();
         kernel.bus.publish(
             "kernel.started",
             "kernel",
@@ -379,6 +395,11 @@ impl Kernel {
     /// Language-server sessions, document sync, and diagnostics.
     pub fn lsp(&self) -> &LspService {
         self.lsp.as_ref()
+    }
+
+    /// PTY sessions, scrollback, and visible shell execution.
+    pub fn terminal(&self) -> &TerminalService {
+        self.terminal.as_ref()
     }
 
     /// The sub-agent manager (async children, collect, cancel, handoff).

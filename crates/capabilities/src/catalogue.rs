@@ -63,6 +63,14 @@ pub fn default_catalogue() -> Vec<Capability> {
             true,
         ),
         capability(
+            "capability.terminal",
+            "Terminal",
+            "PTY sessions, scrollback rings, and visible shell execution.",
+            &["capability.ide"],
+            true,
+            true,
+        ),
+        capability(
             "capability.llm",
             "LLM Router",
             "Providers, routing, budgets, and caches.",

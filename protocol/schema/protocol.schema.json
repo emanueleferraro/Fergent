@@ -3671,6 +3671,165 @@
           "items": { "$ref": "#/$defs/LspDiagnostic" }
         }
       }
+    },
+    "TermSessionState": {
+      "title": "TermSessionState",
+      "description": "The lifecycle state of a terminal session.",
+      "type": "string",
+      "enum": ["running", "exited", "closed"]
+    },
+    "TermSession": {
+      "title": "TermSession",
+      "description": "One terminal session (spec Appendix B).",
+      "type": "object",
+      "required": [
+        "id",
+        "project_id",
+        "shell",
+        "cwd",
+        "cols",
+        "rows",
+        "state",
+        "exit_code",
+        "actor",
+        "created_at",
+        "closed_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "shell": { "type": "string" },
+        "cwd": { "type": "string" },
+        "cols": { "type": "integer", "minimum": 0 },
+        "rows": { "type": "integer", "minimum": 0 },
+        "state": { "$ref": "#/$defs/TermSessionState" },
+        "exit_code": { "type": ["integer", "null"], "format": "int64" },
+        "actor": { "type": "string" },
+        "created_at": { "type": "integer", "format": "int64" },
+        "closed_at": { "type": ["integer", "null"], "format": "int64" }
+      }
+    },
+    "TermOpenParams": {
+      "title": "TermOpenParams",
+      "description": "Params of term.open.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "shell": { "type": ["string", "null"] },
+        "cwd": { "type": ["string", "null"] },
+        "cols": { "type": ["integer", "null"] },
+        "rows": { "type": ["integer", "null"] },
+        "actor": { "type": ["string", "null"] }
+      }
+    },
+    "TermSessionResult": {
+      "title": "TermSessionResult",
+      "description": "Result of term.open and term.exec.",
+      "type": "object",
+      "required": ["session"],
+      "additionalProperties": false,
+      "properties": {
+        "session": { "$ref": "#/$defs/TermSession" }
+      }
+    },
+    "TermIdParams": {
+      "title": "TermIdParams",
+      "description": "Params carrying a terminal session id.",
+      "type": "object",
+      "required": ["session_id"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" }
+      }
+    },
+    "TermWriteParams": {
+      "title": "TermWriteParams",
+      "description": "Params of term.write.",
+      "type": "object",
+      "required": ["session_id", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "data": { "type": "string" }
+      }
+    },
+    "TermResizeParams": {
+      "title": "TermResizeParams",
+      "description": "Params of term.resize.",
+      "type": "object",
+      "required": ["session_id", "cols", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "cols": { "type": "integer" },
+        "rows": { "type": "integer" }
+      }
+    },
+    "TermAck": {
+      "title": "TermAck",
+      "description": "Acknowledges term.write, term.resize, and term.close.",
+      "type": "object",
+      "required": ["ok"],
+      "additionalProperties": false,
+      "properties": {
+        "ok": { "type": "boolean" }
+      }
+    },
+    "TermListParams": {
+      "title": "TermListParams",
+      "description": "Params of term.list.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": ["string", "null"] }
+      }
+    },
+    "TermListResult": {
+      "title": "TermListResult",
+      "description": "Result of term.list.",
+      "type": "object",
+      "required": ["sessions"],
+      "additionalProperties": false,
+      "properties": {
+        "sessions": { "type": "array", "items": { "$ref": "#/$defs/TermSession" } }
+      }
+    },
+    "TermReadParams": {
+      "title": "TermReadParams",
+      "description": "Params of term.read.",
+      "type": "object",
+      "required": ["session_id"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "max_lines": { "type": ["integer", "null"] },
+        "max_bytes": { "type": ["integer", "null"] }
+      }
+    },
+    "TermReadResult": {
+      "title": "TermReadResult",
+      "description": "Result of term.read.",
+      "type": "object",
+      "required": ["output"],
+      "additionalProperties": false,
+      "properties": {
+        "output": { "type": "string" }
+      }
+    },
+    "TermExecParams": {
+      "title": "TermExecParams",
+      "description": "Params of term.exec.",
+      "type": "object",
+      "required": ["project_id", "command"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "command": { "type": "string" },
+        "actor": { "type": ["string", "null"] }
+      }
     }
   }
 }

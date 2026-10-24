@@ -1,0 +1,22 @@
+[package]
+name = "fergents-terminal"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents terminal: PTY sessions, ring buffers, and agent-facing term tools."
+
+[dependencies]
+fergents-storage = { workspace = true }
+fergents-events = { workspace = true }
+fergents-ide = { workspace = true }
+fergents-agents = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ulid = { workspace = true }
+portable-pty = "0.8"
+
+[dev-dependencies]
+tempfile = { workspace = true }

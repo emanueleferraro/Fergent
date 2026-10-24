@@ -15724,6 +15724,607 @@ impl From<&TemplateRenderResult> for TemplateRenderResult {
         value.clone()
     }
 }
+#[doc = "Acknowledges term.write, term.resize, and term.close."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermAck\","]
+#[doc = "  \"description\": \"Acknowledges term.write, term.resize, and term.close.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"ok\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"ok\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermAck {
+    pub ok: bool,
+}
+impl From<&TermAck> for TermAck {
+    fn from(value: &TermAck) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of term.exec."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermExecParams\","]
+#[doc = "  \"description\": \"Params of term.exec.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"command\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"command\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermExecParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    pub command: String,
+    pub project_id: String,
+}
+impl From<&TermExecParams> for TermExecParams {
+    fn from(value: &TermExecParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params carrying a terminal session id."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermIdParams\","]
+#[doc = "  \"description\": \"Params carrying a terminal session id.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermIdParams {
+    pub session_id: String,
+}
+impl From<&TermIdParams> for TermIdParams {
+    fn from(value: &TermIdParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of term.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermListParams\","]
+#[doc = "  \"description\": \"Params of term.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermListParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub project_id: Option<String>,
+}
+impl From<&TermListParams> for TermListParams {
+    fn from(value: &TermListParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of term.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermListResult\","]
+#[doc = "  \"description\": \"Result of term.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"sessions\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"sessions\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/TermSession\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermListResult {
+    pub sessions: Vec<TermSession>,
+}
+impl From<&TermListResult> for TermListResult {
+    fn from(value: &TermListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of term.open."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermOpenParams\","]
+#[doc = "  \"description\": \"Params of term.open.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"cols\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"cwd\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"rows\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"shell\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermOpenParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub actor: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cols: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub cwd: Option<String>,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub rows: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub shell: Option<String>,
+}
+impl From<&TermOpenParams> for TermOpenParams {
+    fn from(value: &TermOpenParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of term.read."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermReadParams\","]
+#[doc = "  \"description\": \"Params of term.read.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"max_bytes\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"max_lines\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermReadParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_bytes: Option<i64>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max_lines: Option<i64>,
+    pub session_id: String,
+}
+impl From<&TermReadParams> for TermReadParams {
+    fn from(value: &TermReadParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of term.read."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermReadResult\","]
+#[doc = "  \"description\": \"Result of term.read.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"output\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"output\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermReadResult {
+    pub output: String,
+}
+impl From<&TermReadResult> for TermReadResult {
+    fn from(value: &TermReadResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of term.resize."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermResizeParams\","]
+#[doc = "  \"description\": \"Params of term.resize.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"cols\","]
+#[doc = "    \"rows\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"cols\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"rows\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermResizeParams {
+    pub cols: i64,
+    pub rows: i64,
+    pub session_id: String,
+}
+impl From<&TermResizeParams> for TermResizeParams {
+    fn from(value: &TermResizeParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One terminal session (spec Appendix B)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermSession\","]
+#[doc = "  \"description\": \"One terminal session (spec Appendix B).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"actor\","]
+#[doc = "    \"closed_at\","]
+#[doc = "    \"cols\","]
+#[doc = "    \"created_at\","]
+#[doc = "    \"cwd\","]
+#[doc = "    \"exit_code\","]
+#[doc = "    \"id\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"rows\","]
+#[doc = "    \"shell\","]
+#[doc = "    \"state\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"actor\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"closed_at\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"cols\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"created_at\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"cwd\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"exit_code\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"format\": \"int64\""]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"rows\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"minimum\": 0.0"]
+#[doc = "    },"]
+#[doc = "    \"shell\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"state\": {"]
+#[doc = "      \"$ref\": \"#/$defs/TermSessionState\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermSession {
+    pub actor: String,
+    pub closed_at: Option<i64>,
+    pub cols: u64,
+    pub created_at: i64,
+    pub cwd: String,
+    pub exit_code: Option<i64>,
+    pub id: String,
+    pub project_id: String,
+    pub rows: u64,
+    pub shell: String,
+    pub state: TermSessionState,
+}
+impl From<&TermSession> for TermSession {
+    fn from(value: &TermSession) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of term.open and term.exec."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermSessionResult\","]
+#[doc = "  \"description\": \"Result of term.open and term.exec.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"session\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"session\": {"]
+#[doc = "      \"$ref\": \"#/$defs/TermSession\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermSessionResult {
+    pub session: TermSession,
+}
+impl From<&TermSessionResult> for TermSessionResult {
+    fn from(value: &TermSessionResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The lifecycle state of a terminal session."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermSessionState\","]
+#[doc = "  \"description\": \"The lifecycle state of a terminal session.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"running\","]
+#[doc = "    \"exited\","]
+#[doc = "    \"closed\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum TermSessionState {
+    #[serde(rename = "running")]
+    Running,
+    #[serde(rename = "exited")]
+    Exited,
+    #[serde(rename = "closed")]
+    Closed,
+}
+impl From<&TermSessionState> for TermSessionState {
+    fn from(value: &TermSessionState) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for TermSessionState {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::Running => write!(f, "running"),
+            Self::Exited => write!(f, "exited"),
+            Self::Closed => write!(f, "closed"),
+        }
+    }
+}
+impl std::str::FromStr for TermSessionState {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "running" => Ok(Self::Running),
+            "exited" => Ok(Self::Exited),
+            "closed" => Ok(Self::Closed),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for TermSessionState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for TermSessionState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for TermSessionState {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Params of term.write."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"TermWriteParams\","]
+#[doc = "  \"description\": \"Params of term.write.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"data\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"data\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct TermWriteParams {
+    pub data: String,
+    pub session_id: String,
+}
+impl From<&TermWriteParams> for TermWriteParams {
+    fn from(value: &TermWriteParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Whether a project may run code (spec decision D3)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]
