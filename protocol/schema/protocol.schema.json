@@ -3201,6 +3201,635 @@
       "properties": {
         "hits": { "type": "array", "items": { "$ref": "#/$defs/ProjectSearchHit" } }
       }
+    },
+    "FileSnapshot": {
+      "title": "FileSnapshot",
+      "description": "A file read from a project (spec decision D2).",
+      "type": "object",
+      "required": [
+        "path",
+        "content",
+        "etag",
+        "size",
+        "language_id",
+        "truncated",
+        "binary"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "content": { "type": "string" },
+        "etag": { "type": "string" },
+        "size": { "type": "integer", "format": "int64" },
+        "language_id": { "type": "string" },
+        "truncated": { "type": "boolean" },
+        "binary": { "type": "boolean" }
+      }
+    },
+    "FileEntry": {
+      "title": "FileEntry",
+      "description": "One entry in a project directory listing.",
+      "type": "object",
+      "required": ["name", "path", "kind", "size"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "path": { "type": "string" },
+        "kind": { "type": "string", "enum": ["file", "dir"] },
+        "size": { "type": "integer", "format": "int64" }
+      }
+    },
+    "FileStat": {
+      "title": "FileStat",
+      "description": "Metadata for one project path.",
+      "type": "object",
+      "required": ["path", "kind", "size", "modified_at", "etag"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "kind": { "type": "string", "enum": ["file", "dir"] },
+        "size": { "type": "integer", "format": "int64" },
+        "modified_at": { "type": "integer", "format": "int64" },
+        "etag": { "type": "string" }
+      }
+    },
+    "FileReadParams": {
+      "title": "FileReadParams",
+      "description": "Params of file.read.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "FileReadResult": {
+      "title": "FileReadResult",
+      "description": "Result of file.read.",
+      "type": "object",
+      "required": ["file"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "$ref": "#/$defs/FileSnapshot" }
+      }
+    },
+    "FileWriteParams": {
+      "title": "FileWriteParams",
+      "description": "Params of file.write.",
+      "type": "object",
+      "required": ["project_id", "path", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "content": { "type": "string" },
+        "base_etag": { "type": ["string", "null"] }
+      }
+    },
+    "FileWriteResult": {
+      "title": "FileWriteResult",
+      "description": "Result of file.write and file.create.",
+      "type": "object",
+      "required": ["file"],
+      "additionalProperties": false,
+      "properties": {
+        "file": { "$ref": "#/$defs/FileSnapshot" }
+      }
+    },
+    "FileCreateParams": {
+      "title": "FileCreateParams",
+      "description": "Params of file.create.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "content": { "type": "string" }
+      }
+    },
+    "FilePathParams": {
+      "title": "FilePathParams",
+      "description": "Params carrying a project id and a path.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "FileRenameParams": {
+      "title": "FileRenameParams",
+      "description": "Params of file.rename.",
+      "type": "object",
+      "required": ["project_id", "from", "to"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "from": { "type": "string" },
+        "to": { "type": "string" }
+      }
+    },
+    "FileStatResult": {
+      "title": "FileStatResult",
+      "description": "Result of file.stat, file.mkdir, and file.rename.",
+      "type": "object",
+      "required": ["entry"],
+      "additionalProperties": false,
+      "properties": {
+        "entry": { "$ref": "#/$defs/FileStat" }
+      }
+    },
+    "FileDeleteResult": {
+      "title": "FileDeleteResult",
+      "description": "Result of file.delete.",
+      "type": "object",
+      "required": ["deleted"],
+      "additionalProperties": false,
+      "properties": {
+        "deleted": { "type": "boolean" }
+      }
+    },
+    "FileListParams": {
+      "title": "FileListParams",
+      "description": "Params of file.list.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "FileListResult": {
+      "title": "FileListResult",
+      "description": "Result of file.list.",
+      "type": "object",
+      "required": ["entries"],
+      "additionalProperties": false,
+      "properties": {
+        "entries": { "type": "array", "items": { "$ref": "#/$defs/FileEntry" } }
+      }
+    },
+    "LspServerStatus": {
+      "title": "LspServerStatus",
+      "description": "The lifecycle state of a language server.",
+      "type": "string",
+      "enum": ["not_installed", "starting", "ready", "failed", "stopped"]
+    },
+    "LspServer": {
+      "title": "LspServer",
+      "description": "A language-server configuration and its current state (spec Appendix B).",
+      "type": "object",
+      "required": [
+        "id",
+        "language_id",
+        "command",
+        "args",
+        "env",
+        "root_strategy",
+        "source",
+        "enabled",
+        "status",
+        "installed"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "language_id": { "type": "string" },
+        "command": { "type": "string" },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "env": { "type": "object", "additionalProperties": { "type": "string" } },
+        "root_strategy": { "type": "string" },
+        "source": { "type": "string" },
+        "enabled": { "type": "boolean" },
+        "status": { "$ref": "#/$defs/LspServerStatus" },
+        "installed": { "type": "boolean" }
+      }
+    },
+    "LspServerListResult": {
+      "title": "LspServerListResult",
+      "description": "Result of lsp.server.list.",
+      "type": "object",
+      "required": ["servers"],
+      "additionalProperties": false,
+      "properties": {
+        "servers": { "type": "array", "items": { "$ref": "#/$defs/LspServer" } }
+      }
+    },
+    "LspServerAddParams": {
+      "title": "LspServerAddParams",
+      "description": "Params of lsp.server.add.",
+      "type": "object",
+      "required": ["language_id", "command"],
+      "additionalProperties": false,
+      "properties": {
+        "language_id": { "type": "string" },
+        "command": { "type": "string" },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "env": { "type": "object", "additionalProperties": { "type": "string" } },
+        "source": { "type": "string" },
+        "enabled": { "type": ["boolean", "null"] }
+      }
+    },
+    "LspServerResult": {
+      "title": "LspServerResult",
+      "description": "Result of lsp.server.add, lsp.server.start, and lsp.server.restart.",
+      "type": "object",
+      "required": ["server"],
+      "additionalProperties": false,
+      "properties": {
+        "server": { "$ref": "#/$defs/LspServer" }
+      }
+    },
+    "LspServerIdParams": {
+      "title": "LspServerIdParams",
+      "description": "Params of lsp.server.remove.",
+      "type": "object",
+      "required": ["id"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" }
+      }
+    },
+    "LspServerRemoveResult": {
+      "title": "LspServerRemoveResult",
+      "description": "Result of lsp.server.remove.",
+      "type": "object",
+      "required": ["removed"],
+      "additionalProperties": false,
+      "properties": {
+        "removed": { "type": "boolean" }
+      }
+    },
+    "LspSessionParams": {
+      "title": "LspSessionParams",
+      "description": "Params of the lsp.server lifecycle commands.",
+      "type": "object",
+      "required": ["project_id", "language_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "language_id": { "type": "string" }
+      }
+    },
+    "LspServerStopResult": {
+      "title": "LspServerStopResult",
+      "description": "Result of lsp.server.stop.",
+      "type": "object",
+      "required": ["stopped"],
+      "additionalProperties": false,
+      "properties": {
+        "stopped": { "type": "boolean" }
+      }
+    },
+    "LspAck": {
+      "title": "LspAck",
+      "description": "Acknowledges a notification-style LSP command.",
+      "type": "object",
+      "required": ["ok"],
+      "additionalProperties": false,
+      "properties": {
+        "ok": { "type": "boolean" }
+      }
+    },
+    "LspDocumentOpenParams": {
+      "title": "LspDocumentOpenParams",
+      "description": "Params of lsp.document.open.",
+      "type": "object",
+      "required": ["project_id", "path", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "text": { "type": "string" },
+        "language_id": { "type": ["string", "null"] }
+      }
+    },
+    "LspDocumentChangeParams": {
+      "title": "LspDocumentChangeParams",
+      "description": "Params of lsp.document.change.",
+      "type": "object",
+      "required": ["project_id", "path", "text"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "text": { "type": "string" },
+        "range": { "type": ["object", "null"] }
+      }
+    },
+    "LspDocumentChangeResult": {
+      "title": "LspDocumentChangeResult",
+      "description": "Result of lsp.document.change.",
+      "type": "object",
+      "required": ["version"],
+      "additionalProperties": false,
+      "properties": {
+        "version": { "type": "integer" }
+      }
+    },
+    "LspDocumentPathParams": {
+      "title": "LspDocumentPathParams",
+      "description": "Params of lsp.document.close and lsp.document.save.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "text": { "type": ["string", "null"] }
+      }
+    },
+    "LspPositionParams": {
+      "title": "LspPositionParams",
+      "description": "Params of the position-based LSP requests.",
+      "type": "object",
+      "required": ["project_id", "path", "line", "character"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "line": { "type": "integer", "format": "uint32" },
+        "character": { "type": "integer", "format": "uint32" }
+      }
+    },
+    "LspRenameParams": {
+      "title": "LspRenameParams",
+      "description": "Params of lsp.rename.",
+      "type": "object",
+      "required": ["project_id", "path", "line", "character", "new_name"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "line": { "type": "integer", "format": "uint32" },
+        "character": { "type": "integer", "format": "uint32" },
+        "new_name": { "type": "string" }
+      }
+    },
+    "LspResolveParams": {
+      "title": "LspResolveParams",
+      "description": "Params of lsp.completion_resolve.",
+      "type": "object",
+      "required": ["project_id", "path", "item"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "item": { "type": "object" }
+      }
+    },
+    "LspWorkspaceSymbolsParams": {
+      "title": "LspWorkspaceSymbolsParams",
+      "description": "Params of lsp.workspace_symbols.",
+      "type": "object",
+      "required": ["project_id", "path", "query"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "query": { "type": "string" }
+      }
+    },
+    "LspFormatParams": {
+      "title": "LspFormatParams",
+      "description": "Params of lsp.format.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "tab_size": { "type": ["integer", "null"] },
+        "insert_spaces": { "type": ["boolean", "null"] }
+      }
+    },
+    "LspCodeActionParams": {
+      "title": "LspCodeActionParams",
+      "description": "Params of lsp.code_action.",
+      "type": "object",
+      "required": ["project_id", "path", "range"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "range": { "type": "object" },
+        "diagnostics": { "type": ["array", "null"], "items": { "type": "object" } }
+      }
+    },
+    "LspRequestResult": {
+      "title": "LspRequestResult",
+      "description": "The raw JSON result of an LSP request (server-defined shape).",
+      "type": "object",
+      "required": ["result"],
+      "additionalProperties": false,
+      "properties": {
+        "result": {}
+      }
+    },
+    "LspDiagnostic": {
+      "title": "LspDiagnostic",
+      "description": "One diagnostic published by a language server.",
+      "type": "object",
+      "required": ["path", "line", "column", "end_line", "end_column", "severity", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "line": { "type": "integer", "format": "uint32" },
+        "column": { "type": "integer", "format": "uint32" },
+        "end_line": { "type": "integer", "format": "uint32" },
+        "end_column": { "type": "integer", "format": "uint32" },
+        "severity": { "type": "integer" },
+        "message": { "type": "string" },
+        "source": { "type": ["string", "null"] },
+        "code": { "type": ["string", "null"] }
+      }
+    },
+    "LspDiagnosticsParams": {
+      "title": "LspDiagnosticsParams",
+      "description": "Params of lsp.diagnostics.list.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": ["string", "null"] }
+      }
+    },
+    "LspDiagnosticsResult": {
+      "title": "LspDiagnosticsResult",
+      "description": "Result of lsp.diagnostics.list.",
+      "type": "object",
+      "required": ["diagnostics"],
+      "additionalProperties": false,
+      "properties": {
+        "diagnostics": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/LspDiagnostic" }
+        }
+      }
+    },
+    "TermSessionState": {
+      "title": "TermSessionState",
+      "description": "The lifecycle state of a terminal session.",
+      "type": "string",
+      "enum": ["running", "exited", "closed"]
+    },
+    "TermSession": {
+      "title": "TermSession",
+      "description": "One terminal session (spec Appendix B).",
+      "type": "object",
+      "required": [
+        "id",
+        "project_id",
+        "shell",
+        "cwd",
+        "cols",
+        "rows",
+        "state",
+        "exit_code",
+        "actor",
+        "created_at",
+        "closed_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "shell": { "type": "string" },
+        "cwd": { "type": "string" },
+        "cols": { "type": "integer", "minimum": 0 },
+        "rows": { "type": "integer", "minimum": 0 },
+        "state": { "$ref": "#/$defs/TermSessionState" },
+        "exit_code": { "type": ["integer", "null"], "format": "int64" },
+        "actor": { "type": "string" },
+        "created_at": { "type": "integer", "format": "int64" },
+        "closed_at": { "type": ["integer", "null"], "format": "int64" }
+      }
+    },
+    "TermOpenParams": {
+      "title": "TermOpenParams",
+      "description": "Params of term.open.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "shell": { "type": ["string", "null"] },
+        "cwd": { "type": ["string", "null"] },
+        "cols": { "type": ["integer", "null"] },
+        "rows": { "type": ["integer", "null"] },
+        "actor": { "type": ["string", "null"] }
+      }
+    },
+    "TermSessionResult": {
+      "title": "TermSessionResult",
+      "description": "Result of term.open and term.exec.",
+      "type": "object",
+      "required": ["session"],
+      "additionalProperties": false,
+      "properties": {
+        "session": { "$ref": "#/$defs/TermSession" }
+      }
+    },
+    "TermIdParams": {
+      "title": "TermIdParams",
+      "description": "Params carrying a terminal session id.",
+      "type": "object",
+      "required": ["session_id"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" }
+      }
+    },
+    "TermWriteParams": {
+      "title": "TermWriteParams",
+      "description": "Params of term.write.",
+      "type": "object",
+      "required": ["session_id", "data"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "data": { "type": "string" }
+      }
+    },
+    "TermResizeParams": {
+      "title": "TermResizeParams",
+      "description": "Params of term.resize.",
+      "type": "object",
+      "required": ["session_id", "cols", "rows"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "cols": { "type": "integer" },
+        "rows": { "type": "integer" }
+      }
+    },
+    "TermAck": {
+      "title": "TermAck",
+      "description": "Acknowledges term.write, term.resize, and term.close.",
+      "type": "object",
+      "required": ["ok"],
+      "additionalProperties": false,
+      "properties": {
+        "ok": { "type": "boolean" }
+      }
+    },
+    "TermListParams": {
+      "title": "TermListParams",
+      "description": "Params of term.list.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": ["string", "null"] }
+      }
+    },
+    "TermListResult": {
+      "title": "TermListResult",
+      "description": "Result of term.list.",
+      "type": "object",
+      "required": ["sessions"],
+      "additionalProperties": false,
+      "properties": {
+        "sessions": { "type": "array", "items": { "$ref": "#/$defs/TermSession" } }
+      }
+    },
+    "TermReadParams": {
+      "title": "TermReadParams",
+      "description": "Params of term.read.",
+      "type": "object",
+      "required": ["session_id"],
+      "additionalProperties": false,
+      "properties": {
+        "session_id": { "type": "string" },
+        "max_lines": { "type": ["integer", "null"] },
+        "max_bytes": { "type": ["integer", "null"] }
+      }
+    },
+    "TermReadResult": {
+      "title": "TermReadResult",
+      "description": "Result of term.read.",
+      "type": "object",
+      "required": ["output"],
+      "additionalProperties": false,
+      "properties": {
+        "output": { "type": "string" }
+      }
+    },
+    "TermExecParams": {
+      "title": "TermExecParams",
+      "description": "Params of term.exec.",
+      "type": "object",
+      "required": ["project_id", "command"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "command": { "type": "string" },
+        "actor": { "type": ["string", "null"] }
+      }
     }
   }
 }

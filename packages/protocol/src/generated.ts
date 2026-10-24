@@ -2843,3 +2843,454 @@ export interface ProjectSearchParams {
 export interface ProjectSearchResult {
   hits: ProjectSearchHit[];
 }
+
+/**
+ * A file read from a project (spec decision D2).
+ */
+export interface FileSnapshot {
+  path: string;
+  content: string;
+  etag: string;
+  size: number;
+  language_id: string;
+  truncated: boolean;
+  binary: boolean;
+}
+
+/**
+ * One entry in a project directory listing.
+ */
+export interface FileEntry {
+  name: string;
+  path: string;
+  kind: 'file' | 'dir';
+  size: number;
+}
+
+/**
+ * Metadata for one project path.
+ */
+export interface FileStat {
+  path: string;
+  kind: 'file' | 'dir';
+  size: number;
+  modified_at: number;
+  etag: string;
+}
+
+/**
+ * Params of file.read.
+ */
+export interface FileReadParams {
+  project_id: string;
+  path: string;
+}
+
+/**
+ * Result of file.read.
+ */
+export interface FileReadResult {
+  file: FileSnapshot;
+}
+
+/**
+ * Params of file.write.
+ */
+export interface FileWriteParams {
+  project_id: string;
+  path: string;
+  content: string;
+  base_etag?: string | null;
+}
+
+/**
+ * Result of file.write and file.create.
+ */
+export interface FileWriteResult {
+  file: FileSnapshot;
+}
+
+/**
+ * Params of file.create.
+ */
+export interface FileCreateParams {
+  project_id: string;
+  path: string;
+  content?: string;
+}
+
+/**
+ * Params carrying a project id and a path.
+ */
+export interface FilePathParams {
+  project_id: string;
+  path: string;
+}
+
+/**
+ * Params of file.rename.
+ */
+export interface FileRenameParams {
+  project_id: string;
+  from: string;
+  to: string;
+}
+
+/**
+ * Result of file.stat, file.mkdir, and file.rename.
+ */
+export interface FileStatResult {
+  entry: FileStat;
+}
+
+/**
+ * Result of file.delete.
+ */
+export interface FileDeleteResult {
+  deleted: boolean;
+}
+
+/**
+ * Params of file.list.
+ */
+export interface FileListParams {
+  project_id: string;
+  path?: string;
+}
+
+/**
+ * Result of file.list.
+ */
+export interface FileListResult {
+  entries: FileEntry[];
+}
+
+/**
+ * The lifecycle state of a language server.
+ */
+export type LspServerStatus = 'not_installed' | 'starting' | 'ready' | 'failed' | 'stopped';
+
+/**
+ * A language-server configuration and its current state (spec Appendix B).
+ */
+export interface LspServer {
+  id: string;
+  language_id: string;
+  command: string;
+  args: string[];
+  env: {
+    [k: string]: string;
+  };
+  root_strategy: string;
+  source: string;
+  enabled: boolean;
+  status: LspServerStatus;
+  installed: boolean;
+}
+
+/**
+ * Result of lsp.server.list.
+ */
+export interface LspServerListResult {
+  servers: LspServer[];
+}
+
+/**
+ * Params of lsp.server.add.
+ */
+export interface LspServerAddParams {
+  language_id: string;
+  command: string;
+  args?: string[];
+  env?: {
+    [k: string]: string;
+  };
+  source?: string;
+  enabled?: boolean | null;
+}
+
+/**
+ * Result of lsp.server.add, lsp.server.start, and lsp.server.restart.
+ */
+export interface LspServerResult {
+  server: LspServer;
+}
+
+/**
+ * Params of lsp.server.remove.
+ */
+export interface LspServerIdParams {
+  id: string;
+}
+
+/**
+ * Result of lsp.server.remove.
+ */
+export interface LspServerRemoveResult {
+  removed: boolean;
+}
+
+/**
+ * Params of the lsp.server lifecycle commands.
+ */
+export interface LspSessionParams {
+  project_id: string;
+  language_id: string;
+}
+
+/**
+ * Result of lsp.server.stop.
+ */
+export interface LspServerStopResult {
+  stopped: boolean;
+}
+
+/**
+ * Acknowledges a notification-style LSP command.
+ */
+export interface LspAck {
+  ok: boolean;
+}
+
+/**
+ * Params of lsp.document.open.
+ */
+export interface LspDocumentOpenParams {
+  project_id: string;
+  path: string;
+  text: string;
+  language_id?: string | null;
+}
+
+/**
+ * Params of lsp.document.change.
+ */
+export interface LspDocumentChangeParams {
+  project_id: string;
+  path: string;
+  text: string;
+  range?: {} | null;
+}
+
+/**
+ * Result of lsp.document.change.
+ */
+export interface LspDocumentChangeResult {
+  version: number;
+}
+
+/**
+ * Params of lsp.document.close and lsp.document.save.
+ */
+export interface LspDocumentPathParams {
+  project_id: string;
+  path: string;
+  text?: string | null;
+}
+
+/**
+ * Params of the position-based LSP requests.
+ */
+export interface LspPositionParams {
+  project_id: string;
+  path: string;
+  line: number;
+  character: number;
+}
+
+/**
+ * Params of lsp.rename.
+ */
+export interface LspRenameParams {
+  project_id: string;
+  path: string;
+  line: number;
+  character: number;
+  new_name: string;
+}
+
+/**
+ * Params of lsp.completion_resolve.
+ */
+export interface LspResolveParams {
+  project_id: string;
+  path: string;
+  item: {};
+}
+
+/**
+ * Params of lsp.workspace_symbols.
+ */
+export interface LspWorkspaceSymbolsParams {
+  project_id: string;
+  path: string;
+  query: string;
+}
+
+/**
+ * Params of lsp.format.
+ */
+export interface LspFormatParams {
+  project_id: string;
+  path: string;
+  tab_size?: number | null;
+  insert_spaces?: boolean | null;
+}
+
+/**
+ * Params of lsp.code_action.
+ */
+export interface LspCodeActionParams {
+  project_id: string;
+  path: string;
+  range: {};
+  diagnostics?: {}[] | null;
+}
+
+/**
+ * The raw JSON result of an LSP request (server-defined shape).
+ */
+export interface LspRequestResult {
+  result: unknown;
+}
+
+/**
+ * One diagnostic published by a language server.
+ */
+export interface LspDiagnostic {
+  path: string;
+  line: number;
+  column: number;
+  end_line: number;
+  end_column: number;
+  severity: number;
+  message: string;
+  source?: string | null;
+  code?: string | null;
+}
+
+/**
+ * Params of lsp.diagnostics.list.
+ */
+export interface LspDiagnosticsParams {
+  project_id: string;
+  path?: string | null;
+}
+
+/**
+ * Result of lsp.diagnostics.list.
+ */
+export interface LspDiagnosticsResult {
+  diagnostics: LspDiagnostic[];
+}
+
+/**
+ * The lifecycle state of a terminal session.
+ */
+export type TermSessionState = 'running' | 'exited' | 'closed';
+
+/**
+ * One terminal session (spec Appendix B).
+ */
+export interface TermSession {
+  id: string;
+  project_id: string;
+  shell: string;
+  cwd: string;
+  cols: number;
+  rows: number;
+  state: TermSessionState;
+  exit_code: number | null;
+  actor: string;
+  created_at: number;
+  closed_at: number | null;
+}
+
+/**
+ * Params of term.open.
+ */
+export interface TermOpenParams {
+  project_id: string;
+  shell?: string | null;
+  cwd?: string | null;
+  cols?: number | null;
+  rows?: number | null;
+  actor?: string | null;
+}
+
+/**
+ * Result of term.open and term.exec.
+ */
+export interface TermSessionResult {
+  session: TermSession;
+}
+
+/**
+ * Params carrying a terminal session id.
+ */
+export interface TermIdParams {
+  session_id: string;
+}
+
+/**
+ * Params of term.write.
+ */
+export interface TermWriteParams {
+  session_id: string;
+  data: string;
+}
+
+/**
+ * Params of term.resize.
+ */
+export interface TermResizeParams {
+  session_id: string;
+  cols: number;
+  rows: number;
+}
+
+/**
+ * Acknowledges term.write, term.resize, and term.close.
+ */
+export interface TermAck {
+  ok: boolean;
+}
+
+/**
+ * Params of term.list.
+ */
+export interface TermListParams {
+  project_id?: string | null;
+}
+
+/**
+ * Result of term.list.
+ */
+export interface TermListResult {
+  sessions: TermSession[];
+}
+
+/**
+ * Params of term.read.
+ */
+export interface TermReadParams {
+  session_id: string;
+  max_lines?: number | null;
+  max_bytes?: number | null;
+}
+
+/**
+ * Result of term.read.
+ */
+export interface TermReadResult {
+  output: string;
+}
+
+/**
+ * Params of term.exec.
+ */
+export interface TermExecParams {
+  project_id: string;
+  command: string;
+  actor?: string | null;
+}

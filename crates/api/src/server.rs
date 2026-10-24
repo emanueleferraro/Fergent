@@ -1432,7 +1432,11 @@ async fn dispatch(
                 kernel
                     .projects()
                     .open(&path)
-                    .map(|project| serde_json::json!({ "project": to_value(&project) }))
+                    .map(|project| {
+                        // Watch for external changes as soon as a project opens.
+                        let _ = kernel.files().watch(&project.id);
+                        serde_json::json!({ "project": to_value(&project) })
+                    })
                     .map_err(CoreError::from)
             })
             .await
@@ -1467,7 +1471,10 @@ async fn dispatch(
                 kernel
                     .projects()
                     .close(&project_id)
-                    .map(|closed| serde_json::json!({ "closed": closed }))
+                    .map(|closed| {
+                        kernel.files().unwatch(&project_id);
+                        serde_json::json!({ "closed": closed })
+                    })
                     .map_err(CoreError::from)
             })
             .await
@@ -1540,6 +1547,577 @@ async fn dispatch(
                     .projects()
                     .search(&project_id, &query, limit)
                     .map(|hits| serde_json::json!({ "hits": to_value(&hits) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.read" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .read(&project_id, &path)
+                    .map(|file| serde_json::json!({ "file": to_value(&file) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.write" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let content = required_str(&params, "content")?.to_string();
+            let base_etag = optional_str(&params, "base_etag").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .write(&project_id, &path, &content, base_etag.as_deref())
+                    .map(|file| serde_json::json!({ "file": to_value(&file) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.create" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let content = optional_str(&params, "content")
+                .unwrap_or_default()
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .create(&project_id, &path, &content)
+                    .map(|file| serde_json::json!({ "file": to_value(&file) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.mkdir" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .mkdir(&project_id, &path)
+                    .map(|entry| serde_json::json!({ "entry": to_value(&entry) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.rename" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let from = required_str(&params, "from")?.to_string();
+            let to = required_str(&params, "to")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .rename(&project_id, &from, &to)
+                    .map(|entry| serde_json::json!({ "entry": to_value(&entry) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.delete" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .delete(&project_id, &path)
+                    .map(|deleted| serde_json::json!({ "deleted": deleted }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.list" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = optional_str(&params, "path")
+                .unwrap_or_default()
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .list(&project_id, &path)
+                    .map(|entries| serde_json::json!({ "entries": to_value(&entries) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "file.stat" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .files()
+                    .stat(&project_id, &path)
+                    .map(|entry| serde_json::json!({ "entry": to_value(&entry) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.server.list" => {
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .servers()
+                    .map(|servers| serde_json::json!({ "servers": to_value(&servers) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.server.add" => {
+            let language_id = required_str(&params, "language_id")?.to_string();
+            let command = required_str(&params, "command")?.to_string();
+            let args: Vec<String> = params
+                .get("args")
+                .and_then(|value| serde_json::from_value(value.clone()).ok())
+                .unwrap_or_default();
+            let env: std::collections::BTreeMap<String, String> = params
+                .get("env")
+                .and_then(|value| serde_json::from_value(value.clone()).ok())
+                .unwrap_or_default();
+            let source = optional_str(&params, "source")
+                .unwrap_or("user")
+                .to_string();
+            let enabled = params
+                .get("enabled")
+                .and_then(Value::as_bool)
+                .unwrap_or(true);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .add_server(&language_id, &command, &args, &env, &source, enabled)
+                    .map(|server| serde_json::json!({ "server": to_value(&server) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.server.remove" => {
+            let id = required_str(&params, "id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .remove_server(&id)
+                    .map(|removed| serde_json::json!({ "removed": removed }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.server.start" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let language_id = required_str(&params, "language_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .start(&project_id, &language_id)
+                    .map(|server| serde_json::json!({ "server": to_value(&server) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.server.stop" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let language_id = required_str(&params, "language_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .stop(&project_id, &language_id)
+                    .map(|stopped| serde_json::json!({ "stopped": stopped }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.server.restart" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let language_id = required_str(&params, "language_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .restart(&project_id, &language_id)
+                    .map(|server| serde_json::json!({ "server": to_value(&server) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.server.status" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let language_id = required_str(&params, "language_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .status(&project_id, &language_id)
+                    .map(|server| serde_json::json!({ "server": to_value(&server) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.document.open" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let text = required_str(&params, "text")?.to_string();
+            let language_id = optional_str(&params, "language_id").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .document_open(&project_id, &path, &text, language_id.as_deref())
+                    .map(|()| serde_json::json!({ "ok": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.document.change" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let text = required_str(&params, "text")?.to_string();
+            let range = params
+                .get("range")
+                .filter(|value| !value.is_null())
+                .cloned();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .document_change(&project_id, &path, &text, range)
+                    .map(|version| serde_json::json!({ "version": version }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.document.save" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let text = optional_str(&params, "text").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .document_save(&project_id, &path, text.as_deref())
+                    .map(|()| serde_json::json!({ "ok": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.document.close" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .document_close(&project_id, &path)
+                    .map(|()| serde_json::json!({ "ok": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.completion" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let line = required_u32(&params, "line")?;
+            let character = required_u32(&params, "character")?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .completion(&project_id, &path, line, character)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.completion_resolve" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let item = params
+                .get("item")
+                .cloned()
+                .ok_or((ErrorCode::InvalidParams, "missing item".to_string()))?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .completion_resolve(&project_id, &path, item)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.hover" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let line = required_u32(&params, "line")?;
+            let character = required_u32(&params, "character")?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .hover(&project_id, &path, line, character)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.definition" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let line = required_u32(&params, "line")?;
+            let character = required_u32(&params, "character")?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .definition(&project_id, &path, line, character)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.references" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let line = required_u32(&params, "line")?;
+            let character = required_u32(&params, "character")?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .references(&project_id, &path, line, character)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.rename" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let line = required_u32(&params, "line")?;
+            let character = required_u32(&params, "character")?;
+            let new_name = required_str(&params, "new_name")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .rename(&project_id, &path, line, character, &new_name)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.symbols" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .symbols(&project_id, &path)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.workspace_symbols" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let query = required_str(&params, "query")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .workspace_symbols(&project_id, &path, &query)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.format" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let tab_size = params.get("tab_size").and_then(Value::as_u64).unwrap_or(4) as u32;
+            let insert_spaces = params
+                .get("insert_spaces")
+                .and_then(Value::as_bool)
+                .unwrap_or(true);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .format(&project_id, &path, tab_size, insert_spaces)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.code_action" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let range = params
+                .get("range")
+                .cloned()
+                .ok_or((ErrorCode::InvalidParams, "missing range".to_string()))?;
+            let diagnostics = params
+                .get("diagnostics")
+                .cloned()
+                .unwrap_or_else(|| Value::Array(Vec::new()));
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .code_action(&project_id, &path, range, diagnostics)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.signature_help" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = required_str(&params, "path")?.to_string();
+            let line = required_u32(&params, "line")?;
+            let character = required_u32(&params, "character")?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .lsp()
+                    .signature_help(&project_id, &path, line, character)
+                    .map(|result| serde_json::json!({ "result": result }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "lsp.diagnostics.list" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let path = optional_str(&params, "path").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                Ok(serde_json::json!({
+                    "diagnostics": to_value(&kernel.lsp().diagnostics(&project_id, path.as_deref())),
+                }))
+            })
+            .await
+        }
+        "term.open" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let shell = optional_str(&params, "shell").map(str::to_string);
+            let cwd = optional_str(&params, "cwd").map(str::to_string);
+            let cols = params.get("cols").and_then(Value::as_u64).map(|v| v as u16);
+            let rows = params.get("rows").and_then(Value::as_u64).map(|v| v as u16);
+            let actor = optional_str(&params, "actor").unwrap_or("user").to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .open(
+                        &project_id,
+                        shell.as_deref(),
+                        cwd.as_deref(),
+                        cols,
+                        rows,
+                        &actor,
+                    )
+                    .map(|session| serde_json::json!({ "session": to_value(&session) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.write" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let data = required_str(&params, "data")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .write(&session_id, &data)
+                    .map(|()| serde_json::json!({ "ok": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.resize" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let cols = required_u32(&params, "cols")? as u16;
+            let rows = required_u32(&params, "rows")? as u16;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .resize(&session_id, cols, rows)
+                    .map(|()| serde_json::json!({ "ok": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.close" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .close(&session_id)
+                    .map(|closed| serde_json::json!({ "ok": closed }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.list" => {
+            let project_id = optional_str(&params, "project_id").map(str::to_string);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .list(project_id.as_deref())
+                    .map(|sessions| serde_json::json!({ "sessions": to_value(&sessions) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.read" => {
+            let session_id = required_str(&params, "session_id")?.to_string();
+            let max_lines = params
+                .get("max_lines")
+                .and_then(Value::as_u64)
+                .map(|value| value as usize);
+            let max_bytes = params
+                .get("max_bytes")
+                .and_then(Value::as_u64)
+                .map(|value| value as usize);
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .read(&session_id, max_lines, max_bytes)
+                    .map(|output| serde_json::json!({ "output": output }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "term.exec" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let command = required_str(&params, "command")?.to_string();
+            let actor = optional_str(&params, "actor")
+                .unwrap_or("agent")
+                .to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .terminal()
+                    .exec(&project_id, &command, &actor)
+                    .map(|session| serde_json::json!({ "session": to_value(&session) }))
                     .map_err(CoreError::from)
             })
             .await
@@ -1945,6 +2523,9 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("permission.") => Some("capability.agents"),
         method if method.starts_with("backup.") => Some("capability.agents"),
         method if method.starts_with("project.") => Some("capability.ide"),
+        method if method.starts_with("file.") => Some("capability.ide"),
+        method if method.starts_with("lsp.") => Some("capability.lsp"),
+        method if method.starts_with("term.") => Some("capability.terminal"),
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
         method if method.starts_with("mcp.") => Some("capability.mcp"),
@@ -2009,6 +2590,15 @@ fn required_str<'a>(params: &'a Value, key: &str) -> Result<&'a str, (ErrorCode,
 /// Read an optional string field.
 fn optional_str<'a>(params: &'a Value, key: &str) -> Option<&'a str> {
     params.get(key).and_then(Value::as_str)
+}
+
+/// Read a required unsigned field as `u32`.
+fn required_u32(params: &Value, key: &str) -> Result<u32, (ErrorCode, String)> {
+    params
+        .get(key)
+        .and_then(Value::as_u64)
+        .map(|value| value as u32)
+        .ok_or_else(|| (ErrorCode::InvalidParams, format!("missing {key}")))
 }
 
 /// Map a sub-agent error to the closest wire error code.
@@ -2089,7 +2679,37 @@ fn map_core_error(err: CoreError) -> (ErrorCode, String) {
         CoreError::Project(fergents_ide::ProjectError::Untrusted(_)) => {
             (ErrorCode::ProjectUntrusted, err.to_string())
         }
+        CoreError::Project(fergents_ide::ProjectError::Conflict(_)) => {
+            (ErrorCode::FileConflict, err.to_string())
+        }
         CoreError::Project(_) => (ErrorCode::InvalidParams, err.to_string()),
+        CoreError::Lsp(fergents_lsp::LspError::Project(fergents_ide::ProjectError::Untrusted(
+            _,
+        ))) => (ErrorCode::ProjectUntrusted, err.to_string()),
+        CoreError::Lsp(fergents_lsp::LspError::Storage(_)) => {
+            (ErrorCode::StorageError, err.to_string())
+        }
+        CoreError::Lsp(
+            fergents_lsp::LspError::Project(_)
+            | fergents_lsp::LspError::UnknownServer(_)
+            | fergents_lsp::LspError::NotInstalled(_)
+            | fergents_lsp::LspError::DocumentNotOpen(_),
+        ) => (ErrorCode::InvalidParams, err.to_string()),
+        CoreError::Lsp(_) => (ErrorCode::InternalError, err.to_string()),
+        CoreError::Terminal(fergents_terminal::TerminalError::Project(
+            fergents_ide::ProjectError::Untrusted(_),
+        )) => (ErrorCode::ProjectUntrusted, err.to_string()),
+        CoreError::Terminal(fergents_terminal::TerminalError::Storage(_)) => {
+            (ErrorCode::StorageError, err.to_string())
+        }
+        CoreError::Terminal(
+            fergents_terminal::TerminalError::Project(_)
+            | fergents_terminal::TerminalError::UnknownSession(_)
+            | fergents_terminal::TerminalError::NotRunning(_)
+            | fergents_terminal::TerminalError::ShellNotAllowed(_)
+            | fergents_terminal::TerminalError::Invalid(_),
+        ) => (ErrorCode::InvalidParams, err.to_string()),
+        CoreError::Terminal(_) => (ErrorCode::InternalError, err.to_string()),
         CoreError::Capability(cap) => {
             let code = if matches!(cap, fergents_capabilities::CapabilityError::Disabled(_)) {
                 ErrorCode::CapabilityDisabled

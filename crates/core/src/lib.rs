@@ -28,8 +28,9 @@ use fergents_agents::{
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_chat::{ChatMessage, ChatService};
 use fergents_events::{now_ms, EventBus};
-use fergents_ide::ProjectService;
+use fergents_ide::{file_tools, FileService, ProjectService};
 use fergents_llm::{ChatRequest, MockProvider};
+use fergents_lsp::LspService;
 use fergents_permissions::PermissionService;
 use fergents_protocol::{
     BrainSummary, HealthSnapshot, HealthStatus, StorageStatus, SystemInfoResult,
@@ -37,6 +38,7 @@ use fergents_protocol::{
 use fergents_reversibility::ReversibilityService;
 use fergents_secrets::{Keychain, KeyringKeychain, SecretVault};
 use fergents_storage::{SqliteStorage, Storage, StorageError, Value};
+use fergents_terminal::{terminal_tools, TerminalService};
 
 pub use brains::{BrainService, BusSink};
 
@@ -85,6 +87,12 @@ pub enum CoreError {
     /// A project layer failure.
     #[error(transparent)]
     Project(#[from] fergents_ide::ProjectError),
+    /// An LSP failure.
+    #[error(transparent)]
+    Lsp(#[from] fergents_lsp::LspError),
+    /// A terminal failure.
+    #[error(transparent)]
+    Terminal(#[from] fergents_terminal::TerminalError),
 }
 
 /// Kernel configuration.
@@ -154,6 +162,9 @@ pub struct Kernel {
     provider_service: Arc<ProviderService>,
     mcp_service: Arc<McpService>,
     projects: Arc<ProjectService>,
+    files: Arc<FileService>,
+    lsp: Arc<LspService>,
+    terminal: Arc<TerminalService>,
     subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
@@ -227,6 +238,27 @@ impl Kernel {
         let mcp_service = Arc::new(McpService::new(storage_for_mcp));
         let storage_for_projects: Arc<dyn Storage> = storage.clone();
         let projects = Arc::new(ProjectService::new(storage_for_projects, bus.clone()));
+        let files = Arc::new(FileService::new(
+            projects.clone(),
+            reversibility.clone(),
+            bus.clone(),
+        ));
+        for tool in file_tools(files.clone()) {
+            tools.register(tool);
+        }
+        let lsp = Arc::new(LspService::new(
+            storage.clone(),
+            bus.clone(),
+            projects.clone(),
+        ));
+        let terminal = Arc::new(TerminalService::new(
+            storage.clone(),
+            bus.clone(),
+            projects.clone(),
+        ));
+        for tool in terminal_tools(terminal.clone()) {
+            tools.register(tool);
+        }
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -253,6 +285,9 @@ impl Kernel {
             provider_service,
             mcp_service,
             projects,
+            files,
+            lsp,
+            terminal,
             subagents,
             started: Instant::now(),
             started_ms: now_ms(),
@@ -260,6 +295,10 @@ impl Kernel {
             providers: RwLock::new(Vec::new()),
         });
         kernel.reconcile_sessions()?;
+        // Resume watching every known project (file.changed events).
+        let _ = kernel.files.watch_all();
+        // PTY sessions do not survive a kernel restart.
+        let _ = kernel.terminal.reconcile();
         kernel.bus.publish(
             "kernel.started",
             "kernel",
@@ -346,6 +385,21 @@ impl Kernel {
     /// The project layer (open, trust, file index, search).
     pub fn projects(&self) -> &ProjectService {
         self.projects.as_ref()
+    }
+
+    /// Project-scoped file operations, backups, and the external-change watcher.
+    pub fn files(&self) -> &FileService {
+        self.files.as_ref()
+    }
+
+    /// Language-server sessions, document sync, and diagnostics.
+    pub fn lsp(&self) -> &LspService {
+        self.lsp.as_ref()
+    }
+
+    /// PTY sessions, scrollback, and visible shell execution.
+    pub fn terminal(&self) -> &TerminalService {
+        self.terminal.as_ref()
     }
 
     /// The sub-agent manager (async children, collect, cancel, handoff).
