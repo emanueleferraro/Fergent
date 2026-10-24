@@ -2964,3 +2964,222 @@ export interface FileListParams {
 export interface FileListResult {
   entries: FileEntry[];
 }
+
+/**
+ * The lifecycle state of a language server.
+ */
+export type LspServerStatus = 'not_installed' | 'starting' | 'ready' | 'failed' | 'stopped';
+
+/**
+ * A language-server configuration and its current state (spec Appendix B).
+ */
+export interface LspServer {
+  id: string;
+  language_id: string;
+  command: string;
+  args: string[];
+  env: {
+    [k: string]: string;
+  };
+  root_strategy: string;
+  source: string;
+  enabled: boolean;
+  status: LspServerStatus;
+  installed: boolean;
+}
+
+/**
+ * Result of lsp.server.list.
+ */
+export interface LspServerListResult {
+  servers: LspServer[];
+}
+
+/**
+ * Params of lsp.server.add.
+ */
+export interface LspServerAddParams {
+  language_id: string;
+  command: string;
+  args?: string[];
+  env?: {
+    [k: string]: string;
+  };
+  source?: string;
+  enabled?: boolean | null;
+}
+
+/**
+ * Result of lsp.server.add, lsp.server.start, and lsp.server.restart.
+ */
+export interface LspServerResult {
+  server: LspServer;
+}
+
+/**
+ * Params of lsp.server.remove.
+ */
+export interface LspServerIdParams {
+  id: string;
+}
+
+/**
+ * Result of lsp.server.remove.
+ */
+export interface LspServerRemoveResult {
+  removed: boolean;
+}
+
+/**
+ * Params of the lsp.server lifecycle commands.
+ */
+export interface LspSessionParams {
+  project_id: string;
+  language_id: string;
+}
+
+/**
+ * Result of lsp.server.stop.
+ */
+export interface LspServerStopResult {
+  stopped: boolean;
+}
+
+/**
+ * Acknowledges a notification-style LSP command.
+ */
+export interface LspAck {
+  ok: boolean;
+}
+
+/**
+ * Params of lsp.document.open.
+ */
+export interface LspDocumentOpenParams {
+  project_id: string;
+  path: string;
+  text: string;
+  language_id?: string | null;
+}
+
+/**
+ * Params of lsp.document.change.
+ */
+export interface LspDocumentChangeParams {
+  project_id: string;
+  path: string;
+  text: string;
+  range?: {} | null;
+}
+
+/**
+ * Result of lsp.document.change.
+ */
+export interface LspDocumentChangeResult {
+  version: number;
+}
+
+/**
+ * Params of lsp.document.close and lsp.document.save.
+ */
+export interface LspDocumentPathParams {
+  project_id: string;
+  path: string;
+  text?: string | null;
+}
+
+/**
+ * Params of the position-based LSP requests.
+ */
+export interface LspPositionParams {
+  project_id: string;
+  path: string;
+  line: number;
+  character: number;
+}
+
+/**
+ * Params of lsp.rename.
+ */
+export interface LspRenameParams {
+  project_id: string;
+  path: string;
+  line: number;
+  character: number;
+  new_name: string;
+}
+
+/**
+ * Params of lsp.completion_resolve.
+ */
+export interface LspResolveParams {
+  project_id: string;
+  path: string;
+  item: {};
+}
+
+/**
+ * Params of lsp.workspace_symbols.
+ */
+export interface LspWorkspaceSymbolsParams {
+  project_id: string;
+  path: string;
+  query: string;
+}
+
+/**
+ * Params of lsp.format.
+ */
+export interface LspFormatParams {
+  project_id: string;
+  path: string;
+  tab_size?: number | null;
+  insert_spaces?: boolean | null;
+}
+
+/**
+ * Params of lsp.code_action.
+ */
+export interface LspCodeActionParams {
+  project_id: string;
+  path: string;
+  range: {};
+  diagnostics?: {}[] | null;
+}
+
+/**
+ * The raw JSON result of an LSP request (server-defined shape).
+ */
+export interface LspRequestResult {
+  result: unknown;
+}
+
+/**
+ * One diagnostic published by a language server.
+ */
+export interface LspDiagnostic {
+  path: string;
+  line: number;
+  column: number;
+  end_line: number;
+  end_column: number;
+  severity: number;
+  message: string;
+  source?: string | null;
+  code?: string | null;
+}
+
+/**
+ * Params of lsp.diagnostics.list.
+ */
+export interface LspDiagnosticsParams {
+  project_id: string;
+  path?: string | null;
+}
+
+/**
+ * Result of lsp.diagnostics.list.
+ */
+export interface LspDiagnosticsResult {
+  diagnostics: LspDiagnostic[];
+}

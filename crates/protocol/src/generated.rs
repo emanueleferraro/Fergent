@@ -9258,6 +9258,1111 @@ impl From<&LinksOrphansResult> for LinksOrphansResult {
         value.clone()
     }
 }
+#[doc = "Acknowledges a notification-style LSP command."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspAck\","]
+#[doc = "  \"description\": \"Acknowledges a notification-style LSP command.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"ok\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"ok\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspAck {
+    pub ok: bool,
+}
+impl From<&LspAck> for LspAck {
+    fn from(value: &LspAck) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.code_action."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspCodeActionParams\","]
+#[doc = "  \"description\": \"Params of lsp.code_action.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"range\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"diagnostics\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"array\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"object\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"range\": {"]
+#[doc = "      \"type\": \"object\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspCodeActionParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub diagnostics: Option<Vec<::serde_json::Map<String, ::serde_json::Value>>>,
+    pub path: String,
+    pub project_id: String,
+    pub range: ::serde_json::Map<String, ::serde_json::Value>,
+}
+impl From<&LspCodeActionParams> for LspCodeActionParams {
+    fn from(value: &LspCodeActionParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "One diagnostic published by a language server."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspDiagnostic\","]
+#[doc = "  \"description\": \"One diagnostic published by a language server.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"column\","]
+#[doc = "    \"end_column\","]
+#[doc = "    \"end_line\","]
+#[doc = "    \"line\","]
+#[doc = "    \"message\","]
+#[doc = "    \"path\","]
+#[doc = "    \"severity\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"code\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"column\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"end_column\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"end_line\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"line\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"message\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"severity\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    },"]
+#[doc = "    \"source\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspDiagnostic {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub code: Option<String>,
+    pub column: u32,
+    pub end_column: u32,
+    pub end_line: u32,
+    pub line: u32,
+    pub message: String,
+    pub path: String,
+    pub severity: i64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<String>,
+}
+impl From<&LspDiagnostic> for LspDiagnostic {
+    fn from(value: &LspDiagnostic) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.diagnostics.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspDiagnosticsParams\","]
+#[doc = "  \"description\": \"Params of lsp.diagnostics.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspDiagnosticsParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub path: Option<String>,
+    pub project_id: String,
+}
+impl From<&LspDiagnosticsParams> for LspDiagnosticsParams {
+    fn from(value: &LspDiagnosticsParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of lsp.diagnostics.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspDiagnosticsResult\","]
+#[doc = "  \"description\": \"Result of lsp.diagnostics.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"diagnostics\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"diagnostics\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/LspDiagnostic\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspDiagnosticsResult {
+    pub diagnostics: Vec<LspDiagnostic>,
+}
+impl From<&LspDiagnosticsResult> for LspDiagnosticsResult {
+    fn from(value: &LspDiagnosticsResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.document.change."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspDocumentChangeParams\","]
+#[doc = "  \"description\": \"Params of lsp.document.change.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"text\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"range\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"object\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"text\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspDocumentChangeParams {
+    pub path: String,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub range: Option<::serde_json::Map<String, ::serde_json::Value>>,
+    pub text: String,
+}
+impl From<&LspDocumentChangeParams> for LspDocumentChangeParams {
+    fn from(value: &LspDocumentChangeParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of lsp.document.change."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspDocumentChangeResult\","]
+#[doc = "  \"description\": \"Result of lsp.document.change.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"version\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"version\": {"]
+#[doc = "      \"type\": \"integer\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspDocumentChangeResult {
+    pub version: i64,
+}
+impl From<&LspDocumentChangeResult> for LspDocumentChangeResult {
+    fn from(value: &LspDocumentChangeResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.document.open."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspDocumentOpenParams\","]
+#[doc = "  \"description\": \"Params of lsp.document.open.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"text\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"language_id\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"text\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspDocumentOpenParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub language_id: Option<String>,
+    pub path: String,
+    pub project_id: String,
+    pub text: String,
+}
+impl From<&LspDocumentOpenParams> for LspDocumentOpenParams {
+    fn from(value: &LspDocumentOpenParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.document.close and lsp.document.save."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspDocumentPathParams\","]
+#[doc = "  \"description\": \"Params of lsp.document.close and lsp.document.save.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"text\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"string\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspDocumentPathParams {
+    pub path: String,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub text: Option<String>,
+}
+impl From<&LspDocumentPathParams> for LspDocumentPathParams {
+    fn from(value: &LspDocumentPathParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.format."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspFormatParams\","]
+#[doc = "  \"description\": \"Params of lsp.format.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"insert_spaces\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"tab_size\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"integer\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspFormatParams {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub insert_spaces: Option<bool>,
+    pub path: String,
+    pub project_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub tab_size: Option<i64>,
+}
+impl From<&LspFormatParams> for LspFormatParams {
+    fn from(value: &LspFormatParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of the position-based LSP requests."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspPositionParams\","]
+#[doc = "  \"description\": \"Params of the position-based LSP requests.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"character\","]
+#[doc = "    \"line\","]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"character\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"line\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspPositionParams {
+    pub character: u32,
+    pub line: u32,
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&LspPositionParams> for LspPositionParams {
+    fn from(value: &LspPositionParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.rename."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspRenameParams\","]
+#[doc = "  \"description\": \"Params of lsp.rename.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"character\","]
+#[doc = "    \"line\","]
+#[doc = "    \"new_name\","]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"character\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"line\": {"]
+#[doc = "      \"type\": \"integer\","]
+#[doc = "      \"format\": \"uint32\""]
+#[doc = "    },"]
+#[doc = "    \"new_name\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspRenameParams {
+    pub character: u32,
+    pub line: u32,
+    pub new_name: String,
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&LspRenameParams> for LspRenameParams {
+    fn from(value: &LspRenameParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The raw JSON result of an LSP request (server-defined shape)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspRequestResult\","]
+#[doc = "  \"description\": \"The raw JSON result of an LSP request (server-defined shape).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"result\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"result\": {}"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspRequestResult {
+    pub result: ::serde_json::Value,
+}
+impl From<&LspRequestResult> for LspRequestResult {
+    fn from(value: &LspRequestResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.completion_resolve."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspResolveParams\","]
+#[doc = "  \"description\": \"Params of lsp.completion_resolve.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"item\","]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"item\": {"]
+#[doc = "      \"type\": \"object\""]
+#[doc = "    },"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspResolveParams {
+    pub item: ::serde_json::Map<String, ::serde_json::Value>,
+    pub path: String,
+    pub project_id: String,
+}
+impl From<&LspResolveParams> for LspResolveParams {
+    fn from(value: &LspResolveParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "A language-server configuration and its current state (spec Appendix B)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServer\","]
+#[doc = "  \"description\": \"A language-server configuration and its current state (spec Appendix B).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"args\","]
+#[doc = "    \"command\","]
+#[doc = "    \"enabled\","]
+#[doc = "    \"env\","]
+#[doc = "    \"id\","]
+#[doc = "    \"installed\","]
+#[doc = "    \"language_id\","]
+#[doc = "    \"root_strategy\","]
+#[doc = "    \"source\","]
+#[doc = "    \"status\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"args\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"command\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"env\": {"]
+#[doc = "      \"type\": \"object\","]
+#[doc = "      \"additionalProperties\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"installed\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    },"]
+#[doc = "    \"language_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"root_strategy\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"source\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"status\": {"]
+#[doc = "      \"$ref\": \"#/$defs/LspServerStatus\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspServer {
+    pub args: Vec<String>,
+    pub command: String,
+    pub enabled: bool,
+    pub env: ::std::collections::HashMap<String, String>,
+    pub id: String,
+    pub installed: bool,
+    pub language_id: String,
+    pub root_strategy: String,
+    pub source: String,
+    pub status: LspServerStatus,
+}
+impl From<&LspServer> for LspServer {
+    fn from(value: &LspServer) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.server.add."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServerAddParams\","]
+#[doc = "  \"description\": \"Params of lsp.server.add.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"command\","]
+#[doc = "    \"language_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"args\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"command\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"enabled\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"boolean\","]
+#[doc = "        \"null\""]
+#[doc = "      ]"]
+#[doc = "    },"]
+#[doc = "    \"env\": {"]
+#[doc = "      \"type\": \"object\","]
+#[doc = "      \"additionalProperties\": {"]
+#[doc = "        \"type\": \"string\""]
+#[doc = "      }"]
+#[doc = "    },"]
+#[doc = "    \"language_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"source\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspServerAddParams {
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub args: Vec<String>,
+    pub command: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub enabled: Option<bool>,
+    #[serde(default, skip_serializing_if = "::std::collections::HashMap::is_empty")]
+    pub env: ::std::collections::HashMap<String, String>,
+    pub language_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<String>,
+}
+impl From<&LspServerAddParams> for LspServerAddParams {
+    fn from(value: &LspServerAddParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.server.remove."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServerIdParams\","]
+#[doc = "  \"description\": \"Params of lsp.server.remove.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspServerIdParams {
+    pub id: String,
+}
+impl From<&LspServerIdParams> for LspServerIdParams {
+    fn from(value: &LspServerIdParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of lsp.server.list."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServerListResult\","]
+#[doc = "  \"description\": \"Result of lsp.server.list.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"servers\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"servers\": {"]
+#[doc = "      \"type\": \"array\","]
+#[doc = "      \"items\": {"]
+#[doc = "        \"$ref\": \"#/$defs/LspServer\""]
+#[doc = "      }"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspServerListResult {
+    pub servers: Vec<LspServer>,
+}
+impl From<&LspServerListResult> for LspServerListResult {
+    fn from(value: &LspServerListResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of lsp.server.remove."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServerRemoveResult\","]
+#[doc = "  \"description\": \"Result of lsp.server.remove.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"removed\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"removed\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspServerRemoveResult {
+    pub removed: bool,
+}
+impl From<&LspServerRemoveResult> for LspServerRemoveResult {
+    fn from(value: &LspServerRemoveResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of lsp.server.add, lsp.server.start, and lsp.server.restart."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServerResult\","]
+#[doc = "  \"description\": \"Result of lsp.server.add, lsp.server.start, and lsp.server.restart.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"server\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"server\": {"]
+#[doc = "      \"$ref\": \"#/$defs/LspServer\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspServerResult {
+    pub server: LspServer,
+}
+impl From<&LspServerResult> for LspServerResult {
+    fn from(value: &LspServerResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "The lifecycle state of a language server."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServerStatus\","]
+#[doc = "  \"description\": \"The lifecycle state of a language server.\","]
+#[doc = "  \"type\": \"string\","]
+#[doc = "  \"enum\": ["]
+#[doc = "    \"not_installed\","]
+#[doc = "    \"starting\","]
+#[doc = "    \"ready\","]
+#[doc = "    \"failed\","]
+#[doc = "    \"stopped\""]
+#[doc = "  ]"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(
+    :: serde :: Deserialize,
+    :: serde :: Serialize,
+    Clone,
+    Copy,
+    Debug,
+    Eq,
+    Hash,
+    Ord,
+    PartialEq,
+    PartialOrd,
+)]
+pub enum LspServerStatus {
+    #[serde(rename = "not_installed")]
+    NotInstalled,
+    #[serde(rename = "starting")]
+    Starting,
+    #[serde(rename = "ready")]
+    Ready,
+    #[serde(rename = "failed")]
+    Failed,
+    #[serde(rename = "stopped")]
+    Stopped,
+}
+impl From<&LspServerStatus> for LspServerStatus {
+    fn from(value: &LspServerStatus) -> Self {
+        value.clone()
+    }
+}
+impl ::std::fmt::Display for LspServerStatus {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter<'_>) -> ::std::fmt::Result {
+        match *self {
+            Self::NotInstalled => write!(f, "not_installed"),
+            Self::Starting => write!(f, "starting"),
+            Self::Ready => write!(f, "ready"),
+            Self::Failed => write!(f, "failed"),
+            Self::Stopped => write!(f, "stopped"),
+        }
+    }
+}
+impl std::str::FromStr for LspServerStatus {
+    type Err = self::error::ConversionError;
+    fn from_str(value: &str) -> Result<Self, self::error::ConversionError> {
+        match value {
+            "not_installed" => Ok(Self::NotInstalled),
+            "starting" => Ok(Self::Starting),
+            "ready" => Ok(Self::Ready),
+            "failed" => Ok(Self::Failed),
+            "stopped" => Ok(Self::Stopped),
+            _ => Err("invalid value".into()),
+        }
+    }
+}
+impl std::convert::TryFrom<&str> for LspServerStatus {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &str) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<&String> for LspServerStatus {
+    type Error = self::error::ConversionError;
+    fn try_from(value: &String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+impl std::convert::TryFrom<String> for LspServerStatus {
+    type Error = self::error::ConversionError;
+    fn try_from(value: String) -> Result<Self, self::error::ConversionError> {
+        value.parse()
+    }
+}
+#[doc = "Result of lsp.server.stop."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspServerStopResult\","]
+#[doc = "  \"description\": \"Result of lsp.server.stop.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"stopped\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"stopped\": {"]
+#[doc = "      \"type\": \"boolean\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspServerStopResult {
+    pub stopped: bool,
+}
+impl From<&LspServerStopResult> for LspServerStopResult {
+    fn from(value: &LspServerStopResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of the lsp.server lifecycle commands."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspSessionParams\","]
+#[doc = "  \"description\": \"Params of the lsp.server lifecycle commands.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"language_id\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"language_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspSessionParams {
+    pub language_id: String,
+    pub project_id: String,
+}
+impl From<&LspSessionParams> for LspSessionParams {
+    fn from(value: &LspSessionParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of lsp.workspace_symbols."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"LspWorkspaceSymbolsParams\","]
+#[doc = "  \"description\": \"Params of lsp.workspace_symbols.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"path\","]
+#[doc = "    \"project_id\","]
+#[doc = "    \"query\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"path\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"query\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct LspWorkspaceSymbolsParams {
+    pub path: String,
+    pub project_id: String,
+    pub query: String,
+}
+impl From<&LspWorkspaceSymbolsParams> for LspWorkspaceSymbolsParams {
+    fn from(value: &LspWorkspaceSymbolsParams) -> Self {
+        value.clone()
+    }
+}
 #[doc = "The [markdown] section of brain.toml (BRAIN.md §6.1)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]

@@ -22,6 +22,7 @@ fergents-index = { workspace = true }
 fergents-graph = { workspace = true }
 fergents-secrets = { workspace = true }
 fergents-ide = { workspace = true }
+fergents-lsp = { workspace = true }
 chrono = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }
