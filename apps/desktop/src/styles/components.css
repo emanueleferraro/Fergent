@@ -2546,6 +2546,137 @@ mark,
     gap: var(--s-1);
 }
 
+/* Terminal panel (Phase 3, task 3.9). */
+.terminal-panel {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    height: 240px;
+    min-height: 140px;
+    max-height: 45%;
+    border-top: 1px solid var(--border-default);
+    background: var(--surface-1);
+}
+.terminal-panel__bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border-bottom: 1px solid var(--border-default);
+}
+.terminal-panel__tools {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    flex-shrink: 0;
+}
+.terminal-tabs {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    min-width: 0;
+    overflow-x: auto;
+}
+.terminal-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    border-radius: var(--r-xs);
+}
+.terminal-tab--active {
+    background: var(--color-active);
+}
+.terminal-tab__label {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border: none;
+    background: transparent;
+    color: var(--text-default);
+    font-size: var(--fs-body-sm);
+    cursor: pointer;
+}
+.terminal-tab__label:hover,
+.terminal-tab--active .terminal-tab__label {
+    color: var(--text-strong);
+}
+.terminal-tab__title {
+    white-space: nowrap;
+}
+.terminal-tab__badge {
+    padding: 0 var(--s-1);
+    font-size: var(--fs-caption);
+}
+.terminal-tab__close,
+.terminal-tab__new {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border: none;
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: var(--fs-body-sm);
+    cursor: pointer;
+}
+.terminal-tab__close:hover,
+.terminal-tab__new:hover {
+    background: var(--color-hover);
+    color: var(--text-strong);
+}
+.terminal-tab__new {
+    flex-shrink: 0;
+}
+.terminal-shell {
+    padding: var(--s-1) var(--s-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-xs);
+    background: var(--surface-2);
+    color: var(--text-default);
+    font-size: var(--fs-body-sm);
+}
+.terminal-panes {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+.terminal-pane {
+    display: flex;
+    flex: 1 1 50%;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    padding: var(--s-2);
+}
+.terminal-panes--split .terminal-pane + .terminal-pane {
+    border-left: 1px solid var(--border-default);
+}
+.terminal-pane__bar {
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: var(--s-1);
+}
+.terminal-host {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+.terminal-host .xterm {
+    height: 100%;
+}
+.terminal-panel__status {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border-top: 1px solid var(--border-default);
+}
+
 /* ============================================================
    REDUCED MOTION
    ============================================================ */

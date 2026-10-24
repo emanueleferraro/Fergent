@@ -72,8 +72,8 @@ the behaviour is implemented, tested, and merged.
 - [ ] Monaco lazy chunk; startup budget unchanged
 - [ ] Tabs (dirty/preview/pinned), breadcrumb, outline, find/replace
 - [ ] Save/conflict banner; external change handled
-- [ ] Problems panel grouped and jumpable
-- [ ] Terminal tabs/split/shell selector; live session reconnect
+- [x] Problems panel grouped and jumpable
+- [x] Terminal tabs/split/shell selector; live session reconnect
 - [ ] Source control: status/diff/stage/commit/branches/log/blame/conflicts
 - [ ] Diff preview with per-hunk/file/all approval and line stats
 - [ ] Inline AI ghost text (opt-in), Tab/Esc, quick actions, suppression rules
