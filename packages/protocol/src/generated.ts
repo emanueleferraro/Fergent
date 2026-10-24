@@ -2845,6 +2845,41 @@ export interface ProjectSearchResult {
 }
 
 /**
+ * Params of editor.layout.get.
+ */
+export interface EditorLayoutGetParams {
+  project_id: string;
+}
+
+/**
+ * Result of editor.layout.get; null until a layout is saved.
+ */
+export interface EditorLayoutGetResult {
+  layout: {
+    [k: string]: unknown;
+  } | null;
+}
+
+/**
+ * Params of editor.layout.set (spec decision D14).
+ */
+export interface EditorLayoutSetParams {
+  project_id: string;
+  layout: {
+    [k: string]: unknown;
+  };
+}
+
+/**
+ * Result of editor.layout.set.
+ */
+export interface EditorLayoutSetResult {
+  layout: {
+    [k: string]: unknown;
+  };
+}
+
+/**
  * A file read from a project (spec decision D2).
  */
 export interface FileSnapshot {

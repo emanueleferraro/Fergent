@@ -20,6 +20,16 @@ import {
 import { t } from '../../i18n/i18n';
 import { buildFileTree, flattenVisibleTree, type FileNode, type TreeSource } from './tree';
 
+/** A changed-file marker rendered next to a file row (UI.md §8.2). */
+export interface TreeBadge {
+  /** One-letter marker (`M`, `A`, `D`, …). */
+  letter: string;
+  /** Tone class suffix (added, modified, deleted, …). */
+  tone: string;
+  /** Accessible description, e.g. "Modified". */
+  title?: string | undefined;
+}
+
 /** Props for `FileTree`. */
 export interface FileTreeProps {
   /** Flat document rows; the tree is derived internally. */
@@ -30,6 +40,10 @@ export interface FileTreeProps {
   onSelect?: ((path: string) => void) | undefined;
   /** Folder paths expanded on first render. */
   defaultExpanded?: readonly string[] | undefined;
+  /** Badges for changed files, keyed by path. */
+  status?: Readonly<Record<string, TreeBadge>> | undefined;
+  /** Accessible name of the tree. */
+  label?: string | undefined;
 }
 
 function depthStyle(depth: number): CSSProperties {
@@ -63,6 +77,8 @@ export function FileTree({
   activePath,
   onSelect,
   defaultExpanded = [],
+  status,
+  label,
 }: FileTreeProps): ReactElement {
   const nodes = useMemo(() => buildFileTree(documents), [documents]);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set(defaultExpanded));
@@ -151,6 +167,7 @@ export function FileTree({
       const folder = node.kind === 'dir';
       const open = folder && expanded.has(node.path);
       const selected = !folder && node.path === activePath;
+      const badge = folder ? undefined : status?.[node.path];
       const tabbable = focusPath ? node.path === focusPath : node.path === visible[0]?.path;
       return (
         <div key={node.path} className="tree-node">
@@ -182,6 +199,15 @@ export function FileTree({
               <FileIcon folder={folder} />
             </span>
             <span className="tree-label">{node.name}</span>
+            {badge ? (
+              <span
+                className={`tree-badge tree-badge--${badge.tone}`}
+                aria-label={badge.title}
+                title={badge.title}
+              >
+                {badge.letter}
+              </span>
+            ) : null}
           </div>
           {open && node.children.length > 0 ? renderNodes(node.children, depth + 1) : null}
         </div>
@@ -189,7 +215,7 @@ export function FileTree({
     });
 
   return (
-    <div className="tree" role="tree" aria-label={t('explorer.files.label')}>
+    <div className="tree" role="tree" aria-label={label ?? t('explorer.files.label')}>
       {visible.length === 0 ? (
         <div className="empty">
           <div className="empty-title">{t('explorer.files.empty.title')}</div>

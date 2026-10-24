@@ -190,6 +190,49 @@ fn containment_rejects_symlink_escapes() {
 }
 
 #[test]
+fn editor_layouts_are_persisted_per_project() {
+    let temp = tempfile::tempdir().unwrap();
+    let root = temp.path().join("repo");
+    std::fs::create_dir_all(&root).unwrap();
+
+    let projects = service(temp.path());
+    let project = projects.open(root.to_str().unwrap()).unwrap();
+
+    // Nothing saved yet.
+    assert!(projects.layout(&project.id).unwrap().is_none());
+
+    let layout = serde_json::json!({
+        "kind": "split",
+        "direction": "row",
+        "ratio": 0.5,
+        "first": { "kind": "pane", "view": "chat" },
+        "second": { "kind": "pane", "view": "ide" }
+    });
+    let saved = projects.set_layout(&project.id, layout.clone()).unwrap();
+    assert_eq!(saved, layout);
+
+    // A fresh service over the same store sees the persisted layout.
+    let reopened = service(temp.path());
+    assert_eq!(reopened.layout(&project.id).unwrap().unwrap(), layout);
+
+    // Saving again replaces (does not duplicate) the row.
+    let replaced = serde_json::json!({ "kind": "pane", "view": "ide" });
+    reopened.set_layout(&project.id, replaced.clone()).unwrap();
+    assert_eq!(projects.layout(&project.id).unwrap().unwrap(), replaced);
+
+    // Non-object layouts are rejected.
+    assert!(matches!(
+        projects.set_layout(&project.id, serde_json::json!("wide")),
+        Err(ProjectError::Invalid(_))
+    ));
+    // Unknown projects are rejected.
+    assert!(matches!(
+        projects.layout("nope"),
+        Err(ProjectError::Unknown(_))
+    ));
+}
+
+#[test]
 fn unknown_project_is_reported() {
     let temp = tempfile::tempdir().unwrap();
     let projects = service(temp.path());

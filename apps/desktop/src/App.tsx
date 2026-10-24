@@ -16,6 +16,11 @@ import { AgentsView } from './features/agents/AgentsView';
 import { EditorArea } from './features/editor/EditorArea';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
+import { IdeView } from './features/ide/IdeView';
+import { SplitPane } from './features/layout/SplitPane';
+import { useIdeLayout } from './features/layout/useIdeLayout';
+import { ProjectExplorer } from './features/project/ProjectExplorer';
+import { useProjects } from './features/project/useProjects';
 import { SearchPanel } from './features/search/SearchPanel';
 import { SettingsView } from './features/settings/SettingsView';
 import { useTheme } from './features/theme/theme';
@@ -87,14 +92,40 @@ export function App(): ReactElement {
   const kernel = useMemo(() => createKernelClient(), []);
   const kernelState = useKernel(kernel, SUBSCRIBE_TOPICS);
   const chat = useChat(kernel);
+  const projects = useProjects(kernel);
+  const projectId = projects.active?.id ?? null;
+  const ideLayout = useIdeLayout(kernel, projectId);
   const [activeId, setActiveId] = useState<RailId>('chat');
   const [paletteOpen, setPaletteOpen] = useState(false);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
+  const [openPaths, setOpenPaths] = useState<string[]>([]);
+  const [activePath, setActivePath] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
   const [brainView, setBrainView] = useState<'notes' | 'graph'>('notes');
   const openIdsRef = useRef(openIds);
   openIdsRef.current = openIds;
+
+  // Switching projects closes that project's tabs: paths are project-relative.
+  useEffect(() => {
+    setOpenPaths([]);
+    setActivePath(undefined);
+  }, [projectId]);
+
+  const openFile = useCallback((path: string) => {
+    setOpenPaths((prev) => (prev.includes(path) ? prev : [...prev, path]));
+    setActivePath(path);
+  }, []);
+
+  const closeFile = useCallback(
+    (path: string) => {
+      setOpenPaths((prev) => prev.filter((candidate) => candidate !== path));
+      setActivePath((current) =>
+        current === path ? openPaths.filter((candidate) => candidate !== path).at(-1) : current,
+      );
+    },
+    [openPaths],
+  );
 
   const openDocument = useCallback((documentId: string) => {
     setOpenIds((prev) => (prev.includes(documentId) ? prev : [...prev, documentId]));
@@ -109,6 +140,14 @@ export function App(): ReactElement {
         : current,
     );
   }, []);
+
+  const openNoteFromIde = useCallback(
+    (documentId: string) => {
+      openDocument(documentId);
+      setActiveId('brain');
+    },
+    [openDocument],
+  );
 
   const toggleTheme = useCallback(() => {
     toggle();
@@ -154,6 +193,21 @@ export function App(): ReactElement {
           />
         ) : activeId === 'chat' ? (
           <ChatSidebar chat={chat} />
+        ) : activeId === 'ide' ? (
+          <ProjectExplorer
+            kernel={kernel}
+            projects={projects.projects}
+            active={projects.active}
+            files={projects.files}
+            statuses={projects.statuses}
+            activePath={activePath}
+            error={projects.error}
+            onSelectProject={projects.select}
+            onOpenProject={(path) => void projects.open(path)}
+            onTrust={(trusted) => void projects.trust(trusted)}
+            onOpenFile={openFile}
+            onOpenNote={openNoteFromIde}
+          />
         ) : (
           <>
             <div className="panel-title">{activeItem ? t(activeItem.titleKey) : ''}</div>
@@ -170,7 +224,13 @@ export function App(): ReactElement {
         )}
       </aside>
 
-      <main className={activeId === 'brain' ? 'shell__main shell__main--flush' : 'shell__main'}>
+      <main
+        className={
+          activeId === 'brain' || activeId === 'ide'
+            ? 'shell__main shell__main--flush'
+            : 'shell__main'
+        }
+      >
         {activeId === 'brain' ? (
           <div className="brain-view">
             <div className="brain-view__bar">
@@ -219,6 +279,29 @@ export function App(): ReactElement {
           </div>
         ) : activeId === 'chat' ? (
           <ChatPanel kernel={kernel} chat={chat} />
+        ) : activeId === 'ide' ? (
+          <SplitPane
+            direction="row"
+            ratio={ideLayout.ratio}
+            label={t('ide.split.label')}
+            onRatioChange={ideLayout.resize}
+            onReset={ideLayout.reset}
+            first={
+              <div className="ide-workspace__chat">
+                <ChatPanel kernel={kernel} chat={chat} />
+              </div>
+            }
+            second={
+              <IdeView
+                kernel={kernel}
+                projectId={projectId}
+                openPaths={openPaths}
+                activePath={activePath}
+                onSelect={setActivePath}
+                onClose={closeFile}
+              />
+            }
+          />
         ) : activeId === 'settings' ? (
           <SettingsView kernel={kernel} />
         ) : activeId === 'agents' ? (
@@ -253,6 +336,11 @@ export function App(): ReactElement {
 
       <footer className="shell__status">
         <span>{t('status.kernel', { status: t(statusKey(kernelState.status)) })}</span>
+        <span>
+          {t('status.project', {
+            name: projects.active?.name ?? t('status.project.none'),
+          })}
+        </span>
         <span className="t-mono">{t('status.ui', { version: uiVersion })}</span>
         <span className="spacer" />
         <span>

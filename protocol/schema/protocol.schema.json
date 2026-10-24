@@ -3202,6 +3202,50 @@
         "hits": { "type": "array", "items": { "$ref": "#/$defs/ProjectSearchHit" } }
       }
     },
+    "EditorLayoutGetParams": {
+      "title": "EditorLayoutGetParams",
+      "description": "Params of editor.layout.get.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" }
+      }
+    },
+    "EditorLayoutGetResult": {
+      "title": "EditorLayoutGetResult",
+      "description": "Result of editor.layout.get; null until a layout is saved.",
+      "type": "object",
+      "required": ["layout"],
+      "additionalProperties": false,
+      "properties": {
+        "layout": {
+          "type": ["object", "null"],
+          "additionalProperties": true
+        }
+      }
+    },
+    "EditorLayoutSetParams": {
+      "title": "EditorLayoutSetParams",
+      "description": "Params of editor.layout.set (spec decision D14).",
+      "type": "object",
+      "required": ["project_id", "layout"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "layout": { "type": "object", "additionalProperties": true }
+      }
+    },
+    "EditorLayoutSetResult": {
+      "title": "EditorLayoutSetResult",
+      "description": "Result of editor.layout.set.",
+      "type": "object",
+      "required": ["layout"],
+      "additionalProperties": false,
+      "properties": {
+        "layout": { "type": "object", "additionalProperties": true }
+      }
+    },
     "FileSnapshot": {
       "title": "FileSnapshot",
       "description": "A file read from a project (spec decision D2).",

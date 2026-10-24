@@ -2202,6 +2202,123 @@ mark,
 }
 
 /* ============================================================
+   PROJECT EXPLORER & IDE (Phase 3, UI.md §5.3, §8)
+   ============================================================ */
+.project-explorer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    min-height: 0;
+}
+.project-explorer__section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    min-height: 0;
+}
+.project-bar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+}
+.project-bar__row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+}
+.project-bar__row .input,
+.project-bar__row .select {
+    flex: 1;
+    min-width: 0;
+}
+.project-bar__path {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Git status badges in the file tree (UI.md §8.2). */
+.tree-badge {
+    flex-shrink: 0;
+    padding: 0 5px;
+    border-radius: var(--r-xs);
+    font-size: var(--fs-label);
+    font-weight: var(--fw-semibold);
+    line-height: var(--lh-normal);
+    color: var(--text-muted);
+}
+.tree-badge--added { color: var(--color-success); background: var(--color-success-soft); }
+.tree-badge--modified { color: var(--color-warning); background: var(--color-warning-soft); }
+.tree-badge--deleted { color: var(--color-danger); background: var(--color-danger-soft); }
+.tree-badge--renamed { color: var(--color-info); background: var(--color-info-soft); }
+.tree-badge--conflict { color: var(--color-danger); background: var(--color-danger-soft); }
+.tree-badge--untracked { color: var(--text-default); background: var(--color-active); }
+
+/* Split view (UI.md §6.3, §10). */
+.split-pane {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    min-height: 0;
+}
+.split-pane--column {
+    flex-direction: column;
+}
+.split-pane__pane {
+    flex: 0 0 auto;
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+.split-pane__pane--flex {
+    flex: 1 1 0;
+}
+.split-pane__divider {
+    flex: 0 0 4px;
+    cursor: col-resize;
+    background: var(--border-default);
+    transition: background var(--t-fast);
+}
+.split-pane--column > .split-pane__divider {
+    cursor: row-resize;
+}
+.split-pane__divider:hover,
+.split-pane__divider:focus-visible {
+    background: var(--color-accent-line);
+    outline: none;
+}
+
+/* The IDE pane next to chat. */
+.ide-workspace__chat {
+    height: 100%;
+    min-height: 0;
+    padding: var(--s-4);
+    overflow: auto;
+}
+.ide-view {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+.ide-view__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow: auto;
+}
+.ide-view__preview {
+    margin: 0;
+    padding: var(--s-4);
+    font-size: var(--fs-mono);
+    line-height: var(--lh-relaxed);
+    color: var(--text-default);
+    white-space: pre;
+}
+
+/* ============================================================
    REDUCED MOTION
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
