@@ -243,6 +243,45 @@ impl ProjectService {
         path::contained(root, rel)
     }
 
+    /// The persisted layout tree for a project, if one was ever saved
+    /// (spec decision D14).
+    pub fn layout(&self, id: &str) -> Result<Option<serde_json::Value>, ProjectError> {
+        self.require(id)?;
+        let rows = self.storage.query(
+            "SELECT layout FROM editor_layouts WHERE project_id = ?1",
+            &[string(id)],
+        )?;
+        Ok(rows
+            .first()
+            .and_then(|row| row.get("layout"))
+            .and_then(json_value))
+    }
+
+    /// Persist the layout tree, replacing any previous one.
+    pub fn set_layout(
+        &self,
+        id: &str,
+        layout: serde_json::Value,
+    ) -> Result<serde_json::Value, ProjectError> {
+        self.require(id)?;
+        if !layout.is_object() {
+            return Err(ProjectError::Invalid(
+                "layout must be an object".to_string(),
+            ));
+        }
+        let raw = serde_json::to_string(&layout)
+            .map_err(|error| ProjectError::Invalid(error.to_string()))?;
+        self.storage.execute(
+            "INSERT INTO editor_layouts (project_id, layout, updated_at) VALUES (?1, ?2, ?3) \
+             ON CONFLICT(project_id) DO UPDATE SET layout = excluded.layout, \
+             updated_at = excluded.updated_at",
+            &[string(id), string(&raw), Value::from(now_ms())],
+        )?;
+        self.bus
+            .publish("layout.updated", "project", json!({ "project_id": id }))?;
+        Ok(layout)
+    }
+
     /// Build (or reuse) and return the cached file index.
     fn indexed_files(&self, project: &Project) -> Result<Vec<String>, ProjectError> {
         if let Ok(indexes) = self.indexes.read() {
@@ -292,6 +331,15 @@ fn string(value: &str) -> Value {
     Value::String(value.to_string())
 }
 
+/// Decode a JSON column that may hold a string, an inline value, or `NULL`.
+fn json_value(value: &Value) -> Option<serde_json::Value> {
+    match value {
+        Value::Null => None,
+        Value::String(raw) => serde_json::from_str(raw).ok(),
+        other => Some(other.clone()),
+    }
+}
+
 fn clamp_limit(limit: Option<usize>) -> usize {
     limit.unwrap_or(DEFAULT_LIMIT).clamp(1, MAX_LIMIT)
 }
@@ -321,11 +369,7 @@ fn row_to_project(row: &Row) -> Project {
             .and_then(Value::as_str)
             .map(TrustState::parse)
             .unwrap_or(TrustState::Untrusted),
-        settings: row.get("settings").and_then(|value| match value {
-            Value::Null => None,
-            Value::String(raw) => serde_json::from_str(raw).ok(),
-            other => Some(other.clone()),
-        }),
+        settings: row.get("settings").and_then(json_value),
         last_opened_at: row
             .get("last_opened_at")
             .and_then(Value::as_i64)

@@ -1551,6 +1551,34 @@ async fn dispatch(
             })
             .await
         }
+        "editor.layout.get" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .layout(&project_id)
+                    .map(|layout| serde_json::json!({ "layout": layout }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "editor.layout.set" => {
+            let project_id = required_str(&params, "project_id")?.to_string();
+            let layout = params
+                .get("layout")
+                .cloned()
+                .ok_or((ErrorCode::InvalidParams, "missing layout".to_string()))?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .projects()
+                    .set_layout(&project_id, layout)
+                    .map(|layout| serde_json::json!({ "layout": layout }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "file.read" => {
             let project_id = required_str(&params, "project_id")?.to_string();
             let path = required_str(&params, "path")?.to_string();
@@ -2757,6 +2785,7 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("permission.") => Some("capability.agents"),
         method if method.starts_with("backup.") => Some("capability.agents"),
         method if method.starts_with("project.") => Some("capability.ide"),
+        method if method.starts_with("editor.") => Some("capability.ide"),
         method if method.starts_with("file.") => Some("capability.ide"),
         method if method.starts_with("lsp.") => Some("capability.lsp"),
         method if method.starts_with("term.") => Some("capability.terminal"),

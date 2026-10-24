@@ -316,6 +316,37 @@ async fn project_lifecycle_over_ipc() {
         other => panic!("unexpected error: {other:?}"),
     }
 
+    // --- editor layout: unsaved, saved, restored (D14) --------------------
+    let layout = client
+        .call("editor.layout.get", json!({ "project_id": id }))
+        .await
+        .unwrap();
+    assert_eq!(layout["layout"], json!(null));
+
+    let saved = client
+        .call(
+            "editor.layout.set",
+            json!({
+                "project_id": id,
+                "layout": {
+                    "kind": "split",
+                    "direction": "row",
+                    "ratio": 0.5,
+                    "first": { "kind": "pane", "view": "chat" },
+                    "second": { "kind": "pane", "view": "ide" }
+                }
+            }),
+        )
+        .await
+        .unwrap();
+    assert_eq!(saved["layout"]["ratio"], json!(0.5));
+
+    let restored = client
+        .call("editor.layout.get", json!({ "project_id": id }))
+        .await
+        .unwrap();
+    assert_eq!(restored["layout"]["first"]["view"], json!("chat"));
+
     // --- close ------------------------------------------------------------
     let closed = client
         .call("project.close", json!({ "project_id": id }))

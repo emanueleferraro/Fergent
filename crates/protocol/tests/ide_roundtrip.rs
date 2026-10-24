@@ -141,6 +141,25 @@ fn file_mutation_roundtrip() {
 }
 
 #[test]
+fn editor_layout_roundtrip() {
+    let layout = json!({
+        "kind": "split",
+        "direction": "row",
+        "ratio": 0.5,
+        "first": { "kind": "pane", "view": "chat" },
+        "second": { "kind": "pane", "view": "ide" }
+    });
+    assert_roundtrip::<EditorLayoutGetParams>(json!({ "project_id": "01J9PROJECT" }));
+    assert_roundtrip::<EditorLayoutGetResult>(json!({ "layout": layout.clone() }));
+    assert_roundtrip::<EditorLayoutGetResult>(json!({ "layout": null }));
+    assert_roundtrip::<EditorLayoutSetParams>(json!({
+        "project_id": "01J9PROJECT",
+        "layout": layout.clone()
+    }));
+    assert_roundtrip::<EditorLayoutSetResult>(json!({ "layout": layout }));
+}
+
+#[test]
 fn project_query_roundtrip() {
     assert_roundtrip::<ProjectFilesParams>(json!({
         "project_id": "01J9PROJECT",

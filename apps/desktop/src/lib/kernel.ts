@@ -19,6 +19,7 @@ import type {
   Event,
   HealthSnapshot,
   McpServer,
+  Project,
   ProviderConfig,
   SecretRef,
   SubAgent,
@@ -122,6 +123,10 @@ export class MockKernelClient implements KernelClient {
   private readonly mockMcp: McpServer[] = [];
   private readonly mockChildren = new Map<string, SubAgent[]>();
   private readonly mockDisabledSections = new Set<string>(['summary', 'attachments']);
+  private readonly mockProjects: Project[] = [];
+  private readonly mockLayouts = new Map<string, unknown>();
+  private readonly mockProjectFiles = new Map<string, string[]>();
+  private readonly mockProjectContents = new Map<string, string>();
   private mockSeq = 0;
 
   constructor(options: MockKernelClientOptions = {}) {
@@ -164,6 +169,7 @@ export class MockKernelClient implements KernelClient {
     const sessionId = typeof payload.session_id === 'string' ? payload.session_id : '';
     const agentId = typeof payload.id === 'string' ? payload.id : '';
     const parentId = typeof payload.parent_session_id === 'string' ? payload.parent_session_id : '';
+    const projectId = typeof payload.project_id === 'string' ? payload.project_id : '';
 
     switch (method) {
       case 'system.health':
@@ -184,6 +190,64 @@ export class MockKernelClient implements KernelClient {
         return { mentions: [] };
       case 'search.query':
         return { results: [] };
+      case 'project.list':
+        return { projects: this.mockProjects };
+      case 'project.open':
+        return { project: this.mockOpenProject(payload) };
+      case 'project.get':
+        return { project: this.mockProjects.find((item) => item.id === projectId) ?? null };
+      case 'project.close': {
+        const index = this.mockProjects.findIndex((item) => item.id === projectId);
+        if (index >= 0) {
+          this.mockProjects.splice(index, 1);
+        }
+        return { closed: index >= 0 };
+      }
+      case 'project.trust': {
+        const project = this.mockProjects.find((item) => item.id === projectId);
+        if (project) {
+          project.trust = payload.trusted === false ? 'untrusted' : 'trusted';
+        }
+        return { project: project ?? null };
+      }
+      case 'project.files':
+        return { files: this.mockProjectFiles.get(projectId) ?? [] };
+      case 'project.search':
+        return { hits: [] };
+      case 'editor.layout.get':
+        return { layout: this.mockLayouts.get(projectId) ?? null };
+      case 'editor.layout.set':
+        this.mockLayouts.set(projectId, payload.layout);
+        return { layout: payload.layout };
+      case 'git.status':
+        return {
+          project_id: projectId,
+          branch: null,
+          head: null,
+          detached: false,
+          ahead: 0,
+          behind: 0,
+          clean: true,
+          entries: [],
+        };
+      case 'file.read':
+        return this.mockReadFile(projectId, String(payload.path ?? ''));
+      case 'file.write': {
+        const path = String(payload.path ?? '');
+        const content = String(payload.content ?? '');
+        this.mockProjectContents.set(`${projectId}:${path}`, content);
+        return {
+          file: {
+            path,
+            content,
+            etag: `mock-${content.length}`,
+            size: content.length,
+            language_id: 'plaintext',
+            truncated: false,
+            binary: false,
+          },
+        };
+      }
       case 'capability.list':
         return { capabilities: [] };
       case 'capability.set':
@@ -329,6 +393,46 @@ export class MockKernelClient implements KernelClient {
       default:
         return null;
     }
+  }
+
+  private mockOpenProject(payload: Record<string, unknown>): Project {
+    const path = String(payload.path ?? '').trim();
+    const existing = this.mockProjects.find((project) => project.path === path);
+    if (existing) {
+      return existing;
+    }
+    const segments = path.split(/[\\/]+/).filter((segment) => segment.length > 0);
+    const now = Date.now();
+    const project: Project = {
+      id: `mock-project-${++this.mockSeq}`,
+      path,
+      name: segments.at(-1) ?? path,
+      vcs: null,
+      brain_id: null,
+      trust: 'untrusted',
+      settings: {},
+      last_opened_at: now,
+      created_at: now,
+      updated_at: now,
+    };
+    this.mockProjects.unshift(project);
+    this.mockProjectFiles.set(project.id, []);
+    return project;
+  }
+
+  private mockReadFile(projectId: string, path: string): unknown {
+    const content = this.mockProjectContents.get(`${projectId}:${path}`) ?? '';
+    return {
+      file: {
+        path,
+        content,
+        etag: `mock-${content.length}`,
+        size: content.length,
+        language_id: 'plaintext',
+        truncated: false,
+        binary: false,
+      },
+    };
   }
 
   private mockCreateAgent(payload: Record<string, unknown>): AgentDefinition {

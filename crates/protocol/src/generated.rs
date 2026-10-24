@@ -6463,6 +6463,141 @@ impl std::convert::TryFrom<String> for DocumentKind {
         value.parse()
     }
 }
+#[doc = "Params of editor.layout.get."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"EditorLayoutGetParams\","]
+#[doc = "  \"description\": \"Params of editor.layout.get.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct EditorLayoutGetParams {
+    pub project_id: String,
+}
+impl From<&EditorLayoutGetParams> for EditorLayoutGetParams {
+    fn from(value: &EditorLayoutGetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of editor.layout.get; null until a layout is saved."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"EditorLayoutGetResult\","]
+#[doc = "  \"description\": \"Result of editor.layout.get; null until a layout is saved.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"layout\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"layout\": {"]
+#[doc = "      \"type\": ["]
+#[doc = "        \"object\","]
+#[doc = "        \"null\""]
+#[doc = "      ],"]
+#[doc = "      \"additionalProperties\": true"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct EditorLayoutGetResult {
+    pub layout: Option<::serde_json::Map<String, ::serde_json::Value>>,
+}
+impl From<&EditorLayoutGetResult> for EditorLayoutGetResult {
+    fn from(value: &EditorLayoutGetResult) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of editor.layout.set (spec decision D14)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"EditorLayoutSetParams\","]
+#[doc = "  \"description\": \"Params of editor.layout.set (spec decision D14).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"layout\","]
+#[doc = "    \"project_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"layout\": {"]
+#[doc = "      \"type\": \"object\","]
+#[doc = "      \"additionalProperties\": true"]
+#[doc = "    },"]
+#[doc = "    \"project_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct EditorLayoutSetParams {
+    pub layout: ::serde_json::Map<String, ::serde_json::Value>,
+    pub project_id: String,
+}
+impl From<&EditorLayoutSetParams> for EditorLayoutSetParams {
+    fn from(value: &EditorLayoutSetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of editor.layout.set."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"EditorLayoutSetResult\","]
+#[doc = "  \"description\": \"Result of editor.layout.set.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"layout\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"layout\": {"]
+#[doc = "      \"type\": \"object\","]
+#[doc = "      \"additionalProperties\": true"]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct EditorLayoutSetResult {
+    pub layout: ::serde_json::Map<String, ::serde_json::Value>,
+}
+impl From<&EditorLayoutSetResult> for EditorLayoutSetResult {
+    fn from(value: &EditorLayoutSetResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Payload of the embedding.created event (SEARCH.md §4)."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]

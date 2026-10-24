@@ -20,6 +20,8 @@ export interface EditorTabsProps {
   activeId?: string | undefined;
   onSelect: (documentId: string) => void;
   onClose: (documentId: string) => void;
+  /** Accessible name of the tab strip. */
+  ariaLabel?: string | undefined;
 }
 
 function CloseIcon(): ReactElement {
@@ -31,14 +33,20 @@ function CloseIcon(): ReactElement {
 }
 
 /** The editor tab bar. */
-export function EditorTabs({ tabs, activeId, onSelect, onClose }: EditorTabsProps): ReactElement {
+export function EditorTabs({
+  tabs,
+  activeId,
+  onSelect,
+  onClose,
+  ariaLabel,
+}: EditorTabsProps): ReactElement {
   const close = (event: MouseEvent, documentId: string): void => {
     event.stopPropagation();
     onClose(documentId);
   };
 
   return (
-    <div className="editor-tabs" role="tablist" aria-label={t('editor.tabs.label')}>
+    <div className="editor-tabs" role="tablist" aria-label={ariaLabel ?? t('editor.tabs.label')}>
       {tabs.map((tab) => {
         const active = tab.documentId === activeId;
         const closeLabel = t('editor.tabs.close', { title: tab.title });
