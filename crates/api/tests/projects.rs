@@ -49,6 +49,17 @@ async fn start_stack() -> (tempfile::TempDir, SocketPath, ServerHandle, Arc<Kern
     (dir, socket, handle, kernel)
 }
 
+/// Disable `capability.ide`, first switching off the enabled dependents that
+/// would otherwise block it.
+async fn disable_ide(client: &KernelClient) {
+    for id in ["capability.terminal", "capability.lsp", "capability.ide"] {
+        client
+            .call("capability.set", json!({ "id": id, "enabled": false }))
+            .await
+            .unwrap();
+    }
+}
+
 #[tokio::test(flavor = "multi_thread")]
 async fn file_operations_over_ipc() {
     let (dir, socket, handle, _kernel) = start_stack().await;
@@ -176,13 +187,7 @@ async fn file_operations_over_ipc() {
     assert_eq!(deleted["deleted"], json!(true));
 
     // --- guard ------------------------------------------------------------
-    client
-        .call(
-            "capability.set",
-            json!({ "id": "capability.ide", "enabled": false }),
-        )
-        .await
-        .unwrap();
+    disable_ide(&client).await;
     let err = client
         .call("file.list", json!({ "project_id": id }))
         .await
@@ -315,13 +320,7 @@ async fn project_lifecycle_over_ipc() {
     assert!(listed["projects"].as_array().unwrap().is_empty());
 
     // --- guard: a disabled capability's command is refused ----------------
-    client
-        .call(
-            "capability.set",
-            json!({ "id": "capability.ide", "enabled": false }),
-        )
-        .await
-        .unwrap();
+    disable_ide(&client).await;
     let err = client.call("project.list", json!({})).await.unwrap_err();
     match err {
         fergents_api::ApiError::Rpc { code, .. } => {
