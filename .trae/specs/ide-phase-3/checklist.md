@@ -74,7 +74,7 @@ the behaviour is implemented, tested, and merged.
 - [ ] Save/conflict banner; external change handled
 - [x] Problems panel grouped and jumpable
 - [x] Terminal tabs/split/shell selector; live session reconnect
-- [ ] Source control: status/diff/stage/commit/branches/log/blame/conflicts
+- [x] Source control: status/diff/stage/commit/branches/log/blame/conflicts
 - [ ] Diff preview with per-hunk/file/all approval and line stats
 - [ ] Inline AI ghost text (opt-in), Tab/Esc, quick actions, suppression rules
 - [ ] Composer proposal → approve subset → reversible apply; reject writes
