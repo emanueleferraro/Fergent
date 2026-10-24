@@ -28,6 +28,7 @@ use fergents_agents::{
 use fergents_capabilities::{default_catalogue, CapabilityError, CapabilityRegistry};
 use fergents_chat::{ChatMessage, ChatService};
 use fergents_events::{now_ms, EventBus};
+use fergents_git::GitService;
 use fergents_ide::{file_tools, FileService, ProjectService};
 use fergents_llm::{ChatRequest, MockProvider};
 use fergents_lsp::LspService;
@@ -93,6 +94,9 @@ pub enum CoreError {
     /// A terminal failure.
     #[error(transparent)]
     Terminal(#[from] fergents_terminal::TerminalError),
+    /// A git failure.
+    #[error(transparent)]
+    Git(#[from] fergents_git::GitError),
 }
 
 /// Kernel configuration.
@@ -165,6 +169,7 @@ pub struct Kernel {
     files: Arc<FileService>,
     lsp: Arc<LspService>,
     terminal: Arc<TerminalService>,
+    git: Arc<GitService>,
     subagents: Arc<SubAgentManager>,
     started: Instant,
     started_ms: i64,
@@ -259,6 +264,13 @@ impl Kernel {
         for tool in terminal_tools(terminal.clone()) {
             tools.register(tool);
         }
+        // The dispatch layer enforces `capability.git-remote` for fetch/pull/push.
+        let git = Arc::new(GitService::new(
+            storage.clone(),
+            bus.clone(),
+            projects.clone(),
+            true,
+        ));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -288,6 +300,7 @@ impl Kernel {
             files,
             lsp,
             terminal,
+            git,
             subagents,
             started: Instant::now(),
             started_ms: now_ms(),
@@ -400,6 +413,11 @@ impl Kernel {
     /// PTY sessions, scrollback, and visible shell execution.
     pub fn terminal(&self) -> &TerminalService {
         self.terminal.as_ref()
+    }
+
+    /// Repository status, diffs, commits, branches, and history.
+    pub fn git(&self) -> &GitService {
+        self.git.as_ref()
     }
 
     /// The sub-agent manager (async children, collect, cancel, handoff).

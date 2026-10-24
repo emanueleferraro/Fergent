@@ -3294,3 +3294,338 @@ export interface TermExecParams {
   command: string;
   actor?: string | null;
 }
+
+/**
+ * What happened to one path.
+ */
+export type GitChangeKind =
+  'added' | 'modified' | 'deleted' | 'renamed' | 'typechange' | 'conflicted' | 'untracked';
+
+/**
+ * One changed path in the working tree or the index.
+ */
+export interface GitStatusEntry {
+  path: string;
+  original_path?: string | null;
+  kind: GitChangeKind;
+  staged: boolean;
+}
+
+/**
+ * The repository status, including upstream tracking.
+ */
+export interface GitRepoStatus {
+  project_id: string;
+  branch: string | null;
+  head: string | null;
+  detached: boolean;
+  ahead: number;
+  behind: number;
+  clean: boolean;
+  entries: GitStatusEntry[];
+}
+
+/**
+ * Params of git.status.
+ */
+export interface GitStatusParams {
+  project_id: string;
+}
+
+/**
+ * Result of git.status and git.branch.switch.
+ */
+export interface GitStatusResult {
+  status: GitRepoStatus;
+}
+
+/**
+ * One line of a diff hunk.
+ */
+export interface GitDiffLine {
+  kind: 'context' | 'add' | 'del';
+  old_line?: number | null;
+  new_line?: number | null;
+  content: string;
+}
+
+/**
+ * One hunk of a file diff.
+ */
+export interface GitDiffHunk {
+  old_start: number;
+  old_lines: number;
+  new_start: number;
+  new_lines: number;
+  header: string;
+  lines: GitDiffLine[];
+}
+
+/**
+ * One changed file with its hunks.
+ */
+export interface GitFileDiff {
+  path: string;
+  original_path?: string | null;
+  binary: boolean;
+  hunks: GitDiffHunk[];
+}
+
+/**
+ * Params of git.diff.
+ */
+export interface GitDiffParams {
+  project_id: string;
+  path?: string | null;
+  staged?: boolean | null;
+  commit?: string | null;
+}
+
+/**
+ * Result of git.diff.
+ */
+export interface GitDiffResult {
+  files: GitFileDiff[];
+}
+
+/**
+ * Params of the path-based git commands.
+ */
+export interface GitPathsParams {
+  project_id: string;
+  paths: string[];
+  actor?: string | null;
+}
+
+/**
+ * Result of git.stage and git.unstage.
+ */
+export interface GitStageResult {
+  paths: number;
+}
+
+/**
+ * Result of git.discard; the backup makes it reversible.
+ */
+export interface GitDiscardResult {
+  backup: string;
+}
+
+/**
+ * Params of git.commit.
+ */
+export interface GitCommitParams {
+  project_id: string;
+  message: string;
+  actor?: string | null;
+  session_id?: string | null;
+  allow_empty?: boolean | null;
+}
+
+/**
+ * The result of a commit.
+ */
+export interface GitCommit {
+  id: string;
+  short_id: string;
+  summary: string;
+  trailers: string[];
+}
+
+/**
+ * Result of git.commit.
+ */
+export interface GitCommitResult {
+  commit: GitCommit;
+}
+
+/**
+ * One local branch.
+ */
+export interface GitBranch {
+  name: string;
+  is_head: boolean;
+  upstream?: string | null;
+  ahead: number;
+  behind: number;
+}
+
+/**
+ * Params of git.branches.
+ */
+export interface GitBranchesParams {
+  project_id: string;
+}
+
+/**
+ * Result of git.branches.
+ */
+export interface GitBranchesResult {
+  branches: GitBranch[];
+}
+
+/**
+ * Params of git.branch.create.
+ */
+export interface GitBranchCreateParams {
+  project_id: string;
+  name: string;
+  from?: string | null;
+  checkout?: boolean | null;
+  actor?: string | null;
+}
+
+/**
+ * Result of git.branch.create.
+ */
+export interface GitBranchResult {
+  branch: GitBranch;
+}
+
+/**
+ * Params of git.branch.switch.
+ */
+export interface GitBranchSwitchParams {
+  project_id: string;
+  name: string;
+  actor?: string | null;
+}
+
+/**
+ * One commit in the log.
+ */
+export interface GitCommitInfo {
+  id: string;
+  short_id: string;
+  author: string;
+  author_email: string;
+  time: number;
+  summary: string;
+}
+
+/**
+ * Params of git.log.
+ */
+export interface GitLogParams {
+  project_id: string;
+  limit?: number | null;
+}
+
+/**
+ * Result of git.log.
+ */
+export interface GitLogResult {
+  commits: GitCommitInfo[];
+}
+
+/**
+ * Params of git.show.
+ */
+export interface GitShowParams {
+  project_id: string;
+  commit: string;
+}
+
+/**
+ * A changed file in a commit, without hunks.
+ */
+export interface GitFileSummary {
+  path: string;
+  original_path?: string | null;
+  additions: number;
+  deletions: number;
+}
+
+/**
+ * Result of git.show.
+ */
+export interface GitShowResult {
+  commit: GitCommitInfo;
+  message: string;
+  files: GitFileSummary[];
+}
+
+/**
+ * One blamed line.
+ */
+export interface GitBlameLine {
+  line: number;
+  commit: string;
+  short_commit: string;
+  author: string;
+  time: number;
+  content: string;
+}
+
+/**
+ * Params of git.blame.
+ */
+export interface GitBlameParams {
+  project_id: string;
+  path: string;
+}
+
+/**
+ * Result of git.blame.
+ */
+export interface GitBlameResult {
+  lines: GitBlameLine[];
+}
+
+/**
+ * One conflicted path.
+ */
+export interface GitConflict {
+  path: string;
+  has_base: boolean;
+  has_ours: boolean;
+  has_theirs: boolean;
+}
+
+/**
+ * Params of git.conflicts.
+ */
+export interface GitConflictsParams {
+  project_id: string;
+}
+
+/**
+ * Result of git.conflicts.
+ */
+export interface GitConflictsResult {
+  conflicts: GitConflict[];
+}
+
+/**
+ * Params of git.resolve.
+ */
+export interface GitResolveParams {
+  project_id: string;
+  path: string;
+  strategy: 'ours' | 'theirs' | 'mark_resolved';
+  actor?: string | null;
+}
+
+/**
+ * Result of git.resolve.
+ */
+export interface GitResolveResult {
+  resolved: boolean;
+}
+
+/**
+ * Params of git.fetch, git.pull, and git.push.
+ */
+export interface GitRemoteParams {
+  project_id: string;
+  remote?: string | null;
+  actor?: string | null;
+}
+
+/**
+ * Result of a remote git operation.
+ */
+export interface GitRemoteResult {
+  operation: string;
+  output: string;
+}

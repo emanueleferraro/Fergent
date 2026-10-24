@@ -1,0 +1,21 @@
+[package]
+name = "fergents-git"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents source control: git2 repositories, status, diffs, commits, and remote operations."
+
+[dependencies]
+fergents-storage = { workspace = true }
+fergents-events = { workspace = true }
+fergents-ide = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+ulid = { workspace = true }
+git2 = { version = "0.19", default-features = false, features = ["vendored-libgit2"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }

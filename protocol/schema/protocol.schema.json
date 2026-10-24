@@ -3830,6 +3830,485 @@
         "command": { "type": "string" },
         "actor": { "type": ["string", "null"] }
       }
+    },
+    "GitChangeKind": {
+      "title": "GitChangeKind",
+      "description": "What happened to one path.",
+      "type": "string",
+      "enum": [
+        "added",
+        "modified",
+        "deleted",
+        "renamed",
+        "typechange",
+        "conflicted",
+        "untracked"
+      ]
+    },
+    "GitStatusEntry": {
+      "title": "GitStatusEntry",
+      "description": "One changed path in the working tree or the index.",
+      "type": "object",
+      "required": ["path", "kind", "staged"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "original_path": { "type": ["string", "null"] },
+        "kind": { "$ref": "#/$defs/GitChangeKind" },
+        "staged": { "type": "boolean" }
+      }
+    },
+    "GitRepoStatus": {
+      "title": "GitRepoStatus",
+      "description": "The repository status, including upstream tracking.",
+      "type": "object",
+      "required": [
+        "project_id",
+        "branch",
+        "head",
+        "detached",
+        "ahead",
+        "behind",
+        "clean",
+        "entries"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "branch": { "type": ["string", "null"] },
+        "head": { "type": ["string", "null"] },
+        "detached": { "type": "boolean" },
+        "ahead": { "type": "integer", "minimum": 0 },
+        "behind": { "type": "integer", "minimum": 0 },
+        "clean": { "type": "boolean" },
+        "entries": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/GitStatusEntry" }
+        }
+      }
+    },
+    "GitStatusParams": {
+      "title": "GitStatusParams",
+      "description": "Params of git.status.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" }
+      }
+    },
+    "GitStatusResult": {
+      "title": "GitStatusResult",
+      "description": "Result of git.status and git.branch.switch.",
+      "type": "object",
+      "required": ["status"],
+      "additionalProperties": false,
+      "properties": {
+        "status": { "$ref": "#/$defs/GitRepoStatus" }
+      }
+    },
+    "GitDiffLine": {
+      "title": "GitDiffLine",
+      "description": "One line of a diff hunk.",
+      "type": "object",
+      "required": ["kind", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "type": "string", "enum": ["context", "add", "del"] },
+        "old_line": { "type": ["integer", "null"], "minimum": 0 },
+        "new_line": { "type": ["integer", "null"], "minimum": 0 },
+        "content": { "type": "string" }
+      }
+    },
+    "GitDiffHunk": {
+      "title": "GitDiffHunk",
+      "description": "One hunk of a file diff.",
+      "type": "object",
+      "required": [
+        "old_start",
+        "old_lines",
+        "new_start",
+        "new_lines",
+        "header",
+        "lines"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "old_start": { "type": "integer", "minimum": 0 },
+        "old_lines": { "type": "integer", "minimum": 0 },
+        "new_start": { "type": "integer", "minimum": 0 },
+        "new_lines": { "type": "integer", "minimum": 0 },
+        "header": { "type": "string" },
+        "lines": { "type": "array", "items": { "$ref": "#/$defs/GitDiffLine" } }
+      }
+    },
+    "GitFileDiff": {
+      "title": "GitFileDiff",
+      "description": "One changed file with its hunks.",
+      "type": "object",
+      "required": ["path", "binary", "hunks"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "original_path": { "type": ["string", "null"] },
+        "binary": { "type": "boolean" },
+        "hunks": { "type": "array", "items": { "$ref": "#/$defs/GitDiffHunk" } }
+      }
+    },
+    "GitDiffParams": {
+      "title": "GitDiffParams",
+      "description": "Params of git.diff.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": ["string", "null"] },
+        "staged": { "type": ["boolean", "null"] },
+        "commit": { "type": ["string", "null"] }
+      }
+    },
+    "GitDiffResult": {
+      "title": "GitDiffResult",
+      "description": "Result of git.diff.",
+      "type": "object",
+      "required": ["files"],
+      "additionalProperties": false,
+      "properties": {
+        "files": { "type": "array", "items": { "$ref": "#/$defs/GitFileDiff" } }
+      }
+    },
+    "GitPathsParams": {
+      "title": "GitPathsParams",
+      "description": "Params of the path-based git commands.",
+      "type": "object",
+      "required": ["project_id", "paths"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "paths": { "type": "array", "items": { "type": "string" } },
+        "actor": { "type": ["string", "null"] }
+      }
+    },
+    "GitStageResult": {
+      "title": "GitStageResult",
+      "description": "Result of git.stage and git.unstage.",
+      "type": "object",
+      "required": ["paths"],
+      "additionalProperties": false,
+      "properties": {
+        "paths": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "GitDiscardResult": {
+      "title": "GitDiscardResult",
+      "description": "Result of git.discard; the backup makes it reversible.",
+      "type": "object",
+      "required": ["backup"],
+      "additionalProperties": false,
+      "properties": {
+        "backup": { "type": "string" }
+      }
+    },
+    "GitCommitParams": {
+      "title": "GitCommitParams",
+      "description": "Params of git.commit.",
+      "type": "object",
+      "required": ["project_id", "message"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "message": { "type": "string" },
+        "actor": { "type": ["string", "null"] },
+        "session_id": { "type": ["string", "null"] },
+        "allow_empty": { "type": ["boolean", "null"] }
+      }
+    },
+    "GitCommit": {
+      "title": "GitCommit",
+      "description": "The result of a commit.",
+      "type": "object",
+      "required": ["id", "short_id", "summary", "trailers"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "short_id": { "type": "string" },
+        "summary": { "type": "string" },
+        "trailers": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "GitCommitResult": {
+      "title": "GitCommitResult",
+      "description": "Result of git.commit.",
+      "type": "object",
+      "required": ["commit"],
+      "additionalProperties": false,
+      "properties": {
+        "commit": { "$ref": "#/$defs/GitCommit" }
+      }
+    },
+    "GitBranch": {
+      "title": "GitBranch",
+      "description": "One local branch.",
+      "type": "object",
+      "required": ["name", "is_head", "ahead", "behind"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string" },
+        "is_head": { "type": "boolean" },
+        "upstream": { "type": ["string", "null"] },
+        "ahead": { "type": "integer", "minimum": 0 },
+        "behind": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "GitBranchesParams": {
+      "title": "GitBranchesParams",
+      "description": "Params of git.branches.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" }
+      }
+    },
+    "GitBranchesResult": {
+      "title": "GitBranchesResult",
+      "description": "Result of git.branches.",
+      "type": "object",
+      "required": ["branches"],
+      "additionalProperties": false,
+      "properties": {
+        "branches": { "type": "array", "items": { "$ref": "#/$defs/GitBranch" } }
+      }
+    },
+    "GitBranchCreateParams": {
+      "title": "GitBranchCreateParams",
+      "description": "Params of git.branch.create.",
+      "type": "object",
+      "required": ["project_id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "name": { "type": "string" },
+        "from": { "type": ["string", "null"] },
+        "checkout": { "type": ["boolean", "null"] },
+        "actor": { "type": ["string", "null"] }
+      }
+    },
+    "GitBranchResult": {
+      "title": "GitBranchResult",
+      "description": "Result of git.branch.create.",
+      "type": "object",
+      "required": ["branch"],
+      "additionalProperties": false,
+      "properties": {
+        "branch": { "$ref": "#/$defs/GitBranch" }
+      }
+    },
+    "GitBranchSwitchParams": {
+      "title": "GitBranchSwitchParams",
+      "description": "Params of git.branch.switch.",
+      "type": "object",
+      "required": ["project_id", "name"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "name": { "type": "string" },
+        "actor": { "type": ["string", "null"] }
+      }
+    },
+    "GitCommitInfo": {
+      "title": "GitCommitInfo",
+      "description": "One commit in the log.",
+      "type": "object",
+      "required": ["id", "short_id", "author", "author_email", "time", "summary"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "short_id": { "type": "string" },
+        "author": { "type": "string" },
+        "author_email": { "type": "string" },
+        "time": { "type": "integer", "format": "int64" },
+        "summary": { "type": "string" }
+      }
+    },
+    "GitLogParams": {
+      "title": "GitLogParams",
+      "description": "Params of git.log.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "limit": { "type": ["integer", "null"], "minimum": 1 }
+      }
+    },
+    "GitLogResult": {
+      "title": "GitLogResult",
+      "description": "Result of git.log.",
+      "type": "object",
+      "required": ["commits"],
+      "additionalProperties": false,
+      "properties": {
+        "commits": { "type": "array", "items": { "$ref": "#/$defs/GitCommitInfo" } }
+      }
+    },
+    "GitShowParams": {
+      "title": "GitShowParams",
+      "description": "Params of git.show.",
+      "type": "object",
+      "required": ["project_id", "commit"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "commit": { "type": "string" }
+      }
+    },
+    "GitFileSummary": {
+      "title": "GitFileSummary",
+      "description": "A changed file in a commit, without hunks.",
+      "type": "object",
+      "required": ["path", "additions", "deletions"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "original_path": { "type": ["string", "null"] },
+        "additions": { "type": "integer", "minimum": 0 },
+        "deletions": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "GitShowResult": {
+      "title": "GitShowResult",
+      "description": "Result of git.show.",
+      "type": "object",
+      "required": ["commit", "message", "files"],
+      "additionalProperties": false,
+      "properties": {
+        "commit": { "$ref": "#/$defs/GitCommitInfo" },
+        "message": { "type": "string" },
+        "files": { "type": "array", "items": { "$ref": "#/$defs/GitFileSummary" } }
+      }
+    },
+    "GitBlameLine": {
+      "title": "GitBlameLine",
+      "description": "One blamed line.",
+      "type": "object",
+      "required": ["line", "commit", "short_commit", "author", "time", "content"],
+      "additionalProperties": false,
+      "properties": {
+        "line": { "type": "integer", "minimum": 1 },
+        "commit": { "type": "string" },
+        "short_commit": { "type": "string" },
+        "author": { "type": "string" },
+        "time": { "type": "integer", "format": "int64" },
+        "content": { "type": "string" }
+      }
+    },
+    "GitBlameParams": {
+      "title": "GitBlameParams",
+      "description": "Params of git.blame.",
+      "type": "object",
+      "required": ["project_id", "path"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" }
+      }
+    },
+    "GitBlameResult": {
+      "title": "GitBlameResult",
+      "description": "Result of git.blame.",
+      "type": "object",
+      "required": ["lines"],
+      "additionalProperties": false,
+      "properties": {
+        "lines": { "type": "array", "items": { "$ref": "#/$defs/GitBlameLine" } }
+      }
+    },
+    "GitConflict": {
+      "title": "GitConflict",
+      "description": "One conflicted path.",
+      "type": "object",
+      "required": ["path", "has_base", "has_ours", "has_theirs"],
+      "additionalProperties": false,
+      "properties": {
+        "path": { "type": "string" },
+        "has_base": { "type": "boolean" },
+        "has_ours": { "type": "boolean" },
+        "has_theirs": { "type": "boolean" }
+      }
+    },
+    "GitConflictsParams": {
+      "title": "GitConflictsParams",
+      "description": "Params of git.conflicts.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" }
+      }
+    },
+    "GitConflictsResult": {
+      "title": "GitConflictsResult",
+      "description": "Result of git.conflicts.",
+      "type": "object",
+      "required": ["conflicts"],
+      "additionalProperties": false,
+      "properties": {
+        "conflicts": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/GitConflict" }
+        }
+      }
+    },
+    "GitResolveParams": {
+      "title": "GitResolveParams",
+      "description": "Params of git.resolve.",
+      "type": "object",
+      "required": ["project_id", "path", "strategy"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "path": { "type": "string" },
+        "strategy": {
+          "type": "string",
+          "enum": ["ours", "theirs", "mark_resolved"]
+        },
+        "actor": { "type": ["string", "null"] }
+      }
+    },
+    "GitResolveResult": {
+      "title": "GitResolveResult",
+      "description": "Result of git.resolve.",
+      "type": "object",
+      "required": ["resolved"],
+      "additionalProperties": false,
+      "properties": {
+        "resolved": { "type": "boolean" }
+      }
+    },
+    "GitRemoteParams": {
+      "title": "GitRemoteParams",
+      "description": "Params of git.fetch, git.pull, and git.push.",
+      "type": "object",
+      "required": ["project_id"],
+      "additionalProperties": false,
+      "properties": {
+        "project_id": { "type": "string" },
+        "remote": { "type": ["string", "null"] },
+        "actor": { "type": ["string", "null"] }
+      }
+    },
+    "GitRemoteResult": {
+      "title": "GitRemoteResult",
+      "description": "Result of a remote git operation.",
+      "type": "object",
+      "required": ["operation", "output"],
+      "additionalProperties": false,
+      "properties": {
+        "operation": { "type": "string" },
+        "output": { "type": "string" }
+      }
     }
   }
 }
