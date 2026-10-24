@@ -2932,6 +2932,126 @@ mark,
     overflow-wrap: anywhere;
 }
 
+/* Diff preview (Phase 3, task 3.11, UI.md §8.7). */
+.diff-preview {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    background: var(--surface-1);
+}
+.diff-preview__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border-bottom: 1px solid var(--border-default);
+}
+.diff-preview__empty {
+    padding: var(--s-3) var(--s-4);
+}
+.diff-preview__body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+}
+.diff-preview__files {
+    display: flex;
+    flex: 0 0 200px;
+    flex-direction: column;
+    gap: var(--s-1);
+    padding: var(--s-2);
+    border-right: 1px solid var(--border-default);
+    overflow: auto;
+}
+.diff-preview__file {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: var(--s-1) var(--s-2);
+    border: none;
+    border-radius: var(--r-xs);
+    background: transparent;
+    color: var(--text-default);
+    font: inherit;
+    font-size: var(--fs-label);
+    text-align: left;
+    cursor: pointer;
+}
+.diff-preview__file:hover {
+    background: var(--color-hover);
+}
+.diff-preview__file--active {
+    background: var(--color-active);
+}
+.diff-preview__file-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.diff-preview__main {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+.diff-preview__file-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border-bottom: 1px solid var(--border-default);
+}
+.diff-preview__file-path {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.diff-editor {
+    flex: 1;
+    min-width: 0;
+    min-height: 160px;
+    overflow: hidden;
+}
+.diff-preview__hunks {
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    gap: var(--s-1);
+    max-height: 30%;
+    padding: var(--s-1) var(--s-2);
+    border-top: 1px solid var(--border-default);
+    overflow: auto;
+}
+.diff-hunk {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border-radius: var(--r-xs);
+    background: var(--surface-2);
+}
+.diff-hunk--off {
+    opacity: 0.6;
+}
+.diff-hunk__header {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.diff-preview__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border-top: 1px solid var(--border-default);
+}
+
 /* ============================================================
    REDUCED MOTION
    ============================================================ */
