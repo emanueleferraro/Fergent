@@ -81,7 +81,7 @@ the behaviour is implemented, tested, and merged.
       nothing
 - [ ] Agent mode: spec/plan/tasks tabs, approval cards, `@file`/`@selection`
 - [ ] Chat + IDE split persisted, resizable by keyboard, restores on restart
-- [ ] Command palette and shortcuts (`Ctrl+Tab`, `Ctrl+W`, `Ctrl+\`)
+- [x] Command palette and shortcuts (`Ctrl+Tab`, `Ctrl+W`, `Ctrl+\`)
 - [ ] Settings → IDE (servers, shells, git remote, editor preferences)
 - [ ] All UI built from `style/` tokens; accessible per `UI.md` §19–§20
 

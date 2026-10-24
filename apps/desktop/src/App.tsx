@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import { version as uiVersion } from '@fergents/ui';
+import type { LspRequestResult } from '@fergents/protocol';
 
 import { CommandPalette } from './features/palette/CommandPalette';
 import { commands } from './features/palette/commands';
@@ -14,10 +15,12 @@ import { ChatSidebar } from './features/chat/ChatSidebar';
 import { useChat } from './features/chat/useChat';
 import { AgentsView } from './features/agents/AgentsView';
 import { EditorArea } from './features/editor/EditorArea';
+import { isTextEdit } from './features/editor/textEdits';
 import { useProjectEditor } from './features/editor/useProjectEditor';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
-import { IdeView } from './features/ide/IdeView';
+import { IdeView, type IdePanel } from './features/ide/IdeView';
+import { cycleTabPath, ideCommands, type IdeActions } from './features/ide/ideCommands';
 import { SplitPane } from './features/layout/SplitPane';
 import { useIdeLayout } from './features/layout/useIdeLayout';
 import { ProjectExplorer } from './features/project/ProjectExplorer';
@@ -102,6 +105,9 @@ export function App(): ReactElement {
   const editor = useProjectEditor(kernel, projectId, { trusted });
   const [activeId, setActiveId] = useState<RailId>('chat');
   const [paletteOpen, setPaletteOpen] = useState(false);
+  const [idePanel, setIdePanel] = useState<IdePanel>('none');
+  const [showScm, setShowScm] = useState(false);
+  const [showChat, setShowChat] = useState(true);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
@@ -135,11 +141,154 @@ export function App(): ReactElement {
     toggle();
   }, [toggle]);
 
+  const toggleIdePanel = useCallback((panel: Exclude<IdePanel, 'none'>) => {
+    setIdePanel((current) => (current === panel ? 'none' : panel));
+  }, []);
+
+  const selectTab = useCallback(
+    (delta: number) => {
+      const next = cycleTabPath(
+        editor.documents.map((document) => document.path),
+        editor.activePath,
+        delta,
+      );
+      if (next !== null) {
+        editor.select(next);
+      }
+    },
+    [editor],
+  );
+
+  const jumpToTab = useCallback(
+    (index: number) => {
+      const document = editor.documents[index];
+      if (document !== undefined) {
+        editor.select(document.path);
+      }
+    },
+    [editor],
+  );
+
+  const formatDocument = useCallback(() => {
+    const path = editor.activePath;
+    if (projectId === null || path === null || !trusted) {
+      return;
+    }
+    void (async () => {
+      try {
+        const result = await kernel.call<LspRequestResult>('lsp.format', {
+          project_id: projectId,
+          path,
+          tab_size: 2,
+          insert_spaces: true,
+        });
+        const edits = Array.isArray(result.result) ? result.result.filter(isTextEdit) : [];
+        if (edits.length > 0) {
+          editor.applyEdits(path, edits);
+        }
+      } catch {
+        // No language server for this file: the buffer stays as it is.
+      }
+    })();
+  }, [editor, kernel, projectId, trusted]);
+
+  // "Add to chat" grounds the conversation in the open file (`@path` mention).
+  const addToChat = useCallback(() => {
+    const path = editor.activePath;
+    if (path === null) {
+      return;
+    }
+    const snippet = `@${path}`;
+    const draft = chat.draft.trim();
+    chat.setDraft(draft.length === 0 ? `${snippet} ` : `${draft}\n${snippet} `);
+    setActiveId('ide');
+  }, [chat, editor.activePath]);
+
+  const ideActions = useMemo<IdeActions>(
+    () => ({
+      hasDocument: editor.activePath !== null,
+      save: () => void editor.save(),
+      formatDocument,
+      closeTab: () => {
+        if (editor.activePath !== null) {
+          editor.close(editor.activePath);
+        }
+      },
+      nextTab: () => selectTab(1),
+      previousTab: () => selectTab(-1),
+      jumpToTab,
+      toggleProblems: () => toggleIdePanel('problems'),
+      toggleTerminal: () => toggleIdePanel('terminal'),
+      toggleScm: () => setShowScm((shown) => !shown),
+      toggleChat: () => setShowChat((shown) => !shown),
+      addToChat,
+    }),
+    [addToChat, editor, formatDocument, jumpToTab, selectTab, toggleIdePanel],
+  );
+
+  const paletteCommands = useMemo(() => [...commands, ...ideCommands(ideActions)], [ideActions]);
+
+  const ideActionsRef = useRef(ideActions);
+  ideActionsRef.current = ideActions;
+
+  // Global shortcuts (UI.md §19.2). Editor-local keys are Monaco's; the
+  // handler only reacts when nobody else consumed the event.
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent): void => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+      if (event.defaultPrevented) {
+        return;
+      }
+      const mod = event.ctrlKey || event.metaKey;
+      const ide = ideActionsRef.current;
+      if (mod && !event.altKey && event.key.toLowerCase() === 'k') {
         event.preventDefault();
         setPaletteOpen((open) => !open);
+        return;
+      }
+      if (mod && !event.altKey && event.key === 'Tab') {
+        event.preventDefault();
+        if (event.shiftKey) {
+          ide.previousTab();
+        } else {
+          ide.nextTab();
+        }
+        return;
+      }
+      if (mod && !event.altKey && event.key === '\\') {
+        event.preventDefault();
+        ide.toggleChat();
+        return;
+      }
+      if (mod && !event.altKey && /^[1-9]$/.test(event.key) && ide.hasDocument) {
+        event.preventDefault();
+        ide.jumpToTab(Number(event.key) - 1);
+        return;
+      }
+      if (
+        mod &&
+        !event.altKey &&
+        !event.shiftKey &&
+        event.key.toLowerCase() === 'w' &&
+        ide.hasDocument
+      ) {
+        event.preventDefault();
+        ide.closeTab();
+        return;
+      }
+      if (
+        mod &&
+        !event.altKey &&
+        !event.shiftKey &&
+        event.key.toLowerCase() === 's' &&
+        ide.hasDocument
+      ) {
+        event.preventDefault();
+        ide.save();
+        return;
+      }
+      if (event.altKey && event.shiftKey && event.code === 'KeyF' && ide.hasDocument) {
+        event.preventDefault();
+        ide.formatDocument();
       }
     };
     window.addEventListener('keydown', onKeyDown);
@@ -147,6 +296,21 @@ export function App(): ReactElement {
   }, []);
 
   const activeItem = RAIL_ITEMS.find((item) => item.id === activeId);
+
+  const ideView = (
+    <IdeView
+      kernel={kernel}
+      projectId={projectId}
+      projectRoot={projects.active?.path ?? ''}
+      editor={editor}
+      theme={theme}
+      trusted={trusted}
+      panel={idePanel}
+      onPanelChange={setIdePanel}
+      showScm={showScm}
+      onToggleScm={() => setShowScm((shown) => !shown)}
+    />
+  );
 
   return (
     <div className="shell">
@@ -262,28 +426,23 @@ export function App(): ReactElement {
         ) : activeId === 'chat' ? (
           <ChatPanel kernel={kernel} chat={chat} />
         ) : activeId === 'ide' ? (
-          <SplitPane
-            direction="row"
-            ratio={ideLayout.ratio}
-            label={t('ide.split.label')}
-            onRatioChange={ideLayout.resize}
-            onReset={ideLayout.reset}
-            first={
-              <div className="ide-workspace__chat">
-                <ChatPanel kernel={kernel} chat={chat} />
-              </div>
-            }
-            second={
-              <IdeView
-                kernel={kernel}
-                projectId={projectId}
-                projectRoot={projects.active?.path ?? ''}
-                editor={editor}
-                theme={theme}
-                trusted={trusted}
-              />
-            }
-          />
+          showChat ? (
+            <SplitPane
+              direction="row"
+              ratio={ideLayout.ratio}
+              label={t('ide.split.label')}
+              onRatioChange={ideLayout.resize}
+              onReset={ideLayout.reset}
+              first={
+                <div className="ide-workspace__chat">
+                  <ChatPanel kernel={kernel} chat={chat} />
+                </div>
+              }
+              second={ideView}
+            />
+          ) : (
+            ideView
+          )
         ) : activeId === 'settings' ? (
           <SettingsView kernel={kernel} />
         ) : activeId === 'agents' ? (
@@ -338,7 +497,7 @@ export function App(): ReactElement {
         open={paletteOpen}
         onClose={() => setPaletteOpen(false)}
         kernel={kernel}
-        commands={commands}
+        commands={paletteCommands}
         toggleTheme={toggleTheme}
       />
     </div>

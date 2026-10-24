@@ -24,6 +24,9 @@ import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
 import { baseName } from '../project/model';
 
+/** Which bottom panel the IDE shows (`none` hides both). */
+export type IdePanel = 'none' | 'problems' | 'terminal';
+
 /** Props for `IdeView`. */
 export interface IdeViewProps {
   kernel: KernelClient;
@@ -36,6 +39,12 @@ export interface IdeViewProps {
   theme: 'dark' | 'light';
   /** Whether the project is trusted (spec D3). */
   trusted: boolean;
+  /** The visible bottom panel; owned by the shell so the palette can toggle it. */
+  panel: IdePanel;
+  onPanelChange: (panel: IdePanel) => void;
+  /** Whether the source-control panel is open. */
+  showScm: boolean;
+  onToggleScm: () => void;
 }
 
 /** Render an outline tree, deepest last. */
@@ -75,14 +84,15 @@ export function IdeView({
   editor,
   theme,
   trusted,
+  panel,
+  onPanelChange,
+  showScm,
+  onToggleScm,
 }: IdeViewProps): ReactElement {
   const { documents, active, activePath, conflict } = editor;
   const [outline, setOutline] = useState<OutlineItem[]>([]);
   const [reveal, setReveal] = useState<RevealRequest | null>(null);
   const revealToken = useRef(0);
-  const [showProblems, setShowProblems] = useState(false);
-  const [showTerminal, setShowTerminal] = useState(false);
-  const [showScm, setShowScm] = useState(false);
   const [actions, setActions] = useState<LspCodeAction[] | null>(null);
   const [lspError, setLspError] = useState<string | null>(null);
   const problems = useProblems(kernel, projectId, trusted);
@@ -338,29 +348,29 @@ export function IdeView({
             projectId={projectId}
             trusted={trusted}
             activePath={activePath}
-            onClose={() => setShowScm(false)}
+            onClose={onToggleScm}
           />
         ) : null}
       </div>
 
-      {showProblems ? (
+      {panel === 'problems' ? (
         <ProblemsPanel
           kernel={kernel}
           projectId={projectId}
           groups={problems.groups}
           counts={problems.counts}
           onOpen={openAt}
-          onClose={() => setShowProblems(false)}
+          onClose={() => onPanelChange('none')}
         />
       ) : null}
 
-      {showTerminal ? (
+      {panel === 'terminal' ? (
         <TerminalPanel
           kernel={kernel}
           projectId={projectId}
           trusted={trusted}
           theme={theme}
-          onClose={() => setShowTerminal(false)}
+          onClose={() => onPanelChange('none')}
         />
       ) : null}
 
@@ -368,11 +378,8 @@ export function IdeView({
         <button
           className="btn btn-ghost btn-sm"
           type="button"
-          aria-pressed={showProblems}
-          onClick={() => {
-            setShowProblems((shown) => !shown);
-            setShowTerminal(false);
-          }}
+          aria-pressed={panel === 'problems'}
+          onClick={() => onPanelChange(panel === 'problems' ? 'none' : 'problems')}
         >
           {t('ide.problems.toggle')}
           <span className="problems-count problem-severity--error">{problems.counts.error}</span>
@@ -383,11 +390,8 @@ export function IdeView({
         <button
           className="btn btn-ghost btn-sm"
           type="button"
-          aria-pressed={showTerminal}
-          onClick={() => {
-            setShowTerminal((shown) => !shown);
-            setShowProblems(false);
-          }}
+          aria-pressed={panel === 'terminal'}
+          onClick={() => onPanelChange(panel === 'terminal' ? 'none' : 'terminal')}
         >
           {t('ide.terminal.toggle')}
         </button>
@@ -395,7 +399,7 @@ export function IdeView({
           className="btn btn-ghost btn-sm"
           type="button"
           aria-pressed={showScm}
-          onClick={() => setShowScm((shown) => !shown)}
+          onClick={onToggleScm}
         >
           {t('ide.scm.toggle')}
         </button>
