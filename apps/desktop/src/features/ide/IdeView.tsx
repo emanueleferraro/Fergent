@@ -1,16 +1,23 @@
 /**
  * The IDE main area (UI.md §8): the project tab strip, breadcrumb, outline and
- * the Monaco editor. Documents, dirty state and saving are owned by
- * `useProjectEditor`; this component is presentation plus the LSP outline.
+ * the Monaco editor, plus the Problems panel and the language-server actions
+ * (spec §3). Documents, dirty state and saving are owned by
+ * `useProjectEditor`; this component is presentation plus the LSP wiring.
  */
-import { useEffect, useRef, useState, type ReactElement } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactElement } from 'react';
 import type { LspRequestResult } from '@fergents/protocol';
 
 import { EditorTabs, type EditorTab } from '../editor/EditorTabs';
-import { MonacoHost, type RevealRequest } from '../editor/MonacoHost';
+import { MonacoHost, type MonacoHostLsp, type RevealRequest } from '../editor/MonacoHost';
 import { isDirty } from '../editor/documents';
 import { parseOutline, type OutlineItem } from '../editor/outline';
 import type { EditorController } from '../editor/useProjectEditor';
+import { ProblemsPanel } from '../lsp/ProblemsPanel';
+import type { LspCodeAction } from '../lsp/lspResult';
+import { toProblem } from '../lsp/problems';
+import { useLspDocuments } from '../lsp/useLspDocuments';
+import { useLspEditor } from '../lsp/useLspEditor';
+import { useProblems } from '../lsp/useProblems';
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
 import { baseName } from '../project/model';
@@ -20,6 +27,8 @@ export interface IdeViewProps {
   kernel: KernelClient;
   /** The active project id, or `null` when nothing is open. */
   projectId: string | null;
+  /** The absolute project root, used to resolve `file://` LSP targets. */
+  projectRoot: string;
   /** The code editor controller. */
   editor: EditorController;
   theme: 'dark' | 'light';
@@ -57,11 +66,24 @@ function OutlineList({
 }
 
 /** The tabbed project file view. */
-export function IdeView({ kernel, projectId, editor, theme, trusted }: IdeViewProps): ReactElement {
+export function IdeView({
+  kernel,
+  projectId,
+  projectRoot,
+  editor,
+  theme,
+  trusted,
+}: IdeViewProps): ReactElement {
   const { documents, active, activePath, conflict } = editor;
   const [outline, setOutline] = useState<OutlineItem[]>([]);
   const [reveal, setReveal] = useState<RevealRequest | null>(null);
   const revealToken = useRef(0);
+  const [showProblems, setShowProblems] = useState(false);
+  const [actions, setActions] = useState<LspCodeAction[] | null>(null);
+  const [lspError, setLspError] = useState<string | null>(null);
+  const problems = useProblems(kernel, projectId, trusted);
+  const lsp = useLspEditor(kernel, projectId, projectRoot, trusted);
+  useLspDocuments(kernel, projectId, trusted, documents);
 
   // The outline is best-effort: no server means no outline, never an error.
   useEffect(() => {
@@ -90,10 +112,70 @@ export function IdeView({ kernel, projectId, editor, theme, trusted }: IdeViewPr
     };
   }, [kernel, projectId, activePath, trusted]);
 
-  const revealAt = (line: number): void => {
+  const markers = useMemo(
+    () => (activePath === null ? [] : problems.byPath(activePath).map(toProblem)),
+    // Diagnostics for a path change with `groups` (the grouped view of the index).
+    [activePath, problems.byPath, problems.groups],
+  );
+
+  const revealAt = (line: number, column?: number): void => {
     revealToken.current += 1;
-    setReveal({ line, token: revealToken.current });
+    setReveal({ line, column, token: revealToken.current });
   };
+
+  const openAt = (path: string, line: number, column: number): void => {
+    void (async () => {
+      await editor.open(path);
+      revealAt(line, column);
+    })();
+  };
+
+  const goToDefinition = (path: string, line: number, column: number): void => {
+    void (async () => {
+      const target = await lsp.definition(path, line, column);
+      if (target === null) {
+        setLspError(t('lsp.definition.none'));
+        return;
+      }
+      setLspError(null);
+      openAt(target.path, target.line, target.column);
+    })();
+  };
+
+  const renameSymbol = (path: string, line: number, column: number): void => {
+    const next = window.prompt(t('lsp.rename.prompt'));
+    if (next === null || next.trim().length === 0) {
+      return;
+    }
+    void (async () => {
+      const changes = await lsp.rename(path, line, column, next.trim());
+      if (changes.length > 0) {
+        await editor.applyWorkspaceEdits(changes);
+      }
+    })();
+  };
+
+  const showCodeActions = (path: string, line: number, column: number): void => {
+    void (async () => {
+      setActions(await lsp.codeActions(path, line, column));
+    })();
+  };
+
+  const applyAction = (action: LspCodeAction): void => {
+    setActions(null);
+    if (action.edits.length > 0) {
+      void editor.applyWorkspaceEdits(action.edits);
+    }
+  };
+
+  const hostLsp: MonacoHostLsp | null = trusted
+    ? {
+        hover: lsp.hover,
+        onDefinition: goToDefinition,
+        onRename: renameSymbol,
+        onCodeActions: showCodeActions,
+      }
+    : null;
 
   const tabs: EditorTab[] = documents.map((document) => ({
     documentId: document.path,
@@ -160,6 +242,36 @@ export function IdeView({ kernel, projectId, editor, theme, trusted }: IdeViewPr
             <div className="inline-feedback error">{editor.error}</div>
           )}
 
+          {lspError === null ? null : <div className="inline-feedback info">{lspError}</div>}
+
+          {actions === null ? null : (
+            <div className="ide-actions" role="menu" aria-label={t('lsp.actions.label')}>
+              <span className="panel-title">{t('lsp.actions.label')}</span>
+              {actions.length === 0 ? (
+                <span className="t-caption">{t('lsp.actions.empty')}</span>
+              ) : (
+                actions.map((action) => (
+                  <button
+                    key={action.title}
+                    role="menuitem"
+                    type="button"
+                    className="btn btn-sm"
+                    onClick={() => applyAction(action)}
+                  >
+                    {action.title}
+                  </button>
+                ))
+              )}
+              <button
+                className="btn btn-ghost btn-sm"
+                type="button"
+                onClick={() => setActions(null)}
+              >
+                {t('lsp.actions.close')}
+              </button>
+            </div>
+          )}
+
           {active.truncated ? (
             <div className="inline-feedback warning">{t('ide.view.truncated')}</div>
           ) : null}
@@ -178,7 +290,10 @@ export function IdeView({ kernel, projectId, editor, theme, trusted }: IdeViewPr
                 {outline.length === 0 ? null : (
                   <aside className="ide-editor__outline" aria-label={t('ide.outline.label')}>
                     <div className="panel-title">{t('ide.outline.label')}</div>
-                    <OutlineList items={outline} onReveal={(item) => revealAt(item.line)} />
+                    <OutlineList
+                      items={outline}
+                      onReveal={(item) => revealAt(item.line, item.column)}
+                    />
                   </aside>
                 )}
                 <div className="ide-editor__main">
@@ -190,6 +305,8 @@ export function IdeView({ kernel, projectId, editor, theme, trusted }: IdeViewPr
                     theme={theme}
                     openPaths={documents.map((document) => document.path)}
                     reveal={reveal}
+                    markers={markers}
+                    lsp={hostLsp}
                     onChange={(content) => editor.change(active.path, content)}
                     onSave={() => void editor.save(active.path)}
                   />
@@ -201,6 +318,38 @@ export function IdeView({ kernel, projectId, editor, theme, trusted }: IdeViewPr
           {editor.busy ? <div className="inline-feedback">{t('ide.view.busy')}</div> : null}
         </>
       )}
+
+      {showProblems ? (
+        <ProblemsPanel
+          kernel={kernel}
+          projectId={projectId}
+          groups={problems.groups}
+          counts={problems.counts}
+          onOpen={openAt}
+          onClose={() => setShowProblems(false)}
+        />
+      ) : null}
+
+      <div className="ide-view__status">
+        <button
+          className="btn btn-ghost btn-sm"
+          type="button"
+          aria-pressed={showProblems}
+          onClick={() => setShowProblems((shown) => !shown)}
+        >
+          {t('ide.problems.toggle')}
+          <span className="problems-count problem-severity--error">{problems.counts.error}</span>
+          <span className="problems-count problem-severity--warning">
+            {problems.counts.warning}
+          </span>
+        </button>
+        <span className="t-caption">
+          {t('ide.problems.summary', {
+            errors: problems.counts.error,
+            warnings: problems.counts.warning,
+          })}
+        </span>
+      </div>
     </div>
   );
 }

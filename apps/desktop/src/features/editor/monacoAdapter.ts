@@ -6,6 +6,7 @@
 
 /** The subset of a Monaco text model the adapter needs. */
 export interface MonacoModel {
+  uri?: unknown;
   getValue(): string;
   setValue(value: string): void;
   dispose(): void;
@@ -14,26 +15,40 @@ export interface MonacoModel {
 /** The subset of a Monaco editor instance the adapter uses. */
 export interface MonacoEditor {
   setModel(model: MonacoModel | null): void;
+  getModel(): MonacoModel | null;
   updateOptions(options: Record<string, unknown>): void;
   addCommand(keybinding: number, handler: () => void): string | null;
   onDidChangeModelContent(listener: () => void): { dispose(): void };
   getValue(): string;
+  getPosition(): { lineNumber: number; column: number } | null;
   focus(): void;
   revealLineInCenter(line: number): void;
   setPosition(position: { lineNumber: number; column: number }): void;
   dispose(): void;
 }
 
+/** A Monaco hover provider, as registered per language. */
+export interface MonacoHoverProvider {
+  provideHover(
+    model: MonacoModel,
+    position: { lineNumber: number; column: number },
+  ): Promise<{ contents: unknown[] } | null>;
+}
+
 /** The slice of the `monaco` namespace used by the IDE. */
 export interface MonacoLike {
   Uri: { parse(value: string): unknown };
   KeyMod: { CtrlCmd: number };
-  KeyCode: { KeyS: number };
+  KeyCode: { KeyS: number; F2: number; F12: number; Period: number };
   editor: {
     create(element: HTMLElement, options: Record<string, unknown>): MonacoEditor;
     createModel(value: string, language: string | undefined, uri: unknown): MonacoModel;
     getModel(uri: unknown): MonacoModel | null;
     setTheme?(theme: string): void;
+    setModelMarkers?(model: MonacoModel, owner: string, markers: readonly unknown[]): void;
+  };
+  languages: {
+    registerHoverProvider(languageId: string, provider: MonacoHoverProvider): { dispose(): void };
   };
 }
 
@@ -109,6 +124,26 @@ export function themeName(theme: 'dark' | 'light'): string {
 /** A stable, one-to-one model URI for a project-relative path. */
 export function modelUri(monaco: MonacoLike, path: string): unknown {
   return monaco.Uri.parse(`inmemory://fergents/${encodeURIComponent(path)}`);
+}
+
+/** Decode the path back out of a `modelUri` (`inmemory://fergents/<encoded>`). */
+export function pathFromModelUri(uri: string): string | null {
+  const prefix = 'inmemory://fergents/';
+  if (!uri.startsWith(prefix)) {
+    return null;
+  }
+  try {
+    return decodeURIComponent(uri.slice(prefix.length));
+  } catch {
+    return null;
+  }
+}
+
+/** The project-relative path of a model, or `null` when it is not ours. */
+export function modelPath(model: MonacoModel): string | null {
+  const uri = model.uri;
+  const text = typeof uri === 'string' ? uri : uri === null || uri === undefined ? '' : String(uri);
+  return text.length === 0 ? null : pathFromModelUri(text);
 }
 
 /**

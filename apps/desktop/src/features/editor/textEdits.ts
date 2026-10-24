@@ -22,6 +22,12 @@ export interface TextEdit {
   newText: string;
 }
 
+/** The edits for one project file (a workspace edit, rename, or quick fix). */
+export interface FileEdits {
+  path: string;
+  edits: TextEdit[];
+}
+
 function isPosition(value: unknown): value is TextPosition {
   if (typeof value !== 'object' || value === null) {
     return false;
