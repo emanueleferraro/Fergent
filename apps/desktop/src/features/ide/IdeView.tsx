@@ -18,6 +18,7 @@ import { toProblem } from '../lsp/problems';
 import { useLspDocuments } from '../lsp/useLspDocuments';
 import { useLspEditor } from '../lsp/useLspEditor';
 import { useProblems } from '../lsp/useProblems';
+import { TerminalPanel } from '../terminal/TerminalPanel';
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
 import { baseName } from '../project/model';
@@ -79,6 +80,7 @@ export function IdeView({
   const [reveal, setReveal] = useState<RevealRequest | null>(null);
   const revealToken = useRef(0);
   const [showProblems, setShowProblems] = useState(false);
+  const [showTerminal, setShowTerminal] = useState(false);
   const [actions, setActions] = useState<LspCodeAction[] | null>(null);
   const [lspError, setLspError] = useState<string | null>(null);
   const problems = useProblems(kernel, projectId, trusted);
@@ -330,18 +332,42 @@ export function IdeView({
         />
       ) : null}
 
+      {showTerminal ? (
+        <TerminalPanel
+          kernel={kernel}
+          projectId={projectId}
+          trusted={trusted}
+          theme={theme}
+          onClose={() => setShowTerminal(false)}
+        />
+      ) : null}
+
       <div className="ide-view__status">
         <button
           className="btn btn-ghost btn-sm"
           type="button"
           aria-pressed={showProblems}
-          onClick={() => setShowProblems((shown) => !shown)}
+          onClick={() => {
+            setShowProblems((shown) => !shown);
+            setShowTerminal(false);
+          }}
         >
           {t('ide.problems.toggle')}
           <span className="problems-count problem-severity--error">{problems.counts.error}</span>
           <span className="problems-count problem-severity--warning">
             {problems.counts.warning}
           </span>
+        </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          type="button"
+          aria-pressed={showTerminal}
+          onClick={() => {
+            setShowTerminal((shown) => !shown);
+            setShowProblems(false);
+          }}
+        >
+          {t('ide.terminal.toggle')}
         </button>
         <span className="t-caption">
           {t('ide.problems.summary', {

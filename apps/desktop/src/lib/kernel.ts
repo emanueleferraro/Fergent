@@ -24,6 +24,7 @@ import type {
   ProviderConfig,
   SecretRef,
   SubAgent,
+  TermSession,
 } from '@fergents/protocol';
 
 /** Tauri event name carrying a forwarded kernel event. */
@@ -128,6 +129,7 @@ export class MockKernelClient implements KernelClient {
   private readonly mockLayouts = new Map<string, unknown>();
   private readonly mockProjectFiles = new Map<string, string[]>();
   private readonly mockProjectContents = new Map<string, string>();
+  private readonly mockTermSessions: TermSession[] = [];
   private readonly mockLspServers: LspServer[] = [
     {
       id: 'typescript',
@@ -323,6 +325,28 @@ export class MockKernelClient implements KernelClient {
         }
         return { stopped: server !== null };
       }
+      case 'term.list':
+        return {
+          sessions: this.mockTermSessions.filter(
+            (session) => projectId === '' || session.project_id === projectId,
+          ),
+        };
+      case 'term.open':
+        return { session: this.mockOpenTerminal(payload, 'user') };
+      case 'term.exec':
+        return { session: this.mockOpenTerminal(payload, 'agent') };
+      case 'term.write':
+      case 'term.resize':
+        return { ok: true };
+      case 'term.read':
+        return { output: '' };
+      case 'term.close': {
+        const index = this.mockTermSessions.findIndex((session) => session.id === sessionId);
+        if (index >= 0) {
+          this.mockTermSessions.splice(index, 1);
+        }
+        return { ok: index >= 0 };
+      }
       case 'capability.list':
         return { capabilities: [] };
       case 'capability.set':
@@ -505,6 +529,25 @@ export class MockKernelClient implements KernelClient {
 
   private mockServersByLanguage(languageId: string): LspServer | null {
     return this.mockLspServers.find((server) => server.language_id === languageId) ?? null;
+  }
+
+  /** A fake PTY session so the browser demo has terminal tabs to drive. */
+  private mockOpenTerminal(payload: Record<string, unknown>, actor: string): TermSession {
+    const session: TermSession = {
+      id: `term-${++this.mockSeq}`,
+      project_id: typeof payload.project_id === 'string' ? payload.project_id : '',
+      shell: typeof payload.shell === 'string' ? payload.shell : 'bash',
+      cwd: typeof payload.cwd === 'string' ? payload.cwd : '/workspace',
+      cols: typeof payload.cols === 'number' ? payload.cols : 80,
+      rows: typeof payload.rows === 'number' ? payload.rows : 24,
+      state: 'running',
+      exit_code: null,
+      actor: typeof payload.actor === 'string' ? payload.actor : actor,
+      created_at: Date.now(),
+      closed_at: null,
+    };
+    this.mockTermSessions.push(session);
+    return session;
   }
 
   private mockReadFile(projectId: string, path: string): unknown {
