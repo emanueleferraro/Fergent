@@ -10,7 +10,8 @@
 Each entry records the decision and the rationale behind it. Decisions are
 **append-only**: a superseded decision keeps its number and gains a
 `Superseded by ADR-0xx` note rather than being rewritten. ADR-001 … ADR-015
-were recorded during Phase 0; ADR-016 … ADR-020 during Phase 1.
+were recorded during Phase 0; ADR-016 … ADR-020 during Phase 1; ADR-021 …
+ADR-026 during Phase 2; ADR-027 … ADR-033 during Phase 3.
 
 | #       | Decision                                                    | Status   |
 | ------- | ----------------------------------------------------------- | -------- |
@@ -34,6 +35,19 @@ were recorded during Phase 0; ADR-016 … ADR-020 during Phase 1.
 | ADR-018 | Swappable `VectorStore`/`Reranker`/`EntityExtractor` traits | Accepted |
 | ADR-019 | Per-brain FTS5 tokenizer defaults                           | Accepted |
 | ADR-020 | Phase 0 gaps fixed before Phase 1 implementation            | Accepted |
+| ADR-021 | Kernel-authoritative capability gating                      | Accepted |
+| ADR-022 | Sandboxed rich outputs                                      | Accepted |
+| ADR-023 | Diff-gated, file-backed `brain.md`                          | Accepted |
+| ADR-024 | Persisted spec/plan/tasks approval runs                     | Accepted |
+| ADR-025 | Secrets in the OS keychain                                  | Accepted |
+| ADR-026 | Compare, fork, and time-travel semantics                    | Accepted |
+| ADR-027 | Monaco for project files, CodeMirror for notes              | Accepted |
+| ADR-028 | Kernel-authoritative project file I/O                       | Accepted |
+| ADR-029 | Project trust gates every process                           | Accepted |
+| ADR-030 | One kernel-side LSP client per (project, language)          | Accepted |
+| ADR-031 | PTYs live in the kernel                                     | Accepted |
+| ADR-032 | git2 (vendored), shadow git, off-by-default remote ops      | Accepted |
+| ADR-033 | Inline AI and Composer as gated, reversible runs            | Accepted |
 
 ---
 
@@ -214,4 +228,86 @@ scoping restores to their blast radius keeps them safe.
 
 ---
 
+## ADR-027 — Monaco for project files, CodeMirror for notes
+
+**Decision.** Project files open in **Monaco** (lazy-loaded in its own chunk,
+with dedicated workers); brain notes keep **CodeMirror 6**. Both editors are
+wrapped behind the same kernel-backed adapter surface, so controllers and
+tests never touch the editor library directly.
+**Rationale.** Monaco brings the LSP-shaped editing model project files need
+(diagnostics, symbols, multi-cursor), while CodeMirror keeps the markdown
+experience and its plugins. Lazy-loading keeps chat and brain startup budgets
+unchanged (Phase 3 decision D1).
+
+## ADR-028 — Kernel-authoritative project file I/O
+
+**Decision.** The webview never reads or writes project files. Every read and
+write goes through `file.*` in the kernel. Writes carry `base_etag`; a mismatch
+returns `file_conflict` and never overwrites. Mutations are backed up before
+they land, so they are reversible.
+**Rationale.** The kernel is the only component that can enforce trust,
+permissions, path sandboxing, and reversibility consistently. Etags make
+out-of-band edits a detectable conflict instead of silent data loss (D2).
+
+## ADR-029 — Project trust gates every process
+
+**Decision.** A newly opened project is **untrusted**. Until `project.trust`
+is granted, the kernel refuses LSP servers, terminals, git hooks, Inline AI,
+and Composer with `project_untrusted`. Trust is persisted per project,
+audited, and revocable; revoking it stops the running processes.
+**Rationale.** Opening a folder must not execute code from it. One explicit
+gate, enforced in the kernel, covers every process-spawning surface (D3).
+
+## ADR-030 — One kernel-side LSP client per (project, language)
+
+**Decision.** The LSP client lives in the kernel (`crates/lsp`). One client is
+spawned per `(project, language)` on demand and shared by all editor tabs.
+Servers come from `PATH` or the registry; nothing is auto-installed. Crashes
+restart with backoff (max 3 in 5 minutes), then `lsp_server_failed` and a manual
+restart; diagnostics from a dead server are marked stale.
+**Rationale.** Centralizing LSP keeps behavior identical across tabs and
+clients, and makes process lifetime a kernel concern rather than a UI one
+(D4, D5).
+
+## ADR-031 — PTYs live in the kernel
+
+**Decision.** Terminals are kernel-owned PTYs (`portable-pty`); xterm.js is a
+view over an event stream with a ring buffer. Sessions die with the kernel — no
+resurrection. `shell.exec` stays non-interactive, `term.exec` runs in a visible
+tab, and `term.read` returns a bounded, redacted tail; all three obey the same
+permission and sandbox policies.
+**Rationale.** Agents and humans must share one terminal model, and ownership
+in the kernel is what makes output readable by the agent without a webview
+(D6, D7).
+
+## ADR-032 — git2 (vendored) with a CLI fallback; shadow git never merged
+
+**Decision.** Git operations use `git2` with **vendored libgit2** for hermetic
+builds, falling back to the `git` CLI for edge cases. Reads are allowed on a
+trusted project; mutations follow the permission policy. Agent/Composer
+commits append `Fergents-Agent` and `Fergents-Session` trailers. Remote
+operations are a **separate, off-by-default** capability (`git-remote`), and
+force-push is never offered.
+**Rationale.** Vendoring removes a system dependency from CI and user machines.
+Shadow git is a safety net for agent edits, not a branch of the user's history,
+and remote access needs its own explicit switch (D8, D9, D10).
+
+## ADR-033 — Inline AI and Composer as gated, reversible runs
+
+**Decision.** Inline AI is **off by default** (per-keystroke token cost),
+debounced, cancellable, budgeted, and never auto-inserted; it is suppressed in
+untrusted projects and large files. A Composer run is a Phase 2 **run**
+(`kind = 'composer'`) whose artifacts are per-file diffs; applying a subset
+goes through backup + shadow git and is reversible, and rejecting writes
+nothing. The agent's codebase context is **explicitly packaged and bounded**
+(open file/selection, fuzzy file list, text search, LSP symbols) rather than
+whole-repository embeddings.
+**Rationale.** Both surfaces spend tokens without the user asking, so they need
+their own switches, budgets, and a diff gate. Bounded context keeps cost and
+latency predictable while still answering "what does this code do?" (D11, D12,
+D13).
+
+---
+
 *End of `DECISIONS.md`.*
+

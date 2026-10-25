@@ -28,6 +28,7 @@
 15. [Reversibility and backups](#15-reversibility-and-backups)
 16. [Process lifecycle](#16-process-lifecycle)
 17. [Key decisions](#17-key-decisions)
+18. [The IDE layer (Phase 3)](#18-the-ide-layer-phase-3)
 
 ---
 
@@ -801,6 +802,54 @@ A summary of the most consequential architectural decisions. Full ADRs in
 | ADR-024 | Persisted spec/plan/tasks approval runs | Gates survive restarts; edits are re-read on resume |
 | ADR-025 | Secrets in the OS keychain, references in the DB | Keys must not travel with the database |
 | ADR-026 | Compare as parallel sessions; scoped time travel | Reuses sessions; restores stay within their blast radius |
+| ADR-027 | Monaco for project files, CodeMirror for notes | LSP-shaped editing where it matters; lazy chunk keeps startup flat |
+| ADR-028 | Kernel-authoritative project file I/O with etags | One place to enforce trust, sandboxing, and reversibility |
+| ADR-029 | Project trust gates every process | Opening a folder must not execute code from it |
+| ADR-030 | One kernel-side LSP client per (project, language) | Shared state across tabs; process lifetime stays in the kernel |
+| ADR-031 | PTYs live in the kernel | Humans and agents share one terminal model |
+| ADR-032 | git2 (vendored), shadow git, off-by-default remote ops | Hermetic builds; agent edits never rewrite user history |
+| ADR-033 | Inline AI and Composer as gated, reversible runs | Token spend is opt-in; every applied diff is undoable |
+
+---
+
+## 18. The IDE layer (Phase 3)
+
+Phase 3 adds a codebase layer to the kernel and an IDE panel to the desktop
+shell. The invariant is unchanged: **the kernel owns state and processes, the
+webview renders**.
+
+```
+┌────────────────────────── desktop (React) ──────────────────────────┐
+│  Explorer · Editor (Monaco) · Problems · Terminal (xterm) · SCM     │
+│  Composer · Inline AI · Agent run panel · Settings → IDE            │
+└───────────────────────────────┬─────────────────────────────────────┘
+                                │ JSON-RPC over the local socket
+┌───────────────────────────────▼─────────────────────────────────────┐
+│ kernel                                                              │
+│  crates/ide       projects, trust, file index, file I/O (etags)     │
+│  crates/lsp       LSP sessions, framing, diagnostics, backoff       │
+│  crates/terminal  PTY sessions, ring buffers, term.exec/read        │
+│  crates/git       git2 reads/writes, shadow git, commit trailers    │
+│  crates/core      composer + inline orchestration over the router   │
+│  crates/capabilities  capability gates   crates/storage  audit      │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+Rules that hold across the layer:
+
+1. **Trust before processes.** A project is untrusted until `project.trust`;
+   LSP, terminals, git, Composer, and Inline AI refuse with
+   `project_untrusted` (ADR-029).
+2. **File writes are etag-guarded.** A stale `base_etag` returns
+   `file_conflict`; the old content is never overwritten (ADR-028).
+3. **Every agent change is a diff.** Composer proposals and agent edits land
+   through backup + shadow git and are reversible; the user's repository is
+   only committed on explicit approval (ADR-032, ADR-033).
+4. **Capabilities are the switchboard.** Each command family maps to one
+   capability; `composer` is on, `inline-ai` and `git-remote` are off by
+   default (ADR-021).
+5. **Layout is state, not UI.** One persisted layout tree per project is
+   restored on start; an invalid tree falls back to defaults.
 
 ---
 

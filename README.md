@@ -6,9 +6,9 @@ multi-agent orchestrator into a single, extensible desktop + CLI application.
 Everything runs on the user's device by default; the cloud is used only for
 LLM API calls, and only when providers are configured.
 
-**Version:** 0.2.0-phase2
+**Version:** 0.3.0-phase3
 **License:** AGPL-3.0-or-later
-**Status:** Phase 2 (Agent Runtime & Chat UI) — delivered
+**Status:** Phase 3 (IDE & Codebase) — delivered
 
 ---
 
@@ -113,6 +113,42 @@ Delivered in Phase 2:
 
 ---
 
+## Phase 3 status
+
+Phase 3 (see `ROADMAP.md` §7) turns the app into an IDE: projects, a real
+editor, language servers, a terminal, source control, and AI editing that
+lands as reviewable diffs.
+
+Delivered in Phase 3:
+
+- **Project layer** (`crates/ide`): open/close projects, VCS and ignore
+  detection, a file index, per-project **trust**, kernel-authoritative file
+  I/O with `base_etag` conflict detection, and persisted editor layouts
+  (ADR-028, ADR-029).
+- **LSP client** (`crates/lsp`): a kernel-side client per
+  `(project, language)` with a server registry, document sync, diagnostics,
+  completion, hover, definition, references, rename, symbols, format, code
+  actions, and crash restart with backoff (ADR-030).
+- **Terminal** (`crates/terminal`): kernel-owned PTYs (`portable-pty`) with a
+  ring buffer, `term.*` commands, and the agent-facing `term.exec` (ADR-031).
+- **Git** (`crates/git`): status, diff, stage, discard, commit, branches, log,
+  show, blame, and conflicts, with shadow git and commit trailers. Remote
+  operations stay off by default (ADR-032).
+- **Composer and Inline AI** (`crates/core`): multi-file proposals applied as
+  reversible per-file diffs, and opt-in ghost-text completions (ADR-033).
+- **Desktop IDE** (`apps/desktop`): Monaco (lazy chunk) with tabs, breadcrumb,
+  outline, and conflict banners; project explorer and search; problems; xterm
+  terminal; source control; diff preview; inline AI; Composer; the agent run
+  panel; the palette/shortcuts; and Settings → IDE.
+- **Settings store**: ungated `settings.get`/`settings.set` for non-secret
+  preferences, shared by Settings and the terminal.
+- **Verification**: protocol round-trip suites, per-crate tests against a fake
+  LSP server and temporary repositories, Vitest suites over the adapters, and
+  a Phase 3 end-to-end test (open → trust → edit → diagnostics → terminal →
+  spec/plan/tasks approval → commit). CI needs no language server or shell.
+
+---
+
 ## Repository layout
 
 ```
@@ -133,6 +169,10 @@ crates/        Cargo workspace (Rust)
   agents/        agent definitions, loop, sessions, memory, permissions
   chat/          chat sessions, transcripts, forks, prompts, compare
   secrets/       OS-keychain secret store (references only in the DB)
+  ide/           projects, trust, file index, kernel file I/O (etags)
+  lsp/           LSP client: framing, sessions, registry, diagnostics
+  terminal/      PTY sessions, ring buffers, agent-facing term tools
+  git/           git2 repositories, diffs, commits, shadow git, remote ops
   fergentsd/     kernel daemon binary
   fergents/      CLI (TUI) binary
 packages/      pnpm workspace packages (protocol types, UI)

@@ -122,6 +122,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   a Phase 2 end-to-end test (create agent → run → tool permission → capability
   toggle → `brain.md` round-trip).
 
+**Phase 3 — IDE & Codebase**
+
+- Project layer (`crates/ide`): open/close/update projects, VCS and
+  `.gitignore` detection, a file index, per-project trust with a strict
+  `project_untrusted` gate, kernel-authoritative file I/O (`file.read`/`write`/
+  `create`/`mkdir`/`rename`/`delete`/`list`/`stat`) with `base_etag` conflict
+  detection, and persisted `editor.layout.get`/`set` (ADR-028, ADR-029).
+- LSP client (`crates/lsp`): framed JSON-RPC over stdio, one session per
+  `(project, language)`, the server registry (`lsp.server.add/remove/list/
+  start/stop/restart/status`), document sync, diagnostics, completion, hover,
+  definition, references, rename, symbols, format, code actions, and signature
+  help. Crashes restart with backoff; `capability.lsp` gates the family
+  (ADR-030).
+- Terminal (`crates/terminal`): `portable-pty` sessions with a ring buffer,
+  `term.open/write/resize/close/list/read` and the agent-facing `term.exec`,
+  all gated by `capability.terminal` and project trust (ADR-031).
+- Git (`crates/git`): status, diffs, stage/unstage, discard (backed up),
+  commit with `Fergents-Agent`/`Fergents-Session` trailers, branches, log,
+  show, blame, conflicts/resolve, and shadow-git safety. Remote operations
+  (`git.fetch`/`pull`/`push`) sit behind the off-by-default
+  `capability.git-remote`; force-push is never offered (ADR-032).
+- Composer and Inline AI (`crates/core`): `composer.start/get/apply/reject/
+  cancel` with per-file diff artifacts, subset application through backup +
+  shadow git, and `inline.complete`/`inline.action`/`inline.cancel` with
+  debouncing, budgets, and trust/size suppression (ADR-033).
+- Desktop IDE (`apps/desktop`): Monaco (lazy chunk) with tabs, breadcrumb,
+  outline, find/replace, and conflict banners; project explorer and search;
+  Problems panel; xterm.js terminal with tabs, split, and shell selector;
+  Source control panel; diff preview with per-hunk approval; Inline AI ghost
+  text; Composer; agent run panel with spec/plan/tasks tabs, approval cards,
+  and `@file`/`@selection`; command palette and shortcuts; and Settings → IDE
+  (shell, editor defaults, language-server registry, git-remote toggle).
+- Generic settings store: ungated `settings.get`/`settings.set` for
+  non-secret preferences, shared by Settings and the terminal.
+- Verification: protocol round-trip suites for the Phase 3 surface, per-crate
+  tests (fake LSP server, temporary repositories, PTY sessions), Vitest suites
+  over the editor/terminal/LSP/git adapters, and a Phase 3 end-to-end test
+  (open → trust → edit → diagnostics → terminal → spec/plan/tasks approval →
+  commit).
+
 ### Changed
 
 - `DATA_MODEL.md` now documents the per-brain schema alongside the global one.
@@ -130,3 +170,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   commands, and UI.
 - `README.md` updated for the Phase 2 crates, commands, and UI, and its status
   now reads Phase 2 delivered.
+- `DECISIONS.md` records ADR-027 … ADR-033 (the Phase 3 IDE decisions).
+- `ARCHITECTURE.md` gained §18 (the IDE layer); `UI.md` §8.8, `SECURITY.md`
+  §22.1, and `STACK.md` §14.5 document the implementation.
+- `README.md` updated for the Phase 3 crates, commands, and UI, and its status
+  now reads Phase 3 delivered.

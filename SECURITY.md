@@ -778,6 +778,31 @@ All in the security dashboard.
 | `brain.write` | Brains | allow (scope) | prompt outside scope |
 | `system.config` | Keys | prompt | always |
 
+### 22.1 Phase 3 (IDE) gates
+
+The IDE adds no new permission categories. It reuses the categories above and
+adds two orthogonal gates:
+
+| Gate | Enforced by | Covers | Notes |
+|---|---|---|---|
+| **Project trust** | kernel, per project | `lsp.*`, `term.*`, `git.*`, `composer.*`, `inline.*` | `project_untrusted` until `project.trust`; revoking stops LSP and terminals |
+| **Capability** | registry, per install | all IDE command families | `capability.{ide,lsp,terminal,git,git-remote,composer,inline-ai}` |
+
+- `project.*`, `file.*`, and `editor.layout.*` require `capability.ide`;
+  writes additionally need a trusted project and a matching `base_etag`.
+- `lsp.*` requires `capability.lsp` and a trusted project; servers come from
+  `PATH` or the registry, never from an auto-install.
+- `term.*` requires `capability.terminal` and a trusted project; `term.exec`
+  is also mapped to `shell.exec` for the permission engine.
+- `git.status`/`diff`/`log`/`blame` require `capability.git`; mutations follow
+  the policy; `git.fetch`/`pull`/`push` require `capability.git-remote`
+  (off by default) and never offer force-push.
+- `composer.*` requires `capability.composer`; `inline.*` requires
+  `capability.inline-ai` (off by default). Both are suppressed in untrusted
+  projects, and every applied change is backed up and reversible.
+- `settings.get`/`settings.set` are the generic, ungated preference store. They
+  must never hold secrets: API keys stay in the OS keychain (ADR-025).
+
 ---
 
 *End of `SECURITY.md`.*
