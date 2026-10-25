@@ -4539,6 +4539,40 @@ impl From<&ChatMessageCreatedPayload> for ChatMessageCreatedPayload {
         value.clone()
     }
 }
+#[doc = "Payload of the chat.message.delta event, streamed while an assistant turn is being generated."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"ChatMessageDeltaPayload\","]
+#[doc = "  \"description\": \"Payload of the chat.message.delta event, streamed while an assistant turn is being generated.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"delta\","]
+#[doc = "    \"session_id\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"delta\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"session_id\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  }"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+pub struct ChatMessageDeltaPayload {
+    pub delta: String,
+    pub session_id: String,
+}
+impl From<&ChatMessageDeltaPayload> for ChatMessageDeltaPayload {
+    fn from(value: &ChatMessageDeltaPayload) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Result of chat.message.list."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]

@@ -307,6 +307,20 @@ their own switches, budgets, and a diff gate. Bounded context keeps cost and
 latency predictable while still answering "what does this code do?" (D11, D12,
 D13).
 
+## ADR-034 — Agents and chat run on the configured providers
+
+**Decision.** The agent runtime receives a `RegistryProvider` backed by
+`ProviderService`, not a fixed adapter. Each request resolves its model from
+the session's pinned `model`, then the `chat` route, then the first model of
+the first configured provider; only when no provider exists does it fall back
+to the deterministic mock (keeping offline development and tests green).
+Agent calls stream (`Provider::chat_stream`), `chat.message.send` republishes
+tokens as `chat.message.delta`, and token counts plus cost are persisted on
+the session.
+**Rationale.** Chat must reflect the provider the user configured; one
+resolver keeps request/stream adapters interchangeable, and a strict offline
+fallback keeps the kernel usable with no network and no keys.
+
 ---
 
 *End of `DECISIONS.md`.*

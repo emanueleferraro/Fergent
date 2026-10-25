@@ -60,6 +60,8 @@ pub struct AgentSessionRecord {
     pub agent_id: String,
     /// A human-readable title.
     pub title: Option<String>,
+    /// The model pinned for this session, if any.
+    pub model: Option<String>,
     /// The current state.
     pub state: RunState,
     /// Creation time (ms since the epoch).

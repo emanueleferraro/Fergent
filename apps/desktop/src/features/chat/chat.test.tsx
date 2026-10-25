@@ -1,7 +1,7 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import type { ReactElement } from 'react';
-import type { ChatMessage, ChatSession } from '@fergents/protocol';
+import type { ChatMessage, ChatSession, Event } from '@fergents/protocol';
 
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
@@ -57,8 +57,10 @@ function deferred<T>(): {
 function stubKernel(handlers: Handlers): {
   kernel: KernelClient;
   calls: { method: string; params: unknown }[];
+  emit: (event: Event) => void;
 } {
   const calls: { method: string; params: unknown }[] = [];
+  const listeners = new Set<(event: Event) => void>();
   const kernel: KernelClient = {
     ensureRunning: () => Promise.resolve(true),
     call: <T,>(method: string, params?: unknown): Promise<T> => {
@@ -74,9 +76,23 @@ function stubKernel(handlers: Handlers): {
         storage: 'ok',
       }),
     subscribe: () => Promise.resolve(),
-    onEvent: () => Promise.resolve(() => undefined),
+    onEvent: (handler) => {
+      listeners.add(handler);
+      return Promise.resolve(() => {
+        listeners.delete(handler);
+      });
+    },
   };
-  return { kernel, calls };
+  const emit = (event: Event): void => {
+    for (const listener of listeners) {
+      listener(event);
+    }
+  };
+  return { kernel, calls, emit };
+}
+
+function event(kind: string, payload: Record<string, unknown>): Event {
+  return { id: 'e1', ts: 1, kind, source: 'chat', payload, version: 1 };
 }
 
 function baseHandlers(messages: ChatMessage[] = []): Handlers {
@@ -147,6 +163,43 @@ describe('Chat UI', () => {
     });
 
     expect(await screen.findByText('Hello back')).toBeTruthy();
+    await waitFor(() => expect(screen.queryByText(t('chat.streaming'))).toBeNull());
+  });
+
+  it('renders assistant deltas while the reply streams', async () => {
+    const pending = deferred<{ session_id: string; messages: ChatMessage[] }>();
+    const handlers = baseHandlers([message({ id: 'm1', role: 'user', content: 'Hi', seq: 1 })]);
+    handlers['chat.message.send'] = () => pending.promise;
+    const { kernel, emit } = stubKernel(handlers);
+    const { container } = render(<Harness kernel={kernel} />);
+
+    const input = await composer();
+    fireEvent.change(input, { target: { value: 'Hello' } });
+    fireEvent.submit(input.closest('form') as HTMLFormElement);
+    expect(await screen.findByText(t('chat.streaming'))).toBeTruthy();
+
+    act(() => {
+      emit(event('chat.message.delta', { session_id: 's1', delta: 'Hel' }));
+    });
+    expect(await screen.findByText('Hel')).toBeTruthy();
+
+    // Deltas for another session are ignored.
+    act(() => {
+      emit(event('chat.message.delta', { session_id: 'other', delta: 'ignored' }));
+      emit(event('chat.message.delta', { session_id: 's1', delta: 'lo' }));
+    });
+    await waitFor(() =>
+      expect(container.querySelector('.msg--pending .msg__text')?.textContent).toBe('Hello'),
+    );
+    expect(screen.queryByText(/ignored/)).toBeNull();
+
+    pending.resolve({
+      session_id: 's1',
+      messages: [
+        message({ id: 'm1', role: 'user', content: 'Hi', seq: 1 }),
+        message({ id: 'm2', role: 'assistant', content: 'Hello', seq: 2 }),
+      ],
+    });
     await waitFor(() => expect(screen.queryByText(t('chat.streaming'))).toBeNull());
   });
 

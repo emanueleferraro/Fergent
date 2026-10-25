@@ -5,7 +5,7 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use fergents_core::{CoreError, Kernel};
-use fergents_events::{now_ms, topic_matches, Subscription};
+use fergents_events::{now_ms, topic_matches, EventBus, Subscription};
 use fergents_protocol::{
     BrainArchiveParams, BrainAttachParams, BrainCloseParams, BrainCreateParams, BrainDeleteParams,
     BrainDetachParams, BrainDuplicateParams, BrainExportParams, BrainGetParams, BrainImportParams,
@@ -1107,7 +1107,8 @@ async fn dispatch(
             let model = params
                 .get("model")
                 .and_then(Value::as_str)
-                .map(str::to_string);
+                .map(str::to_string)
+                .or_else(|| kernel.providers().default_model());
             let kernel = kernel.clone();
             run_blocking(move || {
                 kernel
@@ -1227,7 +1228,10 @@ async fn dispatch(
                     )
                 })?;
             let service = kernel.agents_service().clone();
-            let observer = fergents_agents::NoopObserver;
+            let observer = StreamObserver {
+                bus: kernel.bus(),
+                session_id: &session_id,
+            };
             service
                 .run_in_session(&session.agent_id, &text, &session_id, &observer, None)
                 .await
@@ -1267,7 +1271,10 @@ async fn dispatch(
                     )
                 })?;
             let service = kernel.agents_service().clone();
-            let observer = fergents_agents::NoopObserver;
+            let observer = StreamObserver {
+                bus: kernel.bus(),
+                session_id: &session_id,
+            };
             service
                 .resume_in_session(
                     &session.agent_id,
@@ -2881,6 +2888,23 @@ async fn forward_events(
 
 fn to_value<T: Serialize>(value: &T) -> Value {
     serde_json::to_value(value).unwrap_or(Value::Null)
+}
+
+/// Rebroadcasts an agent's streamed text on the event bus so clients can
+/// render tokens while the turn is still being generated.
+struct StreamObserver<'a> {
+    bus: &'a EventBus,
+    session_id: &'a str,
+}
+
+impl fergents_agents::RunObserver for StreamObserver<'_> {
+    fn on_text(&self, delta: &str) {
+        let _ = self.bus.publish(
+            "chat.message.delta",
+            "chat",
+            serde_json::json!({ "session_id": self.session_id, "delta": delta }),
+        );
+    }
 }
 
 fn from_params<T: serde::de::DeserializeOwned>(params: &Value) -> Result<T, (ErrorCode, String)> {

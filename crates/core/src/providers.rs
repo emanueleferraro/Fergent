@@ -7,7 +7,8 @@ use std::sync::Arc;
 
 use fergents_llm::{
     AnthropicProvider, ChatRequest, ChatResponse, GoogleProvider, MockProvider, ModelInfo,
-    OpenAiCompatProvider, Provider,
+    OpenAiCompatProvider, Provider, ProviderError, ProviderFuture, ProviderHealth, ProviderStream,
+    StreamFrame,
 };
 use fergents_secrets::SecretVault;
 use fergents_storage::{Storage, StorageError, Value};
@@ -230,6 +231,24 @@ impl ProviderService {
             .ok_or_else(|| ProviderRegistryError::Unknown(model.to_string()))
     }
 
+    /// The model the kernel should use when nothing is pinned: the `chat`
+    /// route first, then the first model of the first provider.
+    pub fn default_model(&self) -> Option<String> {
+        if let Ok(routes) = self.routes() {
+            if let Some(model) = routes
+                .into_iter()
+                .find(|route| route.task == "chat")
+                .and_then(|route| route.models.into_iter().next())
+            {
+                return Some(model);
+            }
+        }
+        self.list()
+            .ok()?
+            .into_iter()
+            .find_map(|config| config.models.into_iter().next())
+    }
+
     /// Run a non-streaming completion against the provider serving `model`.
     pub async fn complete(
         &self,
@@ -357,6 +376,162 @@ impl ProviderService {
         };
         Ok(provider)
     }
+}
+
+/// The agent-runtime provider backed by the configured provider registry.
+///
+/// Every request is resolved to a configured provider: the requested model
+/// (a chat session pin or an agent definition) wins when a provider advertises
+/// it, otherwise the `chat` route, then the first configured model. When no
+/// provider is configured at all the runtime serves the deterministic mock, so
+/// the kernel still works fully offline.
+pub struct RegistryProvider {
+    providers: Arc<ProviderService>,
+}
+
+impl RegistryProvider {
+    /// Wrap the provider registry.
+    pub fn new(providers: Arc<ProviderService>) -> Self {
+        Self { providers }
+    }
+
+    /// Resolve `requested` to a provider configuration and the model it serves.
+    fn resolve(&self, requested: &str) -> Option<(ProviderConfig, String)> {
+        let configs = self.providers.list().ok()?;
+        if let Some(config) = configs
+            .iter()
+            .find(|config| config.models.iter().any(|model| model == requested))
+        {
+            return Some((config.clone(), requested.to_string()));
+        }
+        if let Ok(routes) = self.providers.routes() {
+            if let Some(route) = routes.into_iter().find(|route| route.task == "chat") {
+                for model in route.models {
+                    if let Some(config) =
+                        configs.iter().find(|config| config.models.contains(&model))
+                    {
+                        return Some((config.clone(), model));
+                    }
+                }
+            }
+        }
+        let config = configs
+            .into_iter()
+            .find(|config| !config.models.is_empty())?;
+        let model = config.models.first()?.clone();
+        Some((config, model))
+    }
+}
+
+impl Provider for RegistryProvider {
+    fn id(&self) -> &str {
+        "registry"
+    }
+
+    fn chat(&self, request: ChatRequest) -> ProviderFuture<'_, ChatResponse> {
+        Box::pin(async move {
+            let Some((config, model)) = self.resolve(&request.model) else {
+                return MockProvider::new("mock").chat(request).await;
+            };
+            let provider = self.providers.build(&config).map_err(error_for)?;
+            let mut request = request;
+            request.model = model;
+            provider.chat(request).await
+        })
+    }
+
+    fn chat_stream<'a>(&'a self, request: ChatRequest) -> ProviderFuture<'a, ProviderStream<'a>> {
+        Box::pin(async move {
+            use futures::StreamExt;
+
+            let Some((config, model)) = self.resolve(&request.model) else {
+                let response = MockProvider::new("mock").chat(request).await?;
+                return Ok(replay(response));
+            };
+            let provider = self.providers.build(&config).map_err(error_for)?;
+            let mut request = request;
+            request.model = model;
+            if tokio::runtime::Handle::try_current().is_err() {
+                // No executor to drive a forwarding task: collect, then replay.
+                let mut stream = provider.chat_stream(request).await?;
+                let mut frames = Vec::new();
+                while let Some(frame) = stream.next().await {
+                    frames.push(frame);
+                }
+                return Ok(Box::pin(futures::stream::iter(frames)) as ProviderStream<'_>);
+            }
+            let (tx, rx) = tokio::sync::mpsc::channel(64);
+            tokio::spawn(async move {
+                match provider.chat_stream(request).await {
+                    Ok(mut stream) => {
+                        while let Some(frame) = stream.next().await {
+                            if tx.send(frame).await.is_err() {
+                                break;
+                            }
+                        }
+                    }
+                    Err(err) => {
+                        let _ = tx.send(Err(err)).await;
+                    }
+                }
+            });
+            let stream = futures::stream::unfold(rx, |mut rx| async move {
+                rx.recv().await.map(|frame| (frame, rx))
+            });
+            Ok(Box::pin(stream) as ProviderStream<'_>)
+        })
+    }
+
+    fn models(&self) -> ProviderFuture<'_, Vec<ModelInfo>> {
+        Box::pin(async move {
+            Ok(self
+                .providers
+                .list()
+                .unwrap_or_default()
+                .into_iter()
+                .flat_map(|config| config.models.into_iter().map(ModelInfo::new))
+                .collect())
+        })
+    }
+
+    fn health(&self) -> ProviderFuture<'_, ProviderHealth> {
+        Box::pin(async move {
+            match self.providers.list() {
+                Ok(configs) if !configs.is_empty() => Ok(ProviderHealth::healthy()),
+                Ok(_) => Ok(ProviderHealth::unhealthy("no provider configured")),
+                Err(err) => Ok(ProviderHealth::unhealthy(err.to_string())),
+            }
+        })
+    }
+}
+
+/// Flatten a registry failure into the runtime's provider error.
+fn error_for(err: ProviderRegistryError) -> ProviderError {
+    match err {
+        ProviderRegistryError::Llm(inner) => inner,
+        other => ProviderError::Other(other.to_string()),
+    }
+}
+
+/// Replay a completed response as a stream of frames.
+fn replay(response: ChatResponse) -> ProviderStream<'static> {
+    let mut frames: Vec<Result<StreamFrame, ProviderError>> = vec![Ok(StreamFrame::Start {
+        model: response.model.clone(),
+    })];
+    let text = response.text();
+    if !text.is_empty() {
+        frames.push(Ok(StreamFrame::TextDelta { text }));
+    }
+    for call in response.tool_calls() {
+        frames.push(Ok(StreamFrame::ToolCall { call }));
+    }
+    frames.push(Ok(StreamFrame::Usage {
+        usage: response.usage,
+    }));
+    frames.push(Ok(StreamFrame::Stop {
+        finish_reason: response.finish_reason,
+    }));
+    Box::pin(futures::stream::iter(frames))
 }
 
 fn row_to_config(row: fergents_storage::Row) -> ProviderConfig {
