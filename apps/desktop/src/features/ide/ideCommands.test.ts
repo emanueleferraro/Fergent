@@ -20,6 +20,7 @@ function actions(overrides: Partial<IdeActions> = {}): IdeActions {
     toggleScm: vi.fn(),
     toggleChat: vi.fn(),
     toggleComposer: vi.fn(),
+    toggleRuns: vi.fn(),
     addToChat: vi.fn(),
     ...overrides,
   };
@@ -56,6 +57,7 @@ describe('ideCommands', () => {
       'ide.toggleScm',
       'ide.toggleChat',
       'ide.toggleComposer',
+      'ide.toggleRuns',
     ]);
   });
 

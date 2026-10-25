@@ -12,6 +12,7 @@ import {
   MonacoHost,
   type MonacoHostInline,
   type MonacoHostLsp,
+  type MonacoSelection,
   type RevealRequest,
 } from '../editor/MonacoHost';
 import { isDirty } from '../editor/documents';
@@ -29,6 +30,7 @@ import { InlineActionPanel } from '../inline/InlineActionPanel';
 import type { InlineActionKind } from '../inline/inlineEngine';
 import { INLINE_MAX_TOKENS } from '../inline/inlineModel';
 import { useInlineAi } from '../inline/useInlineAi';
+import { RunPanel } from '../runs/RunPanel';
 import { useCapabilityEnabled } from '../settings/useCapabilityEnabled';
 import { TerminalPanel } from '../terminal/TerminalPanel';
 import { t } from '../../i18n/i18n';
@@ -77,6 +79,11 @@ export interface IdeViewProps {
   /** Whether the Composer panel is open. */
   showComposer: boolean;
   onToggleComposer: () => void;
+  /** Whether the agent-run panel is open. */
+  showRuns: boolean;
+  onToggleRuns: () => void;
+  /** Reports the editor selection so the shell can attach it to chat. */
+  onSelectionChange?: ((selection: MonacoSelection | null) => void) | undefined;
 }
 
 /** Render an outline tree, deepest last. */
@@ -122,6 +129,9 @@ export function IdeView({
   onToggleScm,
   showComposer,
   onToggleComposer,
+  showRuns,
+  onToggleRuns,
+  onSelectionChange,
 }: IdeViewProps): ReactElement {
   const { documents, active, activePath, conflict } = editor;
   const [outline, setOutline] = useState<OutlineItem[]>([]);
@@ -424,6 +434,7 @@ export function IdeView({
                         markers={markers}
                         lsp={hostLsp}
                         inline={hostInline}
+                        onSelection={onSelectionChange}
                         onChange={(content) => editor.change(active.path, content)}
                         onSave={() => void editor.save(active.path)}
                       />
@@ -462,7 +473,7 @@ export function IdeView({
           />
         )}
 
-        {inlineRun !== null ? null : showComposer ? (
+        {inlineRun !== null || showRuns ? null : showComposer ? (
           <ComposerPanel
             kernel={kernel}
             projectId={projectId}
@@ -476,6 +487,15 @@ export function IdeView({
                 void editor.reload(path);
               }
             }}
+          />
+        ) : null}
+
+        {showRuns ? (
+          <RunPanel
+            projectId={projectId}
+            trusted={trusted}
+            kernel={kernel}
+            onClose={onToggleRuns}
           />
         ) : null}
       </div>
@@ -537,6 +557,14 @@ export function IdeView({
           onClick={onToggleComposer}
         >
           {t('ide.composer.toggle')}
+        </button>
+        <button
+          className="btn btn-ghost btn-sm"
+          type="button"
+          aria-pressed={showRuns}
+          onClick={onToggleRuns}
+        >
+          {t('ide.runs.toggle')}
         </button>
         <span className="t-caption">
           {inlineEnabled ? t('inline.status', { tokens: INLINE_MAX_TOKENS }) : t('inline.off')}

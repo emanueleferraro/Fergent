@@ -25,6 +25,8 @@ export interface IdeActions {
   toggleChat(): void;
   /** Show or hide the Composer panel. */
   toggleComposer(): void;
+  /** Show or hide the agent-run panel. */
+  toggleRuns(): void;
   /** Append the active file to the chat draft (`@path`). */
   addToChat(): void;
 }
@@ -79,6 +81,12 @@ export function ideCommands(actions: IdeActions): Command[] {
       titleKey: 'ide.command.composer',
       groupKey: 'palette.group.ide',
       run: () => actions.toggleComposer(),
+    },
+    {
+      id: 'ide.toggleRuns',
+      titleKey: 'ide.command.runs',
+      groupKey: 'palette.group.ide',
+      run: () => actions.toggleRuns(),
     },
   ];
   if (!actions.hasDocument) {

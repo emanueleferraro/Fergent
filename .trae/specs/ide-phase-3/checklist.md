@@ -79,7 +79,7 @@ the behaviour is implemented, tested, and merged.
 - [x] Inline AI ghost text (opt-in), Tab/Esc, quick actions, suppression rules
 - [x] Composer proposal → approve subset → reversible apply; reject writes
       nothing
-- [ ] Agent mode: spec/plan/tasks tabs, approval cards, `@file`/`@selection`
+- [x] Agent mode: spec/plan/tasks tabs, approval cards, `@file`/`@selection`
 - [ ] Chat + IDE split persisted, resizable by keyboard, restores on restart
 - [x] Command palette and shortcuts (`Ctrl+Tab`, `Ctrl+W`, `Ctrl+\`)
 - [ ] Settings → IDE (servers, shells, git remote, editor preferences)
