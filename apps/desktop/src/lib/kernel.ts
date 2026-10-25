@@ -173,6 +173,7 @@ export class MockKernelClient implements KernelClient {
     },
   ];
   private mockSeq = 0;
+  private readonly mockSettings = new Map<string, Record<string, unknown>>();
   private mockComposerRuns = new Map<string, ComposerRun>();
   private mockCapabilities = new Map<string, boolean>([
     ['capability.ide', true],
@@ -453,6 +454,29 @@ export class MockKernelClient implements KernelClient {
         }
         return { stopped: server !== null };
       }
+      case 'lsp.server.add':
+        return { server: this.mockAddServer(payload) };
+      case 'lsp.server.remove': {
+        const id = typeof payload.id === 'string' ? payload.id : '';
+        const index = this.mockLspServers.findIndex((item) => item.id === id);
+        if (index >= 0) {
+          this.mockLspServers.splice(index, 1);
+        }
+        return { removed: index >= 0 };
+      }
+      case 'settings.get': {
+        const key = String(payload.key ?? '');
+        return { value: this.mockSettings.get(key) ?? {} };
+      }
+      case 'settings.set': {
+        const key = String(payload.key ?? '');
+        const value =
+          typeof payload.value === 'object' && payload.value !== null
+            ? (payload.value as Record<string, unknown>)
+            : {};
+        this.mockSettings.set(key, value);
+        return { value };
+      }
       case 'term.list':
         return {
           sessions: this.mockTermSessions.filter(
@@ -674,6 +698,34 @@ export class MockKernelClient implements KernelClient {
 
   private mockServersByLanguage(languageId: string): LspServer | null {
     return this.mockLspServers.find((server) => server.language_id === languageId) ?? null;
+  }
+
+  private mockAddServer(payload: Record<string, unknown>): LspServer {
+    const languageId = String(payload.language_id ?? '');
+    const command = String(payload.command ?? '');
+    const args = Array.isArray(payload.args) ? payload.args.map(String) : [];
+    const existing = this.mockLspServers.find(
+      (server) => server.language_id === languageId && server.command === command,
+    );
+    if (existing !== undefined) {
+      existing.args = args;
+      existing.enabled = payload.enabled !== false;
+      return existing;
+    }
+    const server: LspServer = {
+      id: `lsp-${++this.mockSeq}`,
+      language_id: languageId,
+      command,
+      args,
+      env: {},
+      root_strategy: 'project',
+      source: 'user',
+      enabled: payload.enabled !== false,
+      status: 'stopped',
+      installed: true,
+    };
+    this.mockLspServers.push(server);
+    return server;
   }
 
   /** A fake PTY session so the browser demo has terminal tabs to drive. */

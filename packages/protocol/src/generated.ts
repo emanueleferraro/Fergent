@@ -3825,3 +3825,35 @@ export interface InlineActionParams {
 export interface InlineActionResult {
   run: ComposerRun;
 }
+
+/**
+ * Params of settings.get: a namespaced key in the generic settings store.
+ */
+export interface SettingsGetParams {
+  key: string;
+}
+
+/**
+ * Params of settings.set.
+ */
+export interface SettingsSetParams {
+  key: string;
+  /**
+   * The JSON object stored under the key.
+   */
+  value: {
+    [k: string]: unknown;
+  };
+}
+
+/**
+ * Result of settings.get and settings.set: the stored value ({} when unset).
+ */
+export interface SettingsValueResult {
+  /**
+   * The stored JSON object.
+   */
+  value: {
+    [k: string]: unknown;
+  };
+}

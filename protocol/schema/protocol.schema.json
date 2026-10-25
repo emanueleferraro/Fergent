@@ -4584,6 +4584,41 @@
       "properties": {
         "run": { "$ref": "#/$defs/ComposerRun" }
       }
+    },
+    "SettingsGetParams": {
+      "title": "SettingsGetParams",
+      "description": "Params of settings.get: a namespaced key in the generic settings store.",
+      "type": "object",
+      "required": ["key"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" }
+      }
+    },
+    "SettingsSetParams": {
+      "title": "SettingsSetParams",
+      "description": "Params of settings.set.",
+      "type": "object",
+      "required": ["key", "value"],
+      "additionalProperties": false,
+      "properties": {
+        "key": { "type": "string" },
+        "value": {
+          "description": "The JSON object stored under the key."
+        }
+      }
+    },
+    "SettingsValueResult": {
+      "title": "SettingsValueResult",
+      "description": "Result of settings.get and settings.set: the stored value ({} when unset).",
+      "type": "object",
+      "required": ["value"],
+      "additionalProperties": false,
+      "properties": {
+        "value": {
+          "description": "The stored JSON object."
+        }
+      }
     }
   }
 }
