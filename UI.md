@@ -448,6 +448,35 @@ When the agent edits a file, a diff tab opens:
 - "Accept all" / "Reject all".
 - Line stats (+/-).
 
+### 8.8 Phase 3 implementation notes
+
+The panel above is implemented as follows (tasks 3.6–3.16):
+
+- **Editor** — Monaco loads in its own chunk behind `features/editor/monaco.ts`;
+  chat and brain startup never import it. Tabs carry dirty/preview/pinned
+  state, the breadcrumb and outline come from the document model, and
+  save/conflict banners are driven by `file_conflict` and `file.changed`.
+- **File tree** — project files and brain notes are separate sections; git
+  status decorations come from `git.status`.
+- **Terminal** — xterm.js over kernel-owned PTYs, with tabs, split, and a
+  shell selector. The shell preference and the editor defaults live in the
+  kernel settings store, so they survive a restart and are shared with the
+  terminal.
+- **Source control** — status, diff, stage, commit, branches, log, blame, and
+  conflict resolution; remote operations stay behind the off-by-default
+  `git-remote` toggle in Settings → IDE.
+- **Problems** — grouped by file and severity, click to jump.
+- **Inline AI** — ghost text with Tab/Esc, quick actions on `Ctrl+.`, off by
+  default, suppressed in untrusted projects and large files.
+- **Composer** — a proposal opens as diff tabs; applying a subset is
+  reversible, rejecting writes nothing.
+- **Agent mode** — spec/plan/tasks artifacts render as tabs with approval
+  cards, and `@file` / `@selection` attach editor context to the chat composer.
+- **Layout** — chat and IDE share one splitter (`role="separator"`, arrow keys
+  move it by 5%), and the tree is persisted per project and restored on start.
+- **Compliance** — every surface uses `style/` tokens only; no hardcoded
+  colors or spacing.
+
 ---
 
 ## 9. The status bar

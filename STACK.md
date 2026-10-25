@@ -830,6 +830,25 @@ submodule edge cases).
 
 **Why:** performance and programmatic control; CLI fallback for edge cases.
 
+### 14.5 Phase 3 implementation notes
+
+- **Monaco 0.57** (`apps/desktop`) is lazy-loaded in its own Vite chunk, with
+  dedicated workers; brain notes stay on CodeMirror 6 (ADR-027). Both editors
+  sit behind adapter modules so tests can substitute fakes.
+- **LSP client** (`crates/lsp`) is hand-rolled: `Content-Length` framing over
+  stdio JSON-RPC, one session per `(project, language)`, a diagnostics cache,
+  and crash restart with backoff (ADR-030). No LSP crate dependency.
+- **Terminal** (`crates/terminal`) uses `portable-pty`; xterm.js 6 is the view.
+  Output is ring-buffered and streamed as events; `term.read` returns a
+  bounded tail (ADR-031).
+- **Git** uses `git2` with the `vendored-libgit2` feature so builds do not
+  need a system libgit2; commits from agents carry trailers and remote
+  operations are gated by an off-by-default capability (ADR-032).
+- **Testing**: language servers and shells are never required in CI. The LSP
+  framing is covered against an in-repo fake server binary, PTY behavior
+  against local sessions, and the desktop adapters against mocks (ADR-033,
+  spec D16).
+
 ---
 
 ## 15. Sync & P2P
