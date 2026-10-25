@@ -1,278 +1,198 @@
-# Fergents
+<p align="center">
+  <img src="https://raw.githubusercontent.com/emanueleferraro/Fergent/main/apps/desktop/src-tauri/icons/icon.png" alt="Fergents" width="96" height="96">
+</p>
 
-Fergents is a local-first, open-source agentic workspace that unifies a coding
-agent, a second brain, a workflow engine, an MCP hub, a plugin runtime, and a
-multi-agent orchestrator into a single, extensible desktop + CLI application.
-Everything runs on the user's device by default; the cloud is used only for
-LLM API calls, and only when providers are configured.
+<h1 align="center">Fergents</h1>
 
-**Version:** 0.3.0-phase3
-**License:** AGPL-3.0-or-later
-**Status:** Phase 3 (IDE & Codebase) — delivered
+<p align="center">
+  A local-first, agent-native workspace that unifies knowledge management, software development, and autonomous AI in a single extensible application.
+</p>
 
----
+<p align="center">
+  <a href="https://github.com/emanueleferraro/Fergent/actions/workflows/ci.yml">
+    <img src="https://github.com/emanueleferraro/Fergent/actions/workflows/ci.yml/badge.svg" alt="CI">
+  </a>
+  <a href="https://github.com/emanueleferraro/Fergent/releases">
+    <img src="https://img.shields.io/badge/version-0.3.0-blue" alt="Version">
+  </a>
+  <a href="https://github.com/emanueleferraro/Fergent/blob/main/LICENSE">
+    <img src="https://img.shields.io/badge/license-AGPL--3.0-green" alt="License">
+  </a>
+  <img src="https://img.shields.io/badge/stack-Rust%20%2B%20React-orange" alt="Stack">
+</p>
 
-## Phase 0 status
-
-Phase 0 (see `ROADMAP.md` §4) builds the skeleton everything else depends on:
-a monorepo that builds, a kernel daemon that runs and persists events, a
-desktop shell and a CLI that connect to it, and the first CI pipeline. No
-product features exist yet.
-
-Delivered in Phase 0:
-
-- Cargo workspace (`crates/`) and pnpm workspace (`packages/`, `apps/`).
-- Kernel daemon `fergentsd`: JSON-RPC 2.0 server over a local socket, SQLite
-  event bus, runtime registry (tools, providers, brains, sessions), structured
-  logging, health check, graceful shutdown.
-- Protocol contract in `protocol/` (JSON Schema) with committed Rust and
-  TypeScript codegen and handshake version negotiation.
-- Storage layer: global SQLite schema, numbered migration framework, and the
-  `Storage` trait with a `SqliteStorage` implementation.
-- Desktop shell (Tauri v2 + React 19) that spawns `fergentsd` as a sidecar and
-  renders a placeholder UI using `style/` tokens.
-- CLI (TUI, Ratatui) `fergents` with `status`, `events tail`, and `brain list`.
-- GitHub Actions CI (`ci.yml`) and an inert `release.yml` stub.
-
-Explicitly deferred to later phases: the LLM router, MCP host/server, agent
-runtime, Monaco/LSP, the WASM plugin host, the workflow engine, sync, and
-mobile.
+<p align="center">
+  <a href="#overview">Overview</a> ·
+  <a href="#features">Features</a> ·
+  <a href="#architecture">Architecture</a> ·
+  <a href="#getting-started">Getting Started</a> ·
+  <a href="#roadmap">Roadmap</a> ·
+  <a href="#contributing">Contributing</a> ·
+  <a href="#license">License</a>
+</p>
 
 ---
 
-## Phase 1 status
+## Overview
 
-Phase 1 (see `ROADMAP.md` §5) turns the skeleton into a working second brain:
-a markdown vault per brain, indexed for hybrid search, with an entity graph, a
-desktop UI, and a kernel wired to it end to end.
+Modern knowledge work is fragmented across tools that do not share context: notes live in one application, source code in another, AI assistance in a third, and automation in yet another. Every boundary between them costs time and loses information.
 
-Delivered in Phase 1:
+Fergents consolidates these workflows into a single workspace in which the agent is a first-class component of the runtime rather than an auxiliary panel. It can read and write notes, edit source code, drive a terminal, and orchestrate workflows — all within the same application and, by default, on the user's own machine.
 
-- **Brain model and lifecycle** (`crates/brain`): `brain.toml`, vault layout,
-  and the full lifecycle — create from a template (blank, personal, research,
-  coding, team), open, close, update, archive/unarchive, delete, duplicate,
-  move, `.fergbrain` export/import, attach/detach with roles, and
-  `brain.template.save`.
-- **Index and search** (`crates/index`): per-brain SQLite index (documents,
-  chunks, FTS5, `sqlite-vec` embeddings, tags, links), chunking, daily notes,
-  and templates, and hybrid search (BM25 + vectors + sparse fusion) behind
-  swappable engines (ADR-018).
-- **Entity graph** (`crates/graph`): a CozoDB Datalog graph with a SQLite
-  mirror, regex and (feature-gated) ONNX entity extraction, and
-  `graph.query`/`graph.algo`/`graph.neighbors`/`graph.subgraph`.
-- **Kernel wiring and CLI** (`crates/core`, `crates/api`, `crates/fergents`):
-  the Phase 1 commands dispatched over the JSON-RPC socket and the
-  `fergents brain …` and `fergents search …` CLI commands.
-- **Desktop UI** (`apps/desktop`): brain sidebar and explorer, markdown editor
-  with live preview (CodeMirror 6, KaTeX, Mermaid, callouts, wiki links), a
-  search panel, a React Flow graph view, per-brain settings, and a command
-  palette.
-- **Verification**: performance benchmarks behind the `bench` feature and an
-  offline test (`FERGENTS_OFFLINE=1`); the heavy models are never downloaded in
-  CI (deterministic stubs only).
+Design principles:
+
+- **Local-first.** Data resides on the user's machine. Cloud services are opt-in and optional.
+- **Agent-native.** The agent runtime is part of the kernel, not a bolted-on widget.
+- **Extensible by design.** Everything above the kernel is a toggleable capability or a plugin.
 
 ---
 
-## Phase 2 status
+## Features
 
-Phase 2 (see `ROADMAP.md` §6) turns the brain into an agent workspace: a real
-agent runtime, an LLM router with provider management, an MCP host, and a chat
-surface that can run, compare, and inspect agents.
+Fergents is developed in modular phases. The current release (v0.3.0) provides the following.
 
-Delivered in Phase 2:
+### Knowledge base (Phase 1)
 
-- **Capability registry** (`crates/capabilities`): every Phase 2 feature is a
-  capability with dependencies, defaults, hot toggles, plugin registration,
-  and a kernel-authoritative gate (`capability_disabled`) over its commands
-  (ADR-021).
-- **LLM router and providers** (`crates/llm`, `crates/core`): the `Provider`
-  trait with mock, OpenAI, Anthropic, Google, and Ollama adapters, per-task
-  routes, token accounting, and a deterministic mock provider used in CI.
-- **Secrets** (`crates/secrets`): the OS keychain via `keyring`; the database
-  stores only `secret_refs`, never values (ADR-025).
-- **MCP host** (`crates/mcp`): stdio JSON-RPC servers, tool discovery, health,
-  and capability gating.
-- **Agent runtime** (`crates/agents`, `crates/core`): agent definitions on
-  disk, the ReAct loop, sessions and messages, memory tiers with compaction
-  into `session.md`, per-agent `brain.md`, spec/plan/tasks approval runs, and
-  permissions (ADR-023, ADR-024).
-- **Sub-agents** (`crates/core`): spawn/call/collect/cancel, messaging and
-  handoff, with per-parent limits.
-- **Chat backend** (`crates/chat`): sessions, transcripts, forks, prompt
-  library, FTS5 chat search, attachments, context inspection, and multi-model
-  compare as parallel sessions (ADR-026).
-- **Desktop UI** (`apps/desktop`): the chat surface (transcript, rich
-  sandboxed outputs, composer with mentions and prompts), context viewer,
-  provider/secret/MCP managers, feature toggles, the model selector, the
-  compare panel, the sub-agent monitor, and time travel over backups
-  (ADR-022).
-- **Verification**: protocol round-trip suites, per-crate tests, wired IPC
-  tests for every Phase 2 command, and a Phase 2 end-to-end test
-  (create agent → run → tool permission → capability toggle → `brain.md`
-  round-trip). All providers are mocked in CI; no network or API key needed.
+- **Markdown vault.** Plain files on disk, compatible with Obsidian.
+- **Hybrid search.** BM25 keyword matching combined with vector-based semantic retrieval.
+- **Entity graph.** Relationship visualization across notes, powered by CozoDB.
+- **Multiple vaults.** Separate work, personal, and research knowledge bases.
+
+### Agent runtime (Phase 2)
+
+- **Agentic chat.** A minimal conversational interface with streaming responses and inline tool calls.
+- **Custom agents.** Personalities, system prompts, and permissions defined in Markdown files.
+- **Persistent memory.** Long-term memory (`brain.md`) and session compaction (`session.md`).
+- **MCP host.** Connectivity to Model Context Protocol servers such as GitHub and Brave Search.
+- **Conversation forking.** Branch conversations and roll back state to any prior point.
+
+### IDE (Phase 3)
+
+- **Monaco editor.** The editor engine used by Visual Studio Code.
+- **Language Server Protocol.** Full LSP support (Rust, TypeScript, Python, and others) running in the kernel.
+- **Integrated terminal.** xterm.js front end backed by kernel-owned PTYs.
+- **Git integration.** Stage, commit, and review diffs without leaving the application.
+- **Workspace trust.** New projects are untrusted by default; no code executes until explicitly authorized.
+
+### Core runtime
+
+- **Capabilities.** Features can be disabled at the kernel level to reduce resource usage.
+- **Secret vault.** API keys stored in the operating system keychain.
+- **Kernel daemon.** A Rust backend (`fergentsd`) shared by the desktop application, CLI, and future mobile clients.
 
 ---
 
-## Phase 3 status
+## Architecture
 
-Phase 3 (see `ROADMAP.md` §7) turns the app into an IDE: projects, a real
-editor, language servers, a terminal, source control, and AI editing that
-lands as reviewable diffs.
+Fergents is organized in three layers, separating presentation, execution, and storage.
 
-Delivered in Phase 3:
-
-- **Project layer** (`crates/ide`): open/close projects, VCS and ignore
-  detection, a file index, per-project **trust**, kernel-authoritative file
-  I/O with `base_etag` conflict detection, and persisted editor layouts
-  (ADR-028, ADR-029).
-- **LSP client** (`crates/lsp`): a kernel-side client per
-  `(project, language)` with a server registry, document sync, diagnostics,
-  completion, hover, definition, references, rename, symbols, format, code
-  actions, and crash restart with backoff (ADR-030).
-- **Terminal** (`crates/terminal`): kernel-owned PTYs (`portable-pty`) with a
-  ring buffer, `term.*` commands, and the agent-facing `term.exec` (ADR-031).
-- **Git** (`crates/git`): status, diff, stage, discard, commit, branches, log,
-  show, blame, and conflicts, with shadow git and commit trailers. Remote
-  operations stay off by default (ADR-032).
-- **Composer and Inline AI** (`crates/core`): multi-file proposals applied as
-  reversible per-file diffs, and opt-in ghost-text completions (ADR-033).
-- **Desktop IDE** (`apps/desktop`): Monaco (lazy chunk) with tabs, breadcrumb,
-  outline, and conflict banners; project explorer and search; problems; xterm
-  terminal; source control; diff preview; inline AI; Composer; the agent run
-  panel; the palette/shortcuts; and Settings → IDE.
-- **Settings store**: ungated `settings.get`/`settings.set` for non-secret
-  preferences, shared by Settings and the terminal.
-- **Verification**: protocol round-trip suites, per-crate tests against a fake
-  LSP server and temporary repositories, Vitest suites over the adapters, and
-  a Phase 3 end-to-end test (open → trust → edit → diagnostics → terminal →
-  spec/plan/tasks approval → commit). CI needs no language server or shell.
-
----
-
-## Repository layout
-
-```
-crates/        Cargo workspace (Rust)
-  core/          event bus, registry, scheduler, permissions
-  storage/       SQLite pools, migrations, Storage trait
-  events/        event types and bus
-  protocol/      protocol types + generated bindings
-  api/           local socket server (JSON-RPC 2.0)
-  supervisor/    health, restarts, crash recovery
-  markdown/      markdown flavor, frontmatter, and link/tag extraction
-  brain/         brain model, vault layout, lifecycle, multi-brain ops
-  index/         per-brain index: chunking, embeddings, FTS5, hybrid search
-  graph/         entity graph (CozoDB) with a SQLite mirror
-  capabilities/  capability registry: dependencies, hot toggles, gating
-  llm/           provider trait, adapters, routes, token accounting
-  mcp/           MCP host: stdio servers, tool discovery, health
-  agents/        agent definitions, loop, sessions, memory, permissions
-  chat/          chat sessions, transcripts, forks, prompts, compare
-  secrets/       OS-keychain secret store (references only in the DB)
-  ide/           projects, trust, file index, kernel file I/O (etags)
-  lsp/           LSP client: framing, sessions, registry, diagnostics
-  terminal/      PTY sessions, ring buffers, agent-facing term tools
-  git/           git2 repositories, diffs, commits, shadow git, remote ops
-  fergentsd/     kernel daemon binary
-  fergents/      CLI (TUI) binary
-packages/      pnpm workspace packages (protocol types, UI)
-apps/          pnpm workspace applications (desktop shell)
-protocol/      protocol contract sources (JSON Schema) — the source of truth
-style/         design system (tokens + components), mandatory for all UI
-migrations/    numbered SQL migrations (global/, brain/ reserved for Phase 1)
+```text
+┌─────────────────────────────────────────────────────────┐
+│  CLIENTS  (Desktop UI · CLI TUI · Mobile)               │
+│  React 19 + Tauri v2 + Ratatui                          │
+└──────────────────────────┬──────────────────────────────┘
+                           │ JSON-RPC 2.0 over a local socket
+┌──────────────────────────▼──────────────────────────────┐
+│  KERNEL DAEMON (fergentsd) — Rust                       │
+│  Event bus · LLM router · MCP host · Agent runtime      │
+│  LSP client · Git engine · Capabilities                 │
+│  Hybrid search · PTY / terminal                         │
+└──────────────────────────┬──────────────────────────────┘
+                           │
+┌──────────────────────────▼──────────────────────────────┐
+│  SUBSTRATE                                              │
+│  SQLite (per vault) · CozoDB (graph) · Local files      │
+└─────────────────────────────────────────────────────────┘
 ```
 
-The Cargo workspace is defined by the root `Cargo.toml`; the pnpm workspace is
-defined by `pnpm-workspace.yaml`.
+- **Rust kernel.** Owns concurrency, performance-critical paths, and the security boundary.
+- **Tauri front end.** A lightweight native webview shell.
+- **Local substrate.** Embedded databases and plain files; no cloud database is required.
 
 ---
 
-## Build and run
+## Getting Started
 
-### Kernel daemon (`fergentsd`)
+### Prerequisites
 
-```sh
-cargo build --release          # builds all crates and both binaries
+- **Rust** (stable) and **Node.js** (LTS) with `pnpm`.
+- **Windows:** Microsoft C++ Build Tools (with the *Desktop development with C++* workload) and WebView2.
+- **Linux / macOS:** the standard Tauri system dependencies.
 
-./target/release/fergentsd start             # start as a background daemon
-./target/release/fergentsd start --foreground # run in the current process
-./target/release/fergentsd status            # report running (PID) / not running
-./target/release/fergentsd stop              # terminate the daemon
+### 1. Build the kernel
+
+```bash
+git clone https://github.com/emanueleferraro/Fergent.git
+cd Fergent
+cargo build --release -p fergentsd
 ```
 
-The daemon binds a local socket (`\\.\pipe\fergentsd` on Windows,
-`$XDG_RUNTIME_DIR/fergentsd.sock` or `~/.fergents/fergentsd.sock` on Unix) and
-persists state under `~/.fergents/`.
+### 2. Run the desktop application
 
-### CLI (`fergents`)
-
-```sh
-cargo run -p fergents -- status          # connect and print kernel health/state
-cargo run -p fergents -- events tail     # stream events until interrupted
-
-cargo run -p fergents -- brain list              # list the registered brains
-cargo run -p fergents -- brain create "Personal" # create a brain (--template, --path)
-cargo run -p fergents -- brain open <brain-id>   # open a brain by id
-
-cargo run -p fergents -- search "hybrid query"   # hybrid search (--top-k, --mode, --brain)
-```
-
-The `brain` and `search` commands require a running kernel; start one with
-`fergentsd start` first.
-
-### Workspace build (TypeScript)
-
-```sh
-pnpm install
-pnpm build
-```
-
-### Desktop shell (Tauri v2)
-
-The desktop app lives in `apps/desktop` and is a **standalone** Cargo workspace
-(`apps/desktop/src-tauri`) because its Tauri build script requires the
-`fergentsd` **sidecar** to be staged for the host target triple. Build it like:
-
-```sh
-cargo build -p fergentsd                     # from the repo root
-cp target/debug/fergentsd \
-   apps/desktop/src-tauri/binaries/fergentsd-$(rustc -vV | sed -n 's/^host: //p')
+```bash
+# On Windows, stage the sidecar binary for Tauri before building the app:
+# Copy-Item target\release\fergentsd.exe apps\desktop\src-tauri\binaries\fergentsd-x86_64-pc-windows-msvc.exe
 
 cd apps/desktop
 pnpm install
-pnpm dev                                     # Vite dev server only
-pnpm tauri dev                               # full desktop app (spawns the sidecar)
+pnpm tauri dev
 ```
 
-On Windows the sidecar file is `fergentsd-<triple>.exe`. The app spawns the
-kernel detached (via `fergentsd start`), so closing the app leaves the kernel
-running.
+The desktop application spawns `fergentsd` automatically. Closing the window leaves the kernel running in the background; use the CLI or the tray menu to stop it.
+
+### 3. Use the CLI (optional)
+
+```bash
+# Check kernel status
+cargo run -p fergents -- status
+
+# Create a new vault
+cargo run -p fergents -- brain create "My Project" --template coding
+
+# Search
+cargo run -p fergents -- search "authentication flow"
+```
 
 ---
 
-## Development environment
+## Roadmap
 
-The reference development environment is **WSL2 (Ubuntu)**, and a
-`.devcontainer/` is provided and recommended for reproducibility: it provisions
-Rust (stable, with `clippy` and `rustfmt`), Node LTS, and pnpm. VS Code can
-open the repository directly in the container. See `CONTRIBUTING.md` for the
-full setup and the quality gates.
+| Phase | Status     | Scope                                                        |
+| :---- | :--------- | :----------------------------------------------------------- |
+| 0     | Complete   | Monorepo, kernel skeleton, JSON-RPC transport, CI.           |
+| 1     | Complete   | Knowledge base, Markdown, hybrid search, entity graph.       |
+| 2     | Complete   | LLM router, MCP, agent runtime, chat UI, memory.             |
+| 3     | Complete   | IDE, Monaco, LSP, terminal, Git integration.                 |
+| 4     | Next       | Plugin runtime (WASM), skills, marketplace.                  |
+| 5     | Planned    | Visual workflow engine, triggers, debugger.                  |
+| 6     | Planned    | Dashboard and custom widgets.                                |
+| 7     | Planned    | Peer-to-peer sync, Android companion application.            |
 
 ---
 
-## Documentation
+## Contributing
 
-The entry point is this README. The full documentation set includes
-`ARCHITECTURE.md`, `DECISIONS.md` (the ADR log), `STACK.md`, `ROADMAP.md`,
-`DATA_MODEL.md`, `SECURITY.md`, and the runtime/data/UX docs, plus the design
-system in `style/`.
+Fergents is an open-source project. Contributions, bug reports, and feature requests are welcome.
+
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request.
+
+### Quality gates
+
+Every pull request must pass:
+
+- `cargo fmt --check`
+- `cargo clippy -- -D warnings`
+- `cargo test --workspace`
+- `pnpm lint`
+- `pnpm typecheck`
+- `pnpm test`
 
 ---
 
 ## License
 
-Fergents is licensed under the **GNU Affero General Public License, version 3
-or later** (AGPL-3.0-or-later). You are free to use, study, modify, and
-distribute Fergents, provided that any modified version — including one offered
-as a network service — is also released under the same license. See `LICENSE`
-for the full text.
+Fergents is released under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+
+You may use, modify, and distribute the software under the terms of the license. If you modify it and make it available as a network service, you must release the modified source code under the same license.
+
+See [LICENSE](LICENSE) for the full text.
