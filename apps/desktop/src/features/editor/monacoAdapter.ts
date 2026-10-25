@@ -30,6 +30,7 @@ export interface MonacoEditor {
   updateOptions(options: Record<string, unknown>): void;
   addCommand(keybinding: number, handler: () => void): string | null;
   onDidChangeModelContent(listener: () => void): { dispose(): void };
+  onDidChangeCursorSelection?(listener: () => void): { dispose(): void };
   getValue(): string;
   getPosition(): { lineNumber: number; column: number } | null;
   getSelection?(): MonacoRange | null;

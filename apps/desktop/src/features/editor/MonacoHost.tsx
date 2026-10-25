@@ -55,6 +55,14 @@ export interface MonacoHostInline {
   onQuickActions: (path: string, line: number, column: number, selection: string) => void;
 }
 
+/** A non-empty editor selection, as the chat context builder needs it. */
+export interface MonacoSelection {
+  path: string;
+  startLine: number;
+  endLine: number;
+  text: string;
+}
+
 /** Props for `MonacoHost`. */
 export interface MonacoHostProps {
   path: string;
@@ -72,6 +80,8 @@ export interface MonacoHostProps {
   lsp?: MonacoHostLsp | null | undefined;
   /** Inline AI, or `null` when the project is untrusted. */
   inline?: MonacoHostInline | null | undefined;
+  /** Reports the current non-empty selection (task 3.14, @selection). */
+  onSelection?: ((selection: MonacoSelection | null) => void) | undefined;
   onChange: (content: string) => void;
   onSave: () => void;
 }
@@ -88,6 +98,7 @@ export function MonacoHost({
   markers,
   lsp,
   inline,
+  onSelection,
   onChange,
   onSave,
 }: MonacoHostProps): ReactElement {
@@ -107,6 +118,8 @@ export function MonacoHost({
   lspRef.current = lsp;
   const inlineRef = useRef(inline);
   inlineRef.current = inline;
+  const onSelectionRef = useRef(onSelection);
+  onSelectionRef.current = onSelection;
   const hoverProviders = useRef<{ dispose(): void }[]>([]);
   const hoverLanguages = useRef<Set<string>>(new Set());
   const inlineProviders = useRef<{ dispose(): void }[]>([]);
@@ -118,6 +131,7 @@ export function MonacoHost({
   useEffect(() => {
     let cancelled = false;
     let subscription: { dispose(): void } | null = null;
+    let selectionSubscription: { dispose(): void } | null = null;
     void (async () => {
       try {
         const monaco = await loadMonaco();
@@ -145,10 +159,31 @@ export function MonacoHost({
           if (selection === null || model === null || typeof model.getValueInRange !== 'function') {
             return '';
           }
-          if (selection.isEmpty?.() === true) {
+          if (
+            selection.startLineNumber === selection.endLineNumber &&
+            selection.startColumn === selection.endColumn
+          ) {
             return '';
           }
           return model.getValueInRange(selection);
+        };
+        // The selection as the chat attachment expects it (or null).
+        const selectionSnapshot = (): MonacoSelection | null => {
+          const current = modelPathRef.current;
+          const selection = editor.getSelection?.() ?? null;
+          if (current === null || selection === null) {
+            return null;
+          }
+          const text = selectionText();
+          if (text.trim().length === 0) {
+            return null;
+          }
+          return {
+            path: current,
+            startLine: selection.startLineNumber,
+            endLine: selection.endLineNumber,
+            text,
+          };
         };
         // Ctrl/Cmd+S saves through the kernel; Ctrl+F/Ctrl+H are Monaco defaults.
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => onSaveRef.current());
@@ -185,6 +220,9 @@ export function MonacoHost({
           lspRef.current?.onCodeActions(at.path, at.line, at.column);
         });
         subscription = editor.onDidChangeModelContent(() => onChangeRef.current(editor.getValue()));
+        selectionSubscription = editor.onDidChangeCursorSelection?.(() => {
+          onSelectionRef.current?.(selectionSnapshot());
+        }) ?? null;
         editorRef.current = editor;
         setReady(true);
       } catch {
@@ -196,6 +234,7 @@ export function MonacoHost({
     return () => {
       cancelled = true;
       subscription?.dispose();
+      selectionSubscription?.dispose();
       for (const provider of hoverProviders.current) {
         provider.dispose();
       }
@@ -226,6 +265,7 @@ export function MonacoHost({
       modelPathRef.current = path;
       editor.setModel(model);
       editor.focus();
+      onSelectionRef.current?.(null);
     }
     syncModelValue(model, content);
     if (readOnlyRef.current !== readOnly) {

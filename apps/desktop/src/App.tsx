@@ -20,6 +20,7 @@ import { useProjectEditor } from './features/editor/useProjectEditor';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
 import { IdeView, type IdePanel } from './features/ide/IdeView';
+import { appendContext, selectionPayload, type SelectionAttachment } from './features/ide/chatContext';
 import { cycleTabPath, ideCommands, type IdeActions } from './features/ide/ideCommands';
 import { SplitPane } from './features/layout/SplitPane';
 import { useIdeLayout } from './features/layout/useIdeLayout';
@@ -108,6 +109,7 @@ export function App(): ReactElement {
   const [idePanel, setIdePanel] = useState<IdePanel>('none');
   const [showScm, setShowScm] = useState(false);
   const [showComposer, setShowComposer] = useState(false);
+  const [showRuns, setShowRuns] = useState(false);
   const [showChat, setShowChat] = useState(true);
   const [openIds, setOpenIds] = useState<string[]>([]);
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
@@ -115,6 +117,7 @@ export function App(): ReactElement {
   const [brainView, setBrainView] = useState<'notes' | 'graph'>('notes');
   const openIdsRef = useRef(openIds);
   openIdsRef.current = openIds;
+  const selectionRef = useRef<SelectionAttachment | null>(null);
 
   const openDocument = useCallback((documentId: string) => {
     setOpenIds((prev) => (prev.includes(documentId) ? prev : [...prev, documentId]));
@@ -150,11 +153,19 @@ export function App(): ReactElement {
   const toggleScm = useCallback(() => {
     setShowScm((shown) => !shown);
     setShowComposer(false);
+    setShowRuns(false);
   }, []);
 
   const toggleComposer = useCallback(() => {
     setShowComposer((shown) => !shown);
     setShowScm(false);
+    setShowRuns(false);
+  }, []);
+
+  const toggleRuns = useCallback(() => {
+    setShowRuns((shown) => !shown);
+    setShowScm(false);
+    setShowComposer(false);
   }, []);
 
   const selectTab = useCallback(
@@ -204,15 +215,22 @@ export function App(): ReactElement {
     })();
   }, [editor, kernel, projectId, trusted]);
 
-  // "Add to chat" grounds the conversation in the open file (`@path` mention).
+  // The editor reports its selection so "Add to chat" can attach the range.
+  const trackSelection = useCallback((selection: SelectionAttachment | null) => {
+    selectionRef.current = selection;
+  }, []);
+
+  // "Add to chat" grounds the conversation in the open file (`@path`), or in
+  // the selection when there is one (`@path#Lx-Ly` plus the code).
   const addToChat = useCallback(() => {
     const path = editor.activePath;
     if (path === null) {
       return;
     }
-    const snippet = `@${path}`;
-    const draft = chat.draft.trim();
-    chat.setDraft(draft.length === 0 ? `${snippet} ` : `${draft}\n${snippet} `);
+    const selection = selectionRef.current;
+    const payload =
+      selection !== null && selection.path === path ? selectionPayload(selection) : `@${path}`;
+    chat.setDraft(appendContext(chat.draft, payload));
     setActiveId('ide');
   }, [chat, editor.activePath]);
 
@@ -234,6 +252,7 @@ export function App(): ReactElement {
       toggleScm,
       toggleChat: () => setShowChat((shown) => !shown),
       toggleComposer,
+      toggleRuns,
       addToChat,
     }),
     [
@@ -244,6 +263,7 @@ export function App(): ReactElement {
       selectTab,
       toggleComposer,
       toggleIdePanel,
+      toggleRuns,
       toggleScm,
     ],
   );
@@ -333,6 +353,9 @@ export function App(): ReactElement {
       onToggleScm={toggleScm}
       showComposer={showComposer}
       onToggleComposer={toggleComposer}
+      showRuns={showRuns}
+      onToggleRuns={toggleRuns}
+      onSelectionChange={trackSelection}
     />
   );
 
