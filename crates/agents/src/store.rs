@@ -55,7 +55,32 @@ impl AgentStore {
         Ok(())
     }
 
-    /// Update a session's rolling summary.
+    /// Add a run's token usage and cost to the session totals.
+    pub fn add_usage(
+        &self,
+        id: &str,
+        input_tokens: u64,
+        output_tokens: u64,
+        cost_usd: f64,
+    ) -> Result<(), AgentError> {
+        self.storage.execute(
+            "UPDATE agent_sessions SET \
+             tokens_in = COALESCE(tokens_in, 0) + ?1, \
+             tokens_out = COALESCE(tokens_out, 0) + ?2, \
+             cost_usd = COALESCE(cost_usd, 0) + ?3, \
+             updated_at = ?4 WHERE id = ?5",
+            &[
+                Value::from(input_tokens),
+                Value::from(output_tokens),
+                Value::from(cost_usd),
+                Value::from(now_ms()),
+                Value::String(id.to_string()),
+            ],
+        )?;
+        Ok(())
+    }
+
+    /// Update a session's summary.
     pub fn set_summary(&self, id: &str, summary: &str) -> Result<(), AgentError> {
         self.storage.execute(
             "UPDATE agent_sessions SET summary = ?1, updated_at = ?2 WHERE id = ?3",
@@ -137,6 +162,7 @@ fn session_from_row(row: &fergents_storage::Row) -> AgentSessionRecord {
         id: str_col(row, "id"),
         agent_id: str_col(row, "agent_id"),
         title: row.get("title").and_then(Value::as_str).map(str::to_string),
+        model: row.get("model").and_then(Value::as_str).map(str::to_string),
         state: row
             .get("state")
             .and_then(Value::as_str)

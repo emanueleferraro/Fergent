@@ -3006,6 +3006,16 @@
         "seq": { "type": "integer", "format": "int64" }
       }
     },
+    "ChatMessageDeltaPayload": {
+      "title": "ChatMessageDeltaPayload",
+      "description": "Payload of the chat.message.delta event, streamed while an assistant turn is being generated.",
+      "type": "object",
+      "required": ["session_id", "delta"],
+      "properties": {
+        "session_id": { "type": "string" },
+        "delta": { "type": "string" }
+      }
+    },
     "TrustState": {
       "title": "TrustState",
       "description": "Whether a project may run code (spec decision D3).",

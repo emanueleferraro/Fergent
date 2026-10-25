@@ -2699,6 +2699,14 @@ export interface ChatMessageCreatedPayload {
 }
 
 /**
+ * Payload of the chat.message.delta event, streamed while an assistant turn is being generated.
+ */
+export interface ChatMessageDeltaPayload {
+  session_id: string;
+  delta: string;
+}
+
+/**
  * Whether a project may run code (spec decision D3).
  */
 export type TrustState = 'untrusted' | 'trusted';

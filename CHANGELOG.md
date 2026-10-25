@@ -162,6 +162,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (open → trust → edit → diagnostics → terminal → spec/plan/tasks approval →
   commit).
 
+- Provider-backed agent runtime (`crates/core`, `crates/agents`): the kernel
+  now hands the agent/chat runtime a `RegistryProvider` over
+  `ProviderService`, resolving each request from the session's pinned model,
+  then the `chat` route, then the first configured provider, and only falling
+  back to the offline mock when nothing is configured. Chat turns stream
+  (`chat.message.delta`) and persist token counts and cost (ADR-034).
+- Provider streaming in the chat UI: `useChat` subscribes to
+  `chat.message.delta` and renders the reply as it arrives; new sessions
+  default to the provider's default model.
+- `chat.session.create` now defaults `model` to the provider registry's
+  default model.
+
 ### Changed
 
 - `DATA_MODEL.md` now documents the per-brain schema alongside the global one.

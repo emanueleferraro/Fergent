@@ -21,6 +21,7 @@ pub use subagents::{SubAgentError, SubAgentManager, SubAgentRecord};
 
 pub use providers::{
     ProviderConfig, ProviderRegistryError, ProviderRoute, ProviderService, ProviderTest,
+    RegistryProvider,
 };
 
 use std::collections::HashMap;
@@ -37,7 +38,7 @@ use fergents_chat::{ChatMessage, ChatService};
 use fergents_events::{now_ms, EventBus};
 use fergents_git::GitService;
 use fergents_ide::{file_tools, FileService, ProjectService};
-use fergents_llm::{ChatRequest, MockProvider};
+use fergents_llm::ChatRequest;
 use fergents_lsp::LspService;
 use fergents_permissions::PermissionService;
 use fergents_protocol::{
@@ -220,9 +221,9 @@ impl Kernel {
         let storage_for_caps: Arc<dyn Storage> = storage.clone();
         let capabilities = Arc::new(CapabilityRegistry::new(storage_for_caps, bus.clone())?);
         capabilities.seed(&default_catalogue())?;
-        // The agent runtime. Until the provider manager (task 2.17) wires real
-        // providers, the kernel runs agents against the deterministic mock
-        // provider so `agent.run` works fully offline.
+        // The agent runtime routes every request through the configured
+        // providers (task 2.17); with none configured it stays on the
+        // deterministic mock so `agent.run` still works fully offline.
         let storage_for_agents: Arc<dyn Storage> = storage.clone();
         let storage_for_memory: Arc<dyn Storage> = storage.clone();
         let storage_for_context: Arc<dyn Storage> = storage.clone();
@@ -234,7 +235,6 @@ impl Kernel {
             bus.clone(),
             config.data_dir.join("specs"),
         ));
-        let provider: Arc<dyn fergents_llm::Provider> = Arc::new(MockProvider::new("mock"));
         let storage_for_perms: Arc<dyn Storage> = storage.clone();
         let permissions = Arc::new(PermissionService::new(storage_for_perms, bus.clone()));
         let storage_for_backups: Arc<dyn Storage> = storage.clone();
@@ -254,6 +254,8 @@ impl Kernel {
         let storage_for_providers: Arc<dyn Storage> = storage.clone();
         let provider_service =
             Arc::new(ProviderService::new(storage_for_providers, secrets.clone()));
+        let provider: Arc<dyn fergents_llm::Provider> =
+            Arc::new(RegistryProvider::new(provider_service.clone()));
         let storage_for_mcp: Arc<dyn Storage> = storage.clone();
         let mcp_service = Arc::new(McpService::new(storage_for_mcp));
         let storage_for_projects: Arc<dyn Storage> = storage.clone();

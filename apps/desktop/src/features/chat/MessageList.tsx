@@ -48,7 +48,11 @@ export function MessageList({ chat }: MessageListProps): ReactElement {
         <div className="msg msg--assistant msg--pending" aria-busy="true">
           <div className="msg__meta">{t('chat.role.assistant')}</div>
           <div className="msg__body">
-            <span className="t-caption">{t('chat.streaming')}</span>
+            {chat.streaming ? (
+              <span className="msg__text">{chat.streaming}</span>
+            ) : (
+              <span className="t-caption">{t('chat.streaming')}</span>
+            )}
             <span className="chat-cursor" />
           </div>
         </div>

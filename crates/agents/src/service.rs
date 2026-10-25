@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use std::sync::{Arc, RwLock};
 
 use fergents_events::EventBus;
-use fergents_llm::{ChatRequest, Provider, TokenCounter};
+use fergents_llm::{ChatRequest, CostTable, Provider, TokenCounter};
 use serde_json::json;
 
 use crate::definition::AgentDefinition;
@@ -283,14 +283,33 @@ impl AgentService {
             json!({ "agent_id": definition.id, "session_id": session_id }),
         )?;
 
+        // A model pinned on the session (the chat selector) wins over the
+        // agent definition, so a session can switch providers without editing
+        // the agent file.
+        let effective = match self.store.get_session(session_id)?.and_then(|s| s.model) {
+            Some(model) => {
+                let mut pinned = definition.clone();
+                pinned.model = model;
+                pinned
+            }
+            None => definition.clone(),
+        };
+
         let outcome = self
             .runtime
-            .run(definition, task, session_id, observer, cancel)
+            .run(&effective, task, session_id, observer, cancel)
             .await;
 
         match outcome {
             Ok(outcome) => {
                 self.persist_outcome(&outcome, skip_user_turn)?;
+                let cost = CostTable::with_defaults().cost(&outcome.model, &outcome.usage);
+                self.store.add_usage(
+                    session_id,
+                    u64::from(outcome.usage.input_tokens),
+                    u64::from(outcome.usage.output_tokens),
+                    cost,
+                )?;
                 let state = state_for_stop(outcome.stop);
                 self.store.set_state(session_id, state)?;
                 self.bus.publish(

@@ -9,6 +9,7 @@ import type {
   AttachmentRouting,
   CapabilityListResult,
   ChatMessage,
+  ChatMessageDeltaPayload,
   ChatMessageListResult,
   ChatMessageSendResult,
   ChatSearchHit,
@@ -47,6 +48,8 @@ export interface ChatController {
   messages: ChatMessage[];
   messagesLoading: boolean;
   sending: boolean;
+  /** Assistant text streamed so far for the in-flight turn. */
+  streaming: string;
   actionError: string | null;
   prompts: PromptTemplate[];
   hits: ChatSearchHit[];
@@ -87,6 +90,7 @@ export function useChat(kernel: KernelClient): ChatController {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [sending, setSending] = useState(false);
+  const [streaming, setStreaming] = useState('');
   const [actionError, setActionError] = useState<string | null>(null);
   const [prompts, setPrompts] = useState<PromptTemplate[]>([]);
   const [hits, setHits] = useState<ChatSearchHit[]>([]);
@@ -98,6 +102,33 @@ export function useChat(kernel: KernelClient): ChatController {
 
   const activeIdRef = useRef(activeId);
   activeIdRef.current = activeId;
+
+  // Append streamed assistant deltas for the session in view.
+  useEffect(() => {
+    let active = true;
+    let dispose: (() => void) | null = null;
+    void (async () => {
+      const off = await kernel.onEvent((event) => {
+        if (event.kind !== 'chat.message.delta') {
+          return;
+        }
+        const payload = event.payload as Partial<ChatMessageDeltaPayload>;
+        if (payload.session_id !== activeIdRef.current || typeof payload.delta !== 'string') {
+          return;
+        }
+        setStreaming((current) => current + payload.delta);
+      });
+      if (active) {
+        dispose = off;
+      } else {
+        off();
+      }
+    })();
+    return () => {
+      active = false;
+      dispose?.();
+    };
+  }, [kernel]);
 
   const loadSessions = useCallback(async (): Promise<ChatSession[]> => {
     const result = await kernel.call<ChatSessionListResult>('chat.session.list', { limit: 50 });
@@ -247,6 +278,7 @@ export function useChat(kernel: KernelClient): ChatController {
         return;
       }
       setSending(true);
+      setStreaming('');
       setActionError(null);
       setNotice(null);
       try {
@@ -260,6 +292,7 @@ export function useChat(kernel: KernelClient): ChatController {
       } catch (cause) {
         setActionError(messageOf(cause));
       } finally {
+        setStreaming('');
         setSending(false);
       }
     },
@@ -271,6 +304,7 @@ export function useChat(kernel: KernelClient): ChatController {
       return;
     }
     setSending(true);
+    setStreaming('');
     setActionError(null);
     try {
       const result = await kernel.call<ChatMessageSendResult>('chat.message.retry', {
@@ -281,6 +315,7 @@ export function useChat(kernel: KernelClient): ChatController {
     } catch (cause) {
       setActionError(messageOf(cause));
     } finally {
+      setStreaming('');
       setSending(false);
     }
   }, [kernel, activeId, sending, loadSessions]);
@@ -417,6 +452,7 @@ export function useChat(kernel: KernelClient): ChatController {
     messages,
     messagesLoading,
     sending,
+    streaming,
     actionError,
     prompts,
     hits,

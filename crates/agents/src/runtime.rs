@@ -4,7 +4,10 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::time::Instant;
 
-use fergents_llm::{ChatRequest, ContentBlock, FinishReason, Message, Provider, Role, Usage};
+use fergents_llm::{
+    ChatRequest, ContentBlock, FinishReason, Message, Provider, Role, StreamFrame, ToolCall, Usage,
+};
+use futures::StreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
@@ -61,6 +64,8 @@ pub struct RunOutcome {
     pub agent_id: String,
     /// The final assistant text.
     pub final_text: String,
+    /// The model that produced the final answer.
+    pub model: String,
     /// The full transcript, normalized.
     pub messages: Vec<Message>,
     /// Every tool call made during the run.
@@ -176,6 +181,7 @@ impl AgentRuntime {
         let mut iterations: u32 = 0;
         let mut final_text = String::new();
         let mut stop = StopReason::Completed;
+        let mut model = definition.model.clone();
 
         // `plan_execute` performs a planning turn before the executor loop.
         // The remaining variants (`reflexion`, `tot`, `debate`, `map_reduce`)
@@ -197,6 +203,7 @@ impl AgentRuntime {
                 stream: false,
             };
             let plan = self.provider.chat(plan_request).await?;
+            model = plan.model.clone();
             usage = add_usage(usage, plan.usage);
             observer.on_text(&plan.text());
             messages.push(plan.message);
@@ -225,17 +232,18 @@ impl AgentRuntime {
                 tools: tool_defs.clone(),
                 temperature: definition.temperature,
                 max_tokens: definition.max_tokens,
-                stream: false,
+                stream: true,
             };
-            let response = self.provider.chat(request).await?;
-            usage = add_usage(usage, response.usage);
-            observer.on_text(&response.text());
-            messages.push(response.message.clone());
-
-            let calls = response.tool_calls();
+            let turn = self.stream_turn(request, observer).await?;
+            usage = add_usage(usage, turn.usage);
+            if let Some(name) = &turn.model {
+                model = name.clone();
+            }
+            messages.push(turn.message());
+            let calls = turn.tool_calls();
             if calls.is_empty() {
-                final_text = response.text();
-                if response.finish_reason == FinishReason::ToolCalls {
+                final_text = turn.text();
+                if turn.finish == FinishReason::ToolCalls {
                     // A tool-call finish with no parsed calls is a no-op; stop.
                     stop = StopReason::Completed;
                 }
@@ -277,12 +285,36 @@ impl AgentRuntime {
             session_id: session_id.to_string(),
             agent_id: definition.id.clone(),
             final_text,
+            model,
             messages,
             tool_calls,
             usage,
             iterations,
             stop,
         })
+    }
+
+    /// Consume one streamed turn, forwarding text deltas to the observer.
+    async fn stream_turn(
+        &self,
+        request: ChatRequest,
+        observer: &dyn RunObserver,
+    ) -> Result<StreamedTurn, AgentError> {
+        let mut stream = self.provider.chat_stream(request).await?;
+        let mut turn = StreamedTurn::default();
+        while let Some(frame) = stream.next().await {
+            match frame? {
+                StreamFrame::Start { model } => turn.model = Some(model),
+                StreamFrame::TextDelta { text } => {
+                    observer.on_text(&text);
+                    turn.text.push_str(&text);
+                }
+                StreamFrame::ToolCall { call } => turn.calls.push(call),
+                StreamFrame::Usage { usage } => turn.usage = usage,
+                StreamFrame::Stop { finish_reason } => turn.finish = finish_reason,
+            }
+        }
+        Ok(turn)
     }
 
     async fn execute_tool(&self, name: &str, arguments: Value) -> Result<Value, AgentError> {
@@ -295,6 +327,57 @@ impl AgentRuntime {
                 Some(tool) => tool.call(arguments).await,
                 None => Err(AgentError::UnknownTool(name.to_string())),
             },
+        }
+    }
+}
+
+/// One assistant turn, accumulated from a provider stream.
+struct StreamedTurn {
+    model: Option<String>,
+    text: String,
+    calls: Vec<ToolCall>,
+    usage: Usage,
+    finish: FinishReason,
+}
+
+impl Default for StreamedTurn {
+    fn default() -> Self {
+        Self {
+            model: None,
+            text: String::new(),
+            calls: Vec::new(),
+            usage: Usage::default(),
+            finish: FinishReason::Stop,
+        }
+    }
+}
+
+impl StreamedTurn {
+    fn text(&self) -> String {
+        self.text.clone()
+    }
+
+    fn tool_calls(&self) -> Vec<ToolCall> {
+        self.calls.clone()
+    }
+
+    fn message(&self) -> Message {
+        let mut content = Vec::new();
+        if !self.text.is_empty() {
+            content.push(ContentBlock::Text {
+                text: self.text.clone(),
+            });
+        }
+        for call in &self.calls {
+            content.push(ContentBlock::ToolCall {
+                id: call.id.clone(),
+                name: call.name.clone(),
+                arguments: call.arguments.clone(),
+            });
+        }
+        Message {
+            role: Role::Assistant,
+            content,
         }
     }
 }
