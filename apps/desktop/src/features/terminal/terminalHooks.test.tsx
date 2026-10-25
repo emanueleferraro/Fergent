@@ -53,6 +53,22 @@ describe('useTerminal', () => {
     expect(result.current.tabs).toHaveLength(1);
   });
 
+  it('restores and persists the shell in the settings store', async () => {
+    const { kernel, projectId } = await openProject();
+    await kernel.call('settings.set', { key: 'ide.shell', value: { shell: 'zsh' } });
+
+    const { result } = renderHook(() => useTerminal(kernel, projectId, true));
+
+    await waitFor(() => {
+      expect(result.current.shell).toBe('zsh');
+    });
+
+    act(() => result.current.setShell('fish'));
+
+    const write = kernel.calls.filter((call) => call.method === 'settings.set').at(-1);
+    expect(write?.params).toEqual({ key: 'ide.shell', value: { shell: 'fish' } });
+  });
+
   it('reconnects to sessions the kernel still has running', async () => {
     const { kernel, projectId } = await openProject();
     await kernel.call('term.open', { project_id: projectId, shell: 'fish', cwd: '/work/demo' });

@@ -6,6 +6,7 @@
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
+  SettingsValueResult,
   TermAck,
   TermListResult,
   TermReadResult,
@@ -15,6 +16,7 @@ import type {
 
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
+import { IDE_SHELL_KEY } from '../settings/useIdeSettings';
 
 import {
   appendTab,
@@ -55,18 +57,8 @@ export interface TerminalState {
   subscribe: (id: string, handler: OutputHandler) => () => void;
 }
 
-const SHELL_KEY = 'fergents.terminal.shell';
-
 function messageOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
-}
-
-function readShell(): string {
-  try {
-    return localStorage.getItem(SHELL_KEY) ?? 'auto';
-  } catch {
-    return 'auto';
-  }
 }
 
 /** The transcript line appended when the shell exits. */
@@ -86,8 +78,30 @@ export function useTerminal(
   const [activeId, setActiveId] = useState<string | null>(null);
   const [secondaryId, setSecondaryId] = useState<string | null>(null);
   const [split, setSplit] = useState(false);
-  const [shell, setShellState] = useState<string>(readShell);
+  const [shell, setShellState] = useState<string>('auto');
   const [error, setError] = useState<string | null>(null);
+
+  // The shell choice lives in the kernel's settings store, so the terminal and
+  // Settings → IDE agree and the choice survives a restart.
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      try {
+        const stored = await kernel.call<SettingsValueResult>('settings.get', {
+          key: IDE_SHELL_KEY,
+        });
+        const value = stored.value['shell'];
+        if (!cancelled && typeof value === 'string' && value.length > 0) {
+          setShellState(value);
+        }
+      } catch {
+        // A missing preference is not an error: the kernel default applies.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [kernel]);
 
   const tabsRef = useRef(tabs);
   tabsRef.current = tabs;
@@ -355,14 +369,15 @@ export function useTerminal(
     };
   }, []);
 
-  const setShell = useCallback((id: string) => {
-    setShellState(id);
-    try {
-      localStorage.setItem(SHELL_KEY, id);
-    } catch {
-      // Storage is optional; the choice simply does not persist.
-    }
-  }, []);
+  const setShell = useCallback(
+    (id: string) => {
+      setShellState(id);
+      void kernel
+        .call('settings.set', { key: IDE_SHELL_KEY, value: { shell: id } })
+        .catch(() => undefined);
+    },
+    [kernel],
+  );
 
   const dismissError = useCallback(() => setError(null), []);
   const active = useMemo(() => tabs.find((tab) => tab.id === activeId) ?? null, [tabs, activeId]);

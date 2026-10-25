@@ -71,7 +71,7 @@ the behaviour is implemented, tested, and merged.
 
 - [ ] Monaco lazy chunk; startup budget unchanged
 - [ ] Tabs (dirty/preview/pinned), breadcrumb, outline, find/replace
-- [ ] Save/conflict banner; external change handled
+- [x] Save/conflict banner; external change handled
 - [x] Problems panel grouped and jumpable
 - [x] Terminal tabs/split/shell selector; live session reconnect
 - [x] Source control: status/diff/stage/commit/branches/log/blame/conflicts
@@ -80,9 +80,9 @@ the behaviour is implemented, tested, and merged.
 - [x] Composer proposal → approve subset → reversible apply; reject writes
       nothing
 - [x] Agent mode: spec/plan/tasks tabs, approval cards, `@file`/`@selection`
-- [ ] Chat + IDE split persisted, resizable by keyboard, restores on restart
+- [x] Chat + IDE split persisted, resizable by keyboard, restores on restart
 - [x] Command palette and shortcuts (`Ctrl+Tab`, `Ctrl+W`, `Ctrl+\`)
-- [ ] Settings → IDE (servers, shells, git remote, editor preferences)
+- [x] Settings → IDE (servers, shells, git remote, editor preferences)
 - [ ] All UI built from `style/` tokens; accessible per `UI.md` §19–§20
 
 ## Release (3.17)

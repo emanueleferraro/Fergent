@@ -9,11 +9,12 @@ import type { KernelClient } from '../../lib/kernel';
 
 import { BrainSettings } from './BrainSettings';
 import { FeaturesSettings } from './FeaturesSettings';
+import { IdeSettings } from './IdeSettings';
 import { McpSettings } from './McpSettings';
 import { ProvidersSettings } from './ProvidersSettings';
 import { SecretsSettings } from './SecretsSettings';
 
-type SettingsTab = 'brain' | 'features' | 'providers' | 'secrets' | 'mcp';
+type SettingsTab = 'brain' | 'features' | 'providers' | 'secrets' | 'mcp' | 'ide';
 
 const TABS: { id: SettingsTab; label: Parameters<typeof t>[0] }[] = [
   { id: 'brain', label: 'settings.tabs.brain' },
@@ -21,6 +22,7 @@ const TABS: { id: SettingsTab; label: Parameters<typeof t>[0] }[] = [
   { id: 'providers', label: 'settings.tabs.providers' },
   { id: 'secrets', label: 'settings.tabs.secrets' },
   { id: 'mcp', label: 'settings.tabs.mcp' },
+  { id: 'ide', label: 'settings.tabs.ide' },
 ];
 
 /** Props for `SettingsView`. */
@@ -53,6 +55,7 @@ export function SettingsView({ kernel }: SettingsViewProps): ReactElement {
       {tab === 'providers' ? <ProvidersSettings kernel={kernel} /> : null}
       {tab === 'secrets' ? <SecretsSettings kernel={kernel} /> : null}
       {tab === 'mcp' ? <McpSettings kernel={kernel} /> : null}
+      {tab === 'ide' ? <IdeSettings kernel={kernel} /> : null}
     </div>
   );
 }

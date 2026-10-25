@@ -17789,6 +17789,106 @@ impl From<&SecretTestResult> for SecretTestResult {
         value.clone()
     }
 }
+#[doc = "Params of settings.get: a namespaced key in the generic settings store."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SettingsGetParams\","]
+#[doc = "  \"description\": \"Params of settings.get: a namespaced key in the generic settings store.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"key\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"key\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SettingsGetParams {
+    pub key: String,
+}
+impl From<&SettingsGetParams> for SettingsGetParams {
+    fn from(value: &SettingsGetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Params of settings.set."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SettingsSetParams\","]
+#[doc = "  \"description\": \"Params of settings.set.\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"key\","]
+#[doc = "    \"value\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"key\": {"]
+#[doc = "      \"type\": \"string\""]
+#[doc = "    },"]
+#[doc = "    \"value\": {"]
+#[doc = "      \"description\": \"The JSON object stored under the key.\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SettingsSetParams {
+    pub key: String,
+    #[doc = "The JSON object stored under the key."]
+    pub value: ::serde_json::Value,
+}
+impl From<&SettingsSetParams> for SettingsSetParams {
+    fn from(value: &SettingsSetParams) -> Self {
+        value.clone()
+    }
+}
+#[doc = "Result of settings.get and settings.set: the stored value ({} when unset)."]
+#[doc = r""]
+#[doc = r" <details><summary>JSON schema</summary>"]
+#[doc = r""]
+#[doc = r" ```json"]
+#[doc = "{"]
+#[doc = "  \"title\": \"SettingsValueResult\","]
+#[doc = "  \"description\": \"Result of settings.get and settings.set: the stored value ({} when unset).\","]
+#[doc = "  \"type\": \"object\","]
+#[doc = "  \"required\": ["]
+#[doc = "    \"value\""]
+#[doc = "  ],"]
+#[doc = "  \"properties\": {"]
+#[doc = "    \"value\": {"]
+#[doc = "      \"description\": \"The stored JSON object.\""]
+#[doc = "    }"]
+#[doc = "  },"]
+#[doc = "  \"additionalProperties\": false"]
+#[doc = "}"]
+#[doc = r" ```"]
+#[doc = r" </details>"]
+#[derive(:: serde :: Deserialize, :: serde :: Serialize, Clone, Debug, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub struct SettingsValueResult {
+    #[doc = "The stored JSON object."]
+    pub value: ::serde_json::Value,
+}
+impl From<&SettingsValueResult> for SettingsValueResult {
+    fn from(value: &SettingsValueResult) -> Self {
+        value.clone()
+    }
+}
 #[doc = "Result of spec.get."]
 #[doc = r""]
 #[doc = r" <details><summary>JSON schema</summary>"]

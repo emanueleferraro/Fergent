@@ -18,6 +18,7 @@ use fergents_protocol::{
     SearchQueryParams, SubscribeParams, TemplateCreateParams, TemplateRenderParams,
     UnsubscribeParams, WelcomeResult, KERNEL_VERSION, PROTOCOL_VERSION,
 };
+use fergents_storage::{Key, Storage};
 use serde::Serialize;
 use serde_json::Value;
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader, WriteHalf};
@@ -1577,6 +1578,35 @@ async fn dispatch(
                     .set_layout(&project_id, layout)
                     .map(|layout| serde_json::json!({ "layout": layout }))
                     .map_err(CoreError::from)
+            })
+            .await
+        }
+        "settings.get" => {
+            let key = required_str(&params, "key")?.to_string();
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                let value = kernel
+                    .storage()
+                    .get(&Key(key))
+                    .map_err(CoreError::from)?
+                    .unwrap_or_else(|| serde_json::json!({}));
+                Ok(serde_json::json!({ "value": value }))
+            })
+            .await
+        }
+        "settings.set" => {
+            let key = required_str(&params, "key")?.to_string();
+            let value = params
+                .get("value")
+                .cloned()
+                .ok_or((ErrorCode::InvalidParams, "missing value".to_string()))?;
+            let kernel = kernel.clone();
+            run_blocking(move || {
+                kernel
+                    .storage()
+                    .put(Key(key), value.clone())
+                    .map_err(CoreError::from)?;
+                Ok(serde_json::json!({ "value": value }))
             })
             .await
         }
