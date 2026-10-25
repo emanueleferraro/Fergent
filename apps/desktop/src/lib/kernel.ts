@@ -36,6 +36,7 @@ import type {
   SecretRef,
   SubAgent,
   TermSession,
+  WorkflowRun,
 } from '@fergents/protocol';
 
 /** Tauri event name carrying a forwarded kernel event. */
@@ -174,6 +175,8 @@ export class MockKernelClient implements KernelClient {
   ];
   private mockSeq = 0;
   private readonly mockSettings = new Map<string, Record<string, unknown>>();
+  private readonly mockRuns: WorkflowRun[] = [];
+  private readonly mockRunArtifacts = new Map<string, Record<string, string>>();
   private mockComposerRuns = new Map<string, ComposerRun>();
   private mockCapabilities = new Map<string, boolean>([
     ['capability.ide', true],
@@ -386,6 +389,25 @@ export class MockKernelClient implements KernelClient {
         return { cancelled: true };
       case 'inline.action':
         return { run: this.mockComposerStart(projectId, payload) };
+      case 'run.list':
+        return { runs: this.mockRuns.slice(0, Number(payload.limit ?? 20)) };
+      case 'spec.start':
+        return this.mockStartRun(
+          String(payload.slug ?? ''),
+          String(payload.task ?? ''),
+          String(payload.mode ?? 'supervised'),
+        );
+      case 'spec.get': {
+        const run = this.mockRun(String(payload.run_id));
+        return { run, artifacts: this.mockRunArtifacts.get(run.id) ?? {} };
+      }
+      case 'run.get':
+        return this.mockRun(String(payload.run_id));
+      case 'spec.approve':
+      case 'run.approve':
+        return this.mockApproveRun(String(payload.run_id));
+      case 'run.reject':
+        return this.mockRejectRun(String(payload.run_id));
       case 'git.resolve':
         return { resolved: true };
       case 'file.read':
@@ -891,6 +913,68 @@ export class MockKernelClient implements KernelClient {
       restart_required: false,
       config: {},
     }));
+  }
+
+  private mockRun(runId: string): WorkflowRun {
+    const run = this.mockRuns.find((item) => item.id === runId);
+    if (run === undefined) {
+      throw new Error('unknown run');
+    }
+    return run;
+  }
+
+  private mockStartRun(slug: string, task: string, mode: string): WorkflowRun {
+    const now = Date.now();
+    const name = slug.trim() === '' ? 'run' : slug.trim();
+    const run: WorkflowRun = {
+      id: `run-${++this.mockSeq}`,
+      session_id: null,
+      slug: name,
+      mode: mode as WorkflowRun['mode'],
+      state: 'awaiting_spec_approval',
+      pending_gate: 'spec',
+      artifacts: { spec: `.fergents/specs/${name}/spec.md` },
+      created_at: now,
+      updated_at: now,
+    };
+    this.mockRuns.unshift(run);
+    this.mockRunArtifacts.set(run.id, { spec: `# Spec: ${name}\n\n${task}\n` });
+    return run;
+  }
+
+  private mockApproveRun(runId: string): WorkflowRun {
+    const run = this.mockRun(runId);
+    const artifacts = this.mockRunArtifacts.get(run.id) ?? {};
+    if (run.pending_gate === 'spec') {
+      run.state = 'awaiting_plan_approval';
+      run.pending_gate = 'plan';
+      run.artifacts = { ...run.artifacts, plan: `.fergents/specs/${run.slug}/plan.md` };
+      this.mockRunArtifacts.set(run.id, {
+        ...artifacts,
+        plan: `# Plan: ${run.slug}\n\n1. Implement the change.\n`,
+      });
+    } else if (run.pending_gate === 'plan') {
+      run.state = 'awaiting_task_approval';
+      run.pending_gate = 'task';
+      run.artifacts = { ...run.artifacts, task: `.fergents/specs/${run.slug}/tasks.md` };
+      this.mockRunArtifacts.set(run.id, {
+        ...artifacts,
+        task: `# Tasks: ${run.slug}\n\n- [ ] Implement the change.\n`,
+      });
+    } else {
+      run.state = 'completed';
+      run.pending_gate = null;
+    }
+    run.updated_at = Date.now();
+    return run;
+  }
+
+  private mockRejectRun(runId: string): WorkflowRun {
+    const run = this.mockRun(runId);
+    run.state = 'rejected';
+    run.pending_gate = null;
+    run.updated_at = Date.now();
+    return run;
   }
 
   private mockComposerStart(projectId: string, payload: Record<string, unknown>): ComposerRun {

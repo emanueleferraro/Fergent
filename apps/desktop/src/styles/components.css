@@ -3155,3 +3155,117 @@ mark,
 .inline-panel .diff-preview {
     min-height: 0;
 }
+
+/* ============================================================
+   AGENT RUN (task 3.14)
+   ============================================================ */
+.run-panel {
+    display: flex;
+    flex: 0 0 460px;
+    flex-direction: column;
+    min-width: 320px;
+    min-height: 0;
+    border-left: 1px solid var(--border-default);
+    background: var(--surface-1);
+    overflow-y: auto;
+}
+.run-panel__bar {
+    display: flex;
+    align-items: center;
+    gap: var(--s-1);
+    padding: var(--s-1) var(--s-2);
+    border-bottom: 1px solid var(--border-default);
+}
+.run-panel__form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    padding: var(--s-3);
+    border-bottom: 1px solid var(--border-default);
+}
+.run-panel__input {
+    width: 100%;
+    padding: var(--s-2);
+    border: 1px solid var(--border-default);
+    border-radius: var(--r-md);
+    background: var(--surface-2);
+    color: var(--text-default);
+    font-family: var(--font-mono);
+    font-size: var(--fs-mono);
+    line-height: 1.5;
+}
+.run-panel__input:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+}
+.run-panel__hint {
+    margin: 0;
+    color: var(--color-warning);
+}
+.run-panel__error {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+    color: var(--color-danger);
+    background: var(--color-danger-soft);
+}
+.run-panel__empty {
+    margin: 0;
+    padding: var(--s-3);
+    color: var(--text-muted);
+}
+.run-panel__detail {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-bottom: 1px solid var(--border-default);
+}
+.run-panel__state {
+    display: flex;
+    align-items: center;
+    gap: var(--s-2);
+    padding: var(--s-2) var(--s-3);
+}
+.run-panel__approval {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+    margin: 0 var(--s-3) var(--s-2);
+    padding: var(--s-2);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--r-md);
+    background: var(--color-warning-soft);
+}
+.run-panel__artifact {
+    min-height: 0;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: var(--s-3);
+    border-top: 1px solid var(--border-default);
+}
+.run-panel__recent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+    padding: var(--s-3);
+}
+.run-panel__run {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border: 1px solid transparent;
+    border-radius: var(--r-md);
+    background: transparent;
+    color: var(--text-default);
+    text-align: left;
+    cursor: pointer;
+}
+.run-panel__run:hover,
+.run-panel__run.active {
+    border-color: var(--border-default);
+    background: var(--surface-2);
+}
