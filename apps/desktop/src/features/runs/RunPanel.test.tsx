@@ -70,7 +70,11 @@ describe('RunPanel', () => {
     expect(screen.getByText(/Spec: auth-refresh/)).toBeDefined();
 
     const start = kernel.calls.find((entry) => entry.method === 'spec.start');
-    expect(start?.params).toEqual({ slug: 'auth-refresh', task: 'Refresh the token', mode: 'batch' });
+    expect(start?.params).toEqual({
+      slug: 'auth-refresh',
+      task: 'Refresh the token',
+      mode: 'batch',
+    });
   });
 
   it('approves the pending gate and advances to the plan', async () => {
@@ -128,8 +132,7 @@ describe('RunPanel', () => {
     await waitFor(() => {
       const opened = kernel.calls.filter(
         (entry) =>
-          entry.method === 'spec.get' &&
-          (entry.params as { run_id?: string }).run_id === older.id,
+          entry.method === 'spec.get' && (entry.params as { run_id?: string }).run_id === older.id,
       );
       expect(opened.length).toBeGreaterThan(0);
     });

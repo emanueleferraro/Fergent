@@ -20,7 +20,11 @@ import { useProjectEditor } from './features/editor/useProjectEditor';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
 import { IdeView, type IdePanel } from './features/ide/IdeView';
-import { appendContext, selectionPayload, type SelectionAttachment } from './features/ide/chatContext';
+import {
+  appendContext,
+  selectionPayload,
+  type SelectionAttachment,
+} from './features/ide/chatContext';
 import { cycleTabPath, ideCommands, type IdeActions } from './features/ide/ideCommands';
 import { SplitPane } from './features/layout/SplitPane';
 import { useIdeLayout } from './features/layout/useIdeLayout';

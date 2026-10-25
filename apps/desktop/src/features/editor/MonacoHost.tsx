@@ -220,9 +220,10 @@ export function MonacoHost({
           lspRef.current?.onCodeActions(at.path, at.line, at.column);
         });
         subscription = editor.onDidChangeModelContent(() => onChangeRef.current(editor.getValue()));
-        selectionSubscription = editor.onDidChangeCursorSelection?.(() => {
-          onSelectionRef.current?.(selectionSnapshot());
-        }) ?? null;
+        selectionSubscription =
+          editor.onDidChangeCursorSelection?.(() => {
+            onSelectionRef.current?.(selectionSnapshot());
+          }) ?? null;
         editorRef.current = editor;
         setReady(true);
       } catch {

@@ -4,12 +4,7 @@
  * run; this controller only reflects it.
  */
 import { useCallback, useEffect, useState } from 'react';
-import type {
-  AutonomyMode,
-  RunGate,
-  SpecGetResult,
-  WorkflowRun,
-} from '@fergents/protocol';
+import type { AutonomyMode, RunGate, SpecGetResult, WorkflowRun } from '@fergents/protocol';
 
 import type { KernelClient } from '../../lib/kernel';
 
@@ -41,7 +36,11 @@ function messageOf(error: unknown): string {
 }
 
 /** Load and drive the spec workflow of the project. */
-export function useRuns(kernel: KernelClient, projectId: string | null, trusted: boolean): RunsController {
+export function useRuns(
+  kernel: KernelClient,
+  projectId: string | null,
+  trusted: boolean,
+): RunsController {
   const [runs, setRuns] = useState<WorkflowRun[]>([]);
   const [active, setActive] = useState<SpecGetResult | null>(null);
   const [loading, setLoading] = useState(false);
