@@ -142,6 +142,40 @@ impl CapabilityRegistry {
         self.view(&id)
     }
 
+    /// Remove a capability registered by a plugin (or any non-kernel source).
+    ///
+    /// Refuses when an enabled capability still depends on it.
+    pub fn unregister(&self, id: &str) -> Result<(), CapabilityError> {
+        let capability = self.definition(id)?;
+        if let Some(dependent) = self.first_enabled_dependent(id) {
+            return Err(CapabilityError::HasEnabledDependents {
+                id: id.to_string(),
+                dependent,
+            });
+        }
+        self.store.execute(
+            "DELETE FROM capabilities WHERE id = ?1",
+            &[Value::String(id.to_string())],
+        )?;
+        self.defs
+            .write()
+            .expect("capability defs poisoned")
+            .remove(id);
+        self.enabled
+            .write()
+            .expect("capability state poisoned")
+            .remove(id);
+        self.restart
+            .write()
+            .expect("capability restart set poisoned")
+            .remove(id);
+        self.emit(
+            "capability.unregistered",
+            json!({ "id": id, "source": capability.source }),
+        );
+        Ok(())
+    }
+
     /// Register every capability in `catalogue` that is not already present,
     /// using each definition's `default_enabled` for its initial state.
     ///

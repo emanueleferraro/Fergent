@@ -1,0 +1,22 @@
+[package]
+name = "fergents-packages"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents packaging primitives: safe archives, digests, signatures, and API compatibility."
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+thiserror = { workspace = true }
+semver = "1"
+ed25519-dalek = { version = "2", features = ["rand_core"] }
+zip = { workspace = true }
+walkdir = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

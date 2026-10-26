@@ -1,0 +1,34 @@
+[package]
+name = "fergents-plugins"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents plugin host: manifests, registry, installation, and gated host calls."
+
+[dependencies]
+fergents-packages = { workspace = true }
+fergents-wasm = { workspace = true }
+fergents-storage = { workspace = true }
+fergents-events = { workspace = true }
+fergents-capabilities = { workspace = true }
+fergents-permissions = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+toml = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+ulid = { workspace = true }
+globset = "0.4"
+walkdir = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+notify = { workspace = true }
+git2 = { version = "0.19", default-features = false, features = ["vendored-libgit2"] }
+tokio = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+wat = "1"
+tokio = { workspace = true }

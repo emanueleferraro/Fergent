@@ -1,0 +1,19 @@
+[package]
+name = "fergents-wasm"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "Fergents WASM sandbox: Component Model host, limits, and gated host calls."
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+wasmtime = { version = "50", features = ["component-model"] }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+wat = "1"
