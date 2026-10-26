@@ -1,0 +1,40 @@
+//! Fergents sandbox ABI, version 1.
+//!
+//! Components import exactly one interface. Every host capability (fs, http,
+//! llm, mcp, storage, events, secrets, brain, ui) is dispatched by `call`,
+//! which keeps the ABI small and makes permission checks impossible to bypass
+//! (`spec.md` D1–D9).
+
+package fergents:host@1.0.0;
+
+/// The only host import. `op` is a namespaced operation (`fs.read`,
+/// `storage.set`, ...); `payload` is JSON; the result is JSON.
+interface host {
+  call: func(op: string, payload: string) -> result<string, string>;
+}
+
+/// Kernel plugin exports (`PLUGINS.md` §4.3).
+world plugin {
+  import host;
+
+  /// Called once after instantiation.
+  export init: func() -> result<_, string>;
+  /// Tool metadata as a JSON array.
+  export list-tools: func() -> result<string, string>;
+  /// Execute one declared tool.
+  export call-tool: func(name: string, input: string) -> result<string, string>;
+  /// Deliver a subscribed event.
+  export on-event: func(topic: string, payload: string) -> result<_, string>;
+  /// Handle a manifest command.
+  export on-command: func(command: string, args: string) -> result<string, string>;
+  /// Best-effort cleanup.
+  export on-shutdown: func();
+}
+
+/// Skill exports (`SKILLS.md` §3.3).
+world skill {
+  import host;
+
+  /// Execute the skill.
+  export run: func(input: string) -> result<string, string>;
+}
