@@ -54,6 +54,10 @@ pub enum Category {
     McpConnect,
     /// Installing a plugin.
     PluginInstall,
+    /// Installing or changing a skill.
+    SkillInstall,
+    /// Invoking a skill (including chaining).
+    SkillInvoke,
     /// Spawning a sub-agent.
     AgentSpawn,
     /// Editing a workflow.
@@ -67,7 +71,7 @@ pub enum Category {
 /// The permission categories and their tool-name inference.
 impl Category {
     /// Every category.
-    pub const ALL: [Category; 12] = [
+    pub const ALL: [Category; 14] = [
         Category::FsRead,
         Category::FsWrite,
         Category::ShellExec,
@@ -76,6 +80,8 @@ impl Category {
         Category::LlmCall,
         Category::McpConnect,
         Category::PluginInstall,
+        Category::SkillInstall,
+        Category::SkillInvoke,
         Category::AgentSpawn,
         Category::WorkflowEdit,
         Category::BrainWrite,
@@ -93,6 +99,8 @@ impl Category {
             Category::LlmCall => "llm.call",
             Category::McpConnect => "mcp.connect",
             Category::PluginInstall => "plugin.install",
+            Category::SkillInstall => "skill.install",
+            Category::SkillInvoke => "skill.invoke",
             Category::AgentSpawn => "agent.spawn",
             Category::WorkflowEdit => "workflow.edit",
             Category::BrainWrite => "brain.write",
@@ -117,6 +125,7 @@ impl Category {
                 | Category::NetP2p
                 | Category::McpConnect
                 | Category::PluginInstall
+                | Category::SkillInstall
                 | Category::SystemConfig
         )
     }
@@ -138,6 +147,9 @@ impl Category {
             tool if tool.starts_with("workflow.") => Category::WorkflowEdit,
             tool if tool.starts_with("llm.") => Category::LlmCall,
             tool if tool.starts_with("plugin.") => Category::PluginInstall,
+            "skill.invoke" => Category::SkillInvoke,
+            tool if tool.starts_with("skill.") => Category::SkillInstall,
+            tool if tool.starts_with("factory.") => Category::PluginInstall,
             tool if tool.starts_with("web.") => Category::NetHttp,
             _ => Category::SystemConfig,
         }
@@ -157,7 +169,8 @@ impl<'de> Deserialize<'de> for Category {
             serde::de::Error::custom(format!(
                 "unknown permission category {value:?}; expected one of fs.read, fs.write, \
                  shell.exec, net.http, net.p2p, llm.call, mcp.connect, plugin.install, \
-                 agent.spawn, workflow.edit, brain.write, system.config"
+                 skill.install, skill.invoke, agent.spawn, workflow.edit, brain.write, \
+                 system.config"
             ))
         })
     }

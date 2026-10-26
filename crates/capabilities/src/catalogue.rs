@@ -143,6 +143,30 @@ pub fn default_catalogue() -> Vec<Capability> {
             true,
         ),
         capability(
+            "capability.plugins",
+            "Plugins",
+            "Sandboxed WASM plugins, host functions, and UI slots.",
+            &["capability.agents"],
+            true,
+            true,
+        ),
+        capability(
+            "capability.skills",
+            "Skills",
+            "Declarative prompt, tool, code, and hybrid skills.",
+            &["capability.agents"],
+            true,
+            true,
+        ),
+        capability(
+            "capability.marketplace",
+            "Marketplace",
+            "Signed plugin and skill indexes, search, and installation.",
+            &["capability.plugins", "capability.skills"],
+            false,
+            true,
+        ),
+        capability(
             "capability.sub-agents",
             "Sub-agents",
             "Synchronous and asynchronous sub-agents.",
@@ -265,10 +289,14 @@ pub fn default_catalogue() -> Vec<Capability> {
         capability(
             "capability.plugin-factory",
             "Plugin Factory",
-            "AI-authored plugins (runtime in Phase 4).",
-            &["capability.agents"],
+            "AI-authored plugins built and tested in a sandbox.",
+            &[
+                "capability.plugins",
+                "capability.skills",
+                "capability.agents",
+            ],
             false,
-            false,
+            true,
         ),
         capability(
             "capability.workflow-debugger",
