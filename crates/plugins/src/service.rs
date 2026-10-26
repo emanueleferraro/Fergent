@@ -514,10 +514,16 @@ impl PluginService {
     }
 
     /// Deliver bus events to plugins in the background.
+    ///
+    /// Returns an error (instead of panicking) when called outside a Tokio
+    /// runtime, so a headless or early-boot kernel can still start.
     pub fn spawn_event_router(self: &Arc<Self>) -> Result<(), PluginError> {
+        let handle = tokio::runtime::Handle::try_current().map_err(|_| {
+            PluginError::Unavailable("no tokio runtime for the plugin event router".to_string())
+        })?;
         let mut subscription = self.bus.subscribe();
         let service = self.clone();
-        tokio::spawn(async move {
+        handle.spawn(async move {
             while let Ok(event) = subscription.recv().await {
                 if event.kind.starts_with("plugin.") {
                     continue;
