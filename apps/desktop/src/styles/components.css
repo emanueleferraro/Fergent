@@ -1,4 +1,4 @@
-﻿/* ============================================================
+﻿﻿﻿/* ============================================================
    TRAE Components
    CSS riutilizzabile per tutti i componenti del sistema.
    Richiede: tokens.css + typography.css
@@ -3269,3 +3269,190 @@ mark,
     border-color: var(--border-default);
     background: var(--surface-2);
 }
+
+/* ============================================================
+   PLUGINS & SKILLS (Phase 4)
+   Extracted from `style/patterns.html` (pattern 12 · Plugin cards)
+   so the shell, marketplace, and settings compose tokens only.
+   ============================================================ */
+.plugin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.plugin-card {
+    padding: 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-lg);
+    background: var(--color-glass);
+    backdrop-filter: blur(var(--blur-glass)) saturate(150%);
+    -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(150%);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color var(--t), transform var(--t), box-shadow var(--t);
+}
+.plugin-card:hover { border-color: var(--color-border-2); transform: translateY(-2px); box-shadow: var(--sh-md); }
+.plugin-head { display: flex; gap: 11px; align-items: flex-start; }
+.plugin-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--r-md);
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(145deg, rgba(217, 119, 87, 0.18), rgba(217, 119, 87, 0.06));
+    border: 1px solid var(--color-accent-line);
+    color: var(--color-accent);
+}
+.plugin-icon.blue {
+    background: linear-gradient(145deg, rgba(107, 148, 217, 0.18), rgba(107, 148, 217, 0.06));
+    border-color: rgba(107, 148, 217, 0.35);
+    color: var(--color-info);
+}
+.plugin-icon.green {
+    background: linear-gradient(145deg, rgba(127, 184, 148, 0.18), rgba(127, 184, 148, 0.06));
+    border-color: rgba(127, 184, 148, 0.35);
+    color: var(--color-success);
+}
+.plugin-icon svg { width: 18px; height: 18px; stroke: currentColor; stroke-width: 1.6; fill: none; }
+.plugin-title { font-size: 13.5px; font-weight: var(--fw-semibold); color: var(--color-text); }
+.plugin-sub { font-size: 11.5px; color: var(--color-text-3); margin-top: 2px; }
+.plugin-meta { display: flex; gap: 6px; flex-wrap: wrap; }
+.plugin-perms { display: flex; flex-wrap: wrap; gap: 5px; }
+.perm-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10.5px;
+    font-family: var(--font-mono);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-3);
+}
+.perm-pill svg { width: 10px; height: 10px; stroke: currentColor; stroke-width: 2; fill: none; }
+.plugin-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding-top: 12px;
+    border-top: 1px solid var(--color-border);
+    font-size: 11px;
+    color: var(--color-text-4);
+}
+.plugin-foot .source { display: flex; align-items: center; gap: 5px; font-family: var(--font-mono); }
+.plugin-foot .source svg { width: 11px; height: 11px; stroke: currentColor; stroke-width: 1.8; fill: none; }
+
+/* Slot host (task 4.5): the light-DOM wrapper around each plugin surface.
+   The surface itself is a shadow root, so plugin CSS can never leak out. */
+.plugin-slot { display: flex; flex-direction: column; gap: var(--s-2); min-width: 0; }
+.plugin-slot__item { min-width: 0; }
+.plugin-surface { display: block; min-width: 0; }
+
+/* ---- Plugin / skill management ------------------------------------------ */
+.plugin-view { display: flex; flex-direction: column; gap: var(--s-4); }
+.plugin-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    align-items: center;
+    justify-content: space-between;
+}
+.plugin-toolbar__group { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+.plugin-toolbar .input { max-width: 260px; }
+.plugin-card__desc { font-size: 12px; color: var(--color-text-3); line-height: var(--lh-relaxed); }
+.plugin-card__actions { display: flex; flex-wrap: wrap; gap: var(--s-1); align-items: center; }
+.plugin-detail { display: flex; flex-direction: column; gap: var(--s-4); }
+.plugin-detail__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--s-3);
+}
+.plugin-detail__title { display: flex; gap: var(--s-2); align-items: center; flex-wrap: wrap; }
+.plugin-detail__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--s-3);
+}
+.plugin-section { display: flex; flex-direction: column; gap: var(--s-2); }
+.plugin-section__title {
+    font-size: var(--fs-caption);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-3);
+    font-weight: var(--fw-semibold);
+}
+.plugin-kv { display: flex; flex-direction: column; gap: 4px; }
+.plugin-kv__row { display: flex; justify-content: space-between; gap: var(--s-3); font-size: 12px; }
+.plugin-kv__key { color: var(--color-text-3); }
+.plugin-kv__value {
+    color: var(--color-text-2);
+    font-family: var(--font-mono);
+    text-align: right;
+    word-break: break-all;
+}
+.plugin-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+.plugin-pill-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.plugin-mono { font-family: var(--font-mono); font-size: 11.5px; color: var(--color-text-3); }
+.plugin-empty { color: var(--color-text-3); font-size: 12px; }
+.plugin-code {
+    white-space: pre-wrap;
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    color: var(--color-text-2);
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid var(--color-border);
+    border-radius: var(--r-md);
+    padding: var(--s-3);
+    max-height: 220px;
+    overflow: auto;
+}
+.plugin-run-list { display: flex; flex-direction: column; gap: 4px; }
+.plugin-run {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-2);
+    padding: var(--s-1) var(--s-2);
+    border: 1px solid transparent;
+    border-radius: var(--r-md);
+    background: transparent;
+    color: var(--color-text-2);
+    font-family: var(--font-mono);
+    font-size: 11.5px;
+    text-align: left;
+}
+.plugin-run:hover,
+.plugin-run.active { border-color: var(--color-border); background: rgba(255, 255, 255, 0.03); }
+.plugin-layout {
+    display: grid;
+    grid-template-columns: minmax(200px, 280px) minmax(0, 1fr);
+    gap: var(--s-4);
+    align-items: start;
+}
+
+/* ---- Install review (UI.md §12) ---------------------------------------- */
+.review-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+    padding: var(--s-4);
+    border: 1px solid var(--color-accent-line);
+    border-radius: var(--r-lg);
+    background: var(--color-accent-soft);
+}
+.review-head { display: flex; flex-direction: column; gap: 3px; }
+.review-title { font-size: var(--fs-body); font-weight: var(--fw-semibold); color: var(--color-text); }
+.review-meta { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-3); }
+.review-perms { display: flex; flex-direction: column; gap: var(--s-1); }
+.review-perm { display: flex; gap: var(--s-2); align-items: flex-start; font-size: 12.5px; }
+.review-perm__scope { font-family: var(--font-mono); font-size: 11px; color: var(--color-text-3); }
+.review-conflicts {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 12px;
+    color: var(--color-warning);
+}
+.review-actions { display: flex; flex-wrap: wrap; gap: var(--s-2); align-items: center; }
+.review-hint { font-size: 11.5px; color: var(--color-text-3); }

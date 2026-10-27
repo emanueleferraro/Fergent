@@ -19,11 +19,17 @@ export default defineConfig({
         new URL('../../packages/protocol/src/index.ts', import.meta.url),
       ),
       '@fergents/ui': fileURLToPath(new URL('../../packages/ui/src/index.ts', import.meta.url)),
+      '@fergents/plugin-sdk': fileURLToPath(
+        new URL('../../packages/plugin-sdk/src/index.ts', import.meta.url),
+      ),
     },
   },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}'],
     setupFiles: ['src/test/setup.ts'],
+    // Plugin surfaces inject the design-system CSS into their shadow roots;
+    // the tests assert on the real sheet rather than a stub.
+    css: true,
   },
 });

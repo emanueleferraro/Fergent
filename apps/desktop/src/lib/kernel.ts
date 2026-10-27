@@ -39,6 +39,26 @@ import type {
   WorkflowRun,
 } from '@fergents/protocol';
 
+import type { InstallReview, PluginView } from '../features/plugins/model';
+import type { CachedEntry, MarketplaceInstallResult } from '../features/plugins/useMarketplace';
+import type { SkillReview, SkillView } from '../features/skills/model';
+
+import {
+  makePluginReview,
+  makeSkillReview,
+  mockFactoryInstall,
+  mockFactoryReport,
+  mockFactoryTest,
+  mockMarketFixtures,
+  mockPluginFixtures,
+  mockPluginStats,
+  mockScaffold,
+  mockSkillFixtures,
+  mockSkillStats,
+  pluginFromReview,
+  skillFromReview,
+} from './mockData';
+
 /** Tauri event name carrying a forwarded kernel event. */
 export const KERNEL_EVENT = 'kernel://event';
 
@@ -187,7 +207,19 @@ export class MockKernelClient implements KernelClient {
     ['capability.llm', true],
     ['capability.composer', true],
     ['capability.inline-ai', false],
+    ['capability.agents', true],
+    ['capability.skills', true],
+    ['capability.plugins', true],
+    ['capability.marketplace', false],
+    ['capability.plugin-factory', false],
   ]);
+  private readonly mockPlugins: PluginView[] = mockPluginFixtures();
+  private readonly mockSkills: SkillView[] = mockSkillFixtures();
+  private readonly mockMarket: CachedEntry[] = mockMarketFixtures();
+  private readonly mockReviews = new Map<string, InstallReview>();
+  private readonly mockSkillReviews = new Map<string, SkillReview>();
+  private mockFactoryRuns: string[] = ['01J8FACTORYDEMO000000000001'];
+  private mockFactorySeq = 0;
 
   constructor(options: MockKernelClientOptions = {}) {
     this.healthSnapshot = options.health ?? DEFAULT_HEALTH;
@@ -521,6 +553,194 @@ export class MockKernelClient implements KernelClient {
         }
         return { ok: index >= 0 };
       }
+      case 'plugin.list':
+        return { plugins: this.mockPlugins };
+      case 'plugin.get':
+        return this.mockFindPlugin(String(payload.id ?? ''));
+      case 'plugin.inspect':
+        return this.mockPluginInspect(payload);
+      case 'plugin.install':
+      case 'plugin.update':
+        return this.mockPluginInstall(payload);
+      case 'plugin.uninstall': {
+        const id = String(payload.id ?? '');
+        const index = this.mockPlugins.findIndex((item) => item.id === id);
+        if (index >= 0) {
+          this.mockPlugins.splice(index, 1);
+        }
+        return { uninstalled: index >= 0 };
+      }
+      case 'plugin.enable':
+      case 'plugin.disable':
+      case 'plugin.reload': {
+        const plugin = this.mockFindPlugin(String(payload.id ?? ''));
+        if (method !== 'plugin.reload') {
+          plugin.enabled = method === 'plugin.enable';
+        }
+        plugin.degraded = false;
+        plugin.error = null;
+        plugin.updated_at = Date.now();
+        return plugin;
+      }
+      case 'plugin.stats':
+        return mockPluginStats();
+      case 'plugin.tool.call':
+        return { result: { ok: true, tool: String(payload.tool ?? '') } };
+      case 'plugin.command.run':
+        return { result: { ok: true, command: String(payload.command ?? '') } };
+      case 'plugin.dev.link': {
+        const review = this.mockPluginInspect({ source: { kind: 'dir', path: payload.path } });
+        const view = pluginFromReview(
+          review,
+          review.permissions.map((grant) => grant.category),
+        );
+        view.dev = true;
+        view.source = 'dev';
+        view.signature_status = 'dev';
+        this.mockPlugins.push(view);
+        return view;
+      }
+      case 'plugin.dev.unlink': {
+        const id = String(payload.id ?? '');
+        const index = this.mockPlugins.findIndex((item) => item.id === id);
+        if (index >= 0) {
+          this.mockPlugins.splice(index, 1);
+        }
+        return { unlinked: index >= 0 };
+      }
+      case 'skill.list':
+        return { skills: this.mockSkills };
+      case 'skill.get':
+        return this.mockFindSkill(String(payload.id ?? ''));
+      case 'skill.inspect':
+        return this.mockSkillInspect(payload);
+      case 'skill.install':
+        return this.mockSkillInstall(payload);
+      case 'skill.enable':
+      case 'skill.disable': {
+        const skill = this.mockFindSkill(String(payload.id ?? ''));
+        skill.enabled = method === 'skill.enable';
+        skill.updated_at = Date.now();
+        return skill;
+      }
+      case 'skill.delete': {
+        const id = String(payload.id ?? '');
+        const index = this.mockSkills.findIndex((item) => item.id === id);
+        if (index >= 0) {
+          this.mockSkills.splice(index, 1);
+        }
+        return { deleted: index >= 0 };
+      }
+      case 'skill.duplicate': {
+        const source = this.mockFindSkill(String(payload.id ?? ''));
+        const view: SkillView = {
+          ...source,
+          id: String(payload.new_id ?? `${source.id}-copy`),
+          name: `${source.name} (copy)`,
+          path: `${source.path}-copy`,
+          installed_at: Date.now(),
+          updated_at: Date.now(),
+        };
+        this.mockSkills.push(view);
+        return view;
+      }
+      case 'skill.invoke':
+      case 'skill.test':
+        return { output: { ok: true, input: payload.input ?? {} } };
+      case 'skill.invocations':
+        return mockSkillStats();
+      case 'factory.list':
+        return { runs: this.mockFactoryRuns };
+      case 'factory.scaffold': {
+        const runId = `factory-${++this.mockFactorySeq}`;
+        this.mockFactoryRuns = [runId, ...this.mockFactoryRuns];
+        return mockScaffold(runId, String(payload.template ?? 'kernel-tool'));
+      }
+      case 'factory.build':
+        return {
+          run_id: String(payload.run_id ?? ''),
+          skipped: false,
+          log: 'cargo component build --release\nCompiled plugin v0.1.0',
+        };
+      case 'factory.test':
+        return mockFactoryTest();
+      case 'factory.package':
+        return {
+          run_id: String(payload.run_id ?? ''),
+          kind: 'plugin',
+          extension: 'fergplugin',
+          path: `/mock/factory/${String(payload.run_id ?? '')}/dist/plugin.fergplugin`,
+        };
+      case 'factory.report':
+        return mockFactoryReport(String(payload.run_id ?? ''));
+      case 'factory.install': {
+        const preview = mockFactoryInstall(String(payload.run_id ?? ''));
+        if ('review_id' in preview.review) {
+          this.mockReviews.set(preview.review.review_id, preview.review);
+        }
+        return preview;
+      }
+      case 'marketplace.search':
+        return this.mockMarketSearch(payload);
+      case 'marketplace.refresh':
+        return {
+          refreshed: [
+            {
+              source_id: 'official',
+              entries: this.mockMarket.length,
+              signature: 'verified',
+              error: null,
+            },
+          ],
+        };
+      case 'marketplace.get': {
+        const entry = this.mockMarket.find(
+          (item) =>
+            item.id === String(payload.id ?? '') &&
+            item.kind === String(payload.kind ?? '') &&
+            item.source_id === String(payload.source_id ?? ''),
+        );
+        return entry ?? null;
+      }
+      case 'marketplace.install':
+        return this.mockMarketInstall(payload);
+      case 'marketplace.check_updates':
+        return {
+          updates: [
+            {
+              kind: 'plugin',
+              id: 'com.fergents.rss-reader',
+              installed: '1.2.0',
+              available: '2.0.0',
+            },
+          ],
+        };
+      case 'marketplace.sources.list':
+        return {
+          sources: [
+            {
+              id: 'official',
+              url: 'https://registry.example.com/index.json',
+              kind: 'https',
+              key_id: null,
+              enabled: true,
+              last_refreshed_at: Date.now() - 86_400_000,
+              etag: null,
+            },
+          ],
+        };
+      case 'marketplace.sources.add':
+        return {
+          id: String(payload.id ?? 'source'),
+          url: String(payload.url ?? ''),
+          kind: String(payload.kind ?? 'https'),
+          key_id: payload.key_id ?? null,
+          enabled: true,
+          last_refreshed_at: null,
+          etag: null,
+        };
+      case 'marketplace.sources.remove':
+        return { removed: true };
       case 'capability.list':
         return { capabilities: this.mockCapabilityViews() };
       case 'capability.set': {
@@ -890,6 +1110,11 @@ export class MockKernelClient implements KernelClient {
       'capability.llm': 'LLM Router',
       'capability.composer': 'Composer',
       'capability.inline-ai': 'Inline AI',
+      'capability.agents': 'Agents',
+      'capability.skills': 'Skills',
+      'capability.plugins': 'Plugins',
+      'capability.marketplace': 'Marketplace',
+      'capability.plugin-factory': 'Plugin Factory',
     };
     const dependencies: Record<string, string[]> = {
       'capability.lsp': ['capability.ide'],
@@ -898,7 +1123,15 @@ export class MockKernelClient implements KernelClient {
       'capability.git-remote': ['capability.git'],
       'capability.composer': ['capability.ide', 'capability.agents'],
       'capability.inline-ai': ['capability.ide', 'capability.llm'],
+      'capability.marketplace': ['capability.plugins', 'capability.skills'],
+      'capability.plugin-factory': ['capability.plugins', 'capability.skills', 'capability.agents'],
     };
+    const defaultOff = new Set([
+      'capability.inline-ai',
+      'capability.git-remote',
+      'capability.marketplace',
+      'capability.plugin-factory',
+    ]);
     return [...this.mockCapabilities].map(([id, enabled]) => ({
       id,
       name: names[id] ?? id,
@@ -908,11 +1141,128 @@ export class MockKernelClient implements KernelClient {
       dependencies: dependencies[id] ?? [],
       resources: [],
       enabled,
-      default_enabled: id !== 'capability.inline-ai' && id !== 'capability.git-remote',
+      default_enabled: !defaultOff.has(id),
       hot_toggle: true,
       restart_required: false,
       config: {},
     }));
+  }
+
+  private mockFindPlugin(id: string): PluginView {
+    const plugin = this.mockPlugins.find((item) => item.id === id);
+    if (plugin === undefined) {
+      throw new Error(`unknown plugin: ${id}`);
+    }
+    return plugin;
+  }
+
+  private mockFindSkill(id: string): SkillView {
+    const skill = this.mockSkills.find((item) => item.id === id);
+    if (skill === undefined) {
+      throw new Error(`unknown skill: ${id}`);
+    }
+    return skill;
+  }
+
+  private mockPluginInspect(payload: Record<string, unknown>): InstallReview {
+    const source = (payload.source ?? {}) as Record<string, unknown>;
+    const kind = String(source.kind ?? 'dir');
+    const location = String(source.path ?? source.url ?? 'inspected');
+    const base = location.split(/[\\/]/).filter(Boolean).pop() ?? 'inspected';
+    const id = `com.example.${base.toLowerCase().replace(/[^a-z0-9._-]+/g, '-')}`;
+    const review = makePluginReview(id, base, '0.1.0', `${kind}:${location}`);
+    this.mockReviews.set(review.review_id, review);
+    return review;
+  }
+
+  private mockSkillInspect(payload: Record<string, unknown>): SkillReview {
+    const source = (payload.source ?? {}) as Record<string, unknown>;
+    const location = String(source.path ?? 'inspected');
+    const base = location.split(/[\\/]/).filter(Boolean).pop() ?? 'inspected';
+    const review = makeSkillReview(base.toLowerCase(), base, '0.1.0');
+    this.mockSkillReviews.set(base.toLowerCase(), review);
+    return review;
+  }
+
+  private mockPluginInstall(payload: Record<string, unknown>): PluginView {
+    const review = this.mockReviews.get(String(payload.review_id ?? ''));
+    if (review === undefined) {
+      throw new Error('unknown install review');
+    }
+    const approved = Array.isArray(payload.permissions) ? payload.permissions.map(String) : [];
+    const view = pluginFromReview(review, approved);
+    const index = this.mockPlugins.findIndex((item) => item.id === view.id);
+    if (index >= 0) {
+      this.mockPlugins[index] = view;
+    } else {
+      this.mockPlugins.push(view);
+    }
+    this.mockReviews.delete(review.review_id);
+    return view;
+  }
+
+  private mockSkillInstall(payload: Record<string, unknown>): SkillView {
+    const source = (payload.source ?? {}) as Record<string, unknown>;
+    const location = String(source.path ?? '');
+    const base = location.split(/[\\/]/).filter(Boolean).pop() ?? 'inspected';
+    const id = base.toLowerCase();
+    const review = this.mockSkillReviews.get(id) ?? makeSkillReview(id, base, '0.1.0');
+    const view = skillFromReview(review, location);
+    const index = this.mockSkills.findIndex((item) => item.id === view.id);
+    if (index >= 0) {
+      this.mockSkills[index] = view;
+    } else {
+      this.mockSkills.push(view);
+    }
+    this.mockSkillReviews.delete(id);
+    return view;
+  }
+
+  private mockMarketInstall(payload: Record<string, unknown>): MarketplaceInstallResult {
+    const entry = this.mockMarket.find(
+      (item) =>
+        item.id === String(payload.id ?? '') &&
+        item.kind === String(payload.kind ?? '') &&
+        item.source_id === String(payload.source_id ?? ''),
+    );
+    if (entry === undefined) {
+      throw new Error('unknown marketplace entry');
+    }
+    if (entry.yanked) {
+      throw new Error(`marketplace entry is yanked: ${entry.kind}/${entry.id}`);
+    }
+    if (entry.kind === 'skill') {
+      const review = makeSkillReview(entry.id, entry.name, entry.version);
+      this.mockSkillReviews.set(entry.id, review);
+      return { kind: 'skill', requires_approval: true, entry, review };
+    }
+    const review = makePluginReview(
+      entry.id,
+      entry.name,
+      entry.version,
+      `dir:${entry.download.url}`,
+    );
+    this.mockReviews.set(review.review_id, review);
+    return { kind: 'plugin', requires_approval: true, entry, review };
+  }
+
+  private mockMarketSearch(payload: Record<string, unknown>): { entries: CachedEntry[] } {
+    const query = String(payload.query ?? '')
+      .trim()
+      .toLowerCase();
+    const kind = String(payload.kind ?? '');
+    const entries = this.mockMarket.filter((entry) => {
+      if (kind !== '' && entry.kind !== kind) {
+        return false;
+      }
+      if (query === '') {
+        return true;
+      }
+      return `${entry.id} ${entry.name} ${entry.description ?? ''} ${entry.tags.join(' ')}`
+        .toLowerCase()
+        .includes(query);
+    });
+    return { entries };
   }
 
   private mockRun(runId: string): WorkflowRun {

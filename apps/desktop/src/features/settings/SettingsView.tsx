@@ -1,11 +1,16 @@
 /**
- * The Settings section shell (Tasks 2.12, 2.17): per-brain settings, feature
- * toggles, and the provider / secret / MCP managers.
+ * The Settings section shell (Tasks 2.12, 2.17, 4.6): per-brain settings,
+ * feature toggles, plugins and skills, and the provider / secret / MCP
+ * managers.
  */
 import { useState, type ReactElement } from 'react';
 
+import type { MessageKey } from '../../i18n/en';
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
+
+import { PluginsView } from '../plugins/PluginsView';
+import { SkillsView } from '../skills/SkillsView';
 
 import { BrainSettings } from './BrainSettings';
 import { FeaturesSettings } from './FeaturesSettings';
@@ -14,11 +19,15 @@ import { McpSettings } from './McpSettings';
 import { ProvidersSettings } from './ProvidersSettings';
 import { SecretsSettings } from './SecretsSettings';
 
-type SettingsTab = 'brain' | 'features' | 'providers' | 'secrets' | 'mcp' | 'ide';
+/** The Settings tabs, including the Phase 4 plugin and skill managers. */
+export type SettingsTab =
+  'brain' | 'features' | 'plugins' | 'skills' | 'providers' | 'secrets' | 'mcp' | 'ide';
 
-const TABS: { id: SettingsTab; label: Parameters<typeof t>[0] }[] = [
+const TABS: { id: SettingsTab; label: MessageKey }[] = [
   { id: 'brain', label: 'settings.tabs.brain' },
   { id: 'features', label: 'settings.tabs.features' },
+  { id: 'plugins', label: 'settings.tabs.plugins' },
+  { id: 'skills', label: 'settings.tabs.skills' },
   { id: 'providers', label: 'settings.tabs.providers' },
   { id: 'secrets', label: 'settings.tabs.secrets' },
   { id: 'mcp', label: 'settings.tabs.mcp' },
@@ -28,11 +37,20 @@ const TABS: { id: SettingsTab; label: Parameters<typeof t>[0] }[] = [
 /** Props for `SettingsView`. */
 export interface SettingsViewProps {
   kernel: KernelClient;
+  /** Controlled active tab; omit to let the view own the state. */
+  tab?: SettingsTab;
+  onTabChange?(tab: SettingsTab): void;
 }
 
 /** The Settings section. */
-export function SettingsView({ kernel }: SettingsViewProps): ReactElement {
-  const [tab, setTab] = useState<SettingsTab>('brain');
+export function SettingsView({ kernel, tab, onTabChange }: SettingsViewProps): ReactElement {
+  const [localTab, setLocalTab] = useState<SettingsTab>('brain');
+  const active = tab ?? localTab;
+
+  const select = (next: SettingsTab): void => {
+    setLocalTab(next);
+    onTabChange?.(next);
+  };
 
   return (
     <div className="settings-view">
@@ -42,20 +60,22 @@ export function SettingsView({ kernel }: SettingsViewProps): ReactElement {
             key={item.id}
             type="button"
             role="tab"
-            className={tab === item.id ? 'tab active' : 'tab'}
-            aria-selected={tab === item.id}
-            onClick={() => setTab(item.id)}
+            className={active === item.id ? 'tab active' : 'tab'}
+            aria-selected={active === item.id}
+            onClick={() => select(item.id)}
           >
             {t(item.label)}
           </button>
         ))}
       </div>
-      {tab === 'brain' ? <BrainSettings kernel={kernel} /> : null}
-      {tab === 'features' ? <FeaturesSettings kernel={kernel} /> : null}
-      {tab === 'providers' ? <ProvidersSettings kernel={kernel} /> : null}
-      {tab === 'secrets' ? <SecretsSettings kernel={kernel} /> : null}
-      {tab === 'mcp' ? <McpSettings kernel={kernel} /> : null}
-      {tab === 'ide' ? <IdeSettings kernel={kernel} /> : null}
+      {active === 'brain' ? <BrainSettings kernel={kernel} /> : null}
+      {active === 'features' ? <FeaturesSettings kernel={kernel} /> : null}
+      {active === 'plugins' ? <PluginsView kernel={kernel} /> : null}
+      {active === 'skills' ? <SkillsView kernel={kernel} /> : null}
+      {active === 'providers' ? <ProvidersSettings kernel={kernel} /> : null}
+      {active === 'secrets' ? <SecretsSettings kernel={kernel} /> : null}
+      {active === 'mcp' ? <McpSettings kernel={kernel} /> : null}
+      {active === 'ide' ? <IdeSettings kernel={kernel} /> : null}
     </div>
   );
 }
