@@ -1,8 +1,8 @@
 # Phase 4 — Tasks
 
 Backend tasks are implemented in order. Each task ships code, tests, and a
-green local `cargo check`/`cargo test` before the next begins. UI tasks are
-deferred until the backend is merged.
+green local `cargo check`/`cargo test` before the next begins. UI tasks came
+after the backend was merged.
 
 ## Task 4.0 — Foundation (capabilities, permissions, schema, guards)
 
@@ -175,9 +175,9 @@ deferred until the backend is merged.
 
 ---
 
-## Deferred tasks (UI, after backend merge)
+## UI tasks (completed after the backend merge)
 
-- 4.5 `apps/desktop` Shadow DOM host + 16 slots.
-- 4.6 Plugins/Skills settings, install review, dev panel.
-- 4.7 Palette contributions + marketplace browser.
-- 4.8 `packages/plugin-sdk` + SDK docs/examples.
+- [x] 4.5 `apps/desktop` Shadow DOM host + 16 slots.
+- [x] 4.6 Plugins/Skills settings, install review, dev panel.
+- [x] 4.7 Palette contributions + marketplace browser.
+- [x] 4.8 `packages/plugin-sdk` + SDK docs/examples.

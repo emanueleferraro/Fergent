@@ -163,8 +163,8 @@ cargo run -p fergents -- search "authentication flow"
 | 1     | Complete   | Knowledge base, Markdown, hybrid search, entity graph.       |
 | 2     | Complete   | LLM router, MCP, agent runtime, chat UI, memory.             |
 | 3     | Complete   | IDE, Monaco, LSP, terminal, Git integration.                 |
-| 4     | Next       | Plugin runtime (WASM), skills, marketplace.                  |
-| 5     | Planned    | Visual workflow engine, triggers, debugger.                  |
+| 4     | Complete   | Plugin runtime (WASM), skills, marketplace, plugin SDK.      |
+| 5     | Next       | Visual workflow engine, triggers, debugger.                  |
 | 6     | Planned    | Dashboard and custom widgets.                                |
 | 7     | Planned    | Peer-to-peer sync, Android companion application.            |
 
