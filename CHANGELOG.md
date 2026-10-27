@@ -224,6 +224,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Relicensed the project from AGPL-3.0-or-later to the **MIT License**: the
+  `LICENSE`, the README badge and license section, every `package.json`, and
+  the Cargo workspace license now read MIT. The change removes the
+  network-copyleft obligation and is intended to encourage broader adoption,
+  embedding, and commercial use.
 - `DATA_MODEL.md` now documents the per-brain schema alongside the global one.
 - `DECISIONS.md` added: the ADR log, recording ADR-001 … ADR-026.
 - `ARCHITECTURE.md` §17 and `README.md` updated for the Phase 1 crates,
