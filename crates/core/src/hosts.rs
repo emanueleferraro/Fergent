@@ -320,6 +320,86 @@ impl Tool for SkillInvokeTool {
     }
 }
 
+/// The kernel surface behind the `factory.*` agent tools (`spec.md` §6).
+pub struct KernelFactoryOps {
+    factory: Arc<crate::factory::FactoryService>,
+    plugins: Option<Arc<PluginService>>,
+    skills: Option<Arc<SkillService>>,
+    capabilities: Arc<fergents_capabilities::CapabilityRegistry>,
+}
+
+impl KernelFactoryOps {
+    /// Build the adapter.
+    pub fn new(
+        factory: Arc<crate::factory::FactoryService>,
+        plugins: Option<Arc<PluginService>>,
+        skills: Option<Arc<SkillService>>,
+        capabilities: Arc<fergents_capabilities::CapabilityRegistry>,
+    ) -> Self {
+        Self {
+            factory,
+            plugins,
+            skills,
+            capabilities,
+        }
+    }
+
+    fn dispatch(
+        &self,
+        command: &str,
+        arguments: &Value,
+    ) -> Result<Value, crate::factory::FactoryError> {
+        use crate::factory::FactoryError;
+        match command {
+            "factory.scaffold" => {
+                let template = text_arg(arguments, "template")?;
+                let id = text_arg(arguments, "id")?;
+                let name = arguments
+                    .get("name")
+                    .and_then(Value::as_str)
+                    .unwrap_or(&id)
+                    .to_string();
+                self.factory.scaffold(&template, &id, &name)
+            }
+            "factory.build" => self.factory.build(&text_arg(arguments, "run_id")?),
+            "factory.test" => self.factory.test(&text_arg(arguments, "run_id")?),
+            "factory.package" => self.factory.package(&text_arg(arguments, "run_id")?),
+            "factory.report" => self.factory.report(&text_arg(arguments, "run_id")?),
+            "factory.install" => crate::factory::install_review(
+                &self.factory,
+                self.plugins.as_ref(),
+                self.skills.as_ref(),
+                &text_arg(arguments, "run_id")?,
+            ),
+            other => Err(FactoryError::Invalid(format!(
+                "unknown factory command: {other}"
+            ))),
+        }
+    }
+}
+
+impl fergents_agents::FactoryOps for KernelFactoryOps {
+    fn call(&self, command: &str, arguments: Value) -> Result<Value, String> {
+        use crate::factory::FactoryError;
+        let result = if self.capabilities.is_enabled("capability.plugin-factory") {
+            self.dispatch(command, &arguments)
+        } else {
+            Err(FactoryError::Invalid(
+                "capability.plugin-factory is disabled".to_string(),
+            ))
+        };
+        result.map_err(|error| format!("{}: {error}", error.code()))
+    }
+}
+
+fn text_arg(arguments: &Value, key: &str) -> Result<String, crate::factory::FactoryError> {
+    arguments
+        .get(key)
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| crate::factory::FactoryError::Invalid(format!("missing {key}")))
+}
+
 /// A kernel tool for one attached skill.
 pub struct AttachedSkillTool {
     service: Arc<SkillService>,
