@@ -12,7 +12,7 @@ pub mod signature;
 pub mod version;
 
 pub use archive::{create_archive, extract_archive, ArchiveLimits};
-pub use digest::{compute_digest, digest_bytes, digest_hex};
+pub use digest::{compute_digest, digest_bytes, digest_hex, digest_of_bytes};
 pub use error::PackageError;
-pub use signature::{sign_digest, verify_signature, SignatureStatus};
-pub use version::{api_compatible, parse_version, KERNEL_API_VERSION};
+pub use signature::{sign_digest, verify_digest, verify_signature, SignatureStatus};
+pub use version::{api_compatible, is_newer, parse_version, KERNEL_API_VERSION};

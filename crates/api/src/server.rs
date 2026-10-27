@@ -2851,6 +2851,549 @@ async fn dispatch(
             })
             .await
         }
+        "plugin.list" => {
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .list()
+                    .map(|plugins| serde_json::json!({ "plugins": to_value(&plugins) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.get" => {
+            let id = plugin_id_param(&params)?;
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .get(&id)
+                    .map(|plugin| to_value(&plugin))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.inspect" => {
+            let source =
+                fergents_plugins::PluginSource::from_json(params.get("source").unwrap_or(&params))
+                    .map_err(|err| (ErrorCode::InvalidParams, err.to_string()))?;
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .inspect(&source)
+                    .map(|review| to_value(&review))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.install" | "plugin.update" => {
+            let review_id = params
+                .get("review_id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing review_id".to_string()))?
+                .to_string();
+            let approved = string_list(params.get("permissions"));
+            let updating = request.method == "plugin.update";
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                let result = if updating {
+                    service.update(&review_id, &approved)
+                } else {
+                    service.install(&review_id, &approved)
+                };
+                result
+                    .map(|plugin| to_value(&plugin))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.uninstall" => {
+            let id = plugin_id_param(&params)?;
+            let remove_storage = params
+                .get("remove_storage")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .uninstall(&id, remove_storage)
+                    .map(|_| serde_json::json!({ "uninstalled": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.enable" | "plugin.disable" | "plugin.reload" => {
+            let id = plugin_id_param(&params)?;
+            let action = request.method.clone();
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                let result = match action.as_str() {
+                    "plugin.enable" => service.enable(&id),
+                    "plugin.disable" => service.disable(&id),
+                    _ => service.reload(&id),
+                };
+                result
+                    .map(|plugin| to_value(&plugin))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.tool.call" => {
+            let id = plugin_id_param(&params)?;
+            let tool = params
+                .get("tool")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing tool".to_string()))?
+                .to_string();
+            let arguments = params
+                .get("arguments")
+                .cloned()
+                .unwrap_or(serde_json::json!({}));
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .call_tool(&id, &tool, arguments)
+                    .map(|value| serde_json::json!({ "result": value }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.command.run" => {
+            let id = plugin_id_param(&params)?;
+            let command = params
+                .get("command")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing command".to_string()))?
+                .to_string();
+            let arguments = params
+                .get("arguments")
+                .cloned()
+                .unwrap_or(serde_json::json!({}));
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .run_command(&id, &command, arguments)
+                    .map(|value| serde_json::json!({ "result": value }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.stats" => {
+            let id = plugin_id_param(&params)?;
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || service.stats(&id).map_err(CoreError::from)).await
+        }
+        "plugin.dev.link" => {
+            let path = params
+                .get("path")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing path".to_string()))?
+                .to_string();
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .dev_link(std::path::Path::new(&path))
+                    .map(|plugin| to_value(&plugin))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "plugin.dev.unlink" => {
+            let id = plugin_id_param(&params)?;
+            let service = kernel.plugins().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.plugins".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .dev_unlink(&id)
+                    .map(|_| serde_json::json!({ "unlinked": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.list" => {
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .list()
+                    .map(|skills| serde_json::json!({ "skills": to_value(&skills) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.get" => {
+            let id = skill_id_param(&params)?;
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .get(&id)
+                    .map(|skill| to_value(&skill))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.inspect" => {
+            let source =
+                fergents_skills::SkillSource::from_json(params.get("source").unwrap_or(&params))
+                    .map_err(|err| (ErrorCode::InvalidParams, err.to_string()))?;
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .inspect(&source)
+                    .map(|review| to_value(&review))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.install" => {
+            let source =
+                fergents_skills::SkillSource::from_json(params.get("source").unwrap_or(&params))
+                    .map_err(|err| (ErrorCode::InvalidParams, err.to_string()))?;
+            let approve = params
+                .get("approve")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .install(&source, approve)
+                    .map(|skill| to_value(&skill))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.enable" | "skill.disable" => {
+            let id = skill_id_param(&params)?;
+            let action = request.method.clone();
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                let result = if action == "skill.enable" {
+                    service.enable(&id)
+                } else {
+                    service.disable(&id)
+                };
+                result
+                    .map(|skill| to_value(&skill))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.delete" => {
+            let id = skill_id_param(&params)?;
+            let remove_storage = params
+                .get("remove_storage")
+                .and_then(Value::as_bool)
+                .unwrap_or(false);
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .delete(&id, remove_storage)
+                    .map(|_| serde_json::json!({ "deleted": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.duplicate" => {
+            let id = skill_id_param(&params)?;
+            let new_id = params
+                .get("new_id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing new_id".to_string()))?
+                .to_string();
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .duplicate(&id, &new_id)
+                    .map(|skill| to_value(&skill))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.invoke" | "skill.test" => {
+            let id = skill_id_param(&params)?;
+            let input = params
+                .get("input")
+                .cloned()
+                .unwrap_or(serde_json::json!({}));
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || {
+                service
+                    .invoke(&id, input)
+                    .map(|value| serde_json::json!({ "output": value }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "skill.invocations" => {
+            let id = skill_id_param(&params)?;
+            let service = kernel.skills().cloned().ok_or((
+                ErrorCode::CapabilityDisabled,
+                "capability_disabled: capability.skills".to_string(),
+            ))?;
+            run_blocking(move || service.stats(&id).map_err(CoreError::from)).await
+        }
+        "factory.list" => {
+            let service = kernel.factory_service().clone();
+            run_blocking(move || Ok(serde_json::json!({ "runs": service.list() }))).await
+        }
+        "factory.scaffold" => {
+            let template = params
+                .get("template")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing template".to_string()))?
+                .to_string();
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            let name = params
+                .get("name")
+                .and_then(Value::as_str)
+                .unwrap_or(&id)
+                .to_string();
+            let service = kernel.factory_service().clone();
+            run_blocking(move || {
+                service
+                    .scaffold(&template, &id, &name)
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "factory.build" | "factory.test" | "factory.package" | "factory.report" => {
+            let run_id = factory_run_id(&params)?;
+            let method = request.method.clone();
+            let service = kernel.factory_service().clone();
+            run_blocking(move || {
+                let result = match method.as_str() {
+                    "factory.build" => service.build(&run_id),
+                    "factory.test" => service.test(&run_id),
+                    "factory.package" => service.package(&run_id),
+                    _ => service.report(&run_id),
+                };
+                result.map_err(CoreError::from)
+            })
+            .await
+        }
+        "factory.install" => {
+            let run_id = factory_run_id(&params)?;
+            let review_id = params
+                .get("review_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let approved = string_list(params.get("permissions"));
+            let factory = kernel.factory_service().clone();
+            let plugins = kernel.plugins().cloned();
+            let skills = kernel.skills().cloned();
+            run_blocking(move || -> Result<Value, CoreError> {
+                let target = factory.target(&run_id)?;
+                if target.kind == "skill" {
+                    let service = skills.ok_or_else(|| {
+                        fergents_core::FactoryError::Invalid(
+                            "capability.skills is disabled".to_string(),
+                        )
+                    })?;
+                    if review_id.is_some() {
+                        return service
+                            .install(
+                                &fergents_skills::SkillSource::Dir(target.dir),
+                                !approved.is_empty(),
+                            )
+                            .map(|skill| to_value(&skill))
+                            .map_err(CoreError::from);
+                    }
+                    let review = service.inspect(&fergents_skills::SkillSource::Dir(target.dir))?;
+                    return Ok(serde_json::json!({
+                        "requires_approval": true,
+                        "review": to_value(&review),
+                    }));
+                }
+                let service = plugins.ok_or_else(|| {
+                    fergents_core::FactoryError::Invalid(
+                        "capability.plugins is disabled".to_string(),
+                    )
+                })?;
+                if let Some(review_id) = review_id {
+                    return service
+                        .install(&review_id, &approved)
+                        .map(|plugin| to_value(&plugin))
+                        .map_err(CoreError::from);
+                }
+                let review = service.inspect(&fergents_plugins::PluginSource::Dir(target.dir))?;
+                Ok(serde_json::json!({
+                    "requires_approval": true,
+                    "review": to_value(&review),
+                }))
+            })
+            .await
+        }
+        "marketplace.sources.list" => {
+            let service = kernel.marketplace_service().clone();
+            run_blocking(move || {
+                service
+                    .sources()
+                    .map(|sources| serde_json::json!({ "sources": to_value(&sources) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "marketplace.sources.add" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            let url = params
+                .get("url")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing url".to_string()))?
+                .to_string();
+            let kind = params
+                .get("kind")
+                .and_then(Value::as_str)
+                .unwrap_or("https")
+                .to_string();
+            let key_id = params
+                .get("key_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let service = kernel.marketplace_service().clone();
+            run_blocking(move || {
+                service
+                    .add_source(&id, &url, &kind, key_id.as_deref())
+                    .map(|source| to_value(&source))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "marketplace.sources.remove" => {
+            let id = params
+                .get("id")
+                .and_then(Value::as_str)
+                .ok_or((ErrorCode::InvalidParams, "missing id".to_string()))?
+                .to_string();
+            let service = kernel.marketplace_service().clone();
+            run_blocking(move || {
+                service
+                    .remove_source(&id)
+                    .map(|_| serde_json::json!({ "removed": true }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "marketplace.refresh" => {
+            let source_id = params
+                .get("source_id")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let service = kernel.marketplace_service().clone();
+            service
+                .refresh(source_id.as_deref())
+                .await
+                .map(|reports| serde_json::json!({ "refreshed": to_value(&reports) }))
+                .map_err(|error| map_core_error(CoreError::from(error)))
+        }
+        "marketplace.search" => {
+            let query = params
+                .get("query")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let kind = params
+                .get("kind")
+                .and_then(Value::as_str)
+                .map(str::to_string);
+            let service = kernel.marketplace_service().clone();
+            run_blocking(move || {
+                service
+                    .search(query.as_deref(), kind.as_deref())
+                    .map(|entries| serde_json::json!({ "entries": to_value(&entries) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "marketplace.get" => {
+            let (source_id, kind, entry_id) = marketplace_entry_params(&params)?;
+            let service = kernel.marketplace_service().clone();
+            run_blocking(move || {
+                service
+                    .get(&source_id, &kind, &entry_id)
+                    .map(|entry| to_value(&entry))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
+        "marketplace.install" => {
+            let (source_id, kind, entry_id) = marketplace_entry_params(&params)?;
+            let service = kernel.marketplace_service().clone();
+            service
+                .install(&source_id, &kind, &entry_id)
+                .await
+                .map_err(|err| map_core_error(CoreError::from(err)))
+        }
+        "marketplace.check_updates" => {
+            let service = kernel.marketplace_service().clone();
+            run_blocking(move || {
+                service
+                    .check_updates()
+                    .map(|updates| serde_json::json!({ "updates": to_value(&updates) }))
+                    .map_err(CoreError::from)
+            })
+            .await
+        }
         "kernel.shutdown" => {
             let _ = shutdown_tx.send(true);
             Ok(serde_json::json!({ "shutting_down": true }))
@@ -2944,6 +3487,10 @@ fn required_capability(method: &str) -> Option<&'static str> {
         method if method.starts_with("prompt.") => Some("capability.chat"),
         method if method.starts_with("provider.") => Some("capability.llm"),
         method if method.starts_with("mcp.") => Some("capability.mcp"),
+        method if method.starts_with("plugin.") => Some("capability.plugins"),
+        method if method.starts_with("skill.") => Some("capability.skills"),
+        method if method.starts_with("factory.") => Some("capability.plugin-factory"),
+        method if method.starts_with("marketplace.") => Some("capability.marketplace"),
         _ => None,
     }
 }
@@ -3059,6 +3606,70 @@ fn map_agent_error(err: fergents_agents::AgentError) -> (ErrorCode, String) {
     (code, format!("{}: {}", err.code(), err))
 }
 
+/// Read a plugin id from command params.
+fn plugin_id_param(params: &Value) -> Result<String, (ErrorCode, String)> {
+    params
+        .get("plugin_id")
+        .or_else(|| params.get("id"))
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| (ErrorCode::InvalidParams, "missing plugin_id".to_string()))
+}
+
+/// Read a skill id from command params.
+fn skill_id_param(params: &Value) -> Result<String, (ErrorCode, String)> {
+    params
+        .get("skill_id")
+        .or_else(|| params.get("id"))
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| (ErrorCode::InvalidParams, "missing skill_id".to_string()))
+}
+
+/// Read a factory run id from command params.
+fn factory_run_id(params: &Value) -> Result<String, (ErrorCode, String)> {
+    params
+        .get("run_id")
+        .and_then(Value::as_str)
+        .map(str::to_string)
+        .ok_or_else(|| (ErrorCode::InvalidParams, "missing run_id".to_string()))
+}
+
+/// Read `(source_id, kind, entry_id)` from marketplace command params.
+fn marketplace_entry_params(
+    params: &Value,
+) -> Result<(String, String, String), (ErrorCode, String)> {
+    let text = |key: &str| {
+        params
+            .get(key)
+            .and_then(Value::as_str)
+            .map(str::to_string)
+            .ok_or_else(|| (ErrorCode::InvalidParams, format!("missing {key}")))
+    };
+    let source_id = text("source_id")?;
+    let kind = params
+        .get("kind")
+        .and_then(Value::as_str)
+        .unwrap_or("plugin")
+        .to_string();
+    let entry_id = text("entry_id")?;
+    Ok((source_id, kind, entry_id))
+}
+
+/// Read a list of strings from an optional array.
+fn string_list(value: Option<&Value>) -> Vec<String> {
+    value
+        .and_then(Value::as_array)
+        .map(|items| {
+            items
+                .iter()
+                .filter_map(Value::as_str)
+                .map(str::to_string)
+                .collect()
+        })
+        .unwrap_or_default()
+}
+
 /// Read the `id` field from capability command params.
 fn capability_id_param(params: &Value) -> Result<&str, (ErrorCode, String)> {
     params
@@ -3103,6 +3714,12 @@ where
 fn map_core_error(err: CoreError) -> (ErrorCode, String) {
     match &err {
         CoreError::Storage(_) => (ErrorCode::StorageError, err.to_string()),
+        CoreError::Plugin(err) => (ErrorCode::InvalidParams, format!("{}: {}", err.code(), err)),
+        CoreError::Skill(err) => (ErrorCode::InvalidParams, format!("{}: {}", err.code(), err)),
+        CoreError::Factory(err) => (ErrorCode::InvalidParams, format!("{}: {}", err.code(), err)),
+        CoreError::Marketplace(err) => {
+            (ErrorCode::InvalidParams, format!("{}: {}", err.code(), err))
+        }
         CoreError::Project(fergents_ide::ProjectError::Storage(_)) => {
             (ErrorCode::StorageError, err.to_string())
         }

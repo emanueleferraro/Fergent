@@ -25,6 +25,8 @@ fergents-ide = { workspace = true }
 fergents-lsp = { workspace = true }
 fergents-terminal = { workspace = true }
 fergents-git = { workspace = true }
+fergents-plugins = { workspace = true }
+fergents-skills = { workspace = true }
 chrono = { workspace = true }
 tokio = { workspace = true }
 tokio-util = { workspace = true }

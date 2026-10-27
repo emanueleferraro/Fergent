@@ -26,9 +26,15 @@ fergents-brain = { workspace = true }
 fergents-index = { workspace = true }
 fergents-graph = { workspace = true }
 fergents-git = { workspace = true }
+fergents-wasm = { workspace = true }
+fergents-packages = { workspace = true }
+fergents-plugins = { workspace = true }
+fergents-skills = { workspace = true }
+reqwest = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 similar = { workspace = true }
+walkdir = { workspace = true }
 ulid = { workspace = true }
 chrono = { workspace = true }
 tokio = { workspace = true }
