@@ -8,16 +8,29 @@
 import type { MessageKey } from '../../i18n/en';
 import type { KernelClient } from '../../lib/kernel';
 
+/** A settings tab a command can jump to. */
+export type SettingsTarget =
+  'brain' | 'features' | 'plugins' | 'skills' | 'providers' | 'secrets' | 'mcp' | 'ide';
+
+/** A tab of the plugin hub section. */
+export type PluginHubTarget = 'marketplace' | 'dev';
+
 /** Dependencies injected into a command when it runs. */
 export interface CommandContext {
   kernel: KernelClient;
   toggleTheme(): void;
+  /** Switches the shell to Settings on the given tab. */
+  openSettings?(tab: SettingsTarget): void;
+  /** Switches the shell to the plugin hub on the given tab. */
+  openPluginHub?(tab: PluginHubTarget): void;
 }
 
 /** A palette command. */
 export interface Command {
   id: string;
   titleKey: MessageKey;
+  /** Literal title contributed by a plugin; overrides `titleKey`. */
+  title?: string;
   groupKey: MessageKey;
   /** Optional shortcut hint rendered by the palette. */
   shortcut?: string;
@@ -58,6 +71,38 @@ export const commands: readonly Command[] = [
       context.toggleTheme();
     },
   },
+  {
+    id: 'plugins.install',
+    titleKey: 'command.installPlugin',
+    groupKey: 'palette.group.plugins',
+    run: (context) => {
+      context.openSettings?.('plugins');
+    },
+  },
+  {
+    id: 'plugins.manage',
+    titleKey: 'command.managePlugins',
+    groupKey: 'palette.group.plugins',
+    run: (context) => {
+      context.openSettings?.('plugins');
+    },
+  },
+  {
+    id: 'skills.install',
+    titleKey: 'command.installSkill',
+    groupKey: 'palette.group.plugins',
+    run: (context) => {
+      context.openSettings?.('skills');
+    },
+  },
+  {
+    id: 'plugins.dev',
+    titleKey: 'command.pluginDevPanel',
+    groupKey: 'palette.group.plugins',
+    run: (context) => {
+      context.openPluginHub?.('dev');
+    },
+  },
 ];
 
 /** Filter commands by a free-text query, matching translated title and group. */
@@ -71,7 +116,8 @@ export function filterCommands(
     return [...list];
   }
   return list.filter((command) => {
-    const haystack = `${translate(command.titleKey)} ${translate(command.groupKey)}`.toLowerCase();
+    const title = command.title ?? translate(command.titleKey);
+    const haystack = `${title} ${translate(command.groupKey)}`.toLowerCase();
     return haystack.includes(needle);
   });
 }

@@ -6,7 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "@fergents/protocol": ["../../packages/protocol/src/index.ts"],
-      "@fergents/ui": ["../../packages/ui/src/index.ts"]
+      "@fergents/ui": ["../../packages/ui/src/index.ts"],
+      "@fergents/plugin-sdk": ["../../packages/plugin-sdk/src/index.ts"]
     }
   },
   "include": ["src", "vite.config.ts"]

@@ -20,6 +20,8 @@ import { useProjectEditor } from './features/editor/useProjectEditor';
 import { BrainExplorer } from './features/explorer/BrainExplorer';
 import { GraphView } from './features/graph/GraphView';
 import { IdeView, type IdePanel } from './features/ide/IdeView';
+import { usePluginCommands } from './features/plugins/commands';
+import { PluginHub, type PluginTab } from './features/plugins/PluginHub';
 import {
   appendContext,
   selectionPayload,
@@ -31,7 +33,7 @@ import { useIdeLayout } from './features/layout/useIdeLayout';
 import { ProjectExplorer } from './features/project/ProjectExplorer';
 import { useProjects } from './features/project/useProjects';
 import { SearchPanel } from './features/search/SearchPanel';
-import { SettingsView } from './features/settings/SettingsView';
+import { SettingsView, type SettingsTab } from './features/settings/SettingsView';
 import { useTheme } from './features/theme/theme';
 import { useKernel, type KernelStatus } from './hooks/useKernel';
 import { t } from './i18n/i18n';
@@ -119,9 +121,21 @@ export function App(): ReactElement {
   const [activeDocId, setActiveDocId] = useState<string | undefined>(undefined);
   const [searchQuery, setSearchQuery] = useState<string | undefined>(undefined);
   const [brainView, setBrainView] = useState<'notes' | 'graph'>('notes');
+  const [settingsTab, setSettingsTab] = useState<SettingsTab>('brain');
+  const [pluginTab, setPluginTab] = useState<PluginTab>('marketplace');
   const openIdsRef = useRef(openIds);
   openIdsRef.current = openIds;
   const selectionRef = useRef<SelectionAttachment | null>(null);
+
+  const openSettings = useCallback((tab: SettingsTab) => {
+    setSettingsTab(tab);
+    setActiveId('settings');
+  }, []);
+
+  const openPluginHub = useCallback((tab: PluginTab) => {
+    setPluginTab(tab);
+    setActiveId('plugins');
+  }, []);
 
   const openDocument = useCallback((documentId: string) => {
     setOpenIds((prev) => (prev.includes(documentId) ? prev : [...prev, documentId]));
@@ -272,7 +286,12 @@ export function App(): ReactElement {
     ],
   );
 
-  const paletteCommands = useMemo(() => [...commands, ...ideCommands(ideActions)], [ideActions]);
+  const pluginPaletteCommands = usePluginCommands(kernel);
+
+  const paletteCommands = useMemo(
+    () => [...commands, ...ideCommands(ideActions), ...pluginPaletteCommands],
+    [ideActions, pluginPaletteCommands],
+  );
 
   const ideActionsRef = useRef(ideActions);
   ideActionsRef.current = ideActions;
@@ -495,7 +514,9 @@ export function App(): ReactElement {
             ideView
           )
         ) : activeId === 'settings' ? (
-          <SettingsView kernel={kernel} />
+          <SettingsView kernel={kernel} tab={settingsTab} onTabChange={setSettingsTab} />
+        ) : activeId === 'plugins' ? (
+          <PluginHub kernel={kernel} tab={pluginTab} onTabChange={setPluginTab} />
         ) : activeId === 'agents' ? (
           <AgentsView kernel={kernel} />
         ) : (
@@ -550,6 +571,8 @@ export function App(): ReactElement {
         kernel={kernel}
         commands={paletteCommands}
         toggleTheme={toggleTheme}
+        openSettings={openSettings}
+        openPluginHub={openPluginHub}
       />
     </div>
   );

@@ -8,8 +8,13 @@ import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 
 import { t } from '../../i18n/i18n';
 import type { KernelClient } from '../../lib/kernel';
-
-import { filterCommands, type Command } from './commands';
+import {
+  filterCommands,
+  type Command,
+  type CommandContext,
+  type PluginHubTarget,
+  type SettingsTarget,
+} from './commands';
 
 /** Props for the palette. */
 export interface CommandPaletteProps {
@@ -18,6 +23,8 @@ export interface CommandPaletteProps {
   kernel: KernelClient;
   commands: readonly Command[];
   toggleTheme: () => void;
+  openSettings?(tab: SettingsTarget): void;
+  openPluginHub?(tab: PluginHubTarget): void;
 }
 
 /** The Ctrl+K command palette. */
@@ -27,6 +34,8 @@ export function CommandPalette({
   kernel,
   commands,
   toggleTheme,
+  openSettings,
+  openPluginHub,
 }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const [active, setActive] = useState(0);
@@ -54,7 +63,13 @@ export function CommandPalette({
     if (!command) {
       return;
     }
-    void Promise.resolve(command.run({ kernel, toggleTheme })).catch(() => undefined);
+    const context: CommandContext = {
+      kernel,
+      toggleTheme,
+      ...(openSettings === undefined ? {} : { openSettings }),
+      ...(openPluginHub === undefined ? {} : { openPluginHub }),
+    };
+    void Promise.resolve(command.run(context)).catch(() => undefined);
     onClose();
   };
 
@@ -120,7 +135,7 @@ export function CommandPalette({
                       <path d="M5 12l4 4 10-10" />
                     </svg>
                   </span>
-                  <span>{t(command.titleKey)}</span>
+                  <span>{command.title ?? t(command.titleKey)}</span>
                   {command.shortcut ? (
                     <span className="kbd">
                       <span>{command.shortcut}</span>

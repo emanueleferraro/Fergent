@@ -179,4 +179,13 @@ describe('SettingsView', () => {
     await waitFor(() => expect(switchFor('LLM').checked).toBe(true));
     expect(screen.queryByText(t('settings.empty.title'))).toBeNull();
   });
+
+  it('registers the plugin and skill tabs', async () => {
+    const { kernel } = stubKernel({ 'brain.list': () => ({ brains: [] }) });
+    render(<SettingsView kernel={kernel} />);
+    await screen.findByText(t('settings.empty.title'));
+
+    expect(screen.getByRole('tab', { name: t('settings.tabs.plugins') })).toBeTruthy();
+    expect(screen.getByRole('tab', { name: t('settings.tabs.skills') })).toBeTruthy();
+  });
 });
