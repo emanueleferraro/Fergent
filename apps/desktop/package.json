@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "license": "AGPL-3.0-or-later",
+  "license": "MIT",
   "description": "Fergents desktop shell (Tauri v2 + React 19).",
   "scripts": {
     "dev": "vite",

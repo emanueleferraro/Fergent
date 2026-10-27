@@ -104,7 +104,7 @@ explain why in the PR description.
   mutable singletons; pass state explicitly.
 - **No unjustified dependencies.** Every new crate or npm dependency must be
   justified in the PR description (what it does, why nothing existing suffices,
-  its license compatibility with AGPL-3.0-or-later, and its maintenance
+  its license compatibility with the MIT License, and its maintenance
   status). Prefer the standard library and existing dependencies.
 - **The protocol is the contract.** Changes to the wire protocol start in
   `protocol/` (JSON Schema) and flow through codegen; generated bindings are
@@ -124,5 +124,5 @@ By participating, you agree to abide by the
 
 ## 7. License
 
-Fergents is licensed under **AGPL-3.0-or-later**. By contributing, you agree
+Fergents is licensed under the **MIT License**. By contributing, you agree
 that your contributions are licensed under the same terms. See `LICENSE`.

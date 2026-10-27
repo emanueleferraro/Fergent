@@ -16,7 +16,7 @@
     <img src="https://img.shields.io/badge/version-0.3.0-blue" alt="Version">
   </a>
   <a href="https://github.com/emanueleferraro/Fergent/blob/main/LICENSE">
-    <img src="https://img.shields.io/badge/license-AGPL--3.0-green" alt="License">
+    <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
   </a>
   <img src="https://img.shields.io/badge/stack-Rust%20%2B%20React-orange" alt="Stack">
 </p>
@@ -191,8 +191,10 @@ Every pull request must pass:
 
 ## License
 
-Fergents is released under the **GNU Affero General Public License v3.0 (AGPL-3.0)**.
+Fergents is released under the **MIT License**.
 
-You may use, modify, and distribute the software under the terms of the license. If you modify it and make it available as a network service, you must release the modified source code under the same license.
+You may use, copy, modify, merge, publish, distribute, sublicense, and sell
+copies of the software, provided the copyright notice and this permission
+notice are included in all copies or substantial portions of the software.
 
 See [LICENSE](LICENSE) for the full text.
