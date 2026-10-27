@@ -300,6 +300,40 @@ impl FactoryService {
     }
 }
 
+/// The two-phase install review for a factory workspace (`spec.md` §6, D18).
+///
+/// Nothing is installed here. The caller must pass the review back for
+/// approval (`plugin.install`/`skill.install`), so the factory can never
+/// install on its own.
+pub fn install_review(
+    factory: &FactoryService,
+    plugins: Option<&Arc<fergents_plugins::PluginService>>,
+    skills: Option<&Arc<fergents_skills::SkillService>>,
+    run_id: &str,
+) -> Result<Value, FactoryError> {
+    let target = factory.target(run_id)?;
+    if target.kind == "skill" {
+        let skills = skills
+            .ok_or_else(|| FactoryError::Invalid("capability.skills is disabled".to_string()))?;
+        let review = skills.inspect(&fergents_skills::SkillSource::Dir(target.dir))?;
+        return Ok(json!({
+            "kind": "skill",
+            "id": target.id,
+            "requires_approval": true,
+            "review": serde_json::to_value(&review).unwrap_or(Value::Null),
+        }));
+    }
+    let plugins = plugins
+        .ok_or_else(|| FactoryError::Invalid("capability.plugins is disabled".to_string()))?;
+    let review = plugins.inspect(&fergents_plugins::PluginSource::Dir(target.dir))?;
+    Ok(json!({
+        "kind": "plugin",
+        "id": target.id,
+        "requires_approval": true,
+        "review": serde_json::to_value(&review).unwrap_or(Value::Null),
+    }))
+}
+
 fn test_plugin(dir: &Path, config: &WorkspaceConfig) -> Result<Value, FactoryError> {
     let text = fs::read_to_string(dir.join(&config.manifest))?;
     let manifest = fergents_plugins::PluginManifest::parse(&text)?;

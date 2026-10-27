@@ -15,7 +15,8 @@ mod providers;
 mod subagents;
 
 pub use factory::{
-    FactoryError, FactoryService, FactoryTarget, WorkspaceConfig, BUILD_TIMEOUT, TEMPLATES,
+    install_review, FactoryError, FactoryService, FactoryTarget, WorkspaceConfig, BUILD_TIMEOUT,
+    TEMPLATES,
 };
 pub use market::{
     CachedEntry, Download, IndexDocument, IndexSignature, MarketEntry, MarketError, MarketService,
@@ -23,7 +24,8 @@ pub use market::{
 };
 
 pub use hosts::{
-    AttachedSkillTool, KernelHostServices, KernelSkillServices, PluginTool, SkillInvokeTool,
+    AttachedSkillTool, KernelFactoryOps, KernelHostServices, KernelSkillServices, PluginTool,
+    SkillInvokeTool,
 };
 
 pub use composer::{
@@ -425,6 +427,17 @@ impl Kernel {
             None
         };
         let factory = Arc::new(FactoryService::new(&config.data_dir, bus.clone()));
+        // Factory tools are only registered while the capability is on; each
+        // call re-checks it, so a hot disable takes effect immediately.
+        if capabilities.is_enabled("capability.plugin-factory") {
+            let ops = Arc::new(KernelFactoryOps::new(
+                factory.clone(),
+                plugins.clone(),
+                skills.clone(),
+                capabilities.clone(),
+            ));
+            fergents_agents::register_factory_tools(&tools, ops);
+        }
         let marketplace = Arc::new(MarketService::new(
             config.data_dir.clone(),
             storage.clone(),

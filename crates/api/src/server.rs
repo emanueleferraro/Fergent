@@ -3240,6 +3240,15 @@ async fn dispatch(
             let plugins = kernel.plugins().cloned();
             let skills = kernel.skills().cloned();
             run_blocking(move || -> Result<Value, CoreError> {
+                let Some(review_id) = review_id else {
+                    return fergents_core::install_review(
+                        &factory,
+                        plugins.as_ref(),
+                        skills.as_ref(),
+                        &run_id,
+                    )
+                    .map_err(CoreError::from);
+                };
                 let target = factory.target(&run_id)?;
                 if target.kind == "skill" {
                     let service = skills.ok_or_else(|| {
@@ -3247,37 +3256,23 @@ async fn dispatch(
                             "capability.skills is disabled".to_string(),
                         )
                     })?;
-                    if review_id.is_some() {
-                        return service
-                            .install(
-                                &fergents_skills::SkillSource::Dir(target.dir),
-                                !approved.is_empty(),
-                            )
-                            .map(|skill| to_value(&skill))
-                            .map_err(CoreError::from);
-                    }
-                    let review = service.inspect(&fergents_skills::SkillSource::Dir(target.dir))?;
-                    return Ok(serde_json::json!({
-                        "requires_approval": true,
-                        "review": to_value(&review),
-                    }));
+                    return service
+                        .install(
+                            &fergents_skills::SkillSource::Dir(target.dir),
+                            !approved.is_empty(),
+                        )
+                        .map(|skill| to_value(&skill))
+                        .map_err(CoreError::from);
                 }
                 let service = plugins.ok_or_else(|| {
                     fergents_core::FactoryError::Invalid(
                         "capability.plugins is disabled".to_string(),
                     )
                 })?;
-                if let Some(review_id) = review_id {
-                    return service
-                        .install(&review_id, &approved)
-                        .map(|plugin| to_value(&plugin))
-                        .map_err(CoreError::from);
-                }
-                let review = service.inspect(&fergents_plugins::PluginSource::Dir(target.dir))?;
-                Ok(serde_json::json!({
-                    "requires_approval": true,
-                    "review": to_value(&review),
-                }))
+                service
+                    .install(&review_id, &approved)
+                    .map(|plugin| to_value(&plugin))
+                    .map_err(CoreError::from)
             })
             .await
         }

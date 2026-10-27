@@ -149,7 +149,10 @@ impl Category {
             tool if tool.starts_with("plugin.") => Category::PluginInstall,
             "skill.invoke" => Category::SkillInvoke,
             tool if tool.starts_with("skill.") => Category::SkillInstall,
-            tool if tool.starts_with("factory.") => Category::PluginInstall,
+            "factory.build" => Category::ShellExec,
+            "factory.install" => Category::PluginInstall,
+            "factory.report" => Category::FsRead,
+            tool if tool.starts_with("factory.") => Category::FsWrite,
             tool if tool.starts_with("web.") => Category::NetHttp,
             _ => Category::SystemConfig,
         }
@@ -301,4 +304,22 @@ pub struct PermissionResult {
     pub request: PermissionRequest,
     /// The resolution.
     pub resolved: Resolved,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn factory_tools_map_to_their_action_category() {
+        assert_eq!(Category::for_tool("factory.build"), Category::ShellExec);
+        assert_eq!(
+            Category::for_tool("factory.install"),
+            Category::PluginInstall
+        );
+        assert_eq!(Category::for_tool("factory.report"), Category::FsRead);
+        assert_eq!(Category::for_tool("factory.scaffold"), Category::FsWrite);
+        assert_eq!(Category::for_tool("factory.test"), Category::FsWrite);
+        assert_eq!(Category::for_tool("factory.package"), Category::FsWrite);
+    }
 }

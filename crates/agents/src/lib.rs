@@ -10,6 +10,7 @@
 mod context;
 mod definition;
 mod error;
+mod factory;
 mod files;
 mod memory;
 mod memory_tools;
@@ -27,6 +28,10 @@ pub use context::{
 };
 pub use definition::{valid_id, AgentDefinition, Limits, LoopKind, MemoryConfig, SubAgentsConfig};
 pub use error::AgentError;
+pub use factory::{
+    factory_tools, register_factory_tools, FactoryCommand, FactoryOps, FactoryTool,
+    FACTORY_TEMPLATES,
+};
 pub use files::{agent_dir, brain_path, read_brain, session_path, write_brain, write_session};
 pub use memory::{MemoryEntry, MemoryKind, MemoryScope, MemoryStore};
 pub use memory_tools::{memory_tools, ForgetTool, ListTool, RecallTool, RememberTool};
