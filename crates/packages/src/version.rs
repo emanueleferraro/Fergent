@@ -21,6 +21,14 @@ pub fn api_compatible(required: u32, current: u32) -> bool {
     required == current || (current > 0 && required + 1 == current)
 }
 
+/// Whether `candidate` is a strictly newer semantic version than `current`.
+pub fn is_newer(candidate: &str, current: &str) -> bool {
+    match (parse_version(candidate), parse_version(current)) {
+        (Ok(candidate), Ok(current)) => candidate > current,
+        _ => false,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

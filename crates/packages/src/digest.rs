@@ -52,6 +52,15 @@ pub fn digest_bytes(root: &Path) -> Result<[u8; 32], PackageError> {
     Ok(hasher.finalize().into())
 }
 
+/// SHA-256 of a raw byte slice.
+///
+/// Used by the marketplace to sign and verify index documents.
+pub fn digest_of_bytes(bytes: &[u8]) -> [u8; 32] {
+    let mut hasher = Sha256::new();
+    hasher.update(bytes);
+    hasher.finalize().into()
+}
+
 /// The digest as lowercase hexadecimal.
 pub fn compute_digest(root: &Path) -> Result<String, PackageError> {
     Ok(hex::encode(digest_bytes(root)?))

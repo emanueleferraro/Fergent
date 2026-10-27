@@ -94,6 +94,25 @@ impl ToolRegistry {
         defs.sort_by(|a, b| a.name.cmp(&b.name));
         defs
     }
+
+    /// Tool definitions visible to an agent that has `skills` attached.
+    ///
+    /// Skill tools (`skill.<id>`) are hidden unless the concept is assigned,
+    /// and the generic `skill.invoke` tool is always available.
+    pub fn defs_for(&self, skills: &[String]) -> Vec<ToolDef> {
+        self.defs()
+            .into_iter()
+            .filter(|definition| {
+                if definition.name == "skill.invoke" {
+                    return true;
+                }
+                match definition.name.strip_prefix("skill.") {
+                    Some(id) => skills.iter().any(|skill| skill == id),
+                    None => true,
+                }
+            })
+            .collect()
+    }
 }
 
 #[cfg(test)]
