@@ -174,7 +174,7 @@ impl AgentRuntime {
             Message::system(definition.system_prompt.clone()),
             Message::user(task.to_string()),
         ];
-        let tool_defs = self.tools.defs();
+        let tool_defs = self.tools.defs_for(&definition.skills);
         let started = Instant::now();
         let mut usage = Usage::default();
         let mut tool_calls: Vec<ToolInvocation> = Vec::new();
@@ -256,7 +256,9 @@ impl AgentRuntime {
                     break 'run;
                 }
                 observer.on_tool_call(&call.name, &call.arguments);
-                let outcome = self.execute_tool(&call.name, call.arguments.clone()).await;
+                let outcome = self
+                    .execute_tool(&call.name, call.arguments.clone(), &definition.skills)
+                    .await;
                 match &outcome {
                     Ok(value) => observer.on_tool_result(&call.name, &Ok(value.clone())),
                     Err(err) => observer.on_tool_result(&call.name, &Err(err.to_string())),
@@ -317,7 +319,19 @@ impl AgentRuntime {
         Ok(turn)
     }
 
-    async fn execute_tool(&self, name: &str, arguments: Value) -> Result<Value, AgentError> {
+    async fn execute_tool(
+        &self,
+        name: &str,
+        arguments: Value,
+        skills: &[String],
+    ) -> Result<Value, AgentError> {
+        if name != "skill.invoke" {
+            if let Some(id) = name.strip_prefix("skill.") {
+                if !skills.iter().any(|skill| skill == id) {
+                    return Err(AgentError::UnknownTool(name.to_string()));
+                }
+            }
+        }
         match self.gate.check(name, &arguments) {
             PermissionDecision::Deny(reason) => Err(AgentError::PermissionDenied {
                 tool: name.to_string(),

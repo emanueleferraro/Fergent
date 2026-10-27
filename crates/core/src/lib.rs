@@ -6,10 +6,25 @@
 
 mod brains;
 mod composer;
+mod factory;
+mod hosts;
 mod inline;
+mod market;
 mod mcp;
 mod providers;
 mod subagents;
+
+pub use factory::{
+    FactoryError, FactoryService, FactoryTarget, WorkspaceConfig, BUILD_TIMEOUT, TEMPLATES,
+};
+pub use market::{
+    CachedEntry, Download, IndexDocument, IndexSignature, MarketEntry, MarketError, MarketService,
+    RefreshReport, SourceRecord, UpdateInfo, CACHE_TTL_MS, INDEX_SCHEMA,
+};
+
+pub use hosts::{
+    AttachedSkillTool, KernelHostServices, KernelSkillServices, PluginTool, SkillInvokeTool,
+};
 
 pub use composer::{
     apply_hunks, diff_hunks, CompletionClient, ComposerError, ComposerService, ModelResolver,
@@ -111,6 +126,18 @@ pub enum CoreError {
     /// An Inline AI failure.
     #[error(transparent)]
     Inline(#[from] InlineError),
+    /// A plugin host failure.
+    #[error(transparent)]
+    Plugin(#[from] fergents_plugins::PluginError),
+    /// A skill runtime failure.
+    #[error(transparent)]
+    Skill(#[from] fergents_skills::SkillError),
+    /// A Plugin Factory failure.
+    #[error(transparent)]
+    Factory(#[from] FactoryError),
+    /// A marketplace failure.
+    #[error(transparent)]
+    Marketplace(#[from] MarketError),
 }
 
 /// Kernel configuration.
@@ -187,6 +214,10 @@ pub struct Kernel {
     composer: Arc<ComposerService>,
     inline: Arc<InlineService>,
     subagents: Arc<SubAgentManager>,
+    plugins: Option<Arc<fergents_plugins::PluginService>>,
+    skills: Option<Arc<fergents_skills::SkillService>>,
+    factory: Arc<FactoryService>,
+    marketplace: Arc<MarketService>,
     started: Instant,
     started_ms: i64,
     tools: RwLock<HashMap<String, ToolInfo>>,
@@ -308,6 +339,99 @@ impl Kernel {
             projects.clone(),
             true,
         ));
+        // Phase 4: plugins and skills are optional, capability-gated
+        // subsystems. Their tools are registered before the agent runtime is
+        // built so models can see plugin tools and assigned skills.
+        let runtime = tokio::runtime::Handle::try_current().ok();
+        let plugins_enabled = capabilities.is_enabled("capability.plugins");
+        let skills_enabled = capabilities.is_enabled("capability.skills");
+        let sandbox = if plugins_enabled || skills_enabled {
+            Some(Arc::new(
+                fergents_wasm::Sandbox::new().map_err(fergents_plugins::PluginError::from)?,
+            ))
+        } else {
+            None
+        };
+        let storage_for_extensions: Arc<dyn Storage> = storage.clone();
+        let plugins = if plugins_enabled {
+            let host_services = Arc::new(KernelHostServices::new(
+                config.data_dir.clone(),
+                provider_service.clone(),
+                secrets.clone(),
+                bus.clone(),
+                runtime.clone(),
+            ));
+            let service = Arc::new(fergents_plugins::PluginService::new(
+                storage_for_extensions.clone(),
+                bus.clone(),
+                config.data_dir.clone(),
+                sandbox.clone().expect("sandbox is present"),
+                host_services,
+                Some(permissions.clone()),
+                capabilities.clone(),
+            ));
+            if let Err(err) = service.start() {
+                tracing::warn!(error = %err, "failed to load plugins at startup");
+            }
+            for (plugin_id, spec) in service.tool_specs() {
+                if tools.contains(&spec.name) {
+                    tracing::warn!(tool = %spec.name, "plugin tool conflicts with a kernel tool");
+                    continue;
+                }
+                tools.register(Arc::new(PluginTool::new(service.clone(), plugin_id, spec)));
+            }
+            if let Err(err) = service.spawn_event_router() {
+                tracing::warn!(error = %err, "failed to start the plugin event router");
+            }
+            Some(service)
+        } else {
+            None
+        };
+        let skills = if skills_enabled {
+            let skill_services = Arc::new(KernelSkillServices::new(
+                config.data_dir.clone(),
+                provider_service.clone(),
+                tools.clone(),
+                runtime,
+            ));
+            let service = Arc::new(fergents_skills::SkillService::new(
+                storage_for_extensions,
+                bus.clone(),
+                config.data_dir.clone(),
+                sandbox.clone().expect("sandbox is present"),
+                skill_services,
+            ));
+            if let Err(err) = service.start() {
+                tracing::warn!(error = %err, "failed to load skills at startup");
+            }
+            tools.register(Arc::new(SkillInvokeTool::new(service.clone())));
+            for view in service.list().unwrap_or_default() {
+                if !view.record.enabled || tools.contains(&view.tool) {
+                    continue;
+                }
+                let spec = fergents_skills::SkillTool {
+                    name: view.tool.clone(),
+                    description: view
+                        .description
+                        .clone()
+                        .unwrap_or_else(|| view.record.name.clone()),
+                    parameters: view.input.clone(),
+                    skill_id: view.record.id.clone(),
+                };
+                tools.register(Arc::new(AttachedSkillTool::new(service.clone(), spec)));
+            }
+            Some(service)
+        } else {
+            None
+        };
+        let factory = Arc::new(FactoryService::new(&config.data_dir, bus.clone()));
+        let marketplace = Arc::new(MarketService::new(
+            config.data_dir.clone(),
+            storage.clone(),
+            bus.clone(),
+            plugins.clone(),
+            skills.clone(),
+        ));
         let agents = Arc::new(AgentService::new(
             config.data_dir.join("agents"),
             storage_for_agents,
@@ -341,6 +465,10 @@ impl Kernel {
             composer,
             inline,
             subagents,
+            plugins,
+            skills,
+            factory,
+            marketplace,
             started: Instant::now(),
             started_ms: now_ms(),
             tools: RwLock::new(HashMap::new()),
@@ -382,6 +510,36 @@ impl Kernel {
     /// The shared agent service handle, for offloading/awaiting runs.
     pub fn agents_service(&self) -> &Arc<AgentService> {
         &self.agents
+    }
+
+    /// The plugin host, when `capability.plugins` is enabled.
+    pub fn plugins(&self) -> Option<&Arc<fergents_plugins::PluginService>> {
+        self.plugins.as_ref()
+    }
+
+    /// The skill runtime, when `capability.skills` is enabled.
+    pub fn skills(&self) -> Option<&Arc<fergents_skills::SkillService>> {
+        self.skills.as_ref()
+    }
+
+    /// The Plugin Factory workspace (gated by `capability.plugin-factory`).
+    pub fn factory(&self) -> &FactoryService {
+        self.factory.as_ref()
+    }
+
+    /// The shared factory handle, for offloading workspace operations.
+    pub fn factory_service(&self) -> &Arc<FactoryService> {
+        &self.factory
+    }
+
+    /// The marketplace (gated by `capability.marketplace`).
+    pub fn marketplace(&self) -> &MarketService {
+        self.marketplace.as_ref()
+    }
+
+    /// The shared marketplace handle, for offloading index operations.
+    pub fn marketplace_service(&self) -> &Arc<MarketService> {
+        &self.marketplace
     }
 
     /// The agent memory store.

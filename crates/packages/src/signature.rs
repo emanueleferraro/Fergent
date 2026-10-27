@@ -63,6 +63,23 @@ pub fn verify_signature(
         .map_err(|_| PackageError::SignatureInvalid)
 }
 
+/// Verify `signature_hex` over an already-computed 32-byte digest.
+///
+/// The marketplace uses this for signed index documents.
+pub fn verify_digest(
+    digest: &[u8; 32],
+    public_key_hex: &str,
+    signature_hex: &str,
+) -> Result<(), PackageError> {
+    let key_bytes = decode_array::<32>(public_key_hex).ok_or(PackageError::InvalidKey)?;
+    let key = VerifyingKey::from_bytes(&key_bytes).map_err(|_| PackageError::InvalidKey)?;
+    let signature_bytes =
+        decode_array::<64>(signature_hex).ok_or(PackageError::SignatureInvalid)?;
+    let signature = Signature::from_bytes(&signature_bytes);
+    key.verify_strict(digest, &signature)
+        .map_err(|_| PackageError::SignatureInvalid)
+}
+
 /// Sign a digest with a raw 32-byte Ed25519 secret key.
 ///
 /// Used by the SDK, the factory, and tests; production installs only verify.
