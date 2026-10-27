@@ -174,6 +174,54 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `chat.session.create` now defaults `model` to the provider registry's
   default model.
 
+**Phase 4 — Skills & plugins**
+
+- Foundation: `capability.plugins` and `capability.skills` (default on),
+  `capability.marketplace` (default off), `capability.plugin-factory`
+  upgraded to hot-toggleable with dependencies, `skill.install` and
+  `skill.invoke` permission categories, the `0015`–`0017` migrations, and
+  `required_capability` routing for `plugin.*`, `skill.*`, `factory.*`, and
+  `marketplace.*`.
+- Packages and sandbox (`crates/packages`, `crates/wasm`): safe zip
+  extraction, deterministic directory digests, Ed25519 signature
+  verification, semver plus `api_version` N / N−1 compatibility, and a
+  wasmtime Component Model host with fuel, epoch, memory, and I/O limits
+  behind a single `host.call` dispatcher.
+- Plugins (`crates/plugins`): `plugin.toml` parsing and validation, a
+  reconciled registry, `inspect` → review → `install` with a permission
+  subset, update and uninstall with trash restore, tool registration and
+  `plugin.tool.call`, namespaced events, dev linking with debounced reload,
+  and plugin-provided capabilities.
+- Skills (`crates/skills`): `SKILL.md` parsing and validation, prompt, tool,
+  code, and hybrid execution with closed schemas, chaining depth 5 with cycle
+  detection, a TTL prompt cache, the registry lifecycle (install, enable,
+  disable, remove, duplicate, test), and per-skill agent tools.
+- Core, factory, and marketplace (`crates/core`): kernel wiring for the
+  sandbox and both services, `factory.scaffold/build/test/package/install/
+  report` in per-run workspaces with no auto-install, marketplace sources,
+  refresh, search, get, install, and update checks over a signed index, audit
+  events for every install/update/uninstall/permission change, and
+  `plugin_calls` / `skill_invocations` metrics.
+- Agent runtime: the factory commands are exposed as agent tools, so the AI
+  can scaffold, build, test, and package a plugin and then hand the user an
+  install review.
+- Desktop (`apps/desktop`): a Shadow DOM slot host for the 16 slots of
+  `UI.md` §22 with per-contribution React roots and N / N−1 compatibility,
+  Settings → Plugins (search, enable/disable, reload, uninstall with storage
+  choice, detail with stats and diagnostics) and Settings → Skills (list,
+  enable, duplicate, delete, JSON test runner, install), a shared install
+  review card that applies only the approved permissions, the plugin dev
+  panel (scaffold through report), the marketplace browser, and palette
+  entries for install, manage, dev panel, and every plugin command. Each
+  surface is gated by its kernel capability.
+- `packages/plugin-sdk`: `definePlugin` with validation, the slot catalogue
+  and `isApiCompatible`, and the typed `PluginBridge`; the shell imports the
+  catalogue from the SDK so there is one source of truth.
+- Verification: per-crate tests (fake archives and keys, registry
+  reconciliation, a fixture component under limits, marketplace fixture
+  indexes), Vitest suites for the host, plugins, skills, marketplace, factory
+  panel, and palette, and the SDK's own suite.
+
 ### Changed
 
 - `DATA_MODEL.md` now documents the per-brain schema alongside the global one.
@@ -187,3 +235,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   §22.1, and `STACK.md` §14.5 document the implementation.
 - `README.md` updated for the Phase 3 crates, commands, and UI, and its status
   now reads Phase 3 delivered.
+- `PLUGINS.md` §5 and §9 now document the shipped `@fergents/plugin-sdk` API
+  (`definePlugin`, `SlotProps`, `PluginBridge`) and the shadow-root isolation
+  boundary; `README.md` status now reads Phase 4 complete.

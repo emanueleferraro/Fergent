@@ -184,43 +184,40 @@ fn fetch(ctx: &mut Context, args: FetchArgs) -> Result<FetchOutput> {
 ### 5.1 Structure
 
 ```tsx
-import { registerPlugin, Panel, useKernel } from '@fergents/plugin-sdk';
+import { definePlugin, type SlotProps } from '@fergents/plugin-sdk';
 
-registerPlugin({
-  id: 'com.example.rss-reader',
-  panels: [
-    {
-      id: 'rss-panel',
-      slot: 'sidebar.section',
-      title: 'RSS Feeds',
-      render: () => <RssPanel />,
-    },
-  ],
-  commands: [
-    {
-      id: 'rss.refresh',
-      label: 'Refresh RSS feeds',
-      run: async () => {
-        const kernel = useKernel();
-        await kernel.call('rss.fetch', { url: 'https://example.com/feed.xml' });
-      },
-    },
-  ],
-});
-
-function RssPanel() {
-  const kernel = useKernel();
-  const { data } = kernel.query('rss.list');
-  return <ul>{data?.map(item => <li key={item.id}>{item.title}</li>)}</ul>;
+function RssPanel({ bridge }: SlotProps) {
+  // `bridge.call` only reaches methods declared in `[ui].kernel_calls`.
+  return (
+    <button
+      type="button"
+      className="btn btn-sm"
+      onClick={() => void bridge.call('rss.fetch', { url: 'https://example.com/feed.xml' })}
+    >
+      Refresh feeds
+    </button>
+  );
 }
+
+export default definePlugin({
+  id: 'com.example.rss-reader',
+  slots: [{ id: 'rss-panel', slot: 'sidebar.section', order: 10, render: RssPanel }],
+  commands: [{ id: 'refresh', label: 'Refresh RSS feeds' }],
+});
 ```
+
+The module default-exports the definition. `definePlugin` rejects an invalid
+id, an unsupported `apiVersion`, an unknown slot, and duplicate contributions
+at load, and the factory runs the same validation before packaging.
 
 ### 5.2 Isolation
 
-- Rendered in a Shadow DOM root.
-- No access to the host DOM or JS globals.
-- Communication only via a message-passing bridge (the SDK).
-- Styles are scoped to the shadow root.
+- Rendered in a Shadow DOM root that already carries the shell's
+  `tokens.css` and `components.css`.
+- Style and DOM isolation only: plugin UI code still runs in the shell's
+  webview. The kernel is the security boundary, and every call the UI makes
+  goes through the injected `bridge`, which binds the owning plugin id.
+- Styles are scoped to the shadow root; no host DOM access.
 
 ### 5.3 Theming
 
@@ -353,11 +350,18 @@ Each slot has a documented interface. Plugins declare which slots they use.
 
 ### 9.2 TypeScript SDK
 
-- NPM: `@fergents/plugin-sdk`.
-- React components for common patterns.
-- Hooks for kernel queries and events.
-- Typed commands.
-- Templates and examples.
+- Package: `@fergents/plugin-sdk` (`packages/plugin-sdk`).
+- `definePlugin` validates a UI module (id, `apiVersion`, slots, commands)
+  and returns the definition the shell registers.
+- `SLOTS` and `SlotName` mirror the 16 slots of `UI.md` §22, and
+  `isApiCompatible` implements the N / N−1 rule.
+- `SlotProps` carries the `PluginBridge` (`pluginId`, `apiVersion`,
+  `call(method, params)`), the only route from a surface to the kernel.
+- Surfaces render inside the shell's shadow root, which already includes
+  `tokens.css` and `components.css`, so plugin UI uses the `style/` tokens and
+  component classes.
+- Templates and examples: the factory's six scaffolds (`kernel-tool`,
+  `ui-panel`, `hybrid`, `theme`, `skill-prompt`, `skill-code`).
 
 ### 9.3 Documentation
 

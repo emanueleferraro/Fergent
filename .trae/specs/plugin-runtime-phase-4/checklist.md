@@ -4,13 +4,14 @@ Status legend: `[ ]` pending, `[x]` done, `[~]` deferred (documented).
 
 ## Spec acceptance (ROADMAP §8)
 
-- [ ] A plugin can register a new tool and a new UI panel. *(tool: done; UI panel: Task 4.5)*
+- [x] A plugin can register a new tool and a new UI panel.
 - [x] A skill can be installed, run, and removed.
-- [ ] The AI can create a plugin and install it. *(factory backend done; AI tool wiring pending)*
-- [ ] The AI can create a skill and use it. *(factory backend done; AI tool wiring pending)*
+- [x] The AI can create a plugin and install it. *(factory tools merged; the
+      install lands on the normal review + approval path, never silently)*
+- [x] The AI can create a skill and use it.
 - [x] Permissions are enforced and auditable.
 - [x] Plugin isolation works (a malicious plugin cannot read the FS).
-- [ ] `PLUGINS.md` and `SKILLS.md` match the implementation.
+- [x] `PLUGINS.md` and `SKILLS.md` match the implementation.
 
 ## Task 4.0 — Foundation
 
@@ -65,11 +66,12 @@ Status legend: `[ ]` pending, `[x]` done, `[~]` deferred (documented).
 - [x] Audit events for install/update/uninstall/permission changes.
 - [x] Capability-disabled tests for all four capabilities.
 
-## Deferred (explicitly out of scope until backend merge)
+## Deferred UI tasks (completed after the backend merge)
 
-- [~] `apps/desktop` slot host, plugins/skills settings, palette, dev panel.
-- [~] `packages/plugin-sdk` and SDK documentation site.
-- [~] Marketplace browser UI.
+- [x] 4.5 `apps/desktop` slot host (16 slots, Shadow DOM, N / N−1).
+- [x] 4.6 Plugins/Skills settings, install review, dev panel.
+- [x] 4.7 Palette contributions + marketplace browser.
+- [x] 4.8 `packages/plugin-sdk` (+ README and factory examples).
 - [~] Workflow node execution (Phase 5).
 
 ## CI gates
@@ -78,3 +80,5 @@ Status legend: `[ ]` pending, `[x]` done, `[~]` deferred (documented).
 - [x] `cargo clippy --all-targets -- -D warnings`
 - [x] `cargo test --workspace`
 - [x] No UI files changed in backend PRs.
+- [x] `pnpm lint`, `pnpm format:check`, `pnpm -r typecheck`, `pnpm -r test`,
+      `pnpm build`.
