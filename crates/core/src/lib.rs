@@ -704,7 +704,7 @@ impl Kernel {
                 .cacheable(),
         );
 
-        let capabilities = self
+        let mut capabilities = self
             .capabilities
             .list()
             .into_iter()
@@ -712,6 +712,35 @@ impl Kernel {
             .map(|capability| capability.id)
             .collect::<Vec<_>>()
             .join(", ");
+
+        if let Some(plugins) = &self.plugins {
+            let enabled = plugins
+                .list()
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|plugin| plugin.record.enabled && !plugin.record.degraded)
+                .map(|plugin| format!("{}@{}", plugin.record.id, plugin.record.version))
+                .collect::<Vec<_>>();
+            if !enabled.is_empty() {
+                capabilities.push_str("\nplugins: ");
+                capabilities.push_str(&enabled.join(", "));
+            }
+        }
+
+        if let Some(skills) = &self.skills {
+            let enabled = skills
+                .list()
+                .unwrap_or_default()
+                .into_iter()
+                .filter(|skill| skill.record.enabled)
+                .map(|skill| format!("{}@{}", skill.record.id, skill.record.version))
+                .collect::<Vec<_>>();
+            if !enabled.is_empty() {
+                capabilities.push_str("\nskills: ");
+                capabilities.push_str(&enabled.join(", "));
+            }
+        }
+
         parts.push(SectionInput::new(SectionKind::Capabilities, capabilities).cacheable());
         parts.push(SectionInput::new(
             SectionKind::Constraints,
