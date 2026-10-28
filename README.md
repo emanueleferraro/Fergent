@@ -13,7 +13,7 @@
     <img src="https://github.com/emanueleferraro/Fergent/actions/workflows/ci.yml/badge.svg" alt="CI">
   </a>
   <a href="https://github.com/emanueleferraro/Fergent/releases">
-    <img src="https://img.shields.io/badge/version-0.3.0-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-0.4.0-blue" alt="Version">
   </a>
   <a href="https://github.com/emanueleferraro/Fergent/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
@@ -37,19 +37,19 @@
 
 Modern knowledge work is fragmented across tools that do not share context: notes live in one application, source code in another, AI assistance in a third, and automation in yet another. Every boundary between them costs time and loses information.
 
-Fergents consolidates these workflows into a single workspace in which the agent is a first-class component of the runtime rather than an auxiliary panel. It can read and write notes, edit source code, drive a terminal, and orchestrate workflows — all within the same application and, by default, on the user's own machine.
+Fergents consolidates these workflows into a single workspace in which the agent is a first-class component of the runtime rather than an auxiliary panel. It can read and write notes, edit source code, drive a terminal, orchestrate workflows, and extend its own capabilities through plugins — all within the same application and, by default, on the user's own machine.
 
 Design principles:
 
 - **Local-first.** Data resides on the user's machine. Cloud services are opt-in and optional.
 - **Agent-native.** The agent runtime is part of the kernel, not a bolted-on widget.
-- **Extensible by design.** Everything above the kernel is a toggleable capability or a plugin.
+- **Extensible by design.** Everything above the kernel is a toggleable capability or a sandboxed plugin.
 
 ---
 
 ## Features
 
-Fergents is developed in modular phases. The current release (v0.3.0) provides the following.
+Fergents is developed in modular phases. The current release (v0.4.0) provides the following.
 
 ### Knowledge base (Phase 1)
 
@@ -74,6 +74,14 @@ Fergents is developed in modular phases. The current release (v0.3.0) provides t
 - **Git integration.** Stage, commit, and review diffs without leaving the application.
 - **Workspace trust.** New projects are untrusted by default; no code executes until explicitly authorized.
 
+### Plugin Runtime & Skills (Phase 4)
+
+- **WASM sandbox.** Secure, permission-gated execution of third-party plugins.
+- **UI extensions.** Plugins can inject React components into 16 defined slots (sidebar, chat, status bar, etc.).
+- **Skills runtime.** Reusable, composable capabilities (prompt, tool, code) defined via `SKILL.md`.
+- **Plugin Factory.** The AI can scaffold, build, test, and install its own plugins and skills inside the app.
+- **Marketplace plumbing.** Support for signed extension indexes and remote installation.
+
 ### Core runtime
 
 - **Capabilities.** Features can be disabled at the kernel level to reduce resource usage.
@@ -95,8 +103,8 @@ Fergents is organized in three layers, separating presentation, execution, and s
 ┌──────────────────────────▼──────────────────────────────┐
 │  KERNEL DAEMON (fergentsd) — Rust                       │
 │  Event bus · LLM router · MCP host · Agent runtime      │
-│  LSP client · Git engine · Capabilities                 │
-│  Hybrid search · PTY / terminal                         │
+│  LSP client · Git engine · WASM Plugin Host             │
+│  Hybrid search · PTY / terminal · Capabilities          │
 └──────────────────────────┬──────────────────────────────┘
                            │
 ┌──────────────────────────▼──────────────────────────────┐
@@ -105,8 +113,8 @@ Fergents is organized in three layers, separating presentation, execution, and s
 └─────────────────────────────────────────────────────────┘
 ```
 
-- **Rust kernel.** Owns concurrency, performance-critical paths, and the security boundary.
-- **Tauri front end.** A lightweight native webview shell.
+- **Rust kernel.** Owns concurrency, performance-critical paths, and the security boundary (including WASM sandboxing).
+- **Tauri front end.** A lightweight native webview shell with a Shadow DOM host for UI plugins.
 - **Local substrate.** Embedded databases and plain files; no cloud database is required.
 
 ---
@@ -163,7 +171,7 @@ cargo run -p fergents -- search "authentication flow"
 | 1     | Complete   | Knowledge base, Markdown, hybrid search, entity graph.       |
 | 2     | Complete   | LLM router, MCP, agent runtime, chat UI, memory.             |
 | 3     | Complete   | IDE, Monaco, LSP, terminal, Git integration.                 |
-| 4     | Complete   | Plugin runtime (WASM), skills, marketplace, plugin SDK.      |
+| 4     | Complete   | Plugin runtime (WASM), skills, plugin SDK, factory.          |
 | 5     | Next       | Visual workflow engine, triggers, debugger.                  |
 | 6     | Planned    | Dashboard and custom widgets.                                |
 | 7     | Planned    | Peer-to-peer sync, Android companion application.            |
