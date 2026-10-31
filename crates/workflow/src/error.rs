@@ -9,6 +9,9 @@ pub enum WorkflowError {
     /// A filesystem failure.
     #[error("io error: {0}")]
     Io(#[from] std::io::Error),
+    /// A persistence failure.
+    #[error("storage error: {0}")]
+    Storage(#[from] fergents_storage::StorageError),
     /// A JSON document is malformed.
     #[error("invalid json: {0}")]
     Json(#[from] serde_json::Error),
@@ -67,6 +70,7 @@ impl WorkflowError {
     pub fn code(&self) -> &'static str {
         match self {
             WorkflowError::Io(_) => "workflow_io",
+            WorkflowError::Storage(_) => "workflow_io",
             WorkflowError::Json(_) => "workflow_invalid_json",
             WorkflowError::Yaml(_) => "workflow_invalid_yaml",
             WorkflowError::Invalid(_) => "workflow_invalid",

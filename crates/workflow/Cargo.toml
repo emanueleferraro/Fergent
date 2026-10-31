@@ -8,6 +8,8 @@ authors.workspace = true
 description = "Fergents workflow engine: document model, validation, templates, expressions, scheduler, and triggers."
 
 [dependencies]
+fergents-events = { workspace = true }
+fergents-storage = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 serde_yaml = { workspace = true }
@@ -17,6 +19,11 @@ chrono = { workspace = true }
 sha2 = { workspace = true }
 hex = { workspace = true }
 regex = { workspace = true }
+tokio = { workspace = true }
+ulid = { workspace = true }
+futures = { workspace = true }
 
 [dev-dependencies]
+fergents-protocol = { workspace = true }
 tempfile = { workspace = true }
+tokio = { workspace = true, features = ["macros", "rt-multi-thread"] }
