@@ -14,10 +14,13 @@
 //! - [`checkpoint`] — the versioned checkpoint envelope (§3.3).
 //! - [`executor`] — one pure function per node kind (§1.2).
 //! - [`engine`] — the driver that walks the graph and records the run (§3).
+//! - [`trigger`] — the six trigger kinds and the schedule/watch/subscribe
+//!   runtime that turns them into runs (§2).
 //!
-//! Everything except [`engine`] is pure: no I/O beyond parsing, no clock
-//! unless one is passed in, and no ambient state. The engine is the only
-//! module that touches the store, the event bus, or the host.
+//! Everything except [`engine`] and [`trigger`] is pure: no I/O beyond
+//! parsing, no clock unless one is passed in, and no ambient state. Those two
+//! are the only modules that touch the store, the event bus, the filesystem,
+//! a socket, or the host.
 
 pub mod checkpoint;
 pub mod context;
@@ -31,6 +34,7 @@ pub mod scheduler;
 pub mod schema;
 pub mod store;
 pub mod template;
+pub mod trigger;
 pub mod validate;
 
 pub use checkpoint::{Checkpointer, RestoredCheckpoint};

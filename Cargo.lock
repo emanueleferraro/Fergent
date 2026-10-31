@@ -2206,11 +2206,14 @@ name = "fergents-workflow"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "chrono-tz",
  "fergents-events",
  "fergents-protocol",
  "fergents-storage",
  "futures",
+ "globset",
  "hex",
+ "notify",
  "regex",
  "serde",
  "serde_json",
