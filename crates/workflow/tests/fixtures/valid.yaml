@@ -1,0 +1,58 @@
+id: weather-report
+name: Weather Report
+description: Fetch a forecast and publish it as a mini app.
+version: "1.0.0"
+tags: [demo]
+permissions:
+  net.http: true
+variables:
+  city: Rome
+triggers:
+  - id: manual
+    kind: manual
+nodes:
+  - id: start
+    type: trigger
+    config:
+      trigger_id: manual
+  - id: parse
+    type: transform
+    config:
+      ops:
+        - op: pick
+          keys: [event]
+  - id: finish
+    type: end
+    config:
+      result: "{{ parse.output }}"
+edges:
+  - from: start
+    from_port: event
+    to: parse
+    to_port: input
+  - from: parse
+    from_port: output
+    to: finish
+    to_port: result
+app:
+  id: weather
+  name: Weather
+  icon: cloud
+  description: A tiny weather app.
+  inputs:
+    - id: city
+      type: string
+      label: City
+      required: true
+  outputs:
+    - id: report
+      type: markdown
+      label: Report
+  layout:
+    - type: form
+      fields: [city]
+    - type: output
+      ref: report
+    - type: button
+      label: Run
+      action: run

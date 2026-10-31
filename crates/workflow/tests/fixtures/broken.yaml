@@ -1,0 +1,111 @@
+id: broken
+name: Broken Workflow
+version: "2.0"
+permissions: {}
+triggers:
+  - id: tick
+    kind: cron
+    schedule: "* * *"
+  - id: hook
+    kind: webhook
+    path: /hook
+  - id: hook2
+    kind: webhook
+    path: /hook
+    method: POST
+nodes:
+  - id: start
+    type: trigger
+    config:
+      trigger_id: tick
+  - id: bad_ref
+    type: trigger
+    config:
+      trigger_id: nope
+  - id: loop_a
+    type: transform
+    config:
+      ops:
+        - op: pick
+          keys: [event]
+  - id: loop_b
+    type: transform
+    config:
+      ops:
+        - op: pick
+          keys: [event]
+  - id: outer
+    type: loop
+    config:
+      count: 2
+      body: [shared]
+  - id: other
+    type: loop
+    config:
+      count: 2
+      body: [shared]
+  - id: shared
+    type: transform
+    config:
+      ops:
+        - op: pick
+          keys: [event]
+  - id: recurse
+    type: subworkflow
+    config:
+      workflow: broken
+  - id: secreted
+    type: transform
+    inputs:
+      value: "{{ secrets.api_key }}"
+    config:
+      template: "{{ ghost }}"
+  - id: slow
+    type: http
+    timeout_s: 1
+    retry:
+      max: 3
+      backoff_ms: 5000
+      backoff_multiplier: 2.0
+    config:
+      method: GET
+      url: "https://example.com/data"
+  - id: stranded
+    type: transform
+    config:
+      ops:
+        - op: pick
+          keys: [event]
+  - id: done
+    type: end
+    config: {}
+edges:
+  - { from: start, from_port: event, to: loop_a, to_port: input }
+  - { from: loop_a, from_port: output, to: loop_b, to_port: input }
+  - { from: loop_b, from_port: output, to: loop_a, to_port: input }
+  - { from: loop_b, from_port: output, to: start, to_port: event }
+  - { from: start, from_port: event, to: outer, to_port: items }
+  - { from: start, from_port: event, to: other, to_port: items }
+  - { from: start, from_port: event, to: recurse, to_port: inputs }
+  - { from: start, from_port: event, to: secreted, to_port: input }
+  - { from: start, from_port: event, to: slow, to_port: url }
+  - { from: slow, from_port: status, to: done, to_port: result }
+  - { from: done, to: loop_a }
+  - { from: outer, from_port: widget, to: done, to_port: result }
+app:
+  id: broken
+  name: Broken
+  icon: cloud
+  inputs:
+    - id: city
+      type: string
+      label: ""
+  outputs:
+    - id: report
+      type: markdown
+      label: Report
+  layout:
+    - type: form
+      fields: [town]
+    - type: output
+      ref: summary
