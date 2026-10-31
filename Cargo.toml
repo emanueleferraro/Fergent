@@ -8,6 +8,7 @@ members = [
     "crates/wasm",
     "crates/plugins",
     "crates/skills",
+    "crates/workflow",
     "crates/core",
     "crates/capabilities",
     "crates/llm",
@@ -56,6 +57,7 @@ fergents-packages = { path = "crates/packages", version = "0.1.0" }
 fergents-wasm = { path = "crates/wasm", version = "0.1.0" }
 fergents-plugins = { path = "crates/plugins", version = "0.1.0" }
 fergents-skills = { path = "crates/skills", version = "0.1.0" }
+fergents-workflow = { path = "crates/workflow", version = "0.1.0" }
 fergents-core = { path = "crates/core", version = "0.1.0" }
 fergents-capabilities = { path = "crates/capabilities", version = "0.1.0" }
 fergents-llm = { path = "crates/llm", version = "0.1.0" }

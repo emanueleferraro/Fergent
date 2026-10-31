@@ -2202,6 +2202,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "fergents-workflow"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "hex",
+ "regex",
+ "serde",
+ "serde_json",
+ "serde_yaml",
+ "sha2",
+ "tempfile",
+ "thiserror 1.0.69",
+ "tracing",
+]
+
+[[package]]
 name = "fergentsd"
 version = "0.1.0"
 dependencies = [
