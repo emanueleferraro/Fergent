@@ -25,7 +25,7 @@ ADR-026 during Phase 2; ADR-027 … ADR-033 during Phase 3.
 | ADR-008 | Markdown + YAML/TOML for all definitions                    | Accepted |
 | ADR-009 | LAN-first P2P with libp2p                                   | Accepted |
 | ADR-010 | `.fergents` backups + shadow git                            | Accepted |
-| ADR-011 | AGPL-3.0                                                    | Accepted |
+| ADR-011 | AGPL-3.0                                                    | Superseded by ADR-035 |
 | ADR-012 | Tauri v2 for desktop + mobile                               | Accepted |
 | ADR-013 | sqlite-vec + BGE-M3 for embeddings                          | Accepted |
 | ADR-014 | No telemetry by default                                     | Accepted |
@@ -48,6 +48,8 @@ ADR-026 during Phase 2; ADR-027 … ADR-033 during Phase 3.
 | ADR-031 | PTYs live in the kernel                                     | Accepted |
 | ADR-032 | git2 (vendored), shadow git, off-by-default remote ops      | Accepted |
 | ADR-033 | Inline AI and Composer as gated, reversible runs            | Accepted |
+| ADR-034 | Agents and chat run on the configured providers             | Accepted |
+| ADR-035 | Relicense to MIT                                            | Accepted |
 
 ---
 
@@ -320,6 +322,31 @@ the session.
 **Rationale.** Chat must reflect the provider the user configured; one
 resolver keeps request/stream adapters interchangeable, and a strict offline
 fallback keeps the kernel usable with no network and no keys.
+
+---
+
+## ADR-035 — Relicense to MIT
+
+**Decision.** Fergents is relicensed from AGPL-3.0-or-later to the **MIT
+License**, effective with `v0.4.0-phase4`. The `LICENSE` text (copyright 2026),
+the README badge and license section, the contributor terms, every npm
+manifest, and the Cargo workspace `license` field now read MIT; the workspace
+crates inherit it through `license.workspace = true`. This entry supersedes
+**ADR-011**, which stays in the log unchanged as history.
+
+**Rationale.** The AGPL's network-copyleft obligation made embedding Fergents
+in closed products, internal appliances, and commercial integrations legally
+awkward, which worked against the goal of a broad extension ecosystem. The
+platform's safety comes from the runtime — the sandbox, the permission engine,
+the capability gates, audit, and reversibility — not from the license, so a
+permissive license aligns the legal terms with the architecture. MIT keeps the
+project maximally adoptable, keeps contributions simple (no CLA), and does not
+change any runtime behaviour or security boundary.
+
+**Consequences.** Dependency audits now accept permissive licenses broadly,
+but copyleft dependencies must be avoided in the kernel and SDK; downstream
+distributors may ship closed derivatives, which the project accepts. ADR-011
+is not rewritten: it remains the record of the original decision.
 
 ---
 
