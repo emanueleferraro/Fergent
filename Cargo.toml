@@ -136,6 +136,9 @@ ignore = "0.4"
 # Filesystem watcher — spec Dependencies (SEARCH.md §13.1)
 notify = "8"
 
+# Glob matching for file triggers and .brainignore-style filters (spec §2.4)
+globset = "0.4"
+
 # `.fergbrain` archive (BRAIN.md §14) — spec Dependencies
 zip = { version = "2", default-features = false, features = ["deflate"] }
 
@@ -149,6 +152,9 @@ hex = "0.4"
 
 # Local wall-clock formatting for daily notes and templates (`strftime`, D10)
 chrono = "0.4"
+
+# IANA timezones for cron schedules (spec §2.2)
+chrono-tz = "0.8"
 
 # Errors
 thiserror = "1"
