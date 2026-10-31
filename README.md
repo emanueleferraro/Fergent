@@ -13,7 +13,7 @@
     <img src="https://github.com/emanueleferraro/Fergent/actions/workflows/ci.yml/badge.svg" alt="CI">
   </a>
   <a href="https://github.com/emanueleferraro/Fergent/releases">
-    <img src="https://img.shields.io/badge/version-0.3.0-blue" alt="Version">
+    <img src="https://img.shields.io/badge/version-0.4.0-blue" alt="Version">
   </a>
   <a href="https://github.com/emanueleferraro/Fergent/blob/main/LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-green" alt="License">
